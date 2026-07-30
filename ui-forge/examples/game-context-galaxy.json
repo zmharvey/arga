@@ -1,0 +1,48 @@
+{
+  "title": "Pet Ascend Simulator",
+  "genre": "simulator",
+  "subgenre": "pet-collection",
+  "inspiration": {
+    "mode": "reskin",
+    "source": "Pet Simulator 99",
+    "deltas": ["deep-space hub", "planet-themed egg tiers"]
+  },
+  "audience": { "ageBand": "8-14", "platformMix": { "mobile": 0.62, "desktop": 0.31, "console": 0.07 } },
+  "artDirection": {
+    "vibe": "cartoon-vibrant",
+    "mood": ["cosmic", "vast", "rewarding"],
+    "paletteHints": ["deep space indigo", "star gold", "nebula magenta"],
+    "referenceNote": "hard-edged panels, deep void surfaces, luminous accents",
+
+    "tokenOverrides": {
+      "radius.sm": 0,
+      "radius.md": 0,
+      "radius.lg": 0,
+      "radius.xl": 0,
+
+      "color.surface.base": "#171034",
+      "color.surface.sunken": "#0C0722",
+      "color.surface.raised": "#241A4E",
+      "color.surface.overlay": "#04020D",
+
+      "color.content.primary": "#F1ECFF",
+      "color.content.secondary": "#A79BD8",
+      "color.content.muted": "#6C609B",
+      "color.content.inverse": "#0C0722",
+
+      "color.accent.primary": "#FFD166",
+      "color.accent.secondary": "#4CC9F0",
+      "color.accent.tertiary": "#F72585",
+
+      "color.border.subtle": "#33245F",
+      "color.border.strong": "#6A4FD0",
+
+      "stroke.base": 2,
+      "gradient.surfaceSheen.strength": 0.15,
+      "gradient.accentSheen.strength": 0.2
+    }
+  },
+  "economy": { "softCurrency": "Coins", "hardCurrency": "Gems", "premium": "Robux" },
+  "coreLoop": ["hatch pet", "farm coins", "upgrade", "prestige"],
+  "screens": [{ "id": "shop", "purpose": "buy eggs and boosts", "priority": 1 }]
+}

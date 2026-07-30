@@ -1,0 +1,178 @@
+{
+  "screen": "roster",
+  "pattern": "modal-grid",
+  "purpose": "choose your active champion from the elemental roster",
+  "focus": "Panel",
+  "variant": {
+    "columns": 3,
+    "artPlacement": "above",
+    "cardAspect": "portrait",
+    "headerStyle": "stack",
+    "density": "comfortable",
+    "ctaPlacement": "per-item"
+  },
+  "ornament": {
+    "cardBadge": "pill",
+    "panelTrim": "top-accent"
+  },
+  "overrides": [
+    {
+      "_why": "Each champion carries its element's colour on the card edge and badge. Element colours are additive tokens from the game context, so specs still contain no literals.",
+      "node": "Item_Pyra",
+      "set": {
+        "stroke": {
+          "color": "element.fire",
+          "thickness": "stroke.heavy"
+        }
+      }
+    },
+    {
+      "node": "Item_Nereus",
+      "set": {
+        "stroke": {
+          "color": "element.water",
+          "thickness": "stroke.heavy"
+        }
+      }
+    },
+    {
+      "node": "Item_Terran",
+      "set": {
+        "stroke": {
+          "color": "element.earth",
+          "thickness": "stroke.heavy"
+        }
+      }
+    },
+    {
+      "node": "Item_Volt",
+      "set": {
+        "stroke": {
+          "color": "element.lightning",
+          "thickness": "stroke.heavy"
+        }
+      }
+    },
+    {
+      "_why": "Badges are pills tinted per element; onColor cannot be derived for additive tokens, so the foreground is named explicitly against a known-light element swatch.",
+      "node": "Badge",
+      "set": {
+        "bg": "surface.overlay",
+        "corner": "radius.pill",
+        "size": {
+          "s": [
+            null,
+            null
+          ],
+          "o": [
+            88,
+            26
+          ]
+        },
+        "pos": {
+          "s": [
+            0.5,
+            1
+          ],
+          "o": [
+            0,
+            -10
+          ]
+        },
+        "anchor": [
+          0.5,
+          1
+        ],
+        "elevation": 2
+      }
+    },
+    {
+      "node": "BadgeText",
+      "set": {
+        "type": "caption",
+        "color": "content.primary",
+        "size": {
+          "s": [
+            1,
+            1
+          ],
+          "o": [
+            null,
+            null
+          ]
+        },
+        "align": "center"
+      }
+    },
+    {
+      "node": "Grid",
+      "set": {
+        "padding": "space.xl"
+      }
+    },
+    {
+      "node": "Item_*",
+      "set": {
+        "padding": "space.lg"
+      }
+    },
+    {
+      "node": "BuyButton",
+      "set": {
+        "bg": "surface.raised",
+        "color": "content.primary",
+        "stroke": {
+          "color": "border.subtle",
+          "thickness": "stroke.hairline"
+        },
+        "type": "type.label"
+      }
+    }
+  ],
+  "content": {
+    "title": "CHOOSE YOUR CHAMPION",
+    "dismissible": true,
+    "chips": [
+      {
+        "label": "Essence",
+        "value": "12,480",
+        "icon": "essence"
+      },
+      {
+        "label": "Shards",
+        "value": "340",
+        "icon": "shard"
+      }
+    ],
+    "items": [
+      {
+        "name": "Pyra",
+        "price": "SELECT",
+        "art": "char-pyra",
+        "badge": "FIRE",
+        "artPrompt": "a heroic female fire champion in sleek polished obsidian-and-molten-orange armour, brightly lit, small contained flame accents at the shoulders and hands"
+      },
+      {
+        "name": "Nereus",
+        "price": "SELECT",
+        "art": "char-nereus",
+        "badge": "WATER",
+        "artPrompt": "a composed male water champion in sleek polished dark armour with bright azure water accents at the forearms, brightly lit, crisp clean edges"
+      },
+      {
+        "name": "Terran",
+        "price": "SELECT",
+        "art": "char-terran",
+        "badge": "EARTH",
+        "artPrompt": "a powerful earth champion in sleek dark stone-plated armour with bright emerald crystal inlays across the chest and gauntlets, brightly lit"
+      },
+      {
+        "name": "Volt",
+        "price": "SELECT",
+        "art": "char-volt",
+        "badge": "STORM",
+        "artPrompt": "an agile storm champion in sleek polished black-and-gold armour with bright electric arcs at the gauntlets, brightly lit, crisp clean edges"
+      }
+    ]
+  }
+}

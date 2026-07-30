@@ -1,0 +1,22 @@
+{
+  "title": "Meadow Cafe Hangout",
+  "genre": "social",
+  "subgenre": "cafe-roleplay",
+  "inspiration": {
+    "mode": "reskin",
+    "source": "Pet Ascend Simulator",
+    "deltas": ["cafe storefront replaces egg hatching", "recipes replace pets"]
+  },
+  "audience": { "ageBand": "13-18", "platformMix": { "mobile": 0.48, "desktop": 0.45, "console": 0.07 } },
+  "artDirection": {
+    "vibe": "cozy",
+    "mood": ["calm", "warm", "welcoming"],
+    "paletteHints": ["terracotta", "sage", "cream"],
+    "referenceNote": "airy pastel surfaces, generous whitespace, soft edges"
+  },
+  "economy": { "softCurrency": "Beans", "hardCurrency": "Petals", "premium": "Robux" },
+  "coreLoop": ["serve customer", "earn beans", "unlock recipe", "decorate"],
+  "screens": [
+    { "id": "shop", "purpose": "buy recipes and decor", "priority": 1 }
+  ]
+}

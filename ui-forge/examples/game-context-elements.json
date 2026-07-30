@@ -1,0 +1,32 @@
+{
+  "title": "Elementborn",
+  "genre": "rpg",
+  "subgenre": "elemental-hero-collector",
+  "inspiration": {
+    "mode": "new",
+    "source": null,
+    "deltas": ["each champion channels one element", "elements counter each other in a wheel"]
+  },
+  "audience": { "ageBand": "10-16", "platformMix": { "mobile": 0.55, "desktop": 0.38, "console": 0.07 } },
+  "artDirection": {
+    "vibe": "sleek",
+    "mood": ["premium", "powerful", "refined"],
+    "paletteHints": ["obsidian glass", "arcane violet", "elemental glow"],
+    "referenceNote": "polished glass panels, thin luminous edges, energy that reads as expensive rather than loud",
+
+    "tokens": {
+      "element": {
+        "fire": "#FF6B3D",
+        "water": "#3AA0FF",
+        "earth": "#5FCF7A",
+        "air": "#C9D6E8",
+        "lightning": "#FFD84B"
+      }
+    }
+  },
+  "economy": { "softCurrency": "Essence", "hardCurrency": "Shards", "premium": "Robux" },
+  "coreLoop": ["summon champion", "battle", "ascend element", "counter-pick"],
+  "screens": [
+    { "id": "roster", "purpose": "choose your active champion", "priority": 1 }
+  ]
+}

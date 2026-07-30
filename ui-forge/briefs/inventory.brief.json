@@ -1,0 +1,27 @@
+{
+  "screen": "inventory",
+  "pattern": "modal-grid",
+  "purpose": "manage owned pets; equip or sell individually",
+  "variant": {
+    "columns": 4,
+    "artPlacement": "above",
+    "cardAspect": "portrait",
+    "headerStyle": "stack",
+    "density": "compact",
+    "ctaPlacement": "per-item"
+  },
+  "ornament": { "cardBadge": "ribbon", "panelTrim": "none" },
+  "content": {
+    "title": "MY PETS",
+    "dismissible": true,
+    "chips": [{ "label": "Slots", "value": "18 / 40", "icon": "slot" }],
+    "items": [
+      { "name": "Nebula Cat", "price": "EQUIP", "art": "pet-nebula-cat", "badge": "x2" },
+      { "name": "Star Pup", "price": "EQUIP", "art": "pet-star-pup" },
+      { "name": "Void Moth", "price": "EQUIP", "art": "pet-void-moth", "badge": "RARE" },
+      { "name": "Comet Fox", "price": "EQUIP", "art": "pet-comet-fox" },
+      { "name": "Dust Bunny", "price": "EQUIP", "art": "pet-dust-bunny" },
+      { "name": "Solar Owl", "price": "EQUIP", "art": "pet-solar-owl", "badge": "NEW" }
+    ]
+  }
+}

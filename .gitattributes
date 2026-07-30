@@ -1,0 +1,6 @@
+# Normalise line endings so cross-machine diffs stay clean.
+* text=auto eol=lf
+
+# Binary — never diff or normalise.
+*.png binary
+*.jpg binary

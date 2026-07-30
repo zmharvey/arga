@@ -1,0 +1,78 @@
+{
+  "screen": "shop",
+  "pattern": "modal-grid",
+  "purpose": "buy eggs and boosts with soft currency",
+
+  "_feedback": [
+    "make the close button round",
+    "cards need thicker outlines and rounder corners",
+    "add a limited-time event banner above the items",
+    "the item name is too quiet, make it bigger",
+    "buy buttons should be pink"
+  ],
+
+  "variant": {
+    "columns": 3,
+    "artPlacement": "above",
+    "cardAspect": "square",
+    "headerStyle": "plain",
+    "density": "comfortable",
+    "ctaPlacement": "footer"
+  },
+  "ornament": { "cardBadge": "none", "panelTrim": "none" },
+
+  "slots": {
+    "panelTop": [
+      {
+        "class": "Frame",
+        "name": "EventBanner",
+        "size": { "s": [1, null], "o": [null, 46] },
+        "at": { "mobile": { "size": { "s": [1, null], "o": [null, 34] } } },
+        "flex": "0 0 auto",
+        "bg": "accent.tertiary",
+        "corner": "radius.md",
+        "gradient": "accentSheen",
+        "elevation": 2,
+        "layout": { "dir": "horizontal", "gap": "space.sm", "align": "center", "justify": "center" },
+        "children": [
+          {
+            "class": "TextLabel",
+            "name": "EventText",
+            "text": "DOUBLE LUCK EVENT  ·  ENDS IN 2:14:09",
+            "type": "label",
+            "color": "onColor.tertiary",
+            "size": { "s": [null, 1], "o": [null, null] },
+            "flex": "0 0 auto"
+          }
+        ]
+      }
+    ]
+  },
+
+  "overrides": [
+    { "node": "CloseButton", "set": { "corner": "radius.pill" } },
+    {
+      "node": "Item_*",
+      "set": {
+        "corner": "radius.xl",
+        "stroke": { "color": "accent.primary", "thickness": "stroke.base" }
+      }
+    },
+    { "node": "Name", "set": { "type": "title", "size": { "s": [1, null], "o": [null, 32] }, "flex": "0 0 auto", "align": "center" } }
+  ],
+
+  "content": {
+    "title": "SHOP",
+    "dismissible": true,
+    "chips": [
+      { "label": "Coins", "value": "128,400", "icon": "coin" },
+      { "label": "Gems", "value": "2,310", "icon": "gem" }
+    ],
+    "items": [
+      { "name": "Cosmic Egg", "price": "25,000", "art": "egg-cosmic" },
+      { "name": "Void Egg", "price": "90,000", "art": "egg-void" },
+      { "name": "Luck Boost", "price": "1,500", "art": "boost-luck" }
+    ],
+    "cta": { "label": "OPEN 3 EGGS", "emphasis": "primary" }
+  }
+}

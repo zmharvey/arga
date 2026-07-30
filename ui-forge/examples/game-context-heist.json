@@ -1,0 +1,20 @@
+{
+  "title": "Vault Breakers",
+  "genre": "shooter",
+  "subgenre": "co-op-heist",
+  "inspiration": {
+    "mode": "new",
+    "source": null,
+    "deltas": ["squads of four crack escalating vaults", "loud vs quiet approach changes the payout"]
+  },
+  "audience": { "ageBand": "12-17", "platformMix": { "mobile": 0.41, "desktop": 0.52, "console": 0.07 } },
+  "artDirection": {
+    "vibe": "cyber",
+    "mood": ["tense", "high-stakes", "precise"],
+    "paletteHints": ["security monitor green", "alarm amber", "gunmetal"],
+    "referenceNote": "surveillance-console feel, hard edges, thin luminous readouts"
+  },
+  "economy": { "softCurrency": "Cred", "hardCurrency": "Keycards", "premium": "Robux" },
+  "coreLoop": ["pick a contract", "gear up", "crack the vault", "escape and bank the payout"],
+  "screens": []
+}

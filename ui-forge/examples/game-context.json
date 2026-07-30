@@ -1,0 +1,24 @@
+{
+  "title": "Pet Ascend Simulator",
+  "genre": "simulator",
+  "subgenre": "pet-collection",
+  "inspiration": {
+    "mode": "reskin",
+    "source": "Pet Simulator 99",
+    "deltas": ["orbital hub instead of ground world", "prestige ladder replaces rebirth"]
+  },
+  "audience": { "ageBand": "8-14", "platformMix": { "mobile": 0.62, "desktop": 0.31, "console": 0.07 } },
+  "artDirection": {
+    "vibe": "cartoon-vibrant",
+    "mood": ["playful", "rewarding", "energetic"],
+    "paletteHints": ["cosmic purple", "gold reward", "cyan energy"],
+    "referenceNote": "chunky rounded panels, thick outlines, heavy reward juice"
+  },
+  "economy": { "softCurrency": "Coins", "hardCurrency": "Gems", "premium": "Robux" },
+  "coreLoop": ["hatch pet", "farm coins", "upgrade", "prestige"],
+  "screens": [
+    { "id": "shop", "purpose": "buy eggs and boosts", "priority": 1 },
+    { "id": "inventory", "purpose": "manage owned pets", "priority": 2 },
+    { "id": "hud", "purpose": "persistent currency + quick actions", "priority": 1 }
+  ]
+}

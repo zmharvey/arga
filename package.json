@@ -1,0 +1,32 @@
+{
+  "name": "arga",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Roblox game generation pipeline. Stage 0: concept. Stage 1: ui-forge.",
+  "scripts": {
+    "concept": "node concept/src/cli.mjs run",
+    "concept:status": "node concept/src/cli.mjs status",
+    "concept:answer": "node concept/src/cli.mjs answer",
+    "concept:compile": "node concept/src/cli.mjs compile",
+    "concept:vocab": "node concept/src/cli.mjs vocab",
+    "render": "node ui-forge/src/cli.mjs render",
+    "render:all": "node ui-forge/src/cli.mjs render --viewport all",
+    "render:cozy": "node ui-forge/src/cli.mjs render --context examples/game-context-cozy.json --out out-cozy --viewport all",
+    "brief": "node ui-forge/src/cli.mjs render --out out-briefs",
+    "gallery": "node ui-forge/src/cli.mjs gallery",
+    "capabilities": "node ui-forge/src/cli.mjs capabilities",
+    "assets": "node ui-forge/src/cli.mjs assets",
+    "assets:stub": "node ui-forge/src/cli.mjs assets --generate --provider stub",
+    "emit": "node ui-forge/src/cli.mjs emit",
+    "calibrate": "node ui-forge/src/cli.mjs calibrate",
+    "feedback": "node ui-forge/src/cli.mjs feedback",
+    "forge": "node ui-forge/src/cli.mjs forge"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.0"
+  }
+}

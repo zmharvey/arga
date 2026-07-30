@@ -1,0 +1,17 @@
+{
+  "name": "arga-ui",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "UIForge": { "$path": "src/shared" }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "UIBoot": { "$path": "src/client" }
+      }
+    }
+  }
+}

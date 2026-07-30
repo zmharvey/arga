@@ -1,0 +1,230 @@
+{
+  "id": "dossier-rail",
+  "describes": "Squared panel with a segmented accent rail bonded to the left edge, an offset header plate that underlaps the rail, and item rows split by a vertical rule between art and text.",
+  "suitedTo": "contract boards, mission select, anything list-shaped",
+  "focus": "Panel",
+  "root": {
+    "class": "Frame",
+    "name": "Backdrop",
+    "size": { "s": [1, 1], "o": [0, 0] },
+    "pos": { "s": [0, 0], "o": [0, 0] },
+    "bg": "surface.overlay",
+    "bgTransparency": 0.45,
+    "children": [
+      {
+        "class": "Frame",
+        "name": "Panel",
+        "size": { "s": [0.56, null], "o": [null, null], "auto": "y" },
+        "at": {
+          "tablet": { "size": { "s": [0.78, null], "o": [null, null], "auto": "y" } },
+          "mobile": { "size": { "s": [0.9, null], "o": [null, null], "auto": "y" } }
+        },
+        "pos": { "s": [0.5, 0.5], "o": [0, 0] },
+        "anchor": [0.5, 0.5],
+        "bg": "surface.base",
+        "corner": "radius.sm",
+        "stroke": { "color": "border.strong", "thickness": "stroke.base" },
+        "elevation": 4,
+        "motion": { "enter": "slide-up", "duration": 0.24, "easing": "cubic" },
+        "layout": { "dir": "horizontal", "gap": "space.none", "align": "stretch", "justify": "start" },
+        "children": [
+          {
+            "class": "Frame",
+            "name": "AccessRail",
+            "size": { "s": [null, 1], "o": [8, null] },
+            "flex": "0 0 auto",
+            "bg": "accent.primary",
+            "gradient": { "rotation": 90, "strength": 0.3 }
+          },
+          {
+            "class": "Frame",
+            "name": "Body",
+            "flex": "1 1 0",
+            "size": { "s": [null, null], "o": [null, null], "auto": "y" },
+            "padding": "space.xl",
+            "layout": { "dir": "vertical", "gap": "space.lg", "align": "stretch", "justify": "start" },
+            "children": [
+              {
+                "class": "Frame",
+                "name": "HeaderPlate",
+                "size": { "s": [1, null], "o": [null, "sizing.minTouchTarget"] },
+                "flex": "0 0 auto",
+                "bg": "surface.raised",
+                "corner": "radius.sm",
+                "padding": { "left": "space.md", "right": "space.xs" },
+                "layout": { "dir": "horizontal", "gap": "space.md", "align": "center", "justify": "between" },
+                "children": [
+                  {
+                    "class": "TextLabel",
+                    "name": "Title",
+                    "text": "{{title}}",
+                    "type": "heading",
+                    "at": { "mobile": { "type": "title" } },
+                    "color": "content.primary",
+                    "flex": "1 1 auto",
+                    "align": "start"
+                  },
+                  {
+                    "$repeat": "chips",
+                    "as": "chip",
+                    "node": {
+                      "class": "Frame",
+                      "name": "Chip",
+                      "flex": "0 1 190px",
+                      "size": { "s": [null, null], "o": [null, 34] },
+                      "at": {
+                        "tablet": { "flex": "0 1 140px" },
+                        "mobile": { "flex": "0 1 130px" }
+                      },
+                      "bg": "surface.sunken",
+                      "corner": "radius.none",
+                      "stroke": { "color": "border.subtle", "thickness": "stroke.hairline" },
+                      "padding": { "left": "space.sm", "right": "space.sm" },
+                      "layout": { "dir": "horizontal", "gap": "space.md", "align": "center", "justify": "between" },
+                      "children": [
+                        {
+                          "class": "TextLabel",
+                          "name": "ChipLabel",
+                          "text": "{{chip.label}}",
+                          "type": "caption",
+                          "color": "content.secondary",
+                          "flex": "0 0 auto"
+                        },
+                        {
+                          "class": "TextLabel",
+                          "name": "ChipValue",
+                          "text": "{{chip.value}}",
+                          "type": "numeric",
+                          "color": "content.primary",
+                          "flex": "1 1 auto",
+                          "align": "end"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "$if": "dismissible",
+                    "node": {
+                      "class": "TextButton",
+                      "name": "CloseButton",
+                      "size": { "s": [null, null], "o": ["sizing.minTouchTarget", "sizing.minTouchTarget"] },
+                      "flex": "0 0 auto",
+                      "bg": "surface.sunken",
+                      "corner": "radius.sm",
+                      "text": "✕",
+                      "type": "title",
+                      "color": "content.secondary",
+                      "align": "center",
+                      "states": { "hover": { "bg": "status.danger", "color": "onColor.danger" }, "pressed": { "scale": 0.96 } },
+                      "motion": { "duration": 0.12, "easing": "quad" }
+                    }
+                  }
+                ]
+              },
+              {
+                "class": "ScrollingFrame",
+                "name": "Rows",
+                "size": { "s": [1, null], "o": [null, null] },
+                "flex": "0 1 auto",
+                "maxSize": { "s": [null, null], "o": [null, 430] },
+                "at": {
+                  "tablet": { "maxSize": { "s": [null, null], "o": [null, 380] } },
+                  "mobile": { "maxSize": { "s": [null, null], "o": [null, 190] } }
+                },
+                "scroll": "y",
+                "layout": { "dir": "vertical", "gap": "space.sm", "align": "stretch", "justify": "start" },
+                "children": [
+                  {
+                    "$repeat": "items",
+                    "as": "item",
+                    "node": {
+                      "class": "Frame",
+                      "name": "Row",
+                      "size": { "s": [1, null], "o": [null, 92] },
+                      "flex": "0 0 auto",
+                      "bg": "surface.sunken",
+                      "corner": "radius.sm",
+                      "stroke": { "color": "border.subtle", "thickness": "stroke.hairline" },
+                      "padding": "space.sm",
+                      "layout": { "dir": "horizontal", "gap": "space.md", "align": "center", "justify": "start" },
+                      "children": [
+                        {
+                          "class": "ImageLabel",
+                          "name": "Art",
+                          "size": { "s": [null, 1], "o": [72, null] },
+                          "flex": "0 0 auto",
+                          "corner": "radius.none",
+                          "image": { "placeholder": "{{item.art}}" }
+                        },
+                        {
+                          "class": "Frame",
+                          "name": "Rule",
+                          "size": { "s": [null, 0.7], "o": [1, null] },
+                          "flex": "0 0 auto",
+                          "bg": "border.subtle"
+                        },
+                        {
+                          "class": "Frame",
+                          "name": "Text",
+                          "flex": "1 1 0",
+                          "size": { "s": [null, 1], "o": [null, null] },
+                          "layout": { "dir": "vertical", "gap": "space.xs", "align": "stretch", "justify": "center" },
+                          "children": [
+                            {
+                              "class": "TextLabel",
+                              "name": "Name",
+                              "text": "{{item.name}}",
+                              "type": "label",
+                              "color": "content.primary",
+                              "size": { "s": [1, null], "o": [null, 24] },
+                              "flex": "0 0 auto",
+                              "align": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "class": "TextButton",
+                          "name": "Action",
+                          "size": { "s": [null, null], "o": [140, "sizing.minTouchTarget"] },
+                          "flex": "0 0 auto",
+                          "bg": "accent.primary",
+                          "corner": "radius.sm",
+                          "gradient": "accentSheen",
+                          "text": "{{item.price}}",
+                          "type": "numeric",
+                          "color": "onColor.primary",
+                          "align": "center",
+                          "states": { "hover": { "scale": 1.03 }, "pressed": { "scale": 0.97 } },
+                          "motion": { "duration": 0.12, "easing": "back" }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "$if": "cta",
+                "node": {
+                  "class": "TextButton",
+                  "name": "PrimaryCta",
+                  "size": { "s": [1, null], "o": [null, 56] },
+                  "flex": "0 0 auto",
+                  "bg": "accent.secondary",
+                  "corner": "radius.sm",
+                  "gradient": "accentSheen",
+                  "elevation": 2,
+                  "text": "{{cta.label}}",
+                  "type": "title",
+                  "color": "onColor.secondary",
+                  "align": "center",
+                  "states": { "hover": { "scale": 1.02 }, "pressed": { "scale": 0.98 } },
+                  "motion": { "duration": 0.12, "easing": "back" }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

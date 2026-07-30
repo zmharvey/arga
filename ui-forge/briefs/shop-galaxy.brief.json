@@ -1,0 +1,510 @@
+{
+  "screen": "shop",
+  "pattern": "modal-grid",
+  "purpose": "buy eggs and boosts with soft currency",
+  "_note": "Decoration sits outside the panel, so the whole frame is the composition — cropping to the panel would hide the planets entirely.",
+  "focus": "Backdrop",
+  "_feedback": [
+    "square, not rounded",
+    "planet galaxy theme",
+    "planets on the sides"
+  ],
+  "variant": {
+    "columns": 3,
+    "artPlacement": "above",
+    "cardAspect": "square",
+    "headerStyle": "plain",
+    "density": "comfortable",
+    "ctaPlacement": "footer"
+  },
+  "ornament": {
+    "cardBadge": "none",
+    "panelTrim": "none"
+  },
+  "overrides": [
+    {
+      "_why": "radius tokens are zeroed globally, but pill-shaped nodes name radius.pill explicitly, so they have to be squared off individually.",
+      "node": "PricePill",
+      "set": {
+        "corner": "radius.none"
+      }
+    },
+    {
+      "node": "PrimaryCta",
+      "set": {
+        "corner": "radius.none"
+      }
+    },
+    {
+      "node": "Chip_*",
+      "set": {
+        "corner": "radius.none"
+      }
+    },
+    {
+      "_why": "Planets are decoration OUTSIDE the panel, which no slot covers. Backdrop has no layout, so its children position absolutely — and inserting them as firstChild puts them behind the panel in paint order.",
+      "node": "Backdrop",
+      "insert": {
+        "position": "firstChild",
+        "nodes": [
+          {
+            "class": "Frame",
+            "name": "Star_1",
+            "pos": {
+              "s": [
+                0.075,
+                0.17
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                9,
+                9
+              ]
+            },
+            "bg": "content.primary",
+            "bgTransparency": 0.25,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_2",
+            "pos": {
+              "s": [
+                0.145,
+                0.73
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                6,
+                6
+              ]
+            },
+            "bg": "content.primary",
+            "bgTransparency": 0.5,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_3",
+            "pos": {
+              "s": [
+                0.35,
+                0.09
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                11,
+                11
+              ]
+            },
+            "bg": "accent.secondary",
+            "bgTransparency": 0.3,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_4",
+            "pos": {
+              "s": [
+                0.63,
+                0.07
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                7,
+                7
+              ]
+            },
+            "bg": "content.primary",
+            "bgTransparency": 0.4,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_5",
+            "pos": {
+              "s": [
+                0.9,
+                0.22
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                10,
+                10
+              ]
+            },
+            "bg": "accent.primary",
+            "bgTransparency": 0.35,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_6",
+            "pos": {
+              "s": [
+                0.94,
+                0.87
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                7,
+                7
+              ]
+            },
+            "bg": "content.primary",
+            "bgTransparency": 0.45,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_7",
+            "pos": {
+              "s": [
+                0.055,
+                0.52
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                6,
+                6
+              ]
+            },
+            "bg": "content.primary",
+            "bgTransparency": 0.55,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "Frame",
+            "name": "Star_8",
+            "pos": {
+              "s": [
+                0.47,
+                0.94
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                8,
+                8
+              ]
+            },
+            "bg": "content.primary",
+            "bgTransparency": 0.4,
+            "corner": "radius.pill"
+          },
+          {
+            "class": "ImageLabel",
+            "name": "PlanetRight",
+            "pos": {
+              "s": [
+                0.795,
+                0.605
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                240,
+                240
+              ]
+            },
+            "at": {
+              "mobile": {
+                "size": {
+                  "s": [
+                    null,
+                    null
+                  ],
+                  "o": [
+                    104,
+                    104
+                  ]
+                },
+                "pos": {
+                  "s": [
+                    0.9,
+                    0.72
+                  ],
+                  "o": [
+                    0,
+                    0
+                  ]
+                }
+              }
+            },
+            "corner": "radius.pill",
+            "elevation": 3,
+            "image": {
+              "placeholder": "planet-magenta-ringed"
+            }
+          },
+          {
+            "class": "ImageLabel",
+            "name": "PlanetLeft",
+            "pos": {
+              "s": [
+                0.2,
+                0.42
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                300,
+                300
+              ]
+            },
+            "at": {
+              "mobile": {
+                "size": {
+                  "s": [
+                    null,
+                    null
+                  ],
+                  "o": [
+                    128,
+                    128
+                  ]
+                },
+                "pos": {
+                  "s": [
+                    0.1,
+                    0.3
+                  ],
+                  "o": [
+                    0,
+                    0
+                  ]
+                }
+              }
+            },
+            "corner": "radius.pill",
+            "elevation": 4,
+            "image": {
+              "placeholder": "planet-violet-gasgiant"
+            }
+          },
+          {
+            "class": "ImageLabel",
+            "name": "MoonLeft",
+            "pos": {
+              "s": [
+                0.325,
+                0.155
+              ],
+              "o": [
+                0,
+                0
+              ]
+            },
+            "anchor": [
+              0.5,
+              0.5
+            ],
+            "size": {
+              "s": [
+                null,
+                null
+              ],
+              "o": [
+                86,
+                86
+              ]
+            },
+            "at": {
+              "mobile": {
+                "size": {
+                  "s": [
+                    null,
+                    null
+                  ],
+                  "o": [
+                    34,
+                    34
+                  ]
+                },
+                "pos": {
+                  "s": [
+                    0.2,
+                    0.12
+                  ],
+                  "o": [
+                    0,
+                    0
+                  ]
+                }
+              }
+            },
+            "corner": "radius.pill",
+            "elevation": 2,
+            "image": {
+              "placeholder": "moon-cyan-icy"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "content": {
+    "title": "SHOP",
+    "dismissible": true,
+    "chips": [
+      {
+        "label": "Coins",
+        "value": "128,400",
+        "icon": "coin"
+      },
+      {
+        "label": "Gems",
+        "value": "2,310",
+        "icon": "gem"
+      }
+    ],
+    "items": [
+      {
+        "name": "Cosmic Egg",
+        "price": "25,000",
+        "art": "egg-cosmic"
+      },
+      {
+        "name": "Void Egg",
+        "price": "90,000",
+        "art": "egg-void"
+      },
+      {
+        "name": "Luck Boost",
+        "price": "1,500",
+        "art": "boost-luck"
+      }
+    ],
+    "cta": {
+      "label": "OPEN 3 EGGS",
+      "emphasis": "primary"
+    }
+  }
+}

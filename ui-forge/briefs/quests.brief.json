@@ -1,0 +1,24 @@
+{
+  "screen": "quests",
+  "pattern": "modal-grid",
+  "purpose": "daily objectives as scannable list rows, not a card grid",
+  "variant": {
+    "columns": 1,
+    "artPlacement": "beside",
+    "cardAspect": "square",
+    "headerStyle": "stack",
+    "density": "compact",
+    "ctaPlacement": "per-item"
+  },
+  "ornament": { "cardBadge": "none", "panelTrim": "top-accent" },
+  "content": {
+    "title": "DAILY QUESTS",
+    "dismissible": true,
+    "chips": [{ "label": "Streak", "value": "4 DAYS", "icon": "flame" }],
+    "items": [
+      { "name": "Hatch 10 eggs", "price": "CLAIM", "art": "quest-hatch" },
+      { "name": "Earn 50,000 coins", "price": "CLAIM", "art": "quest-coins" },
+      { "name": "Reach prestige 3", "price": "LOCKED", "art": "quest-prestige" }
+    ]
+  }
+}

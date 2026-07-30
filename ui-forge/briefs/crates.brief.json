@@ -1,0 +1,23 @@
+{
+  "screen": "crates",
+  "pattern": "modal-grid",
+  "purpose": "premium crate storefront; few high-value options",
+  "variant": {
+    "columns": 2,
+    "artPlacement": "above",
+    "cardAspect": "wide",
+    "headerStyle": "banner",
+    "density": "comfortable",
+    "ctaPlacement": "per-item"
+  },
+  "ornament": { "cardBadge": "pill", "panelTrim": "top-accent" },
+  "content": {
+    "title": "COSMIC CRATES",
+    "dismissible": true,
+    "chips": [{ "label": "Gems", "value": "2,310", "icon": "gem" }],
+    "items": [
+      { "name": "Starter Crate", "price": "199 GEMS", "art": "crate-starter", "badge": "VALUE" },
+      { "name": "Galaxy Crate", "price": "899 GEMS", "art": "crate-galaxy", "badge": "BEST" }
+    ]
+  }
+}
