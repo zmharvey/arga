@@ -28,6 +28,27 @@ that already exists in code rather than one that sounded right on paper.
 - `[cid: decided]` The split into six server modules rather than three. The monolith
   worked, but `persistence` and `clearing` in one file meant a save-format change touched
   the clearing tick. Flagged as arguable: a smaller game might justify fewer.
+- **There is one way to get a RemoteEvent, and `protocol` owns it end to end.** The third build
+  trial found `clearing` required to fire `FindRevealed` and `AreaRestored` while `protocol`
+  exposed only names, and `clearing` did not depend on it. The builder resolved the gap by
+  inventing `ReplicatedStorage:FindFirstChild(name, true)` with a warning on a miss — a recursive
+  search the design does not contain, in the module owning two of the game's five outputs. So
+  `protocol` now **creates** the Instances (`createRemotes()`) and **resolves** them
+  (`channel(name)`), every module that originates traffic declares it in `fires`, and `protocol`
+  declares the list in `declaresRemotes`. The gate refuses a `fires` list on a module that cannot
+  reach the owner, and refuses a name nobody declared. The alternative — `server-main` passing a
+  table of Instances into `clearing.start` — works, and was rejected because it leaves the folder
+  name and the class of each channel inside the entry point, which is where they were hiding when
+  the trial went looking.
+- **A finished area spawns nothing, and that is `[cid: decided]`, not a guard I invented.**
+  `theme/setting/04-permanence-and-passage.md` `W2`: entering a finished part *"spawns **0**
+  patches"*, because *"the prohibition is on the list, not on the flag"* and the flag *"is what
+  stops a finished part coming back green"* — `[brief: binding]` *"Cleared is permanent —
+  overgrowth never returns."* So `areaComplete` is an **input** to `plots.spawn` and the **first
+  test** in `clearing.tick`, not a display flag. Before this, the collapse that empties `cleared`
+  in the payload respawned all 140 patches on the next join, clearing re-cleared them,
+  `progression.award` paid again, and `clearedCount` ran past `area.patchCount` every rejoin
+  without bound.
 
 ```manifest
 {
@@ -73,34 +94,44 @@ that already exists in code rather than one that sounded right on paper.
       "id": "protocol",
       "path": "game/src/shared/Protocol.luau",
       "side": "shared",
-      "responsibility": "Name the remotes and define the shape of the state snapshot both sides agree on.",
+      "responsibility": "Own the remote channels end to end — name them, create the Instances, and hand any module the Instance for a name — and define the shape of the state snapshot both sides agree on.",
       "reads": ["collection", "upgrades", "currency", "tree", "stateShape", "interfaces"],
-      "exposes": ["REMOTES table", "snapshotShape()"],
+      "exposes": ["REMOTES table", "snapshotShape()", "createRemotes()", "channel(name)"],
+      "declaresRemotes": ["RequestState", "StateChanged", "BuyUpgrade", "FindRevealed", "AreaRestored"],
       "dependsOn": ["config"],
       "forbids": [
-        "declaring any remote that lets a client assert a cleared patch or a currency amount"
+        "declaring any remote that lets a client assert a cleared patch or a currency amount",
+        "letting any other module find a remote for itself: channel(name) is the only path from a name to an Instance in the whole game, and an undeclared name is an error rather than a warning and a nil",
+        "creating a remote anywhere but createRemotes, and calling createRemotes from a client",
+        "yielding at require time; the Remotes folder is resolved on the first channel() call and cached, per tree's rule that a module returns a table and does nothing else on load"
       ],
       "criteria": [
         "the remote list contains no clearing or currency-award channel",
-        "client and server both derive field names from this module rather than repeating literals"
+        "client and server both derive field names from this module rather than repeating literals",
+        "channel(name) returns the same Instance on server and client for every declared name, and errors on a name REMOTES does not declare",
+        "`grep -rn 'Instance.new(\"Remote' game/src` matches this file only, and no other file contains a remote name literal or the string \"Remotes\""
       ]
     },
     {
       "id": "persistence",
       "path": "game/src/server/Persistence.luau",
       "side": "server",
-      "responsibility": "Load and save a player's currency, upgrades, collection and cleared state, and collapse a finished area to one flag.",
+      "responsibility": "Load and save a player's currency, upgrades, collection and cleared state: collapse a finished area to one flag on the way out, and expand it back on the way in.",
       "reads": ["runtime", "area", "stateShape", "tree", "interfaces", "wiring"],
       "exposes": ["load(player): PlayerState", "save(player, state)", "defaultState(): PlayerState"],
       "dependsOn": ["config"],
       "forbids": [
         "storing a per-patch cleared list once an area is complete — the brief flags unbounded save growth as this design's one novel technical risk",
-        "throwing on a DataStore failure; a failed load starts a fresh session with a warning"
+        "throwing on a DataStore failure; a failed load starts a fresh session with a warning",
+        "returning a state whose cleared, clearedCount and areaComplete disagree with each other. load reconciles all three before it returns, so no module downstream has to check and none of them may",
+        "trusting the stored clearedCount. It is compared against the cleared set and the flag, and the derived value wins"
       ],
       "criteria": [
         "a completed area occupies a single boolean in the payload, not a list",
         "a DataStore outage leaves the player playable rather than erroring",
-        "loading a save written by the previous version does not lose currency"
+        "loading a save written by the previous version does not lose currency",
+        "a payload with areaComplete true loads back with cleared holding every index from 1 to area.patchCount and clearedCount equal to area.patchCount — the collapse is lossless because load is its exact inverse",
+        "a payload whose clearedCount disagrees with its cleared set loads with the derived value and one warning, never with the stored one"
       ]
     },
     {
@@ -137,10 +168,12 @@ that already exists in code rather than one that sounded right on paper.
       "dependsOn": ["config", "layout"],
       "forbids": [
         "deriving a plot's position from the live player count — a slot is claimed once and held, or plots move out from under their owners as people join and leave",
-        "making a patch collide; contact clearing with movement-only input must never be blocked by the thing being cleared"
+        "making a patch collide; contact clearing with movement-only input must never be blocked by the thing being cleared",
+        "creating a patch Instance for an index state.cleared marks, or for any index at all while state.areaComplete is true. This is where \"cleared is permanent\" is enforced in the world, and no caller may be trusted to remember it"
       ],
       "criteria": [
         "a rejoining player's already-cleared patches do not respawn",
+        "a player whose areaComplete is true gets a plot slab, a spawn Attachment and ZERO patch Instances, with all area.patchCount Patch records present and marked cleared — a finished area stays walkable and stays bare",
         "two players never occupy the same plot position",
         "a vacated slot is reused before a higher one is allocated",
         "every spawned patch has CanCollide false"
@@ -151,35 +184,45 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Clearing.luau",
       "side": "server",
       "responsibility": "Observe player positions on a tick, clear patches within reach, award currency and reveal relics.",
-      "reads": ["runtime", "tiers", "movement", "stateShape", "tree", "interfaces", "wiring", "representation"],
+      "reads": ["runtime", "area", "tiers", "movement", "stateShape", "tree", "interfaces", "wiring", "representation"],
       "applies": ["radius", "value"],
+      "fires": ["FindRevealed", "AreaRestored", "StateChanged"],
       "exposes": ["tick(states)", "start(states)"],
-      "dependsOn": ["config", "progression", "plots"],
+      "dependsOn": ["config", "progression", "plots", "protocol"],
       "forbids": [
         "accepting any client message about clearing — the server observes, it never asks",
-        "using Touched events, which fire from client-authoritative physics"
+        "using Touched events, which fire from client-authoritative physics",
+        "touching a state whose areaComplete is true in any way: no distance test, no award, no write, no remote. The latch is the first thing the pass reads and the rest of the pass is unreachable behind it",
+        "reaching a remote by any means other than protocol.channel(name)",
+        "requiring Plots.luau. The dependency on plots is the Patch record contract and the build order, not a call: clearing reads state.patches, sets Patch.cleared and destroys Patch.instance, and calls nothing on plots"
       ],
       "criteria": [
         "no RemoteEvent exists that a client can fire to claim a cleared patch",
         "walking within the current clear radius of a patch clears it within one tick",
         "payout equals tier value times the player's value multiplier, floored, minimum 1",
-        "completing the last patch sets the area-complete flag exactly once"
+        "completing the last patch sets the area-complete flag exactly once",
+        "state.clearedCount never exceeds area.patchCount, over any number of rejoins",
+        "a player whose areaComplete is true is awarded nothing and fires nothing, however far they walk",
+        "clearing one patch pushes exactly one StateChanged; standing still for ten ticks pushes none"
       ]
     },
     {
       "id": "server-main",
       "path": "game/src/server/init.server.luau",
       "side": "server",
-      "responsibility": "Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.",
+      "responsibility": "Wire lifecycle: ask protocol to create the remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.",
       "reads": ["runtime", "stateShape", "upgrades", "tree", "interfaces", "wiring", "movement"],
       "applies": ["speed"],
+      "fires": ["StateChanged"],
       "exposes": ["none — this is the entry point"],
       "dependsOn": ["protocol", "persistence", "progression", "plots", "clearing"],
       "forbids": [
-        "containing game logic; anything with a rule in it belongs in one of the modules above"
+        "containing game logic; anything with a rule in it belongs in one of the modules above",
+        "creating a remote itself, choosing where the remotes live, or naming one in a literal — protocol.createRemotes() creates them and protocol.channel(name) resolves them"
       ],
       "criteria": [
         "a player's Humanoid.WalkSpeed equals Progression.walkSpeed(state) after spawning and after any successful purchase",
+        "every remote in this file is reached through protocol.channel, and the remotes exist before any player can join",
         "a player who leaves has their state saved before their plot is destroyed",
         "the clear tick survives an error in one iteration without stopping",
         "server shutdown saves every connected player outside Studio"
@@ -209,10 +252,12 @@ that already exists in code rather than one that sounded right on paper.
       "side": "client",
       "responsibility": "Turn player input into purchase requests.",
       "reads": ["upgrades", "tree", "interfaces"],
-      "exposes": ["connect(remotes)"],
+      "exposes": ["connect()"],
+      "fires": ["BuyUpgrade"],
       "dependsOn": ["protocol"],
       "forbids": [
-        "sending anything except an upgrade id — the server owns cost and level"
+        "sending anything except an upgrade id — the server owns cost and level",
+        "accepting a table of remote Instances from its caller, or resolving one by name. It asks protocol.channel(\"BuyUpgrade\"), which is the only lookup in the game"
       ],
       "criteria": [
         "input while a text field is focused is ignored",
@@ -223,16 +268,20 @@ that already exists in code rather than one that sounded right on paper.
       "id": "client-main",
       "path": "game/src/client/init.client.luau",
       "side": "client",
-      "responsibility": "Boot the HUD screen, connect the binding and the input, and ask the server for initial state.",
+      "responsibility": "Boot the HUD screen, connect the binding and the input, connect every server-to-client channel, and ask the server for initial state.",
       "reads": ["tree", "interfaces", "wiring", "representation"],
+      "fires": ["RequestState"],
       "exposes": ["none — this is the entry point"],
       "dependsOn": ["protocol", "hud-binding", "input"],
       "forbids": [
-        "assuming the server's spawn-time push arrived; state is requested once handlers are live"
+        "assuming the server's spawn-time push arrived; state is requested once handlers are live",
+        "resolving a remote by name or by search; protocol.channel(name) is the only lookup",
+        "leaving FindRevealed or AreaRestored unconnected. Their presentation is not specified yet and their handlers are empty, but an unconnected channel is an output with nothing at the end of it"
       ],
       "criteria": [
         "a returning player's HUD shows their saved currency and relic count before they clear anything",
-        "the HUD survives a character respawn without rebuilding"
+        "the HUD survives a character respawn without rebuilding",
+        "all four server-to-client channels have a connected handler after boot, and adding presentation to a reveal is a change to one function body and to no wiring"
       ]
     }
   ]
@@ -258,6 +307,13 @@ that already exists in code rather than one that sounded right on paper.
 5. Every function in an `exposes` list appears in `interfaces` with its parameters resolved, and
    the reverse. The architect gate refuses a mismatch in one direction; the other is this
    criterion.
+6. Every module that originates remote traffic declares it in `fires`, depends on the module
+   holding `declaresRemotes`, and fires only names on that list. The architect gate refuses all
+   three failures.
+7. Each of `protocol`'s five channels has exactly one originating module across every `fires`
+   list, and every one of those five names appears in some `fires` list. A channel nobody fires is
+   a dead channel; a channel two modules fire is only allowed for `StateChanged`, which carries a
+   whole snapshot and is therefore idempotent, and is stated in `interfaces`.
 
 ## Not decided here
 
@@ -265,7 +321,9 @@ Implementation of any module. The save schema's field names (Persistence's own s
 HUD's structure (UI/UX). Whether six server modules is right for a game this size — flagged
 above as arguable.
 
-**Amended by `05-interfaces.md`:** `config` gained `upgradeEffect(upgrade, level)`, which exists
+**Amended by `05-interfaces.md`:** `input.connect(remotes)` became `input.connect()`, because
+`protocol.channel(name)` exists and passing resolved Instances between modules is a second way to
+get one. `config` gained `upgradeEffect(upgrade, level)`, which exists
 in the generated file and which `progression`'s three derived quantities each call, so leaving it
 undeclared made three modules re-decide "additive or compounding". `clearing.start()` became
 `clearing.start(states)`, because it owns the tick cadence and therefore has to be handed the

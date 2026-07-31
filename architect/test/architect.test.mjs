@@ -357,3 +357,46 @@ test('no creative sheet supplies a technical key', () => {
   const overlap = Object.keys(TECH_SCHEMA).filter((k) => k in CREATIVE);
   assert.deepEqual(overlap, [], `these keys are in both contracts: ${overlap.join(', ')}`);
 });
+
+/* ---------------------------------- outputs need a path to their channel */
+
+// The fifth instance of the same defect, found by the third build trial. `clearing` was
+// required to fire FindRevealed and AreaRestored, did not depend on `protocol`, and
+// protocol.REMOTES returns names rather than Instances. A module owning two outputs with no
+// way to reach either.
+
+const WITH_PROTOCOL = () => {
+  const t = tech();
+  t.modules.push({
+    id: 'protocol', path: 'p.luau', side: 'shared', responsibility: 'names the channels',
+    reads: [], exposes: ['REMOTES table'], dependsOn: [], criteria: ['x'],
+    declaresRemotes: ['FindRevealed', 'AreaRestored'],
+  });
+  t.modules[2].dependsOn = ['progression', 'protocol'];
+  t.interfaces.push({ module: 'protocol', fn: 'REMOTES', returns: 'table', note: 'names', params: [] });
+  return t;
+};
+
+test('a module that fires a channel without depending on its owner is rejected', () => {
+  const t = WITH_PROTOCOL();
+  t.modules[1].fires = ['FindRevealed']; // progression depends on config only
+  const p = unconnected(creative(), t).find((x) => x.includes('"progression"') && x.includes('fires'));
+  assert.ok(p, 'an output with no path to it must be caught');
+  assert.match(p, /no way to reach it/);
+});
+
+test('firing a channel nobody declared is rejected', () => {
+  const t = WITH_PROTOCOL();
+  t.modules[2].fires = ['SomethingInvented'];
+  assert.ok(unconnected(creative(), t).some((p) => p.includes('not a declared remote')));
+});
+
+test('a module that depends on the channel owner may fire', () => {
+  const t = WITH_PROTOCOL();
+  t.modules[2].fires = ['FindRevealed', 'AreaRestored'];
+  assert.ok(!unconnected(creative(), t).some((p) => p.includes('fires')));
+});
+
+test('firing nothing is not a problem', () => {
+  assert.ok(!unconnected(creative(), tech()).some((p) => p.includes('fires')));
+});

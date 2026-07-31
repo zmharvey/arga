@@ -145,6 +145,40 @@ export function unconnected(creative, tech) {
     }
   }
 
+  /* ---- outputs: a module that fires a channel must be able to reach it ---- */
+
+  // The fifth instance of the same defect, found by the third build trial. `clearing` was
+  // required by `wiring` to fire FindRevealed and AreaRestored, did not depend on
+  // `protocol`, and `protocol.REMOTES` returns names rather than Instances. So the module
+  // owning two outputs had no path to either, exactly like `walkSpeed` before it.
+  //
+  // The rule missed it because the requirement lived in wiring prose. `fires` makes the
+  // claim structural, the same way `applies` did for upgrades.
+  const remoteOwners = modules.filter((m) => (m.exposes ?? []).some((e) => /REMOTES/.test(String(e))));
+  for (const m of modules) {
+    const fires = m.fires ?? [];
+    if (!fires.length) continue;
+    if (!remoteOwners.length) {
+      problems.push(`module "${m.id}" fires ${fires.length} channel(s) but no module owns the remote list`);
+      continue;
+    }
+    const reachable = remoteOwners.some((o) => (m.dependsOn ?? []).includes(o.id));
+    if (!reachable) {
+      problems.push(
+        `module "${m.id}" fires ${fires.map((f) => `"${f}"`).join(', ')} but does not depend on `
+        + `${remoteOwners.map((o) => `"${o.id}"`).join(' or ')}, which owns the channels — `
+        + 'it has an output and no way to reach it',
+      );
+    }
+    // Firing a name nobody declared is the same defect pointed the other way.
+    const declared = new Set(remoteOwners.flatMap((o) => o.declaresRemotes ?? []));
+    if (declared.size) {
+      for (const f of fires) {
+        if (!declared.has(f)) problems.push(`module "${m.id}" fires "${f}", which is not a declared remote`);
+      }
+    }
+  }
+
   /* ---- state: every field needs a writer that exists, and a constructor ---- */
 
   const fields = tech.stateShape?.fields ?? [];

@@ -8,7 +8,7 @@
 
 | subject | is | count at runtime |
 |---|---|---|
-| `patch` | a `Part` (a `WedgePart` for Heartvine), anchored, non-colliding | up to `area.patchCount` per plot |
+| `patch` | a `Part` (a `WedgePart` for Heartvine), anchored, non-colliding | up to `area.patchCount` per plot, and **exactly 0** once that plot's owner has `areaComplete` |
 | `plot` | one `Part` — the ground slab, which is also the container the patches parent to | 1 per connected player |
 | `spawn-anchor` | an `Attachment` on the plot slab | 1 per plot |
 | `relic` | **nothing.** A Find has no Instance anywhere | 0 |
@@ -82,7 +82,8 @@
       },
       "createdBy": "plots",
       "destroyedBy": "clearing, one at a time as it clears them, and plots when the whole plot goes",
-      "asset": null
+      "asset": null,
+      "note": "The count is \"up to\" deliberately. A rejoining player gets one Instance per index state.cleared does not mark, and a player whose state.areaComplete is true gets ZERO — a finished area stays walkable and stays bare, [cid: decided] theme/setting/04-permanence-and-passage.md W2. plots.spawn owns that test and is the only module that may create one of these."
     },
     {
       "subject": "plot",
@@ -153,6 +154,10 @@ A builder may now assume:
 - That the plot slab's top face is at `Y = 0`, so a patch's Y is `tier.height / 2` and the
   spawn CFrame is 3 studs above the origin.
 - That a Find never needs to be found in the world, only in `state.found`.
+- That nothing in a plot is a `Folder`. The one Folder this build creates is
+  `ReplicatedStorage.Remotes`, which is transport rather than a subject here: `protocol` creates it
+  in `createRemotes()` and `interfaces` fixes its name and contents.
+- That a finished plot is a slab, a spawn Attachment and nothing else, forever.
 
 A builder may **not** assume:
 
@@ -183,7 +188,12 @@ of them changes what an object is *made of*.
 
 How the terrace is dressed beyond the slab — walls, props, skybox, ruin geometry (Art —
 Environment). Any of that may add Instances to `Workspace`; none of it may parent to a plot or
-collide with a patch.
+collide with a patch. **One inherited requirement lands on whoever builds walls:** `[cid: decided]`
+`theme/setting/04-permanence-and-passage.md` `W3` requires every area to carry exactly two
+openings, one inward and one outward, built as construction that was always open and never as a
+doorway, arch, gateway or anything a hinge would belong to. There is no wall in this contract, so
+there is nothing to leave a gap in yet; the requirement binds at the moment walls exist, and the
+opening it leads through needs a second area, which does not.
 
 **Back to CID, one item:** `art/objects/01-patch-footprint.md` ends with "the foliage models
 themselves" left to Art — VFX. This sheet answers "what is it made of" with primitives, on the

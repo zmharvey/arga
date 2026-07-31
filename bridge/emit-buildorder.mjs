@@ -115,6 +115,29 @@ ${globals.map((k) => jsonBlock(k, manifest[k], provenance)).join('\n\n')}
 `);
   }
 
+  /**
+   * A module's outputs, emitted because the module list is where they are declared.
+   *
+   * `fires` and `declaresRemotes` are checked by `architect/validate.mjs` — a module cannot
+   * fire a channel it has no path to, or a name nobody declared. That check is worth nothing
+   * if the declaration never reaches the person writing the code: the third build trial's
+   * builder invented a recursive tree search for a RemoteEvent precisely because the brief it
+   * was handed said which channels to fire and nothing about how to get one.
+   */
+  const outputs = (m) => {
+    const rows = [];
+    if ((m.declaresRemotes ?? []).length) {
+      rows.push(`**Declares the remote channels:** ${m.declaresRemotes.map((r) => `\`${r}\``).join(', ')}. `
+        + 'You create them and you resolve them; no other module may look one up.');
+    }
+    if ((m.fires ?? []).length) {
+      rows.push(`**Fires:** ${m.fires.map((r) => `\`${r}\``).join(', ')}. `
+        + 'Resolve each one through the module that declares the channel list — never by searching '
+        + 'the tree, and never by a name you typed yourself.');
+    }
+    return rows.length ? `\n\n${rows.join('\n\n')}` : '';
+  };
+
   ordered.forEach((m, i) => {
     // Per module: the creative values it reads, plus only the signatures it can actually
     // call — its own and its dependencies'. Handing a builder all 22 interfaces was how the
@@ -139,7 +162,7 @@ ${globals.map((k) => jsonBlock(k, manifest[k], provenance)).join('\n\n')}
 
 **Owns:** ${m.responsibility}
 
-**Depends on:** ${(m.dependsOn ?? []).length ? m.dependsOn.map((d) => `\`${d}\``).join(', ') : 'nothing'}
+**Depends on:** ${(m.dependsOn ?? []).length ? m.dependsOn.map((d) => `\`${d}\``).join(', ') : 'nothing'}${outputs(m)}
 
 ### Must expose
 

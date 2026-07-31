@@ -45,7 +45,11 @@ change it.**
   before `ReplicatedStorage` has finished replicating its children, so the root needs the
   wait; once the Folder is present, Rojo has already populated it, so `.GameConfig` after it
   is safe and 140 `WaitForChild` calls per boot are not. One wait, at the top, assigned to a
-  local.
+  local. **There is exactly one other legitimate wait in the game and it is inside
+  `Protocol.luau`:** `ReplicatedStorage.Remotes` is created at runtime by
+  `protocol.createRemotes()` rather than by Rojo, so it is not in this tree and a client can boot
+  before it replicates. `protocol.channel(name)` waits for it once, on its first call, and caches
+  it. No other file waits for a remote, and none searches for one.
 - **No module runs work at require time.** Every module returns one table and does nothing
   else on load, so require order cannot matter. This is what makes the dependency order in
   `BUILD-ORDER.md` a build convenience rather than a runtime constraint.
@@ -119,7 +123,9 @@ A builder may **not** assume:
 2. No `.luau` file under `game/src` requires a module across sides except into `sharedRoot`.
 3. The server entry point requires its siblings as `script.<Name>`; every other server module
    requires them as `script.Parent.<Name>`. Same shape on the client.
-4. `WaitForChild` appears at most once per file, on the shared root.
+4. `WaitForChild` appears at most once per file: on the shared root, or — in `Protocol.luau`
+   alone — on the runtime-created `ReplicatedStorage.Remotes` folder. Nowhere does it appear on an
+   individual remote, and `FindFirstChild` with a recursive flag appears nowhere at all.
 5. Requiring every module in a bare Luau process, in any order, produces no output and no
    error other than the ones that need Roblox globals.
 

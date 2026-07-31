@@ -199,7 +199,7 @@ export const TECH_SCHEMA = {
   },
 
   modules: {
-    doc: 'The build plan: which modules exist, what each owns, and what it may not do.',
+    doc: 'The build plan: which modules exist, what each owns, what it may not do, and which outputs it owns — `applies` for an upgrade that has to reach the engine, `fires` for a channel it originates, `declaresRemotes` for the module that owns the channel list.',
     minItems: 1,
     array: {
       id: 'slug',

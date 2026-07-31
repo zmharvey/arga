@@ -101,14 +101,14 @@ state looks like, what each object is made of, and what happens in what order.
       "type": "map<patchIndex,boolean>",
       "writtenBy": "clearing",
       "persisted": true,
-      "note": "Which patches are gone, keyed by the 1-based index into layout.build()'s canonical order. Bounded by area.patchCount, and written as empty once areaComplete latches. This is what makes 'cleared is permanent' survive a rejoin."
+      "note": "Which patches are gone, keyed by the 1-based index into layout.build()'s canonical order. COMPLETE IN MEMORY AT ALL TIMES: one key per cleared patch while the area is in progress, and all area.patchCount keys once areaComplete is true, refilled by persistence.load from the flag. Only the SAVE collapses it to empty (persistence's prohibition, runtime criterion 3); load is the exact inverse, which is what makes the collapse lossless instead of a respawn. Bounded by area.patchCount, always. clearing is its only session writer; persistence constructs and reconstitutes it, which is not a session write. This plus areaComplete is what makes 'cleared is permanent' survive a rejoin."
     },
     {
       "name": "clearedCount",
       "type": "integer",
       "writtenBy": "clearing",
       "persisted": true,
-      "note": "Against area.patchCount. Equals the size of cleared while an area is in progress, and survives the collapse that empties it."
+      "note": "Against area.patchCount, and NEVER above it. Always equals the number of keys in cleared, including immediately after a rejoin with areaComplete true, where both equal area.patchCount. persistence.load derives it from cleared and the flag rather than trusting the stored value, so a stale, partial or hand-edited count cannot re-open a finished area."
     },
     {
       "name": "found",
@@ -122,7 +122,7 @@ state looks like, what each object is made of, and what happens in what order.
       "type": "boolean",
       "writtenBy": "clearing",
       "persisted": true,
-      "note": "Latch. Set once, never cleared. Collapses cleared to empty."
+      "note": "Latch. Set once by clearing, never cleared, and the one field the save stores in place of a 140-key list. It is an INPUT, not a display flag: plots.spawn creates zero patch Instances while it is true, clearing.tick skips the state before it measures anything, and persistence.load refills cleared from it. That is what stops a finished area coming back green and paying a second time."
     },
     {
       "name": "player",
@@ -172,9 +172,9 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 2,
       "module": "protocol",
-      "fn": "REMOTES",
+      "fn": "createRemotes()",
       "calledBy": "server-main",
-      "does": "Create one Instance per name in protocol.REMOTES under a single Folder in ReplicatedStorage: four RemoteEvents and one RemoteFunction. Done before any player can join, so a client that boots instantly finds them."
+      "does": "Create the ReplicatedStorage.Remotes Folder and one Instance per channel in protocol.REMOTES: four RemoteEvents and one RemoteFunction, each class taken from that table. protocol does this, not server-main, so the folder name and the class per channel live in the module that owns the names — they used to live in this step, which is why the module firing two channels had nowhere to look and invented a recursive search. Done before any player can join, so a client that boots instantly finds them."
     },
     {
       "order": 3,
@@ -196,7 +196,7 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 6,
       "module": "server-main",
-      "does": "Bind game:BindToClose to the onShutdown phase, and connect the BuyUpgrade remote to the onPurchase phase."
+      "does": "Bind game:BindToClose to the onShutdown phase, connect protocol.channel(\"BuyUpgrade\").OnServerEvent to the onPurchase phase, and set protocol.channel(\"RequestState\").OnServerInvoke to return one snapshot for the calling player. Every remote in this file is reached through protocol.channel and named in no literal anywhere else."
     }
   ],
   "onJoin": [
@@ -205,7 +205,7 @@ state looks like, what each object is made of, and what happens in what order.
       "module": "persistence",
       "fn": "load(player)",
       "calledBy": "server-main",
-      "does": "Load the player's saved state, or defaultState() on a DataStore failure. Yields. Nothing else may run for this player until it returns."
+      "does": "Load the player's saved state, or defaultState() on a DataStore failure, and RECONCILE it before returning: if areaComplete is true, refill cleared with every index from 1 to area.patchCount; then set clearedCount from the cleared set rather than trusting the stored number. This is the inverse of save's collapse and it is why a finished area does not come back green. Yields. Nothing else may run for this player until it returns."
     },
     {
       "order": 2,
@@ -222,12 +222,12 @@ state looks like, what each object is made of, and what happens in what order.
       "module": "plots",
       "fn": "spawn(player, state)",
       "calledBy": "server-main",
-      "does": "Claim a slot, build the plot slab, its spawn Attachment and one Instance per uncleared patch, and write state.patches. Returns the spawn CFrame, which server-main keeps for this player until they leave."
+      "does": "Claim a slot, build the plot slab, its spawn Attachment and one Instance per uncleared patch — and NONE AT ALL if state.areaComplete is true, because a finished area stays walkable and stays bare — then write state.patches. The latch is checked before the cleared set and short-circuits it. Returns the spawn CFrame, which server-main keeps for this player until they leave."
     },
     {
       "order": 5,
       "module": "server-main",
-      "does": "Push a snapshot on REMOTES.StateChanged. May arrive before the client's HUD exists, which is why client-main also pulls one."
+      "does": "Push a snapshot: protocol.channel(\"StateChanged\"):FireClient(player, snapshot). May arrive before the client's HUD exists, which is why client-main also pulls one."
     },
     {
       "order": 6,
@@ -268,14 +268,14 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 5,
       "module": "server-main",
-      "does": "Push a snapshot on REMOTES.StateChanged. The HUD is not rebuilt on a respawn, so this is a refresh, not a boot."
+      "does": "Push a snapshot on protocol.channel(\"StateChanged\"). The HUD is not rebuilt on a respawn, so this is a refresh, not a boot."
     }
   ],
   "onPurchase": [
     {
       "order": 1,
       "module": "server-main",
-      "does": "REMOTES.BuyUpgrade received with one string. Look up states[player.UserId]; if absent, drop the message. Reject any payload that is not a string."
+      "does": "protocol.channel(\"BuyUpgrade\").OnServerEvent received with one string. Look up states[player.UserId]; if absent, drop the message. Reject any payload that is not a string."
     },
     {
       "order": 2,
@@ -295,7 +295,7 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 4,
       "module": "server-main",
-      "does": "On success only: push a snapshot on REMOTES.StateChanged. On failure send nothing — the server is the only writer, so the client's HUD is already correct."
+      "does": "On success only: push a snapshot on protocol.channel(\"StateChanged\"). On failure send nothing — the server is the only writer, so the client's HUD is already correct."
     }
   ],
   "onTick": [
@@ -305,7 +305,8 @@ state looks like, what each object is made of, and what happens in what order.
       "fn": "tick(states)",
       "calledBy": "clearing",
       "applies": "radius, value",
-      "does": "Every runtime.clearTickRate (0.12s), inside a pcall so one bad iteration cannot stop the loop. Per state: skip if the character or its HumanoidRootPart is absent; read progression.clearRadius(state) once; clear every uncleared patch within that XZ distance — set patch.cleared, destroy the Instance, set state.cleared[index], increment state.clearedCount, award max(1, floor(tier.value * progression.valueMultiplier(state))), and fire FindRevealed for a patch.relic that state.found does not already hold. Then, if clearedCount equals area.patchCount and areaComplete is false, latch areaComplete and fire AreaRestored once. Reads no client message and uses no Touched event."
+      "fires": "FindRevealed, AreaRestored, StateChanged",
+      "does": "Every runtime.clearTickRate (0.12s), inside a pcall so one bad iteration cannot stop the loop. Per state, in this order: SKIP THE STATE ENTIRELY IF state.areaComplete IS TRUE — the latch is the first test, before the character lookup and before any distance work, and it is what stops a finished area paying twice; skip if the character or its HumanoidRootPart is absent; read progression.clearRadius(state) once; clear every uncleared patch within that XZ distance — set patch.cleared, destroy the Instance, set state.cleared[index], increment state.clearedCount, award max(1, floor(tier.value * progression.valueMultiplier(state))), and fire FindRevealed for a patch.relic that state.found does not already hold. Then, if clearedCount >= area.patchCount and areaComplete is false, latch areaComplete and fire AreaRestored once. Finally, if this pass changed anything, fire StateChanged once with a fresh snapshot — at most one per player per tick, none on a pass that cleared nothing — because currency, clearedCount and found change here and nowhere else, and nothing else pushes them. All three channels through protocol.channel(name). Reads no client message and uses no Touched event."
     }
   ],
   "onSave": [
@@ -354,7 +355,7 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 1,
       "module": "client-main",
-      "does": "Wait for the remotes Folder by name from protocol.REMOTES, and create one ScreenGui in PlayerGui. It is created once and survives every character respawn."
+      "does": "Create one ScreenGui in PlayerGui. It is created once and survives every character respawn. It does NOT wait for the remotes Folder itself: protocol.channel does that once, inside Protocol.luau, on its first call."
     },
     {
       "order": 2,
@@ -371,14 +372,19 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 4,
       "module": "input",
-      "fn": "connect(remotes)",
+      "fn": "connect()",
       "calledBy": "client-main",
-      "does": "Install the purchase affordance. Fires BuyUpgrade with one upgrade id and nothing else."
+      "does": "Install the purchase affordance. Takes no arguments and resolves its own channel with protocol.channel(\"BuyUpgrade\"); client-main passes it nothing. Fires BuyUpgrade with one upgrade id and nothing else."
     },
     {
       "order": 5,
       "module": "client-main",
-      "does": "Connect REMOTES.StateChanged.OnClientEvent to the updater, THEN call REMOTES.RequestState:InvokeServer() once and pass the result to the same updater. In that order, so a push arriving during the round trip is not lost. The updater is idempotent, so a duplicate snapshot is harmless."
+      "does": "Connect protocol.channel(\"StateChanged\").OnClientEvent to the updater, THEN call protocol.channel(\"RequestState\"):InvokeServer() once and pass the result to the same updater. In that order, so a push arriving during the round trip is not lost. The updater is idempotent, so a duplicate snapshot is harmless — which is also what makes two originators on StateChanged safe."
+    },
+    {
+      "order": 6,
+      "module": "client-main",
+      "does": "Connect the two payoff channels: protocol.channel(\"FindRevealed\").OnClientEvent to a local onReveal(findName), and protocol.channel(\"AreaRestored\").OnClientEvent to a local onRestored(areaLabel). Both handlers exist and both are EMPTY today. What a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet; they are connected anyway so that each channel has a receiver at the end of the wire and adding presentation is a change to one function body rather than to the wiring. The HUD does not depend on either: the found count, the balance and the progress bar all arrive on StateChanged."
     }
   ],
   "constructs": [
@@ -446,7 +452,8 @@ state looks like, what each object is made of, and what happens in what order.
     },
     "createdBy": "plots",
     "destroyedBy": "clearing, one at a time as it clears them, and plots when the whole plot goes",
-    "asset": null
+    "asset": null,
+    "note": "The count is \"up to\" deliberately. A rejoining player gets one Instance per index state.cleared does not mark, and a player whose state.areaComplete is true gets ZERO — a finished area stays walkable and stays bare, [cid: decided] theme/setting/04-permanence-and-passage.md W2. plots.spawn owns that test and is the only module that may create one of these."
   },
   {
     "subject": "plot",
@@ -777,7 +784,7 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Write to:** `game/src/server/Persistence.luau`
 
-**Owns:** Load and save a player's currency, upgrades, collection and cleared state, and collapse a finished area to one flag.
+**Owns:** Load and save a player's currency, upgrades, collection and cleared state: collapse a finished area to one flag on the way out, and expand it back on the way in.
 
 **Depends on:** `config`
 
@@ -791,6 +798,8 @@ state looks like, what each object is made of, and what happens in what order.
 
 - storing a per-patch cleared list once an area is complete — the brief flags unbounded save growth as this design's one novel technical risk
 - throwing on a DataStore failure; a failed load starts a fresh session with a warning
+- returning a state whose cleared, clearedCount and areaComplete disagree with each other. load reconciles all three before it returns, so no module downstream has to check and none of them may
+- trusting the stored clearedCount. It is compared against the cleared set and the flag, and the derived value wins
 
 ### Values
 
@@ -882,8 +891,8 @@ state looks like, what each object is made of, and what happens in what order.
         "type": "Player"
       }
     ],
-    "returns": "PlayerState — every persisted field populated; patches empty and player unset",
-    "note": "Never throws and never returns nil. On a DataStore failure it warns and returns defaultState(), so the player is playable on a fresh session rather than stuck. It yields; server-main must not insert the state into the live collection until it has returned, or clearing.tick can see a half-loaded state. Reads under runtime.dataStoreName, keyed by the player's UserId."
+    "returns": "PlayerState — every persisted field populated AND RECONCILED; patches empty and player unset",
+    "note": "Never throws and never returns nil. On a DataStore failure it warns and returns defaultState(), so the player is playable on a fresh session rather than stuck. It yields; server-main must not insert the state into the live collection until it has returned, or clearing.tick can see a half-loaded state. Reads under runtime.dataStoreName, keyed by the player's UserId. RECONCILES BEFORE RETURNING, which is the other half of save's collapse and the trial-3 fix: if areaComplete is true, cleared is filled with every index from 1 to area.patchCount and clearedCount is set to area.patchCount; otherwise clearedCount is set to the number of keys in cleared. The stored clearedCount is compared, never trusted, and a mismatch warns — a payload whose count disagrees with its set is exactly how a finished area re-opened and paid twice. Every caller may therefore assume, for any state this function returns: #cleared == clearedCount, and areaComplete implies clearedCount == area.patchCount."
   },
   {
     "module": "persistence",
@@ -899,7 +908,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "boolean — true if the write was accepted",
-    "note": "Writes exactly the six persisted fields of 03-state-shape and nothing else. THE COLLAPSE: when state.areaComplete is true, cleared is written as an empty set, because the flag already implies every index. That is what keeps the payload bounded and what persistence's own prohibition is about. clearedCount survives the collapse; cleared does not. Yields. Idempotent — saving twice with no change between is not an error."
+    "note": "Writes exactly the six persisted fields of 03-state-shape and nothing else. THE COLLAPSE: when state.areaComplete is true, cleared is written as an empty set, because the flag already implies every index. That is what keeps the payload bounded and what persistence's own prohibition is about. It is lossless ONLY because load is its exact inverse and refills the set from the same flag; dropping the list with nothing to expand it is what respawned a finished area. The live state.cleared is NOT emptied — this function collapses the payload, not the state. Yields. Idempotent — saving twice with no change between is not an error."
   },
   {
     "module": "persistence",
@@ -916,6 +925,8 @@ state looks like, what each object is made of, and what happens in what order.
 1. a completed area occupies a single boolean in the payload, not a list
 2. a DataStore outage leaves the player playable rather than erroring
 3. loading a save written by the previous version does not lose currency
+4. a payload with areaComplete true loads back with cleared holding every index from 1 to area.patchCount and clearedCount equal to area.patchCount — the collapse is lossless because load is its exact inverse
+5. a payload whose clearedCount disagrees with its cleared set loads with the derived value and one warning, never with the stored one
 
 ---
 
@@ -1129,18 +1140,25 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Write to:** `game/src/shared/Protocol.luau`
 
-**Owns:** Name the remotes and define the shape of the state snapshot both sides agree on.
+**Owns:** Own the remote channels end to end — name them, create the Instances, and hand any module the Instance for a name — and define the shape of the state snapshot both sides agree on.
 
 **Depends on:** `config`
+
+**Declares the remote channels:** `RequestState`, `StateChanged`, `BuyUpgrade`, `FindRevealed`, `AreaRestored`. You create them and you resolve them; no other module may look one up.
 
 ### Must expose
 
 - `REMOTES table`
 - `snapshotShape()`
+- `createRemotes()`
+- `channel(name)`
 
 ### Must not
 
 - declaring any remote that lets a client assert a cleared patch or a currency amount
+- letting any other module find a remote for itself: channel(name) is the only path from a name to an Instance in the whole game, and an undeclared name is an error rather than a warning and a nil
+- creating a remote anywhere but createRemotes, and calling createRemotes from a client
+- yielding at require time; the Remotes folder is resolved on the first channel() call and cached, per tree's rule that a module returns a table and does nothing else on load
 
 ### Values
 
@@ -1316,8 +1334,75 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "protocol",
     "fn": "REMOTES",
     "params": [],
-    "returns": "table — remote NAMES, not Instances. server-main creates the Instances at boot; both sides look them up by these names.",
-    "note": "Exactly five, and no more: RequestState (RemoteFunction, client -> server, returns one snapshot, used once at client boot because client-main may not assume the join-time push arrived); StateChanged (RemoteEvent, server -> client, one snapshot); BuyUpgrade (RemoteEvent, client -> server, one upgrade id string and nothing else); FindRevealed (RemoteEvent, server -> client, one find name); AreaRestored (RemoteEvent, server -> client, the area label). There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair."
+    "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
+    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "channels": [
+      {
+        "name": "RequestState",
+        "class": "RemoteFunction",
+        "direction": "client -> server",
+        "payload": "no arguments; returns one snapshot",
+        "firedBy": "client-main",
+        "handledBy": "server-main, which sets OnServerInvoke at boot",
+        "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live"
+      },
+      {
+        "name": "StateChanged",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one snapshot, exactly the fields snapshotShape() names",
+        "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+        "handledBy": "client-main, which passes it to the updater hud-binding.bind returned",
+        "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes."
+      },
+      {
+        "name": "BuyUpgrade",
+        "class": "RemoteEvent",
+        "direction": "client -> server",
+        "payload": "one upgrade id string and nothing else",
+        "firedBy": "input",
+        "handledBy": "server-main, wiring.onPurchase",
+        "why": "the only client-originated message in the game; the server prices it"
+      },
+      {
+        "name": "FindRevealed",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one find name string, from Patch.relic",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onReveal handler, which is connected and empty: what a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet. The HUD does not need it; the found count arrives on StateChanged.",
+        "why": "up to collection.relicsPerArea times per area, per player"
+      },
+      {
+        "name": "AreaRestored",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "the area label string",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onRestored handler, connected and empty for the same reason",
+        "why": "exactly once per player per area, on the latch transition only. A rejoining finished player learns it from the snapshot's areaComplete field and from nothing else: [cid: decided] theme/setting/04-permanence-and-passage.md forbids any effect, sound, fade or transition marking entry into a finished part."
+      }
+    ]
+  },
+  {
+    "module": "protocol",
+    "fn": "createRemotes()",
+    "params": [],
+    "returns": "Folder — ReplicatedStorage.Remotes, holding one Instance per channel",
+    "note": "SERVER ONLY, called exactly once, by server-main at boot before any player can join (wiring.boot step 2). Creates a Folder named \"Remotes\" directly under ReplicatedStorage — [architect: arbitrary] on the name, fixed here so two builders cannot pick differently; deliberately NOT under tree.sharedRoot, because that Folder is Rojo-managed and these Instances are made at runtime — then one RemoteEvent or RemoteFunction per entry of REMOTES, with the class taken from that table. Errors if called from a client. Idempotent on the server: a second call creates nothing and returns the existing Folder. Connects no handler; server-main connects BuyUpgrade and RequestState itself. This function exists because the folder name and the class-per-channel used to live in server-main's boot step, where no other module could see them."
+  },
+  {
+    "module": "protocol",
+    "fn": "channel(name)",
+    "params": [
+      {
+        "name": "name",
+        "type": "string",
+        "note": "a key of REMOTES, taken from that table rather than hand-typed wherever the call site can reach it"
+      }
+    ],
+    "returns": "RemoteEvent | RemoteFunction — the live Instance for that channel",
+    "note": "THE ONLY PATH FROM A NAME TO A REMOTE INSTANCE, on both sides, for every module. Errors on a name REMOTES does not declare — it never warns and returns nil, because the thing it replaces did exactly that. Resolves the Remotes Folder once with WaitForChild on the first call and caches it: a client may call before the server's boot step has replicated, a server caller cannot, since createRemotes ran first. Does no work at require time, per tree's rule that a module returns one table and nothing else on load. Trial 3's builder, lacking this function, invented ReplicatedStorage:FindFirstChild(name, true) with a warning on a miss; that recursive search is forbidden, and so is any WaitForChild on a remote outside this module."
   },
   {
     "module": "protocol",
@@ -1333,6 +1418,8 @@ state looks like, what each object is made of, and what happens in what order.
 
 1. the remote list contains no clearing or currency-award channel
 2. client and server both derive field names from this module rather than repeating literals
+3. channel(name) returns the same Instance on server and client for every declared name, and errors on a name REMOTES does not declare
+4. `grep -rn 'Instance.new("Remote' game/src` matches this file only, and no other file contains a remote name literal or the string "Remotes"
 
 ---
 
@@ -1494,8 +1581,75 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "protocol",
     "fn": "REMOTES",
     "params": [],
-    "returns": "table — remote NAMES, not Instances. server-main creates the Instances at boot; both sides look them up by these names.",
-    "note": "Exactly five, and no more: RequestState (RemoteFunction, client -> server, returns one snapshot, used once at client boot because client-main may not assume the join-time push arrived); StateChanged (RemoteEvent, server -> client, one snapshot); BuyUpgrade (RemoteEvent, client -> server, one upgrade id string and nothing else); FindRevealed (RemoteEvent, server -> client, one find name); AreaRestored (RemoteEvent, server -> client, the area label). There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair."
+    "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
+    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "channels": [
+      {
+        "name": "RequestState",
+        "class": "RemoteFunction",
+        "direction": "client -> server",
+        "payload": "no arguments; returns one snapshot",
+        "firedBy": "client-main",
+        "handledBy": "server-main, which sets OnServerInvoke at boot",
+        "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live"
+      },
+      {
+        "name": "StateChanged",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one snapshot, exactly the fields snapshotShape() names",
+        "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+        "handledBy": "client-main, which passes it to the updater hud-binding.bind returned",
+        "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes."
+      },
+      {
+        "name": "BuyUpgrade",
+        "class": "RemoteEvent",
+        "direction": "client -> server",
+        "payload": "one upgrade id string and nothing else",
+        "firedBy": "input",
+        "handledBy": "server-main, wiring.onPurchase",
+        "why": "the only client-originated message in the game; the server prices it"
+      },
+      {
+        "name": "FindRevealed",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one find name string, from Patch.relic",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onReveal handler, which is connected and empty: what a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet. The HUD does not need it; the found count arrives on StateChanged.",
+        "why": "up to collection.relicsPerArea times per area, per player"
+      },
+      {
+        "name": "AreaRestored",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "the area label string",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onRestored handler, connected and empty for the same reason",
+        "why": "exactly once per player per area, on the latch transition only. A rejoining finished player learns it from the snapshot's areaComplete field and from nothing else: [cid: decided] theme/setting/04-permanence-and-passage.md forbids any effect, sound, fade or transition marking entry into a finished part."
+      }
+    ]
+  },
+  {
+    "module": "protocol",
+    "fn": "createRemotes()",
+    "params": [],
+    "returns": "Folder — ReplicatedStorage.Remotes, holding one Instance per channel",
+    "note": "SERVER ONLY, called exactly once, by server-main at boot before any player can join (wiring.boot step 2). Creates a Folder named \"Remotes\" directly under ReplicatedStorage — [architect: arbitrary] on the name, fixed here so two builders cannot pick differently; deliberately NOT under tree.sharedRoot, because that Folder is Rojo-managed and these Instances are made at runtime — then one RemoteEvent or RemoteFunction per entry of REMOTES, with the class taken from that table. Errors if called from a client. Idempotent on the server: a second call creates nothing and returns the existing Folder. Connects no handler; server-main connects BuyUpgrade and RequestState itself. This function exists because the folder name and the class-per-channel used to live in server-main's boot step, where no other module could see them."
+  },
+  {
+    "module": "protocol",
+    "fn": "channel(name)",
+    "params": [
+      {
+        "name": "name",
+        "type": "string",
+        "note": "a key of REMOTES, taken from that table rather than hand-typed wherever the call site can reach it"
+      }
+    ],
+    "returns": "RemoteEvent | RemoteFunction — the live Instance for that channel",
+    "note": "THE ONLY PATH FROM A NAME TO A REMOTE INSTANCE, on both sides, for every module. Errors on a name REMOTES does not declare — it never warns and returns nil, because the thing it replaces did exactly that. Resolves the Remotes Folder once with WaitForChild on the first call and caches it: a client may call before the server's boot step has replicated, a server caller cannot, since createRemotes ran first. Does no work at require time, per tree's rule that a module returns one table and nothing else on load. Trial 3's builder, lacking this function, invented ReplicatedStorage:FindFirstChild(name, true) with a warning on a miss; that recursive search is forbidden, and so is any WaitForChild on a remote outside this module."
   },
   {
     "module": "protocol",
@@ -1541,13 +1695,16 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Depends on:** `protocol`
 
+**Fires:** `BuyUpgrade`. Resolve each one through the module that declares the channel list — never by searching the tree, and never by a name you typed yourself.
+
 ### Must expose
 
-- `connect(remotes)`
+- `connect()`
 
 ### Must not
 
 - sending anything except an upgrade id — the server owns cost and level
+- accepting a table of remote Instances from its caller, or resolving one by name. It asks protocol.channel("BuyUpgrade"), which is the only lookup in the game
 
 ### Values
 
@@ -1599,8 +1756,75 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "protocol",
     "fn": "REMOTES",
     "params": [],
-    "returns": "table — remote NAMES, not Instances. server-main creates the Instances at boot; both sides look them up by these names.",
-    "note": "Exactly five, and no more: RequestState (RemoteFunction, client -> server, returns one snapshot, used once at client boot because client-main may not assume the join-time push arrived); StateChanged (RemoteEvent, server -> client, one snapshot); BuyUpgrade (RemoteEvent, client -> server, one upgrade id string and nothing else); FindRevealed (RemoteEvent, server -> client, one find name); AreaRestored (RemoteEvent, server -> client, the area label). There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair."
+    "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
+    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "channels": [
+      {
+        "name": "RequestState",
+        "class": "RemoteFunction",
+        "direction": "client -> server",
+        "payload": "no arguments; returns one snapshot",
+        "firedBy": "client-main",
+        "handledBy": "server-main, which sets OnServerInvoke at boot",
+        "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live"
+      },
+      {
+        "name": "StateChanged",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one snapshot, exactly the fields snapshotShape() names",
+        "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+        "handledBy": "client-main, which passes it to the updater hud-binding.bind returned",
+        "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes."
+      },
+      {
+        "name": "BuyUpgrade",
+        "class": "RemoteEvent",
+        "direction": "client -> server",
+        "payload": "one upgrade id string and nothing else",
+        "firedBy": "input",
+        "handledBy": "server-main, wiring.onPurchase",
+        "why": "the only client-originated message in the game; the server prices it"
+      },
+      {
+        "name": "FindRevealed",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one find name string, from Patch.relic",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onReveal handler, which is connected and empty: what a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet. The HUD does not need it; the found count arrives on StateChanged.",
+        "why": "up to collection.relicsPerArea times per area, per player"
+      },
+      {
+        "name": "AreaRestored",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "the area label string",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onRestored handler, connected and empty for the same reason",
+        "why": "exactly once per player per area, on the latch transition only. A rejoining finished player learns it from the snapshot's areaComplete field and from nothing else: [cid: decided] theme/setting/04-permanence-and-passage.md forbids any effect, sound, fade or transition marking entry into a finished part."
+      }
+    ]
+  },
+  {
+    "module": "protocol",
+    "fn": "createRemotes()",
+    "params": [],
+    "returns": "Folder — ReplicatedStorage.Remotes, holding one Instance per channel",
+    "note": "SERVER ONLY, called exactly once, by server-main at boot before any player can join (wiring.boot step 2). Creates a Folder named \"Remotes\" directly under ReplicatedStorage — [architect: arbitrary] on the name, fixed here so two builders cannot pick differently; deliberately NOT under tree.sharedRoot, because that Folder is Rojo-managed and these Instances are made at runtime — then one RemoteEvent or RemoteFunction per entry of REMOTES, with the class taken from that table. Errors if called from a client. Idempotent on the server: a second call creates nothing and returns the existing Folder. Connects no handler; server-main connects BuyUpgrade and RequestState itself. This function exists because the folder name and the class-per-channel used to live in server-main's boot step, where no other module could see them."
+  },
+  {
+    "module": "protocol",
+    "fn": "channel(name)",
+    "params": [
+      {
+        "name": "name",
+        "type": "string",
+        "note": "a key of REMOTES, taken from that table rather than hand-typed wherever the call site can reach it"
+      }
+    ],
+    "returns": "RemoteEvent | RemoteFunction — the live Instance for that channel",
+    "note": "THE ONLY PATH FROM A NAME TO A REMOTE INSTANCE, on both sides, for every module. Errors on a name REMOTES does not declare — it never warns and returns nil, because the thing it replaces did exactly that. Resolves the Remotes Folder once with WaitForChild on the first call and caches it: a client may call before the server's boot step has replicated, a server caller cannot, since createRemotes ran first. Does no work at require time, per tree's rule that a module returns one table and nothing else on load. Trial 3's builder, lacking this function, invented ReplicatedStorage:FindFirstChild(name, true) with a warning on a miss; that recursive search is forbidden, and so is any WaitForChild on a remote outside this module."
   },
   {
     "module": "protocol",
@@ -1611,16 +1835,10 @@ state looks like, what each object is made of, and what happens in what order.
   },
   {
     "module": "input",
-    "fn": "connect(remotes)",
-    "params": [
-      {
-        "name": "remotes",
-        "type": "table",
-        "note": "the remote Instances, already resolved by name from protocol.REMOTES by client-main"
-      }
-    ],
+    "fn": "connect()",
+    "params": [],
     "returns": "nil",
-    "note": "Fires REMOTES.BuyUpgrade:FireServer(upgradeId) and nothing else, one id per press. Keyboard 1, 2 and 3 map to the 1st, 2nd and 3rd entries of upgrades — value, radius, speed — which is not a free choice: the emitted HUD already labels those rows \"[1] VALUE\", \"[2] REACH\" and \"[3] PACE\". Ignores input while UserInputService:GetFocusedTextBox() is non-nil, and ignores every other key. Sends no cost and no level."
+    "note": "Takes no arguments: it resolves its own channel with protocol.channel(\"BuyUpgrade\"), because there is exactly one way to get a remote and passing resolved Instances between modules is a second one. This supersedes the connect(remotes) signature 02-modules.md originally carried, and that sheet now records the amendment. Fires BuyUpgrade:FireServer(upgradeId) and nothing else, one id per press. Keyboard 1, 2 and 3 map to the 1st, 2nd and 3rd entries of upgrades — value, radius, speed — which is not a free choice: the emitted HUD already labels those rows \"[1] VALUE\", \"[2] REACH\" and \"[3] PACE\". Ignores input while UserInputService:GetFocusedTextBox() is non-nil, and ignores every other key. Sends no cost and no level."
   }
 ]
 ```
@@ -1651,6 +1869,7 @@ state looks like, what each object is made of, and what happens in what order.
 
 - deriving a plot's position from the live player count — a slot is claimed once and held, or plots move out from under their owners as people join and leave
 - making a patch collide; contact clearing with movement-only input must never be blocked by the thing being cleared
+- creating a patch Instance for an index state.cleared marks, or for any index at all while state.areaComplete is true. This is where "cleared is permanent" is enforced in the world, and no caller may be trusted to remember it
 
 ### Values
 
@@ -1830,7 +2049,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "CFrame — the plot's spawn point, the WorldCFrame of the plot's spawn Attachment",
-    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. Calling it twice for one player without a despawn between is a bug, not a second plot."
+    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab and the spawn Attachment are built as usual, because a finished area stays walkable and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
   },
   {
     "module": "plots",
@@ -1850,9 +2069,10 @@ state looks like, what each object is made of, and what happens in what order.
 ### Done when
 
 1. a rejoining player's already-cleared patches do not respawn
-2. two players never occupy the same plot position
-3. a vacated slot is reused before a higher one is allocated
-4. every spawned patch has CanCollide false
+2. a player whose areaComplete is true gets a plot slab, a spawn Attachment and ZERO patch Instances, with all area.patchCount Patch records present and marked cleared — a finished area stays walkable and stays bare
+3. two players never occupy the same plot position
+4. a vacated slot is reused before a higher one is allocated
+5. every spawned patch has CanCollide false
 
 ---
 
@@ -1862,7 +2082,9 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Owns:** Observe player positions on a tick, clear patches within reach, award currency and reveal relics.
 
-**Depends on:** `config`, `progression`, `plots`
+**Depends on:** `config`, `progression`, `plots`, `protocol`
+
+**Fires:** `FindRevealed`, `AreaRestored`, `StateChanged`. Resolve each one through the module that declares the channel list — never by searching the tree, and never by a name you typed yourself.
 
 ### Must expose
 
@@ -1873,6 +2095,9 @@ state looks like, what each object is made of, and what happens in what order.
 
 - accepting any client message about clearing — the server observes, it never asks
 - using Touched events, which fire from client-authoritative physics
+- touching a state whose areaComplete is true in any way: no distance test, no award, no write, no remote. The latch is the first thing the pass reads and the rest of the pass is unreachable behind it
+- reaching a remote by any means other than protocol.channel(name)
+- requiring Plots.luau. The dependency on plots is the Patch record contract and the build order, not a call: clearing reads state.patches, sets Patch.cleared and destroys Patch.instance, and calls nothing on plots
 
 ### Values
 
@@ -1883,6 +2108,22 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "dataStoreName": "ArgaRuin_v1"
+}
+```
+
+#### `area` *(from gameplay/meta/01-the-area.md)*
+
+```json
+{
+  "id": "east-terrace",
+  "label": "East Terrace",
+  "originXZ": [
+    0,
+    0
+  ],
+  "size": 120,
+  "patchCount": 140,
+  "minSpacing": 6
 }
 ```
 
@@ -2004,6 +2245,87 @@ state looks like, what each object is made of, and what happens in what order.
     "note": "The integer is what goes into Patch.tierIndex; the table is for reading value, height and shape at the point of use. Storing the table in a Patch instead of the index is forbidden by 03-state-shape: re-emitting the config would leave stale names in live patches."
   },
   {
+    "module": "protocol",
+    "fn": "REMOTES",
+    "params": [],
+    "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
+    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "channels": [
+      {
+        "name": "RequestState",
+        "class": "RemoteFunction",
+        "direction": "client -> server",
+        "payload": "no arguments; returns one snapshot",
+        "firedBy": "client-main",
+        "handledBy": "server-main, which sets OnServerInvoke at boot",
+        "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live"
+      },
+      {
+        "name": "StateChanged",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one snapshot, exactly the fields snapshotShape() names",
+        "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+        "handledBy": "client-main, which passes it to the updater hud-binding.bind returned",
+        "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes."
+      },
+      {
+        "name": "BuyUpgrade",
+        "class": "RemoteEvent",
+        "direction": "client -> server",
+        "payload": "one upgrade id string and nothing else",
+        "firedBy": "input",
+        "handledBy": "server-main, wiring.onPurchase",
+        "why": "the only client-originated message in the game; the server prices it"
+      },
+      {
+        "name": "FindRevealed",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one find name string, from Patch.relic",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onReveal handler, which is connected and empty: what a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet. The HUD does not need it; the found count arrives on StateChanged.",
+        "why": "up to collection.relicsPerArea times per area, per player"
+      },
+      {
+        "name": "AreaRestored",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "the area label string",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onRestored handler, connected and empty for the same reason",
+        "why": "exactly once per player per area, on the latch transition only. A rejoining finished player learns it from the snapshot's areaComplete field and from nothing else: [cid: decided] theme/setting/04-permanence-and-passage.md forbids any effect, sound, fade or transition marking entry into a finished part."
+      }
+    ]
+  },
+  {
+    "module": "protocol",
+    "fn": "createRemotes()",
+    "params": [],
+    "returns": "Folder — ReplicatedStorage.Remotes, holding one Instance per channel",
+    "note": "SERVER ONLY, called exactly once, by server-main at boot before any player can join (wiring.boot step 2). Creates a Folder named \"Remotes\" directly under ReplicatedStorage — [architect: arbitrary] on the name, fixed here so two builders cannot pick differently; deliberately NOT under tree.sharedRoot, because that Folder is Rojo-managed and these Instances are made at runtime — then one RemoteEvent or RemoteFunction per entry of REMOTES, with the class taken from that table. Errors if called from a client. Idempotent on the server: a second call creates nothing and returns the existing Folder. Connects no handler; server-main connects BuyUpgrade and RequestState itself. This function exists because the folder name and the class-per-channel used to live in server-main's boot step, where no other module could see them."
+  },
+  {
+    "module": "protocol",
+    "fn": "channel(name)",
+    "params": [
+      {
+        "name": "name",
+        "type": "string",
+        "note": "a key of REMOTES, taken from that table rather than hand-typed wherever the call site can reach it"
+      }
+    ],
+    "returns": "RemoteEvent | RemoteFunction — the live Instance for that channel",
+    "note": "THE ONLY PATH FROM A NAME TO A REMOTE INSTANCE, on both sides, for every module. Errors on a name REMOTES does not declare — it never warns and returns nil, because the thing it replaces did exactly that. Resolves the Remotes Folder once with WaitForChild on the first call and caches it: a client may call before the server's boot step has replicated, a server caller cannot, since createRemotes ran first. Does no work at require time, per tree's rule that a module returns one table and nothing else on load. Trial 3's builder, lacking this function, invented ReplicatedStorage:FindFirstChild(name, true) with a warning on a miss; that recursive search is forbidden, and so is any WaitForChild on a remote outside this module."
+  },
+  {
+    "module": "protocol",
+    "fn": "snapshotShape()",
+    "params": [],
+    "returns": "{ string } — the ordered field names a snapshot carries",
+    "note": "Exactly currency, upgrades, clearedCount, found, areaComplete. A snapshot is NOT a PlayerState: patches, cleared and player never cross the wire — patches and cleared are hundreds of entries the HUD has no use for, and player is not serialisable. Both sides build and read the payload from this list rather than repeating field-name literals, which is protocol's second acceptance criterion."
+  },
+  {
     "module": "progression",
     "fn": "award(state, amount)",
     "params": [
@@ -2108,7 +2430,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "CFrame — the plot's spawn point, the WorldCFrame of the plot's spawn Attachment",
-    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. Calling it twice for one player without a despawn between is a bug, not a second plot."
+    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab and the spawn Attachment are built as usual, because a finished area stays walkable and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
   },
   {
     "module": "plots",
@@ -2133,7 +2455,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "nil",
-    "note": "One pass, in this order, per state: skip the entry entirely if state.player.Character or its HumanoidRootPart is absent; read radius once with progression.clearRadius(state); for every patch with cleared false whose XZ distance to the root part is within radius (XZ only, so height never affects reach) — set patch.cleared, destroy patch.instance and nil the field, set state.cleared[index], increment state.clearedCount, call progression.award with max(1, floor(tier.value * progression.valueMultiplier(state))), and if patch.relic is set and state.found[patch.relic] is not, set it and fire FindRevealed. After the loop, if clearedCount equals area.patchCount and areaComplete is false, latch it and fire AreaRestored exactly once. Never reads a client message; never uses Touched."
+    "note": "One pass, in this order, per state: SKIP THE STATE ENTIRELY IF state.areaComplete IS TRUE — the latch is the FIRST test, before the character lookup and before any distance work, and it is what stops a finished area paying a second time; then skip it if state.player.Character or its HumanoidRootPart is absent; read radius once with progression.clearRadius(state); for every patch with cleared false whose XZ distance to the root part is within radius (XZ only, so height never affects reach) — set patch.cleared, destroy patch.instance and nil the field, set state.cleared[index], increment state.clearedCount, call progression.award with max(1, floor(tier.value * progression.valueMultiplier(state))), and if patch.relic is set and state.found[patch.relic] is not, set it and fire FindRevealed. After the loop, if clearedCount >= area.patchCount and areaComplete is false, latch it and fire AreaRestored exactly once. Finally, if the pass changed anything at all, fire StateChanged once with a fresh snapshot — at most one per player per tick, and none at all on a pass that cleared nothing. Every channel through protocol.channel(name); nothing here resolves a remote any other way. Never reads a client message; never uses Touched."
   },
   {
     "module": "clearing",
@@ -2157,6 +2479,9 @@ state looks like, what each object is made of, and what happens in what order.
 2. walking within the current clear radius of a patch clears it within one tick
 3. payout equals tier value times the player's value multiplier, floored, minimum 1
 4. completing the last patch sets the area-complete flag exactly once
+5. state.clearedCount never exceeds area.patchCount, over any number of rejoins
+6. a player whose areaComplete is true is awarded nothing and fires nothing, however far they walk
+7. clearing one patch pushes exactly one StateChanged; standing still for ten ticks pushes none
 
 ---
 
@@ -2164,9 +2489,11 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Write to:** `game/src/client/init.client.luau`
 
-**Owns:** Boot the HUD screen, connect the binding and the input, and ask the server for initial state.
+**Owns:** Boot the HUD screen, connect the binding and the input, connect every server-to-client channel, and ask the server for initial state.
 
 **Depends on:** `protocol`, `hud-binding`, `input`
+
+**Fires:** `RequestState`. Resolve each one through the module that declares the channel list — never by searching the tree, and never by a name you typed yourself.
 
 ### Must expose
 
@@ -2175,6 +2502,8 @@ state looks like, what each object is made of, and what happens in what order.
 ### Must not
 
 - assuming the server's spawn-time push arrived; state is requested once handlers are live
+- resolving a remote by name or by search; protocol.channel(name) is the only lookup
+- leaving FindRevealed or AreaRestored unconnected. Their presentation is not specified yet and their handlers are empty, but an unconnected channel is an output with nothing at the end of it
 
 ### Values
 
@@ -2186,8 +2515,75 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "protocol",
     "fn": "REMOTES",
     "params": [],
-    "returns": "table — remote NAMES, not Instances. server-main creates the Instances at boot; both sides look them up by these names.",
-    "note": "Exactly five, and no more: RequestState (RemoteFunction, client -> server, returns one snapshot, used once at client boot because client-main may not assume the join-time push arrived); StateChanged (RemoteEvent, server -> client, one snapshot); BuyUpgrade (RemoteEvent, client -> server, one upgrade id string and nothing else); FindRevealed (RemoteEvent, server -> client, one find name); AreaRestored (RemoteEvent, server -> client, the area label). There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair."
+    "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
+    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "channels": [
+      {
+        "name": "RequestState",
+        "class": "RemoteFunction",
+        "direction": "client -> server",
+        "payload": "no arguments; returns one snapshot",
+        "firedBy": "client-main",
+        "handledBy": "server-main, which sets OnServerInvoke at boot",
+        "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live"
+      },
+      {
+        "name": "StateChanged",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one snapshot, exactly the fields snapshotShape() names",
+        "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+        "handledBy": "client-main, which passes it to the updater hud-binding.bind returned",
+        "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes."
+      },
+      {
+        "name": "BuyUpgrade",
+        "class": "RemoteEvent",
+        "direction": "client -> server",
+        "payload": "one upgrade id string and nothing else",
+        "firedBy": "input",
+        "handledBy": "server-main, wiring.onPurchase",
+        "why": "the only client-originated message in the game; the server prices it"
+      },
+      {
+        "name": "FindRevealed",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one find name string, from Patch.relic",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onReveal handler, which is connected and empty: what a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet. The HUD does not need it; the found count arrives on StateChanged.",
+        "why": "up to collection.relicsPerArea times per area, per player"
+      },
+      {
+        "name": "AreaRestored",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "the area label string",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onRestored handler, connected and empty for the same reason",
+        "why": "exactly once per player per area, on the latch transition only. A rejoining finished player learns it from the snapshot's areaComplete field and from nothing else: [cid: decided] theme/setting/04-permanence-and-passage.md forbids any effect, sound, fade or transition marking entry into a finished part."
+      }
+    ]
+  },
+  {
+    "module": "protocol",
+    "fn": "createRemotes()",
+    "params": [],
+    "returns": "Folder — ReplicatedStorage.Remotes, holding one Instance per channel",
+    "note": "SERVER ONLY, called exactly once, by server-main at boot before any player can join (wiring.boot step 2). Creates a Folder named \"Remotes\" directly under ReplicatedStorage — [architect: arbitrary] on the name, fixed here so two builders cannot pick differently; deliberately NOT under tree.sharedRoot, because that Folder is Rojo-managed and these Instances are made at runtime — then one RemoteEvent or RemoteFunction per entry of REMOTES, with the class taken from that table. Errors if called from a client. Idempotent on the server: a second call creates nothing and returns the existing Folder. Connects no handler; server-main connects BuyUpgrade and RequestState itself. This function exists because the folder name and the class-per-channel used to live in server-main's boot step, where no other module could see them."
+  },
+  {
+    "module": "protocol",
+    "fn": "channel(name)",
+    "params": [
+      {
+        "name": "name",
+        "type": "string",
+        "note": "a key of REMOTES, taken from that table rather than hand-typed wherever the call site can reach it"
+      }
+    ],
+    "returns": "RemoteEvent | RemoteFunction — the live Instance for that channel",
+    "note": "THE ONLY PATH FROM A NAME TO A REMOTE INSTANCE, on both sides, for every module. Errors on a name REMOTES does not declare — it never warns and returns nil, because the thing it replaces did exactly that. Resolves the Remotes Folder once with WaitForChild on the first call and caches it: a client may call before the server's boot step has replicated, a server caller cannot, since createRemotes ran first. Does no work at require time, per tree's rule that a module returns one table and nothing else on load. Trial 3's builder, lacking this function, invented ReplicatedStorage:FindFirstChild(name, true) with a warning on a miss; that recursive search is forbidden, and so is any WaitForChild on a remote outside this module."
   },
   {
     "module": "protocol",
@@ -2216,16 +2612,10 @@ state looks like, what each object is made of, and what happens in what order.
   },
   {
     "module": "input",
-    "fn": "connect(remotes)",
-    "params": [
-      {
-        "name": "remotes",
-        "type": "table",
-        "note": "the remote Instances, already resolved by name from protocol.REMOTES by client-main"
-      }
-    ],
+    "fn": "connect()",
+    "params": [],
     "returns": "nil",
-    "note": "Fires REMOTES.BuyUpgrade:FireServer(upgradeId) and nothing else, one id per press. Keyboard 1, 2 and 3 map to the 1st, 2nd and 3rd entries of upgrades — value, radius, speed — which is not a free choice: the emitted HUD already labels those rows \"[1] VALUE\", \"[2] REACH\" and \"[3] PACE\". Ignores input while UserInputService:GetFocusedTextBox() is non-nil, and ignores every other key. Sends no cost and no level."
+    "note": "Takes no arguments: it resolves its own channel with protocol.channel(\"BuyUpgrade\"), because there is exactly one way to get a remote and passing resolved Instances between modules is a second one. This supersedes the connect(remotes) signature 02-modules.md originally carried, and that sheet now records the amendment. Fires BuyUpgrade:FireServer(upgradeId) and nothing else, one id per press. Keyboard 1, 2 and 3 map to the 1st, 2nd and 3rd entries of upgrades — value, radius, speed — which is not a free choice: the emitted HUD already labels those rows \"[1] VALUE\", \"[2] REACH\" and \"[3] PACE\". Ignores input while UserInputService:GetFocusedTextBox() is non-nil, and ignores every other key. Sends no cost and no level."
   }
 ]
 ```
@@ -2234,6 +2624,7 @@ state looks like, what each object is made of, and what happens in what order.
 
 1. a returning player's HUD shows their saved currency and relic count before they clear anything
 2. the HUD survives a character respawn without rebuilding
+3. all four server-to-client channels have a connected handler after boot, and adding presentation to a reveal is a change to one function body and to no wiring
 
 ---
 
@@ -2241,9 +2632,11 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Write to:** `game/src/server/init.server.luau`
 
-**Owns:** Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.
+**Owns:** Wire lifecycle: ask protocol to create the remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.
 
 **Depends on:** `protocol`, `persistence`, `progression`, `plots`, `clearing`
+
+**Fires:** `StateChanged`. Resolve each one through the module that declares the channel list — never by searching the tree, and never by a name you typed yourself.
 
 ### Must expose
 
@@ -2252,6 +2645,7 @@ state looks like, what each object is made of, and what happens in what order.
 ### Must not
 
 - containing game logic; anything with a rule in it belongs in one of the modules above
+- creating a remote itself, choosing where the remotes live, or naming one in a literal — protocol.createRemotes() creates them and protocol.channel(name) resolves them
 
 ### Values
 
@@ -2313,8 +2707,75 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "protocol",
     "fn": "REMOTES",
     "params": [],
-    "returns": "table — remote NAMES, not Instances. server-main creates the Instances at boot; both sides look them up by these names.",
-    "note": "Exactly five, and no more: RequestState (RemoteFunction, client -> server, returns one snapshot, used once at client boot because client-main may not assume the join-time push arrived); StateChanged (RemoteEvent, server -> client, one snapshot); BuyUpgrade (RemoteEvent, client -> server, one upgrade id string and nothing else); FindRevealed (RemoteEvent, server -> client, one find name); AreaRestored (RemoteEvent, server -> client, the area label). There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair."
+    "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
+    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "channels": [
+      {
+        "name": "RequestState",
+        "class": "RemoteFunction",
+        "direction": "client -> server",
+        "payload": "no arguments; returns one snapshot",
+        "firedBy": "client-main",
+        "handledBy": "server-main, which sets OnServerInvoke at boot",
+        "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live"
+      },
+      {
+        "name": "StateChanged",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one snapshot, exactly the fields snapshotShape() names",
+        "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+        "handledBy": "client-main, which passes it to the updater hud-binding.bind returned",
+        "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes."
+      },
+      {
+        "name": "BuyUpgrade",
+        "class": "RemoteEvent",
+        "direction": "client -> server",
+        "payload": "one upgrade id string and nothing else",
+        "firedBy": "input",
+        "handledBy": "server-main, wiring.onPurchase",
+        "why": "the only client-originated message in the game; the server prices it"
+      },
+      {
+        "name": "FindRevealed",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "one find name string, from Patch.relic",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onReveal handler, which is connected and empty: what a reveal looks like, sounds like and reads as is routed to Art — VFX, Audio — Stingers and UI/UX — Feedback, none of which owns a contract key yet. The HUD does not need it; the found count arrives on StateChanged.",
+        "why": "up to collection.relicsPerArea times per area, per player"
+      },
+      {
+        "name": "AreaRestored",
+        "class": "RemoteEvent",
+        "direction": "server -> client",
+        "payload": "the area label string",
+        "firedBy": "clearing",
+        "handledBy": "client-main's onRestored handler, connected and empty for the same reason",
+        "why": "exactly once per player per area, on the latch transition only. A rejoining finished player learns it from the snapshot's areaComplete field and from nothing else: [cid: decided] theme/setting/04-permanence-and-passage.md forbids any effect, sound, fade or transition marking entry into a finished part."
+      }
+    ]
+  },
+  {
+    "module": "protocol",
+    "fn": "createRemotes()",
+    "params": [],
+    "returns": "Folder — ReplicatedStorage.Remotes, holding one Instance per channel",
+    "note": "SERVER ONLY, called exactly once, by server-main at boot before any player can join (wiring.boot step 2). Creates a Folder named \"Remotes\" directly under ReplicatedStorage — [architect: arbitrary] on the name, fixed here so two builders cannot pick differently; deliberately NOT under tree.sharedRoot, because that Folder is Rojo-managed and these Instances are made at runtime — then one RemoteEvent or RemoteFunction per entry of REMOTES, with the class taken from that table. Errors if called from a client. Idempotent on the server: a second call creates nothing and returns the existing Folder. Connects no handler; server-main connects BuyUpgrade and RequestState itself. This function exists because the folder name and the class-per-channel used to live in server-main's boot step, where no other module could see them."
+  },
+  {
+    "module": "protocol",
+    "fn": "channel(name)",
+    "params": [
+      {
+        "name": "name",
+        "type": "string",
+        "note": "a key of REMOTES, taken from that table rather than hand-typed wherever the call site can reach it"
+      }
+    ],
+    "returns": "RemoteEvent | RemoteFunction — the live Instance for that channel",
+    "note": "THE ONLY PATH FROM A NAME TO A REMOTE INSTANCE, on both sides, for every module. Errors on a name REMOTES does not declare — it never warns and returns nil, because the thing it replaces did exactly that. Resolves the Remotes Folder once with WaitForChild on the first call and caches it: a client may call before the server's boot step has replicated, a server caller cannot, since createRemotes ran first. Does no work at require time, per tree's rule that a module returns one table and nothing else on load. Trial 3's builder, lacking this function, invented ReplicatedStorage:FindFirstChild(name, true) with a warning on a miss; that recursive search is forbidden, and so is any WaitForChild on a remote outside this module."
   },
   {
     "module": "protocol",
@@ -2332,8 +2793,8 @@ state looks like, what each object is made of, and what happens in what order.
         "type": "Player"
       }
     ],
-    "returns": "PlayerState — every persisted field populated; patches empty and player unset",
-    "note": "Never throws and never returns nil. On a DataStore failure it warns and returns defaultState(), so the player is playable on a fresh session rather than stuck. It yields; server-main must not insert the state into the live collection until it has returned, or clearing.tick can see a half-loaded state. Reads under runtime.dataStoreName, keyed by the player's UserId."
+    "returns": "PlayerState — every persisted field populated AND RECONCILED; patches empty and player unset",
+    "note": "Never throws and never returns nil. On a DataStore failure it warns and returns defaultState(), so the player is playable on a fresh session rather than stuck. It yields; server-main must not insert the state into the live collection until it has returned, or clearing.tick can see a half-loaded state. Reads under runtime.dataStoreName, keyed by the player's UserId. RECONCILES BEFORE RETURNING, which is the other half of save's collapse and the trial-3 fix: if areaComplete is true, cleared is filled with every index from 1 to area.patchCount and clearedCount is set to area.patchCount; otherwise clearedCount is set to the number of keys in cleared. The stored clearedCount is compared, never trusted, and a mismatch warns — a payload whose count disagrees with its set is exactly how a finished area re-opened and paid twice. Every caller may therefore assume, for any state this function returns: #cleared == clearedCount, and areaComplete implies clearedCount == area.patchCount."
   },
   {
     "module": "persistence",
@@ -2349,7 +2810,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "boolean — true if the write was accepted",
-    "note": "Writes exactly the six persisted fields of 03-state-shape and nothing else. THE COLLAPSE: when state.areaComplete is true, cleared is written as an empty set, because the flag already implies every index. That is what keeps the payload bounded and what persistence's own prohibition is about. clearedCount survives the collapse; cleared does not. Yields. Idempotent — saving twice with no change between is not an error."
+    "note": "Writes exactly the six persisted fields of 03-state-shape and nothing else. THE COLLAPSE: when state.areaComplete is true, cleared is written as an empty set, because the flag already implies every index. That is what keeps the payload bounded and what persistence's own prohibition is about. It is lossless ONLY because load is its exact inverse and refills the set from the same flag; dropping the list with nothing to expand it is what respawned a finished area. The live state.cleared is NOT emptied — this function collapses the payload, not the state. Yields. Idempotent — saving twice with no change between is not an error."
   },
   {
     "module": "persistence",
@@ -2463,7 +2924,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "CFrame — the plot's spawn point, the WorldCFrame of the plot's spawn Attachment",
-    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. Calling it twice for one player without a despawn between is a bug, not a second plot."
+    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab and the spawn Attachment are built as usual, because a finished area stays walkable and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
   },
   {
     "module": "plots",
@@ -2488,7 +2949,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "nil",
-    "note": "One pass, in this order, per state: skip the entry entirely if state.player.Character or its HumanoidRootPart is absent; read radius once with progression.clearRadius(state); for every patch with cleared false whose XZ distance to the root part is within radius (XZ only, so height never affects reach) — set patch.cleared, destroy patch.instance and nil the field, set state.cleared[index], increment state.clearedCount, call progression.award with max(1, floor(tier.value * progression.valueMultiplier(state))), and if patch.relic is set and state.found[patch.relic] is not, set it and fire FindRevealed. After the loop, if clearedCount equals area.patchCount and areaComplete is false, latch it and fire AreaRestored exactly once. Never reads a client message; never uses Touched."
+    "note": "One pass, in this order, per state: SKIP THE STATE ENTIRELY IF state.areaComplete IS TRUE — the latch is the FIRST test, before the character lookup and before any distance work, and it is what stops a finished area paying a second time; then skip it if state.player.Character or its HumanoidRootPart is absent; read radius once with progression.clearRadius(state); for every patch with cleared false whose XZ distance to the root part is within radius (XZ only, so height never affects reach) — set patch.cleared, destroy patch.instance and nil the field, set state.cleared[index], increment state.clearedCount, call progression.award with max(1, floor(tier.value * progression.valueMultiplier(state))), and if patch.relic is set and state.found[patch.relic] is not, set it and fire FindRevealed. After the loop, if clearedCount >= area.patchCount and areaComplete is false, latch it and fire AreaRestored exactly once. Finally, if the pass changed anything at all, fire StateChanged once with a fresh snapshot — at most one per player per tick, and none at all on a pass that cleared nothing. Every channel through protocol.channel(name); nothing here resolves a remote any other way. Never reads a client message; never uses Touched."
   },
   {
     "module": "clearing",
@@ -2518,9 +2979,10 @@ state looks like, what each object is made of, and what happens in what order.
 ### Done when
 
 1. a player's Humanoid.WalkSpeed equals Progression.walkSpeed(state) after spawning and after any successful purchase
-2. a player who leaves has their state saved before their plot is destroyed
-3. the clear tick survives an error in one iteration without stopping
-4. server shutdown saves every connected player outside Studio
+2. every remote in this file is reached through protocol.channel, and the remotes exist before any player can join
+3. a player who leaves has their state saved before their plot is destroyed
+4. the clear tick survives an error in one iteration without stopping
+5. server shutdown saves every connected player outside Studio
 
 ---
 
