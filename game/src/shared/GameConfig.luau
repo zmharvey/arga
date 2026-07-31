@@ -29,6 +29,10 @@ GameConfig.Tiers = {
 }
 
 -- The spend side of the loop. From gameplay/balance/01-upgrade-ladder.md.
+--
+-- `base` and `mode` exist because `perLevel` alone does not describe an effect. A builder
+-- handed 1.1 cannot tell whether maxed Reach is 14.3 or 11.79, and both readings satisfied
+-- every acceptance criterion that existed before the first build trial asked.
 GameConfig.Upgrades = {
 	{
 		id = "value",
@@ -38,6 +42,8 @@ GameConfig.Upgrades = {
 		costGrowth = 1.6,
 		maxLevel = 10,
 		perLevel = 0.25,
+		base = 1,
+		mode = "additive",
 	},
 	{
 		id = "radius",
@@ -47,6 +53,8 @@ GameConfig.Upgrades = {
 		costGrowth = 1.75,
 		maxLevel = 8,
 		perLevel = 1.1,
+		base = 5.5,
+		mode = "additive",
 	},
 	{
 		id = "speed",
@@ -56,8 +64,19 @@ GameConfig.Upgrades = {
 		costGrowth = 1.8,
 		maxLevel = 6,
 		perLevel = 1.6,
+		base = 16,
+		mode = "additive",
 	},
 }
+
+-- The one formula. Every axis goes through here, so "additive or compounding" is answered
+-- in one place rather than re-decided by each module that reads a level.
+function GameConfig.upgradeEffect(upgrade: { base: number, perLevel: number, mode: string }, level: number): number
+	if upgrade.mode == "compounding" then
+		return upgrade.base * (upgrade.perLevel ^ level)
+	end
+	return upgrade.base + upgrade.perLevel * level
+end
 
 -- Movement, before upgrades. From gameplay/mechanics/01-reach-and-pace.md.
 GameConfig.BaseClearRadius = 5.5

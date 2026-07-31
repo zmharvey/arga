@@ -86,12 +86,27 @@ function upgradesBlock(upgrades, source) {
 		costGrowth = ${num(u.costGrowth)},
 		maxLevel = ${num(u.maxLevel)},
 		perLevel = ${num(u.perLevel)},
+		base = ${num(u.base)},
+		mode = ${str(u.mode)},
 	},`).join('\n');
   return `
 -- The spend side of the loop. From ${source}.
+--
+-- \`base\` and \`mode\` exist because \`perLevel\` alone does not describe an effect. A builder
+-- handed 1.1 cannot tell whether maxed Reach is 14.3 or 11.79, and both readings satisfied
+-- every acceptance criterion that existed before the first build trial asked.
 GameConfig.Upgrades = {
 ${rows}
 }
+
+-- The one formula. Every axis goes through here, so "additive or compounding" is answered
+-- in one place rather than re-decided by each module that reads a level.
+function GameConfig.upgradeEffect(upgrade: { base: number, perLevel: number, mode: string }, level: number): number
+	if upgrade.mode == "compounding" then
+		return upgrade.base * (upgrade.perLevel ^ level)
+	end
+	return upgrade.base + upgrade.perLevel * level
+end
 `;
 }
 

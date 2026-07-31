@@ -100,6 +100,12 @@ export const SCHEMA = {
       costGrowth: 'number>0',
       maxLevel: 'integer>0',
       perLevel: 'number>0',
+      // Added after the first build trial. `perLevel` alone does not describe an effect:
+      // a builder handed 0.25 cannot tell whether maxed reach is 14.3 or 11.79, and both
+      // readings satisfied every acceptance criterion that existed. `base` is the value at
+      // level 0, which `value` had nowhere to state and so nobody stated.
+      base: 'number>0',
+      mode: 'enum:additive,compounding',
     },
     check(upgrades) {
       const problems = [];
@@ -108,6 +114,11 @@ export const SCHEMA = {
         if (ids.has(u.id)) problems.push(`duplicate upgrade id "${u.id}"`);
         ids.add(u.id);
         if (u.costGrowth <= 1) problems.push(`upgrade "${u.id}" costGrowth ${u.costGrowth} must exceed 1, or the ladder is flat or inverted`);
+        // A compounding step of 1.0 is a no-op ladder that still charges for every level,
+        // which reads as working until somebody checks the maths.
+        if (u.mode === 'compounding' && u.perLevel <= 1) {
+          problems.push(`upgrade "${u.id}" is compounding with perLevel ${u.perLevel}; a factor at or below 1 makes every level worthless or harmful`);
+        }
       }
       return problems;
     },
@@ -159,6 +170,47 @@ export const SCHEMA = {
     shape: {
       baseWalkSpeed: 'number>0',
       baseClearRadius: 'number>0',
+    },
+  },
+
+  playerState: {
+    doc: 'The shape of one player\'s live state: every field, who writes it, and what survives a rejoin.',
+    owner: 'tech/architecture',
+    shape: {
+      fields: 'array',
+      types: 'object',
+    },
+    check(ps) {
+      const problems = [];
+      if (!Array.isArray(ps.fields) || !ps.fields.length) {
+        problems.push('playerState.fields must be a non-empty array');
+        return problems;
+      }
+      const names = new Set();
+      for (const f of ps.fields) {
+        if (!f?.name || !f?.type || !f?.writtenBy) {
+          problems.push(`playerState field ${JSON.stringify(f?.name ?? '?')} needs a name, a type and a writtenBy`);
+          continue;
+        }
+        if (names.has(f.name)) problems.push(`two playerState fields are both called "${f.name}"`);
+        names.add(f.name);
+        if (typeof f.persisted !== 'boolean') {
+          // Left unstated, every module guesses, and the guesses only disagree in
+          // production when a player rejoins.
+          problems.push(`playerState field "${f.name}" does not say whether it is persisted`);
+        }
+      }
+      // A named type that nothing uses is dead weight; a used type that is not named is
+      // the gap that made two builders invent the same record differently.
+      for (const f of ps.fields) {
+        const named = String(f.type ?? '').replace(/[[\]?<>]/g, ' ').split(/[\s,]+/).filter(Boolean);
+        for (const t of named) {
+          if (/^[A-Z]/.test(t) && !(t in (ps.types ?? {}))) {
+            problems.push(`playerState field "${f.name}" is typed "${f.type}" but "${t}" is not defined in playerState.types`);
+          }
+        }
+      }
+      return problems;
     },
   },
 
@@ -333,6 +385,13 @@ function typeError(path, value, spec) {
   }
   if (spec === 'boolean') return t === 'boolean' ? null : `${path} must be a boolean`;
   if (spec === 'array') return Array.isArray(value) ? null : `${path} must be an array`;
+  // A keyed bag whose keys are data rather than schema — `playerState.types` is the first,
+  // holding one entry per named record shape. An array would impose an order that means
+  // nothing, so it is deliberately not one.
+  if (spec === 'object') {
+    if (t !== 'object' || value === null || Array.isArray(value)) return `${path} must be an object`;
+    return null;
+  }
   if (spec.startsWith('enum:')) {
     const allowed = spec.slice(5).split(',');
     return allowed.includes(value) ? null : `${path} must be one of ${allowed.join(', ')}; got ${JSON.stringify(value)}`;
@@ -517,8 +576,93 @@ function orphanedUpgrades(manifest) {
   return problems;
 }
 
+/**
+ * The two structural gaps the first build trial exposed, now checkable.
+ *
+ * Both were invisible to every existing check because every existing check looked at one
+ * key in isolation, and both cost a builder real time:
+ *
+ * 1. `radius` and `speed` take their level-0 value from `movement`, and now also carry a
+ *    `base`. Two numbers for one fact drift silently, so they are compared.
+ * 2. Every `playerState` field claims a writing module. If that module does not exist, or
+ *    the field is written by nobody, the state table has an author nobody can find.
+ */
+function structuralProblems(manifest) {
+  const problems = [];
+  const { upgrades, movement, playerState, modules } = manifest;
+
+  if (Array.isArray(upgrades) && movement) {
+    const externalBase = { radius: 'baseClearRadius', speed: 'baseWalkSpeed' };
+    for (const u of upgrades) {
+      const key = externalBase[u.id];
+      if (key && movement[key] !== undefined && u.base !== movement[key]) {
+        problems.push(
+          `upgrade "${u.id}" has base ${u.base} but movement.${key} is ${movement[key]}; `
+          + 'one of them is what the player starts with and the other is a stale copy.',
+        );
+      }
+    }
+  }
+
+  // Computing a value is not the same as applying it, and the gap between the two is
+  // invisible to every check above. The second build trial found `Progression.walkSpeed`
+  // existing, satisfying `orphanedUpgrades`, and nothing writing it to a Humanoid: both
+  // modules that touch the character declined it in their reports, and the build order
+  // named no third. The Pace upgrade was purchasable with no effect.
+  //
+  // `applies` is the module-side answer, mirroring `playerState.writtenBy`: exactly one
+  // module takes responsibility for making each upgrade visible to the player.
+  if (Array.isArray(upgrades) && Array.isArray(modules)) {
+    const appliedBy = new Map();
+    for (const m of modules) {
+      for (const id of Array.isArray(m.applies) ? m.applies : []) {
+        if (appliedBy.has(id)) {
+          problems.push(`upgrades "${id}" is applied by both "${appliedBy.get(id)}" and "${m.id}"; two modules writing one effect race`);
+        }
+        appliedBy.set(id, m.id);
+      }
+    }
+    const anyDeclared = appliedBy.size > 0;
+    for (const u of upgrades) {
+      if (!appliedBy.has(u.id)) {
+        // Only fires once some module has declared `applies`, so a manifest predating the
+        // field is not spammed with eleven problems it cannot act on.
+        if (anyDeclared) {
+          problems.push(
+            `upgrade "${u.id}" is computed but no module declares it in "applies"; `
+            + 'a player can buy it and see nothing change. Name the module that makes it take effect.',
+          );
+        }
+      }
+    }
+    for (const [id, mod] of appliedBy) {
+      if (!upgrades.some((u) => u.id === id)) {
+        problems.push(`module "${mod}" applies "${id}", which is not an upgrade`);
+      }
+    }
+  }
+
+  if (playerState && Array.isArray(playerState.fields) && Array.isArray(modules)) {
+    const ids = new Set(modules.map((m) => m.id));
+    for (const f of playerState.fields) {
+      if (f?.writtenBy && !ids.has(f.writtenBy)) {
+        problems.push(`playerState field "${f.name}" is written by "${f.writtenBy}", which is not a module`);
+      }
+    }
+    // The upgrades map is keyed by upgrade id. If a ladder gains an axis and the state
+    // shape does not say so, the persisted table quietly stops round-tripping.
+    const upgradeField = playerState.fields.find((f) => /upgrade/i.test(f?.name ?? ''));
+    if (Array.isArray(upgrades) && !upgradeField) {
+      problems.push('playerState has no field holding upgrade levels, but the ladder has '
+        + `${upgrades.length}; a purchase would have nowhere to be recorded`);
+    }
+  }
+
+  return problems;
+}
+
 function crossCuttingProblems(manifest) {
-  const problems = [...orphanedUpgrades(manifest)];
+  const problems = [...orphanedUpgrades(manifest), ...structuralProblems(manifest)];
   const vocab = manifest.vocabulary;
   if (!vocab || !Array.isArray(vocab.bannedWords)) return problems;
 

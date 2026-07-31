@@ -90,7 +90,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Persistence.luau",
       "side": "server",
       "responsibility": "Load and save a player's currency, upgrades, collection and cleared state, and collapse a finished area to one flag.",
-      "reads": ["runtime", "area"],
+      "reads": ["runtime", "area", "playerState"],
       "exposes": ["load(player): PlayerState", "save(player, state)", "defaultState(): PlayerState"],
       "dependsOn": ["config"],
       "forbids": [
@@ -108,7 +108,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Progression.luau",
       "side": "server",
       "responsibility": "Own currency, upgrade levels, purchase validation, and every quantity derived from an upgrade level: clear radius, walk speed and the payout multiplier.",
-      "reads": ["upgrades", "movement"],
+      "reads": ["upgrades", "movement", "playerState"],
       "exposes": [
         "award(state, amount)",
         "tryBuy(state, upgradeId): boolean",
@@ -132,7 +132,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Plots.luau",
       "side": "server",
       "responsibility": "Build and tear down one player's plot of patch Instances, and hold the slot it occupies.",
-      "reads": ["area", "patch", "tiers"],
+      "reads": ["area", "patch", "tiers", "playerState"],
       "exposes": ["claimSlot(): number", "releaseSlot(n)", "spawn(player, state)", "despawn(state)"],
       "dependsOn": ["config", "layout"],
       "forbids": [
@@ -151,7 +151,8 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Clearing.luau",
       "side": "server",
       "responsibility": "Observe player positions on a tick, clear patches within reach, award currency and reveal relics.",
-      "reads": ["runtime", "tiers", "movement"],
+      "reads": ["runtime", "tiers", "movement", "playerState"],
+      "applies": ["radius", "value"],
       "exposes": ["tick(states)", "start()"],
       "dependsOn": ["config", "progression", "plots"],
       "forbids": [
@@ -169,14 +170,16 @@ that already exists in code rather than one that sounded right on paper.
       "id": "server-main",
       "path": "game/src/server/init.server.luau",
       "side": "server",
-      "responsibility": "Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown.",
-      "reads": ["runtime"],
+      "responsibility": "Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.",
+      "reads": ["runtime", "playerState", "upgrades"],
+      "applies": ["speed"],
       "exposes": ["none — this is the entry point"],
       "dependsOn": ["protocol", "persistence", "progression", "plots", "clearing"],
       "forbids": [
         "containing game logic; anything with a rule in it belongs in one of the modules above"
       ],
       "criteria": [
+        "a player's Humanoid.WalkSpeed equals Progression.walkSpeed(state) after spawning and after any successful purchase",
         "a player who leaves has their state saved before their plot is destroyed",
         "the clear tick survives an error in one iteration without stopping",
         "server shutdown saves every connected player outside Studio"

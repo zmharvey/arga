@@ -250,8 +250,11 @@ test('a brief with no process artifact reports no exclusions', async () => {
 /* ---------------------------------------------------------------- contract */
 
 test('contractSlice splits the contract into mine and everyone else', async () => {
+  // Architecture gained `playerState` after the first build trial found that eleven keys
+  // described every value and not one type, so two builders invented the state table
+  // differently an hour apart.
   const { mine, others } = contractSlice('tech/architecture');
-  assert.deepEqual(mine.map((k) => k.key).sort(), ['modules', 'runtime']);
+  assert.deepEqual(mine.map((k) => k.key).sort(), ['modules', 'playerState', 'runtime']);
   assert.ok(others.length > 0);
   assert.ok(!others.some((k) => k.owner === 'tech/architecture'));
 });

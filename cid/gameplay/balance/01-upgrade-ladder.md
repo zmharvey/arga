@@ -19,16 +19,30 @@ compounds (value) and the most expensive being the one that trivialises traversa
   skill's own text, not a sourced figure — the brief could not source the reference's cost
   curve across three source types.
 
+**Every axis is additive: `effect(level) = base + perLevel × level`.** Stated because it was
+not, and a builder handed `perLevel: 1.1` alone could not tell whether maxed Reach is 14.3 or
+11.79. Both readings satisfied every acceptance criterion that existed at the time.
+
+Additive rather than compounding because the ladder is short (6 to 10 levels) and the brief
+wants *"progress you can see"* rather than a curve that does nothing for four levels and then
+runs away. Compounding `speed` at 1.6 would reach a walk speed of 268, which is not a game
+about clearing a terrace.
+
+`value` is a multiplier and so starts at `1.0`; the other two start at the same numbers
+`movement` publishes, and the schema now fails the merge if those two copies ever disagree.
+
 ```manifest
 {
   "provides": "upgrades",
   "value": [
-    { "id": "value",  "label": "Value", "blurb": "Each patch pays more",             "costBase": 25, "costGrowth": 1.6,  "maxLevel": 10, "perLevel": 0.25 },
-    { "id": "radius", "label": "Reach", "blurb": "Clear a wider sweep as you walk",  "costBase": 40, "costGrowth": 1.75, "maxLevel": 8,  "perLevel": 1.1 },
-    { "id": "speed",  "label": "Pace",  "blurb": "Move faster between patches",      "costBase": 60, "costGrowth": 1.8,  "maxLevel": 6,  "perLevel": 1.6 }
+    { "id": "value",  "label": "Value", "blurb": "Each patch pays more",             "costBase": 25, "costGrowth": 1.6,  "maxLevel": 10, "perLevel": 0.25, "base": 1,   "mode": "additive" },
+    { "id": "radius", "label": "Reach", "blurb": "Clear a wider sweep as you walk",  "costBase": 40, "costGrowth": 1.75, "maxLevel": 8,  "perLevel": 1.1,  "base": 5.5, "mode": "additive" },
+    { "id": "speed",  "label": "Pace",  "blurb": "Move faster between patches",      "costBase": 60, "costGrowth": 1.8,  "maxLevel": 6,  "perLevel": 1.6,  "base": 16,  "mode": "additive" }
   ]
 }
 ```
+
+At full ladder: payout ×3.5, reach 14.3 studs, pace 25.6.
 
 ## Consequences for other work
 

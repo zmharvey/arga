@@ -269,6 +269,76 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 }
 ```
 
+#### `playerState` *(from tech/architecture/03-player-state.md)*
+
+```json
+{
+  "fields": [
+    {
+      "name": "currency",
+      "type": "number",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Never decremented except by tryBuy."
+    },
+    {
+      "name": "upgrades",
+      "type": "map<upgradeId,integer>",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Keyed by upgrades[].id. A missing key reads as level 0."
+    },
+    {
+      "name": "patches",
+      "type": "Patch[]",
+      "writtenBy": "plots",
+      "persisted": false,
+      "note": "Live world state. Rebuilt on join from clearedCount and found."
+    },
+    {
+      "name": "clearedCount",
+      "type": "integer",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Against area.patchCount. The only record of clearing that survives."
+    },
+    {
+      "name": "found",
+      "type": "map<relicName,boolean>",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Keyed by the strings in collection.sets[].relics."
+    },
+    {
+      "name": "areaComplete",
+      "type": "boolean",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Latch. Set once, never cleared."
+    },
+    {
+      "name": "player",
+      "type": "Player",
+      "writtenBy": "server-main",
+      "persisted": false,
+      "note": "The Roblox Player. Set at join, never reassigned."
+    }
+  ],
+  "types": {
+    "Patch": {
+      "position": "Vector3",
+      "tierIndex": "integer",
+      "relic": "string?",
+      "cleared": "boolean",
+      "instance": "BasePart?"
+    },
+    "Player": {
+      "__roblox": "Player"
+    }
+  }
+}
+```
+
 ### Done when
 
 1. a completed area occupies a single boolean in the payload, not a list
@@ -311,7 +381,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 25,
     "costGrowth": 1.6,
     "maxLevel": 10,
-    "perLevel": 0.25
+    "perLevel": 0.25,
+    "base": 1,
+    "mode": "additive"
   },
   {
     "id": "radius",
@@ -320,7 +392,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 40,
     "costGrowth": 1.75,
     "maxLevel": 8,
-    "perLevel": 1.1
+    "perLevel": 1.1,
+    "base": 5.5,
+    "mode": "additive"
   },
   {
     "id": "speed",
@@ -329,7 +403,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 60,
     "costGrowth": 1.8,
     "maxLevel": 6,
-    "perLevel": 1.6
+    "perLevel": 1.6,
+    "base": 16,
+    "mode": "additive"
   }
 ]
 ```
@@ -340,6 +416,76 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 {
   "baseWalkSpeed": 16,
   "baseClearRadius": 5.5
+}
+```
+
+#### `playerState` *(from tech/architecture/03-player-state.md)*
+
+```json
+{
+  "fields": [
+    {
+      "name": "currency",
+      "type": "number",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Never decremented except by tryBuy."
+    },
+    {
+      "name": "upgrades",
+      "type": "map<upgradeId,integer>",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Keyed by upgrades[].id. A missing key reads as level 0."
+    },
+    {
+      "name": "patches",
+      "type": "Patch[]",
+      "writtenBy": "plots",
+      "persisted": false,
+      "note": "Live world state. Rebuilt on join from clearedCount and found."
+    },
+    {
+      "name": "clearedCount",
+      "type": "integer",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Against area.patchCount. The only record of clearing that survives."
+    },
+    {
+      "name": "found",
+      "type": "map<relicName,boolean>",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Keyed by the strings in collection.sets[].relics."
+    },
+    {
+      "name": "areaComplete",
+      "type": "boolean",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Latch. Set once, never cleared."
+    },
+    {
+      "name": "player",
+      "type": "Player",
+      "writtenBy": "server-main",
+      "persisted": false,
+      "note": "The Roblox Player. Set at join, never reassigned."
+    }
+  ],
+  "types": {
+    "Patch": {
+      "position": "Vector3",
+      "tierIndex": "integer",
+      "relic": "string?",
+      "cleared": "boolean",
+      "instance": "BasePart?"
+    },
+    "Player": {
+      "__roblox": "Player"
+    }
+  }
 }
 ```
 
@@ -446,7 +592,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 25,
     "costGrowth": 1.6,
     "maxLevel": 10,
-    "perLevel": 0.25
+    "perLevel": 0.25,
+    "base": 1,
+    "mode": "additive"
   },
   {
     "id": "radius",
@@ -455,7 +603,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 40,
     "costGrowth": 1.75,
     "maxLevel": 8,
-    "perLevel": 1.1
+    "perLevel": 1.1,
+    "base": 5.5,
+    "mode": "additive"
   },
   {
     "id": "speed",
@@ -464,7 +614,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 60,
     "costGrowth": 1.8,
     "maxLevel": 6,
-    "perLevel": 1.6
+    "perLevel": 1.6,
+    "base": 16,
+    "mode": "additive"
   }
 ]
 ```
@@ -516,7 +668,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 25,
     "costGrowth": 1.6,
     "maxLevel": 10,
-    "perLevel": 0.25
+    "perLevel": 0.25,
+    "base": 1,
+    "mode": "additive"
   },
   {
     "id": "radius",
@@ -525,7 +679,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 40,
     "costGrowth": 1.75,
     "maxLevel": 8,
-    "perLevel": 1.1
+    "perLevel": 1.1,
+    "base": 5.5,
+    "mode": "additive"
   },
   {
     "id": "speed",
@@ -534,7 +690,9 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "costBase": 60,
     "costGrowth": 1.8,
     "maxLevel": 6,
-    "perLevel": 1.6
+    "perLevel": 1.6,
+    "base": 16,
+    "mode": "additive"
   }
 ]
 ```
@@ -687,6 +845,76 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 ]
 ```
 
+#### `playerState` *(from tech/architecture/03-player-state.md)*
+
+```json
+{
+  "fields": [
+    {
+      "name": "currency",
+      "type": "number",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Never decremented except by tryBuy."
+    },
+    {
+      "name": "upgrades",
+      "type": "map<upgradeId,integer>",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Keyed by upgrades[].id. A missing key reads as level 0."
+    },
+    {
+      "name": "patches",
+      "type": "Patch[]",
+      "writtenBy": "plots",
+      "persisted": false,
+      "note": "Live world state. Rebuilt on join from clearedCount and found."
+    },
+    {
+      "name": "clearedCount",
+      "type": "integer",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Against area.patchCount. The only record of clearing that survives."
+    },
+    {
+      "name": "found",
+      "type": "map<relicName,boolean>",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Keyed by the strings in collection.sets[].relics."
+    },
+    {
+      "name": "areaComplete",
+      "type": "boolean",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Latch. Set once, never cleared."
+    },
+    {
+      "name": "player",
+      "type": "Player",
+      "writtenBy": "server-main",
+      "persisted": false,
+      "note": "The Roblox Player. Set at join, never reassigned."
+    }
+  ],
+  "types": {
+    "Patch": {
+      "position": "Vector3",
+      "tierIndex": "integer",
+      "relic": "string?",
+      "cleared": "boolean",
+      "instance": "BasePart?"
+    },
+    "Player": {
+      "__roblox": "Player"
+    }
+  }
+}
+```
+
 ### Done when
 
 1. a rejoining player's already-cleared patches do not respawn
@@ -790,6 +1018,76 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 }
 ```
 
+#### `playerState` *(from tech/architecture/03-player-state.md)*
+
+```json
+{
+  "fields": [
+    {
+      "name": "currency",
+      "type": "number",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Never decremented except by tryBuy."
+    },
+    {
+      "name": "upgrades",
+      "type": "map<upgradeId,integer>",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Keyed by upgrades[].id. A missing key reads as level 0."
+    },
+    {
+      "name": "patches",
+      "type": "Patch[]",
+      "writtenBy": "plots",
+      "persisted": false,
+      "note": "Live world state. Rebuilt on join from clearedCount and found."
+    },
+    {
+      "name": "clearedCount",
+      "type": "integer",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Against area.patchCount. The only record of clearing that survives."
+    },
+    {
+      "name": "found",
+      "type": "map<relicName,boolean>",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Keyed by the strings in collection.sets[].relics."
+    },
+    {
+      "name": "areaComplete",
+      "type": "boolean",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Latch. Set once, never cleared."
+    },
+    {
+      "name": "player",
+      "type": "Player",
+      "writtenBy": "server-main",
+      "persisted": false,
+      "note": "The Roblox Player. Set at join, never reassigned."
+    }
+  ],
+  "types": {
+    "Patch": {
+      "position": "Vector3",
+      "tierIndex": "integer",
+      "relic": "string?",
+      "cleared": "boolean",
+      "instance": "BasePart?"
+    },
+    "Player": {
+      "__roblox": "Player"
+    }
+  }
+}
+```
+
 ### Done when
 
 1. no RemoteEvent exists that a client can fire to claim a cleared patch
@@ -830,7 +1128,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 
 **Write to:** `game/src/server/init.server.luau`
 
-**Owns:** Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown.
+**Owns:** Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.
 
 **Depends on:** `protocol`, `persistence`, `progression`, `plots`, `clearing`
 
@@ -854,11 +1152,122 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 }
 ```
 
+#### `playerState` *(from tech/architecture/03-player-state.md)*
+
+```json
+{
+  "fields": [
+    {
+      "name": "currency",
+      "type": "number",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Never decremented except by tryBuy."
+    },
+    {
+      "name": "upgrades",
+      "type": "map<upgradeId,integer>",
+      "writtenBy": "progression",
+      "persisted": true,
+      "note": "Keyed by upgrades[].id. A missing key reads as level 0."
+    },
+    {
+      "name": "patches",
+      "type": "Patch[]",
+      "writtenBy": "plots",
+      "persisted": false,
+      "note": "Live world state. Rebuilt on join from clearedCount and found."
+    },
+    {
+      "name": "clearedCount",
+      "type": "integer",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Against area.patchCount. The only record of clearing that survives."
+    },
+    {
+      "name": "found",
+      "type": "map<relicName,boolean>",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Keyed by the strings in collection.sets[].relics."
+    },
+    {
+      "name": "areaComplete",
+      "type": "boolean",
+      "writtenBy": "clearing",
+      "persisted": true,
+      "note": "Latch. Set once, never cleared."
+    },
+    {
+      "name": "player",
+      "type": "Player",
+      "writtenBy": "server-main",
+      "persisted": false,
+      "note": "The Roblox Player. Set at join, never reassigned."
+    }
+  ],
+  "types": {
+    "Patch": {
+      "position": "Vector3",
+      "tierIndex": "integer",
+      "relic": "string?",
+      "cleared": "boolean",
+      "instance": "BasePart?"
+    },
+    "Player": {
+      "__roblox": "Player"
+    }
+  }
+}
+```
+
+#### `upgrades` *(from gameplay/balance/01-upgrade-ladder.md)*
+
+```json
+[
+  {
+    "id": "value",
+    "label": "Value",
+    "blurb": "Each patch pays more",
+    "costBase": 25,
+    "costGrowth": 1.6,
+    "maxLevel": 10,
+    "perLevel": 0.25,
+    "base": 1,
+    "mode": "additive"
+  },
+  {
+    "id": "radius",
+    "label": "Reach",
+    "blurb": "Clear a wider sweep as you walk",
+    "costBase": 40,
+    "costGrowth": 1.75,
+    "maxLevel": 8,
+    "perLevel": 1.1,
+    "base": 5.5,
+    "mode": "additive"
+  },
+  {
+    "id": "speed",
+    "label": "Pace",
+    "blurb": "Move faster between patches",
+    "costBase": 60,
+    "costGrowth": 1.8,
+    "maxLevel": 6,
+    "perLevel": 1.6,
+    "base": 16,
+    "mode": "additive"
+  }
+]
+```
+
 ### Done when
 
-1. a player who leaves has their state saved before their plot is destroyed
-2. the clear tick survives an error in one iteration without stopping
-3. server shutdown saves every connected player outside Studio
+1. a player's Humanoid.WalkSpeed equals Progression.walkSpeed(state) after spawning and after any successful purchase
+2. a player who leaves has their state saved before their plot is destroyed
+3. the clear tick survives an error in one iteration without stopping
+4. server shutdown saves every connected player outside Studio
 
 ---
 

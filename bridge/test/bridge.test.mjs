@@ -28,9 +28,16 @@ const GOOD = {
     { name: 'Heartvine', shape: 'Wedge', rgb: [44, 86, 52], value: 20, weight: 6, height: 3.4 },
   ],
   upgrades: [
-    { id: 'value', label: 'VALUE', blurb: 'more', costBase: 25, costGrowth: 1.6, maxLevel: 10, perLevel: 0.25 },
+    { id: 'value', label: 'Value', blurb: 'more', costBase: 25, costGrowth: 1.6, maxLevel: 10, perLevel: 0.25, base: 1, mode: 'additive' },
   ],
   movement: { baseWalkSpeed: 16, baseClearRadius: 5.5 },
+  playerState: {
+    fields: [
+      { name: 'currency', type: 'number', writtenBy: 'progression', persisted: true },
+      { name: 'upgrades', type: 'map<upgradeId,integer>', writtenBy: 'progression', persisted: true },
+    ],
+    types: {},
+  },
   patch: { footprint: 3, collides: false, material: 'Grass' },
   area: { id: 'east-terrace', label: 'EAST TERRACE', originXZ: [0, 0], size: 120, patchCount: 140, minSpacing: 6 },
   collection: {
@@ -258,7 +265,15 @@ const MODULES = [
   { id: 'layout', path: 'b.luau', side: 'shared', responsibility: 'layout', reads: ['area'], exposes: ['build()'], dependsOn: ['config'], criteria: ['x'] },
   { id: 'main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: [], exposes: ['valueMultiplier(s)'], dependsOn: ['layout'], criteria: ['x'] },
 ];
-const withModules = (mods) => ({ ...clone(), modules: mods });
+// These fixtures build arbitrary module sets to exercise the module rules, so they drop
+// playerState: its fields name real modules by id, and a two-module fixture would fail the
+// writtenBy check for reasons that have nothing to do with what is under test. The
+// writtenBy link has its own tests below.
+const withModules = (mods) => {
+  const m = { ...clone(), modules: mods };
+  delete m.playerState;
+  return m;
+};
 
 test('a module reading a key outside the contract is rejected', () => {
   const m = withModules([{ ...MODULES[0], reads: ['vibes'] }]);
@@ -473,4 +488,131 @@ test('the check stays quiet when there is no module list to check against', () =
   const m = clone();
   delete m.modules;
   assert.ok(!validateManifest(m).problems.some((p) => p.includes('no module exposes')));
+});
+
+/* ------------------------------------ the effect formula and the state shape */
+
+// Both of these are the second half of the first build trial. The orphaned-upgrade check
+// above caught a value nobody read; these two catch a value nobody could interpret and a
+// table nobody owned. All three were invisible to checks that look at one key at a time.
+
+test('an upgrade with no mode is rejected — perLevel alone is not an effect', () => {
+  // Handed `perLevel: 1.1` and nothing else, one builder computed maxed Reach as 14.3 and
+  // the other as 11.79. Both satisfied every criterion that existed.
+  const m = clone();
+  delete m.upgrades[0].mode;
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('mode is required')));
+});
+
+test('a compounding upgrade whose step is at or below 1 is rejected', () => {
+  const m = clone();
+  m.upgrades[0].mode = 'compounding';
+  m.upgrades[0].perLevel = 0.25; // a shrinking multiplier the player pays for
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('worthless or harmful')));
+});
+
+test('an upgrade base that disagrees with movement is rejected', () => {
+  const m = clone();
+  m.upgrades.push({ id: 'radius', label: 'Reach', blurb: 'b', costBase: 40, costGrowth: 1.75, maxLevel: 8, perLevel: 1.1, base: 9, mode: 'additive' });
+  const p = validateManifest(m).problems.find((x) => x.includes('stale copy'));
+  assert.ok(p, 'a second source of truth for the starting radius must be caught');
+  assert.match(p, /5\.5/);
+});
+
+test('a playerState field written by a module that does not exist is rejected', () => {
+  const m = clone();
+  m.playerState.fields[0].writtenBy = 'ghost';
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('"ghost", which is not a module')));
+});
+
+test('two playerState fields with one name is rejected', () => {
+  const m = clone();
+  m.playerState.fields.push({ ...m.playerState.fields[0] });
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('both called "currency"')));
+});
+
+test('a playerState field that does not say whether it survives a rejoin is rejected', () => {
+  // Unstated, every module guesses, and the guesses only disagree in production.
+  const m = clone();
+  delete m.playerState.fields[0].persisted;
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('whether it is persisted')));
+});
+
+test('a field typed with a record the state shape never defines is rejected', () => {
+  // The exact gap: `plots.spawn` wrote patches onto the state and no sheet said what a
+  // patch was, so a builder invented every field name in the record.
+  const m = clone();
+  m.playerState.fields.push({ name: 'patches', type: 'Patch[]', writtenBy: 'progression', persisted: false });
+  const p = validateManifest(m).problems.find((x) => x.includes('not defined in playerState.types'));
+  assert.ok(p, 'an undefined record type must be caught');
+  assert.match(p, /Patch/);
+});
+
+test('a ladder with nowhere to record a purchase is rejected', () => {
+  const m = clone();
+  m.playerState.fields = m.playerState.fields.filter((f) => !/upgrade/i.test(f.name));
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('nowhere to be recorded')));
+});
+
+test('the emitted config carries one effect formula, not one per module', () => {
+  const luau = emitGameConfig(clone(), {});
+  assert.match(luau, /function GameConfig\.upgradeEffect/);
+  assert.match(luau, /mode == "compounding"/);
+  assert.match(luau, /base \+ upgrade\.perLevel \* level/);
+  // The fields must actually reach the file. A key that validates but is never emitted is
+  // a key nothing downstream can read.
+  assert.match(luau, /base = 1,/);
+  assert.match(luau, /mode = "additive",/);
+});
+
+/* ------------------------------------------- computed is not the same as applied */
+
+// The second build trial, run against a contract the first trial had already fixed.
+// `Progression.walkSpeed(state)` existed, so `orphanedUpgrades` passed. Nothing wrote it
+// to a Humanoid: both modules that touch the character declined it in their reports, and
+// the build order named no third. Pace was purchasable with no effect.
+//
+// Computing a value satisfies the earlier check. Applying it is a separate claim.
+
+const APPLIED = () => {
+  const m = clone();
+  m.modules[1].applies = ['value'];
+  return m;
+};
+
+test('an upgrade nothing applies is rejected once any module declares applies', () => {
+  const m = APPLIED();
+  m.upgrades.push({ id: 'speed', label: 'Pace', blurb: 'b', costBase: 60, costGrowth: 1.8, maxLevel: 6, perLevel: 1.6, base: 16, mode: 'additive' });
+  const p = validateManifest(m).problems.find((x) => x.includes('"speed"') && x.includes('applies'));
+  assert.ok(p, 'a computed-but-unapplied upgrade must be caught');
+  assert.match(p, /see nothing change/);
+});
+
+test('two modules applying one upgrade is rejected as a race', () => {
+  const m = APPLIED();
+  m.modules[0].applies = ['value'];
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('applied by both')));
+});
+
+test('a module applying something that is not an upgrade is rejected', () => {
+  const m = APPLIED();
+  m.modules[1].applies = ['value', 'telekinesis'];
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('"telekinesis", which is not an upgrade')));
+});
+
+test('a manifest predating the applies field is not spammed', () => {
+  // Every module omitting `applies` means the field is not in use yet, which is a
+  // migration state rather than eleven defects a reader cannot act on.
+  const m = clone();
+  for (const mod of m.modules) delete mod.applies;
+  assert.ok(!validateManifest(m).problems.some((p) => p.includes('declares it in "applies"')));
+});
+
+test('the shipped module plan applies every upgrade exactly once', async () => {
+  // The regression guard for the real thing, not a fixture.
+  const { mergeSheets: merge } = await import('../merge.mjs');
+  const { manifest, problems } = await merge('cid');
+  assert.deepEqual(problems, []);
+  const applied = manifest.modules.flatMap((mod) => mod.applies ?? []).sort();
+  assert.deepEqual(applied, ['radius', 'speed', 'value']);
 });
