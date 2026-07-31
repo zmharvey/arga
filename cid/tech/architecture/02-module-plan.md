@@ -74,7 +74,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/shared/Protocol.luau",
       "side": "shared",
       "responsibility": "Name the remotes and define the shape of the state snapshot both sides agree on.",
-      "reads": ["collection", "upgrades"],
+      "reads": ["collection", "upgrades", "currency"],
       "exposes": ["REMOTES table", "snapshotShape()"],
       "dependsOn": ["config"],
       "forbids": [
@@ -186,7 +186,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/client/HudBinding.luau",
       "side": "client",
       "responsibility": "Find the named nodes in the ui-forge HUD and write live state into them.",
-      "reads": ["upgrades"],
+      "reads": ["upgrades", "currency"],
       "exposes": ["bind(root, gui): (snapshot) -> ()"],
       "dependsOn": ["protocol"],
       "forbids": [

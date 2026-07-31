@@ -118,8 +118,14 @@ statement of what that sheet must decide.
 The index is the unit verification checks for coverage, so it has to be honest about what it
 found missing in the brief.
 
-**N is the lead's call.** Four small sheets beat one sheet with four sections, because a
-subagent writing one file cannot smear a weak decision across a document.
+**N is anchored to the build contract, not to the lead's taste.** Run
+`npm run bridge -- --contract`: one sheet per contract key the domain owns, plus one per
+genuine non-value decision, and nothing else. A domain that owns no keys says so in its
+index, because that is a finding rather than an oversight.
+
+*This line used to read "four small sheets beat one sheet with four sections." Given that
+and no anchor, seven leads planned 51 sheets for wave 1 of which zero supplied a value a
+build could read. Re-planned against the contract, the first three came back at 3, 5 and 4.*
 
 ### Theme & Narrative Verification
 `checks` in the graph. The two with teeth:

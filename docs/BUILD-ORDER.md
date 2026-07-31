@@ -89,6 +89,8 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 
 ```json
 {
+  "className": "Find",
+  "classPlural": "Finds",
   "relicsPerArea": 6,
   "sets": [
     {
@@ -370,6 +372,8 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 
 ```json
 {
+  "className": "Find",
+  "classPlural": "Finds",
   "relicsPerArea": 6,
   "sets": [
     {
@@ -462,6 +466,16 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 ]
 ```
 
+#### `currency` *(from gameplay/systems/02-the-currency.md)*
+
+```json
+{
+  "name": "Shard",
+  "plural": "Shards",
+  "icon": "shard"
+}
+```
+
 ### Done when
 
 1. the remote list contains no clearing or currency-award channel
@@ -520,6 +534,16 @@ UI modules are absent on purpose: screens come from `ui-forge` via
     "perLevel": 1.6
   }
 ]
+```
+
+#### `currency` *(from gameplay/systems/02-the-currency.md)*
+
+```json
+{
+  "name": "Shard",
+  "plural": "Shards",
+  "icon": "shard"
+}
 ```
 
 ### Done when
@@ -841,4 +865,4 @@ Every contract key below is read by at least one module, or it is listed as unre
 unread key is either a decision nothing needs — worth questioning — or a module that has
 not been declared yet.
 
-- every supplied key is read by a module
+- **vocabulary** is supplied but no module reads it

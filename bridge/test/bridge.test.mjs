@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { mergeSheets } from '../merge.mjs';
-import { validateManifest, SCHEMA, contract } from '../schema.mjs';
+import { validateManifest, SCHEMA, contract, playerFacingStrings } from '../schema.mjs';
 import { emitGameConfig } from '../emit-config.mjs';
 import { emitBuildOrder } from '../emit-buildorder.mjs';
 
@@ -34,11 +34,19 @@ const GOOD = {
   patch: { footprint: 3, collides: false, material: 'Grass' },
   area: { id: 'east-terrace', label: 'EAST TERRACE', originXZ: [0, 0], size: 120, patchCount: 140, minSpacing: 6 },
   collection: {
+    className: 'Find',
+    classPlural: 'Finds',
     relicsPerArea: 6,
     sets: [{ id: 'terrace', label: 'Terrace', depth: 1, relics: ['A', 'B', 'C', 'D', 'E', 'F'] }],
   },
   onboarding: { guaranteedFirstRelic: true },
   runtime: { clearTickRate: 0.12, saveIntervalSeconds: 45, dataStoreName: 'ArgaRuin_v1' },
+  currency: { name: 'Shard', plural: 'Shards', icon: 'shard' },
+  vocabulary: {
+    maxLabelChars: 14,
+    register: 'Plain concrete nouns.',
+    bannedWords: [{ word: 'relic', reason: 'occupied by two games in this family for a rolled multiplier' }],
+  },
   modules: [
     { id: 'config', path: 'game/src/shared/GameConfig.luau', side: 'shared', responsibility: 'values', reads: [], exposes: ['GameConfig'], dependsOn: [], criteria: ['regenerates with no diff'] },
   ],
@@ -183,6 +191,59 @@ test('a non-kebab-case id is rejected, so emitted Luau keys stay predictable', (
   const m = clone();
   m.area.id = 'East Terrace';
   assert.ok(validateManifest(m).problems.some((p) => p.includes('kebab-case')));
+});
+
+/* -------------------------------------------- theme's constraints, enforced */
+
+test('a banned word in any player-facing string fails the merge, with its reason', () => {
+  // The check that gives Theme & Narrative teeth. Every Theme domain owns no value key,
+  // correctly — a register is not a value. Without this their work reached the build as
+  // prose a builder could simply not honour.
+  const m = clone();
+  m.collection.className = 'Relic';
+  const problems = validateManifest(m).problems;
+  const hit = problems.find((p) => p.includes('banned word'));
+  assert.ok(hit, problems.join(' | '));
+  assert.match(hit, /collection\.className/);
+  assert.match(hit, /rolled multiplier/, 'the reason must travel with the rejection');
+});
+
+test('the ban is case-insensitive and matches whole words only', () => {
+  const upper = clone();
+  upper.tiers[0].name = 'RELIC';
+  assert.ok(validateManifest(upper).problems.some((p) => p.includes('banned word')));
+
+  const substring = clone();
+  substring.tiers[0].name = 'Relicense';  // contains "relic" but is not the word
+  assert.deepEqual(validateManifest(substring).problems, []);
+});
+
+test('a label over the character limit fails, but a blurb is exempt', () => {
+  const label = clone();
+  label.upgrades[0].label = 'EXTRAORDINARILY LONG';
+  assert.ok(validateManifest(label).problems.some((p) => p.includes('character label limit')));
+
+  const blurb = clone();
+  blurb.upgrades[0].blurb = 'A deliberately long sentence of prose that runs well past fourteen characters.';
+  assert.deepEqual(validateManifest(blurb).problems, []);
+});
+
+test('every player-facing string is enumerated, so none escapes the ban list', () => {
+  const paths = playerFacingStrings(GOOD).map((s) => s.path);
+  for (const expected of [
+    'area.label', 'currency.name', 'currency.plural',
+    'collection.className', 'collection.classPlural',
+    'tiers[0].name', 'upgrades[0].label', 'upgrades[0].blurb',
+    'collection.sets[0].label', 'collection.sets[0].relics[0]',
+  ]) {
+    assert.ok(paths.includes(expected), `${expected} must be checkable`);
+  }
+});
+
+test('a ban entry with no reason is rejected — a ban nobody can argue with is useless', () => {
+  const m = clone();
+  m.vocabulary.bannedWords = [{ word: 'relic' }];
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('need a word and a reason')));
 });
 
 /* ----------------------------------------------------------------- modules */

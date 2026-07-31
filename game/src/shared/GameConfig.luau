@@ -63,6 +63,17 @@ GameConfig.Upgrades = {
 GameConfig.BaseClearRadius = 5.5
 GameConfig.BaseWalkSpeed = 16
 
+-- The currency. From gameplay/systems/02-the-currency.md.
+--
+-- This existed as the bare string "SHARDS" in a HUD brief and in the shipped screen
+-- before any sheet owned it, which is how an unowned value hides: the merger cannot see
+-- a literal nobody declared. Every display of the currency now derives from here.
+GameConfig.Currency = {
+	name = "Shard",
+	plural = "Shards",
+	icon = "shard",
+}
+
 -- One patch's physical footprint. From art/objects/01-patch-footprint.md.
 GameConfig.Patch = {
 	footprint = 3,
@@ -95,6 +106,10 @@ GameConfig.RelicSets = {
 }
 
 GameConfig.RelicsPerArea = 6
+
+-- The player-facing word for the class. Renamed once already, by a ban list that the
+-- merger enforces: the previous noun was occupied inside this game's own genre family.
+GameConfig.FindNoun = { singular = "Find", plural = "Finds" }
 
 -- From gameplay/onboarding/01-first-find.md. The first find is placed, not rolled, so the promise
 -- that the first patch has something under it cannot be broken by the shuffle.

@@ -109,6 +109,10 @@ ${rows}
 }
 
 GameConfig.RelicsPerArea = ${num(collection.relicsPerArea)}
+
+-- The player-facing word for the class. Renamed once already, by a ban list that the
+-- merger enforces: the previous noun was occupied inside this game's own genre family.
+GameConfig.FindNoun = { singular = ${str(collection.className)}, plural = ${str(collection.classPlural)} }
 `;
 }
 
@@ -133,6 +137,20 @@ export function emitGameConfig(manifest, provenance = {}) {
 -- Movement, before upgrades. From ${src('movement')}.
 GameConfig.BaseClearRadius = ${num(m.baseClearRadius)}
 GameConfig.BaseWalkSpeed = ${num(m.baseWalkSpeed)}
+`);
+
+  const cur = manifest.currency;
+  parts.push(`
+-- The currency. From ${src('currency')}.
+--
+-- This existed as the bare string "SHARDS" in a HUD brief and in the shipped screen
+-- before any sheet owned it, which is how an unowned value hides: the merger cannot see
+-- a literal nobody declared. Every display of the currency now derives from here.
+GameConfig.Currency = {
+	name = ${str(cur.name)},
+	plural = ${str(cur.plural)},
+	icon = ${str(cur.icon)},
+}
 `);
 
   parts.push(`

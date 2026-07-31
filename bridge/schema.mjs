@@ -113,6 +113,44 @@ export const SCHEMA = {
     },
   },
 
+  vocabulary: {
+    doc: 'Naming rules every player-facing string in this contract is checked against.',
+    owner: 'theme/vocabulary',
+    shape: {
+      bannedWords: 'array',
+      maxLabelChars: 'integer>0',
+      register: 'string',
+    },
+    check(v) {
+      const problems = [];
+      for (const b of v.bannedWords) {
+        if (typeof b !== 'object' || !b.word || !b.reason) {
+          problems.push(`vocabulary.bannedWords entries need a word and a reason; got ${JSON.stringify(b)}`);
+        }
+      }
+      return problems;
+    },
+  },
+
+  currency: {
+    doc: 'What the single currency is called, and how it reads on screen.',
+    owner: 'gameplay/systems',
+    shape: {
+      name: 'string',
+      plural: 'string',
+      icon: 'slug',
+    },
+    check(c) {
+      const problems = [];
+      // A HUD readout has room for roughly eight characters before it wraps or
+      // truncates, and this label sits in a corner cluster next to a number.
+      if (c.plural.length > 10) {
+        problems.push(`currency.plural "${c.plural}" is ${c.plural.length} characters; a HUD readout label has room for about 8`);
+      }
+      return problems;
+    },
+  },
+
   movement: {
     doc: 'What the player can reach and how fast, before any upgrade.',
     owner: 'gameplay/mechanics',
@@ -136,6 +174,8 @@ export const SCHEMA = {
     doc: 'The relics, their sets, and how many are buried per area.',
     owner: 'gameplay/meta',
     shape: {
+      className: 'string',
+      classPlural: 'string',
       relicsPerArea: 'integer>0',
       sets: 'array',
     },
@@ -346,7 +386,67 @@ export function validateManifest(manifest) {
     }
   }
 
+  problems.push(...crossCuttingProblems(manifest));
   return { problems, missing };
+}
+
+/**
+ * Every string a player can read, with where it lives.
+ *
+ * Kept in one place because it is the answer to a question four separate CID leads asked
+ * independently: "which of my constraints can actually be enforced?" A naming rule is
+ * only real if something checks it, and this is the list to check against.
+ */
+export function playerFacingStrings(manifest) {
+  const out = [];
+  const add = (path, value) => { if (typeof value === 'string') out.push({ path, value }); };
+
+  add('area.label', manifest.area?.label);
+  add('currency.name', manifest.currency?.name);
+  add('collection.className', manifest.collection?.className);
+  add('collection.classPlural', manifest.collection?.classPlural);
+  add('currency.plural', manifest.currency?.plural);
+  (manifest.tiers ?? []).forEach((t, i) => add(`tiers[${i}].name`, t.name));
+  (manifest.upgrades ?? []).forEach((u, i) => {
+    add(`upgrades[${i}].label`, u.label);
+    add(`upgrades[${i}].blurb`, u.blurb);
+  });
+  (manifest.collection?.sets ?? []).forEach((s, i) => {
+    add(`collection.sets[${i}].label`, s.label);
+    (s.relics ?? []).forEach((r, j) => add(`collection.sets[${i}].relics[${j}]`, r));
+  });
+  return out;
+}
+
+/**
+ * Invariants that span keys, so they cannot live on any single one.
+ *
+ * This is what makes Theme & Narrative's output enforceable. Every Theme domain reported
+ * owning no contract key, correctly — a register or a prohibition is not a value. But that
+ * left their work reaching the build as prose a builder could simply not honour, which is
+ * the exact failure this seam exists to remove. A banned word is the part of a naming rule
+ * that a machine can hold, so it is held here.
+ */
+function crossCuttingProblems(manifest) {
+  const problems = [];
+  const vocab = manifest.vocabulary;
+  if (!vocab || !Array.isArray(vocab.bannedWords)) return problems;
+
+  const strings = playerFacingStrings(manifest);
+  for (const { path, value } of strings) {
+    for (const banned of vocab.bannedWords) {
+      if (!banned?.word) continue;
+      const re = new RegExp(`\\b${String(banned.word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+      if (re.test(value)) {
+        problems.push(`${path} = ${JSON.stringify(value)} uses the banned word "${banned.word}" — ${banned.reason}`);
+      }
+    }
+    // Blurbs are prose and exempt; labels are furniture and must fit.
+    if (!path.endsWith('.blurb') && value.length > vocab.maxLabelChars) {
+      problems.push(`${path} is ${value.length} characters, over the ${vocab.maxLabelChars}-character label limit`);
+    }
+  }
+  return problems;
 }
 
 /** Every key a build needs, with who is meant to supply it. For coverage reports. */
