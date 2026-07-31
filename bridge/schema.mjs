@@ -175,6 +175,74 @@ export const SCHEMA = {
     },
   },
 
+  modules: {
+    doc: 'The build plan: which modules exist, what each owns, and what it may not do.',
+    owner: 'tech/architecture',
+    minItems: 1,
+    array: {
+      id: 'slug',
+      path: 'string',
+      side: 'enum:server,client,shared',
+      responsibility: 'string',
+      reads: 'array',
+      exposes: 'array',
+      dependsOn: 'array',
+      criteria: 'array',
+    },
+    check(modules) {
+      const problems = [];
+      const byId = new Map(modules.map((m) => [m.id, m]));
+      const paths = new Set();
+
+      for (const m of modules) {
+        if (paths.has(m.path)) problems.push(`two modules claim the path ${m.path}`);
+        paths.add(m.path);
+
+        // A module reading a key nobody supplies is a build that stops halfway.
+        for (const key of m.reads) {
+          if (!(key in SCHEMA) || key === 'modules') {
+            problems.push(`module "${m.id}" reads "${key}", which is not a contract key`);
+          }
+        }
+        for (const dep of m.dependsOn) {
+          if (!byId.has(dep)) problems.push(`module "${m.id}" depends on "${dep}", which does not exist`);
+        }
+        if (m.criteria.length === 0) {
+          problems.push(`module "${m.id}" has no acceptance criteria; a builder cannot prove it finished`);
+        }
+        if (m.exposes.length === 0 && m.side !== 'client') {
+          problems.push(`module "${m.id}" exposes nothing and is not a client entry point; either it is dead or its interface is unstated`);
+        }
+        // Sides can only depend inward: client and server may read shared, never
+        // each other. Getting this wrong produces a require that cannot resolve at
+        // runtime, which is a class of bug worth refusing on paper.
+        for (const dep of m.dependsOn) {
+          const d = byId.get(dep);
+          if (!d) continue;
+          if (m.side !== d.side && d.side !== 'shared') {
+            problems.push(`module "${m.id}" (${m.side}) depends on "${dep}" (${d.side}); only shared may be depended on across sides`);
+          }
+        }
+      }
+
+      // A cycle means there is no order a builder can work in.
+      const state = new Map();
+      const visit = (id, trail) => {
+        if (state.get(id) === 'done') return;
+        if (state.get(id) === 'open') {
+          problems.push(`dependency cycle: ${[...trail, id].join(' -> ')}`);
+          return;
+        }
+        state.set(id, 'open');
+        for (const dep of byId.get(id)?.dependsOn ?? []) visit(dep, [...trail, id]);
+        state.set(id, 'done');
+      };
+      for (const m of modules) visit(m.id, []);
+
+      return problems;
+    },
+  },
+
   runtime: {
     doc: 'Server cadences and storage identity. Technical, not creative.',
     owner: 'tech/architecture',

@@ -483,6 +483,13 @@ build stage has no field for. All five were cheap here and expensive downstream.
 **Close** with four things: what you now know that they never told you; what you
 assumed and they should check; what is still open for them; and what you deliberately
 left open as creative work, named by kind.
+
+**List the assumptions inline in the chat, not as a pointer to `OPEN.md §5`.** The
+inventory says an item counts as accounted for when "you assumed it, tagged the assumption,
+**and the developer has seen the tag**." A file they have not opened is a tag they have not
+seen, and every assumption you leave unseen is one you have quietly made on their behalf
+while the document records it as covered. Paste the list. It is the last chance for them to
+catch you putting words in their mouth, and it costs four lines.
 </process>
 
 <question_craft>
@@ -733,7 +740,25 @@ inflates the first two but does not cause them:
 </failure_modes>
 
 <seams>
-Two downstream contracts are genuinely constrained. Everything else is prose.
+Three downstream contracts are genuinely constrained. Everything else is prose.
+
+**The build contract.** Run `npm run bridge -- --contract`. It prints every value a build
+eventually needs and which downstream domain owns supplying it — patch counts, tier
+weights, cost curves, tick rates, module boundaries. **This is not your list to fill in**
+and you must not try: those are the creative decisions the departments exist to make.
+
+Read it for one reason: **it tells you which of your items become numbers later.** When you
+settle "three upgrade axes" or "24 relics in 4 sets of 6" or "a device floor of a 3 GB
+phone", you are setting the frame a value gets chosen inside. When you leave one of those
+vague, nobody downstream knows whether they are choosing freely or violating a decision.
+
+So: where an inventory item is upstream of a build value, **say what the value must satisfy
+even though you are not choosing it.** "Cost curve: unspecified, but one area's income must
+buy visible progress" is a usable constraint. "There is an upgrade system" is not.
+
+The list is empirical — every key on it is something a builder had to invent because no
+sheet supplied it. It will grow as more of the game gets built, so read it each run rather
+than remembering it.
 
 **`ui-forge` vibe.** Art direction must name exactly one of `cartoon-vibrant`,
 `clean-modern`, `dark-tech`, `horror-grim`, `fantasy-ornate`, `premium-gloss`,

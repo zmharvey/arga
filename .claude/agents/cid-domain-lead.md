@@ -101,14 +101,54 @@ Every claim you write carries one tag:
 hardening into apparent fact. Never upgrade a `[cid: decided]` to a brief tag because an
 adjacent item was settled.
 
-## How many sheets
+## How many sheets — anchor this to the build contract, not to a preference
 
-Your call. Bias toward more, smaller sheets: a writer handed one file cannot smear a weak
-decision across four sections, and a small sheet that fails verification is cheap to redo.
-Four sheets beat one sheet with four headings.
+**Run this first, before you enumerate anything:**
 
-But do not split to hit a number. Two genuinely separate decisions are two sheets; one decision
-described twice is one sheet.
+```bash
+npm run bridge -- --contract
+```
+
+It prints every value a build needs and which domain owns it. That list is empirical: each
+key is something a builder had to invent on the spot because no sheet supplied it.
+
+**Your sheet count is then:**
+
+1. **One sheet per contract key you own.** If `--contract` says your domain owns `tiers`,
+   that is one sheet, and it must carry the `manifest` block supplying it.
+2. **Plus one sheet per genuine non-value decision** — a tonal rule, a prohibition, a piece
+   of fiction, a naming pattern. These have no manifest block, and that is correct.
+3. **Nothing else.** Do not split to reach a number and do not split to look thorough.
+
+**If you own no contract keys, say so in your index.** That is a real and useful finding —
+it means your domain constrains other people's work rather than producing values a build
+reads, and a later reader should not wonder why the wave produced nothing buildable.
+
+**Two genuinely separate decisions are two sheets; one decision described twice is one
+sheet.** A heading is not a decision.
+
+*This section used to say "bias toward more, smaller sheets" and "four sheets beat one sheet
+with four headings." Given that instruction and nothing to anchor against, seven leads
+planned 51 sheets for one wave, of which **zero** supplied a value a build could read. The
+instruction caused the number. It is replaced by the contract.*
+
+## Naming is not a decision separate from the thing named
+
+**The sheet that decides a thing names it.** If you own `tiers`, you name the tiers. If you
+own `collection`, you name the relics.
+
+Do not produce a parallel list of names for things another domain owns, and do not expect
+another domain to name yours. That pattern guarantees two sheets claiming one contract key,
+which the merger rejects outright — after both have been written, which is the expensive
+moment to find out.
+
+*Observed: a Vocabulary lead planned separate sheets for `upgrade-axes`, `rarity-ladder` and
+`collection-and-sets`, each naming things owned by Balance, Systems and Meta respectively.
+Three guaranteed collisions.*
+
+**What a vocabulary-style domain does own** is the register and the rules: naming patterns,
+banned words, reading level, and adjudicating a collision when two domains reach for the same
+word. Rules about names, not a second copy of the names.
 
 ## Boundaries
 

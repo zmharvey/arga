@@ -16,6 +16,7 @@ import { join } from 'node:path';
 import { mergeSheets } from '../merge.mjs';
 import { validateManifest, SCHEMA, contract } from '../schema.mjs';
 import { emitGameConfig } from '../emit-config.mjs';
+import { emitBuildOrder } from '../emit-buildorder.mjs';
 
 /* -------------------------------------------------------------- fixtures */
 
@@ -38,6 +39,9 @@ const GOOD = {
   },
   onboarding: { guaranteedFirstRelic: true },
   runtime: { clearTickRate: 0.12, saveIntervalSeconds: 45, dataStoreName: 'ArgaRuin_v1' },
+  modules: [
+    { id: 'config', path: 'game/src/shared/GameConfig.luau', side: 'shared', responsibility: 'values', reads: [], exposes: ['GameConfig'], dependsOn: [], criteria: ['regenerates with no diff'] },
+  ],
 };
 
 const clone = () => JSON.parse(JSON.stringify(GOOD));
@@ -179,6 +183,83 @@ test('a non-kebab-case id is rejected, so emitted Luau keys stay predictable', (
   const m = clone();
   m.area.id = 'East Terrace';
   assert.ok(validateManifest(m).problems.some((p) => p.includes('kebab-case')));
+});
+
+/* ----------------------------------------------------------------- modules */
+
+const MODULES = [
+  { id: 'config', path: 'a.luau', side: 'shared', responsibility: 'values', reads: [], exposes: ['t'], dependsOn: [], criteria: ['x'] },
+  { id: 'layout', path: 'b.luau', side: 'shared', responsibility: 'layout', reads: ['area'], exposes: ['build()'], dependsOn: ['config'], criteria: ['x'] },
+  { id: 'main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: [], exposes: ['none'], dependsOn: ['layout'], criteria: ['x'] },
+];
+const withModules = (mods) => ({ ...clone(), modules: mods });
+
+test('a module reading a key outside the contract is rejected', () => {
+  const m = withModules([{ ...MODULES[0], reads: ['vibes'] }]);
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('not a contract key')));
+});
+
+test('a module depending on one that does not exist is rejected', () => {
+  const m = withModules([{ ...MODULES[0], dependsOn: ['ghost'] }]);
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('does not exist')));
+});
+
+test('a dependency cycle is rejected, since there is no order to build in', () => {
+  const m = withModules([
+    { ...MODULES[0], id: 'a', dependsOn: ['b'] },
+    { ...MODULES[0], id: 'b', path: 'z.luau', dependsOn: ['a'] },
+  ]);
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('dependency cycle')));
+});
+
+test('a cross-side dependency that is not on shared is rejected', () => {
+  // A client requiring a server module is a runtime failure; cheap to refuse on paper.
+  const m = withModules([
+    { ...MODULES[0], id: 'srv', side: 'server' },
+    { ...MODULES[0], id: 'cli', path: 'z.luau', side: 'client', exposes: [], dependsOn: ['srv'] },
+  ]);
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('only shared may be depended on')));
+});
+
+test('a module with no acceptance criteria is rejected', () => {
+  const m = withModules([{ ...MODULES[0], criteria: [] }]);
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('no acceptance criteria')));
+});
+
+test('two modules claiming one path is rejected', () => {
+  const m = withModules([MODULES[0], { ...MODULES[1], path: 'a.luau' }]);
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('claim the path')));
+});
+
+test('a client entry point may expose nothing, but a shared module may not', () => {
+  const clientOk = withModules([{ ...MODULES[0], side: 'client', exposes: [] }]);
+  assert.deepEqual(validateManifest(clientOk).problems, []);
+  const sharedBad = withModules([{ ...MODULES[0], side: 'shared', exposes: [] }]);
+  assert.ok(validateManifest(sharedBad).problems.some((p) => p.includes('exposes nothing')));
+});
+
+test('the build order is emitted in dependency order', () => {
+  const order = emitBuildOrder(withModules(MODULES), {});
+  const at = (id) => order.indexOf(`\`${id}\` —`);
+  assert.ok(at('config') < at('layout'), 'config must come before layout');
+  assert.ok(at('layout') < at('main'), 'layout must come before main');
+});
+
+test('the build order resolves each module’s values inline, so no sheet needs reading', () => {
+  const order = emitBuildOrder(withModules(MODULES), { area: 'gameplay/meta/01-the-area.md' });
+  assert.match(order, /"patchCount": 140/);
+  assert.match(order, /from gameplay\/meta\/01-the-area\.md/);
+});
+
+test('the build order names supplied keys that no module reads', () => {
+  // An unread key is either a decision nothing needs, or a missing module.
+  const order = emitBuildOrder(withModules(MODULES), {});
+  assert.match(order, /\*\*tiers\*\* is supplied but no module reads it/);
+});
+
+test('the build order tells builders not to invent a missing value', () => {
+  const order = emitBuildOrder(withModules(MODULES), {});
+  assert.match(order, /Do not invent a value/);
 });
 
 /* ----------------------------------------------------------------- emitting */

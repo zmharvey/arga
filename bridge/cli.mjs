@@ -14,6 +14,7 @@ import { writeFile, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { mergeSheets } from './merge.mjs';
 import { emitGameConfig } from './emit-config.mjs';
+import { emitBuildOrder } from './emit-buildorder.mjs';
 import { contract } from './schema.mjs';
 
 const args = process.argv.slice(2);
@@ -63,6 +64,12 @@ if (ok && flag('emit')) {
   await mkdir(dirname(outPath), { recursive: true });
   await writeFile(outPath, luau, 'utf8');
   console.log(`\n  emitted ${outPath} (${luau.split('\n').length} lines)`);
+
+  const orderPath = resolve(opt('order-out', 'docs/BUILD-ORDER.md'));
+  const order = emitBuildOrder(manifest, provenance);
+  await mkdir(dirname(orderPath), { recursive: true });
+  await writeFile(orderPath, order, 'utf8');
+  console.log(`  emitted ${orderPath} (${manifest.modules.length} modules, ${order.split('\n').length} lines)`);
 } else if (flag('emit')) {
   console.log('\n  not emitting — the manifest is incomplete or invalid');
 }
