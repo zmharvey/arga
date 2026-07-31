@@ -177,6 +177,7 @@ export const SCHEMA = {
       className: 'string',
       classPlural: 'string',
       relicsPerArea: 'integer>0',
+      areasPerDepth: 'integer>0',
       sets: 'array',
     },
     check(c) {
@@ -196,11 +197,19 @@ export const SCHEMA = {
           seen.add(r);
         }
       }
-      // A set must be completable from one area's worth of finds, or set
-      // completion is unreachable and the long-term objective dies.
+      // A set must be completable from the areas that exist at its depth.
+      //
+      // This check used to compare against ONE area, which is only sound when exactly one
+      // area exists per depth. Two CID sheets found that independently — Core Loop's
+      // `04-lap-vs-session` and Tone's `01-register` — while reasoning about how many laps
+      // fit in a session. It would have wrongly rejected a design that spreads a set across
+      // several smaller areas, which is the obvious fix for a lap that is too short.
+      const perDepth = c.areasPerDepth ?? 1;
       for (const s of c.sets) {
-        if (Array.isArray(s.relics) && s.relics.length > 0 && c.relicsPerArea < s.relics.length) {
-          problems.push(`collection.relicsPerArea ${c.relicsPerArea} is fewer than set "${s.id}" needs (${s.relics.length}); that set can never complete from one area`);
+        if (!Array.isArray(s.relics) || s.relics.length === 0) continue;
+        const reachable = perDepth * c.relicsPerArea;
+        if (reachable < s.relics.length) {
+          problems.push(`set "${s.id}" needs ${s.relics.length} finds but its depth yields only ${reachable} (${c.areasPerDepth} area(s) x ${c.relicsPerArea} per area); it can never complete`);
         }
       }
       return problems;

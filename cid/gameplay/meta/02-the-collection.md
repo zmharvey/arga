@@ -43,6 +43,7 @@ Set one, the Terrace: Sundial, Ewer, Hinge, Tessera, Stylus, Bellcast.
     "className": "Find",
     "classPlural": "Finds",
     "relicsPerArea": 6,
+    "areasPerDepth": 1,
     "sets": [
       { "id": "terrace", "label": "Terrace", "depth": 1, "relics": ["Sundial", "Ewer", "Hinge", "Tessera", "Stylus", "Bellcast"] },
       { "id": "cistern", "label": "Cistern", "depth": 2, "relics": ["Sluice", "Weight", "Siphon", "Chain", "Grate", "Cup"] },

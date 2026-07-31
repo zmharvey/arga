@@ -37,6 +37,7 @@ const GOOD = {
     className: 'Find',
     classPlural: 'Finds',
     relicsPerArea: 6,
+    areasPerDepth: 1,
     sets: [{ id: 'terrace', label: 'Terrace', depth: 1, relics: ['A', 'B', 'C', 'D', 'E', 'F'] }],
   },
   onboarding: { guaranteedFirstRelic: true },
@@ -165,7 +166,7 @@ test('an area that cannot physically hold its patch count is rejected', () => {
 
 test('a set larger than one area can yield is rejected as uncompletable', () => {
   const m = clone();
-  m.collection.relicsPerArea = 4; // sets need 6
+  m.collection.relicsPerArea = 4; // 1 area x 4 < 6 needed
   assert.ok(validateManifest(m).problems.some((p) => p.includes('can never complete')));
 });
 
