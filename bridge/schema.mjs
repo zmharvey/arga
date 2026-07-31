@@ -142,10 +142,12 @@ export const SCHEMA = {
     },
     check(c) {
       const problems = [];
-      // A HUD readout has room for roughly eight characters before it wraps or
-      // truncates, and this label sits in a corner cluster next to a number.
+      // A HUD readout label sits in a corner cluster beside a number, which gives it
+      // about 10 characters before it wraps. The message used to say "about 8" while the
+      // check fired at 10 — found by `cid/theme/vocabulary/01-naming-form.md`, which had to
+      // reconcile this ceiling against the global one and could not tell which was the rule.
       if (c.plural.length > 10) {
-        problems.push(`currency.plural "${c.plural}" is ${c.plural.length} characters; a HUD readout label has room for about 8`);
+        problems.push(`currency.plural "${c.plural}" is ${c.plural.length} characters; a HUD readout label has room for 10`);
       }
       return problems;
     },
@@ -193,8 +195,18 @@ export const SCHEMA = {
           continue;
         }
         for (const r of s.relics) {
-          if (seen.has(r)) problems.push(`relic "${r}" appears in more than one set`);
-          seen.add(r);
+          // A find entry is a bare name today and may gain a flavour line later. Normalise
+          // before comparing: `seen.has(object)` would compare identity, so every duplicate
+          // name would become invisible the moment the shape changed. Found by
+          // `cid/theme/tone/02-flavour-and-humor.md`, which noted all three of these
+          // failures point the same way — quietly reporting success.
+          const name = typeof r === 'string' ? r : r?.name;
+          if (typeof name !== 'string' || name.length === 0) {
+            problems.push(`a find in set "${s.id}" has no name: ${JSON.stringify(r)}`);
+            continue;
+          }
+          if (seen.has(name)) problems.push(`find "${name}" appears in more than one set`);
+          seen.add(name);
         }
       }
       // A set must be completable from the areas that exist at its depth.
@@ -408,7 +420,13 @@ export function validateManifest(manifest) {
  */
 export function playerFacingStrings(manifest) {
   const out = [];
-  const add = (path, value) => { if (typeof value === 'string') out.push({ path, value }); };
+  // Skipping a non-string silently is how 24 find names would vanish from the ban-word
+  // and label-length checks the day they gain a flavour field. Record the miss instead.
+  const missed = [];
+  const add = (path, value) => {
+    if (typeof value === 'string') out.push({ path, value });
+    else if (value !== undefined && value !== null) missed.push({ path, value });
+  };
 
   add('area.label', manifest.area?.label);
   add('currency.name', manifest.currency?.name);
@@ -422,10 +440,25 @@ export function playerFacingStrings(manifest) {
   });
   (manifest.collection?.sets ?? []).forEach((s, i) => {
     add(`collection.sets[${i}].label`, s.label);
-    (s.relics ?? []).forEach((r, j) => add(`collection.sets[${i}].relics[${j}]`, r));
+    (s.relics ?? []).forEach((r, j) => {
+      const base = `collection.sets[${i}].relics[${j}]`;
+      if (typeof r === 'string') add(base, r);
+      else if (r && typeof r === 'object') {
+        add(`${base}.name`, r.name);
+        add(`${base}.flavour`, r.flavour);
+      } else add(base, r);
+    });
   });
+  out.missed = missed;
   return out;
 }
+
+/**
+ * Paths whose value is prose rather than furniture, so the label-length limit does not
+ * apply. Enumerated rather than pattern-matched: the old test was `path.endsWith('.blurb')`,
+ * which would have failed every flavour line on the 14-character limit the day one existed.
+ */
+const PROSE_PATHS = [/\.blurb$/, /\.flavour$/];
 
 /**
  * Invariants that span keys, so they cannot live on any single one.
@@ -442,6 +475,9 @@ function crossCuttingProblems(manifest) {
   if (!vocab || !Array.isArray(vocab.bannedWords)) return problems;
 
   const strings = playerFacingStrings(manifest);
+  for (const { path, value } of strings.missed ?? []) {
+    problems.push(`${path} is not a string (${typeof value}), so it escapes every naming check`);
+  }
   for (const { path, value } of strings) {
     for (const banned of vocab.bannedWords) {
       if (!banned?.word) continue;
@@ -450,8 +486,8 @@ function crossCuttingProblems(manifest) {
         problems.push(`${path} = ${JSON.stringify(value)} uses the banned word "${banned.word}" — ${banned.reason}`);
       }
     }
-    // Blurbs are prose and exempt; labels are furniture and must fit.
-    if (!path.endsWith('.blurb') && value.length > vocab.maxLabelChars) {
+    // Prose is exempt from the label limit; furniture is not.
+    if (!PROSE_PATHS.some((re) => re.test(path)) && value.length > vocab.maxLabelChars) {
       problems.push(`${path} is ${value.length} characters, over the ${vocab.maxLabelChars}-character label limit`);
     }
   }

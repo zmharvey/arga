@@ -346,3 +346,60 @@ test('the emitted config constructs no Roblox types, so it runs outside the engi
   assert.doesNotMatch(luau, /Vector3\./);
   assert.doesNotMatch(luau, /Enum\./);
 });
+
+/* ------------------------------------------- the future shape must not pass quietly */
+
+test('a find that gains a flavour field is still checked, not silently skipped', () => {
+  // Found by cid/theme/tone/02-flavour-and-humor.md: three separate paths would have
+  // failed in the direction of reporting success the day this shape landed.
+  const m = clone();
+  m.collection.sets[0].relics = [
+    { name: 'Sundial', flavour: 'The gnomon is gone. The hour lines remain.' },
+    { name: 'Ewer', flavour: 'Cracked at the lip.' },
+    { name: 'Relic', flavour: 'Still checked for banned words.' },
+    { name: 'Hinge', flavour: 'One leaf, no door.' },
+    { name: 'Tessera', flavour: 'A single tile.' },
+    { name: 'Stylus', flavour: 'Worn to a stub.' },
+  ];
+  const problems = validateManifest(m).problems;
+  assert.ok(problems.some((p) => p.includes('banned word') && p.includes('.name')),
+    `a nested name must still hit the ban list: ${problems.join(' | ')}`);
+  assert.ok(!problems.some((p) => p.includes('character label limit') && p.includes('.flavour')),
+    'prose must be exempt from the label limit');
+});
+
+test('a duplicate find name is caught through the nested shape too', () => {
+  const m = clone();
+  m.collection.sets[0].relics = [
+    { name: 'Sundial' }, { name: 'Sundial' }, { name: 'C' },
+    { name: 'D' }, { name: 'E' }, { name: 'F' },
+  ];
+  assert.ok(validateManifest(m).problems.some((p) => p.includes('appears in more than one set')
+    || p.includes('Sundial')), 'identity comparison would have hidden this');
+});
+
+test('a value that is not a string is reported rather than skipped', () => {
+  const m = clone();
+  m.area.label = 42;
+  const problems = validateManifest(m).problems;
+  assert.ok(problems.some((p) => p.includes('area.label')), problems.join(' | '));
+});
+
+test('every scalar contract value reaches the emitted config', () => {
+  // A key that validates but is never emitted is invisible to anything downstream.
+  // `collection.areasPerDepth` was exactly that until a CID sheet tried to write a
+  // predicate over it and could not find it.
+  const luau = emitGameConfig(GOOD, {});
+  const scalars = [
+    GOOD.area.patchCount, GOOD.area.size, GOOD.area.minSpacing,
+    GOOD.movement.baseWalkSpeed, GOOD.movement.baseClearRadius,
+    GOOD.patch.footprint, GOOD.collection.relicsPerArea, GOOD.collection.areasPerDepth,
+    GOOD.runtime.clearTickRate, GOOD.runtime.saveIntervalSeconds,
+  ];
+  for (const v of scalars) {
+    assert.ok(luau.includes(String(v)), `${v} must appear in the emitted config`);
+  }
+  for (const s of [GOOD.currency.name, GOOD.collection.className, GOOD.area.label]) {
+    assert.ok(luau.includes(`"${s}"`), `${s} must appear in the emitted config`);
+  }
+});

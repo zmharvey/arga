@@ -110,6 +110,12 @@ ${rows}
 
 GameConfig.RelicsPerArea = ${num(collection.relicsPerArea)}
 
+-- How many areas exist at one depth. In SCHEMA but previously not emitted, so a
+-- config-level predicate could not see the value it depended on. Found by the
+-- depth-escalation sheet: a key that validates but never reaches the build is a key
+-- nothing downstream can check.
+GameConfig.AreasPerDepth = ${num(collection.areasPerDepth ?? 1)}
+
 -- The player-facing word for the class. Renamed once already, by a ban list that the
 -- merger enforces: the previous noun was occupied inside this game's own genre family.
 GameConfig.FindNoun = { singular = ${str(collection.className)}, plural = ${str(collection.classPlural)} }

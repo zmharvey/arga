@@ -92,6 +92,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   "className": "Find",
   "classPlural": "Finds",
   "relicsPerArea": 6,
+  "areasPerDepth": 1,
   "sets": [
     {
       "id": "terrace",
@@ -375,6 +376,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   "className": "Find",
   "classPlural": "Finds",
   "relicsPerArea": 6,
+  "areasPerDepth": 1,
   "sets": [
     {
       "id": "terrace",
