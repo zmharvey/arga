@@ -64,6 +64,14 @@ node concept/src/cli.mjs vocab              # option menus for the skill
 node --test concept/test/gate.test.mjs      # 31 tests
 npm run concept:status
 
+# CID
+npm run bridge                              # sheets -> validated build manifest
+npm run bridge -- --contract                # what a build needs, and who owns each key
+npm run cid:verify                          # mechanical checks. run BEFORE any verifier agent
+npm run cid:research                         # bank every [research: url] into one deduped pack
+npm run cid:digest                          # every sheet's decision + boundary, ~40 lines
+npm run cid:pack -- --domain theme/tone --brief concept/spec/<slug>
+
 # stage 1
 npm run render -- --brief briefs/shop.brief.json --viewport all
 npm run forge -- --context <path> --viewport all   # idea → screens, one run
@@ -74,9 +82,28 @@ npm run capabilities                        # the pattern registry
 
 Needs `OPENAI_API_KEY` in `.env` (gitignored). Node ≥20.
 
+## Agent context is a derivation too
+
+The same rule that governs `compose(brief, theme)` governs how a CID agent gets its context.
+An agent that reads 26 sibling sheets to learn where its subject stops, or searches the web
+for a page another agent fetched an hour ago, is paying to re-derive something a parser
+states once.
+
+Wave 1 ran one agent per sheet and cost **~6.3M tokens of input to produce ~110k of sheets**
+— 97% input, most of it the same bytes delivered 37 times. `bridge/context.mjs` derives that
+context instead: `cid:digest` (every decision, 234x smaller than the sheets), `cid:research`
+(fetch once, cite many), `cid:pack` (one domain's complete context). Writers are batched one
+per domain and have no fetch tools. Measured: **11x cheaper, and sibling overlap goes away**,
+because a writer holding all of a domain's sheets cannot collide with itself.
+
+**Run `cid:verify` before dispatching any verifier agent.** Three wave-1 sheets each spent
+~150k tokens rediscovering one string comparison the script finds in milliseconds.
+
 ## Known gaps
 
-1. **CID does not exist.** Stage 0's output has no consumer. See `docs/CID.md`.
+1. **CID wave 1 only.** 37 sheets, 14 domains. Waves 2-7 unstarted. Five categories (UI/UX,
+   Audio, Analytics, Live Ops, Discovery & Marketing) own no contract key, so as things stand
+   they would produce prose with no path into a build. See `docs/CID.md`.
 2. **No bridge from spec sheets to `game-context.json`.** `deriveGameContext` expects a
    structured object; the skill writes markdown. Nothing reads the sheets. The
    `fantasy-ornate` vibe key in `04-PRESENTATION.md` has to be carried across by hand.

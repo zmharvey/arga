@@ -22,10 +22,15 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, basename, dirname } from 'node:path';
 import { SCHEMA, playerFacingStrings } from './schema.mjs';
 import { mergeSheets } from './merge.mjs';
+import { packUrls } from './context.mjs';
 
-const ROOT = 'cid';
 const args = process.argv.slice(2);
-const only = args.includes('--category') ? args[args.indexOf('--category') + 1] : null;
+const opt = (name, fallback) => {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 && args[i + 1] ? args[i + 1] : fallback;
+};
+const ROOT = opt('root', 'cid');
+const only = opt('category', null);
 
 const REQUIRED_SECTIONS = ['## Decision', '## Acceptance criteria'];
 const TAG = /\[(brief: (binding|soft)|cid: decided|research:|playtest unknown|unverified)/;
@@ -162,6 +167,66 @@ for (const f of files.filter(scoped)) {
     warns.push(`player-facing labels use two casing conventions: ${shouted.length} all-caps `
       + `(${shouted.slice(0, 4).map((s) => `"${s.value}"`).join(', ')}) and ${titled.length} title-case `
       + `(${titled.slice(0, 4).map((s) => `"${s.value}"`).join(', ')}). Pick one — Tone's register forbids runs of capitals.`);
+  }
+}
+
+/* ------------------------- 6. a cited URL must be in the research pack */
+
+// The old rule was "never write [research: url] unless you fetched that URL in this run",
+// which nothing could check, so nothing did. With fetching moved to one batched pass and
+// removed from the writer's toolset, the rule becomes "cite the pack" — and that is
+// checkable, which is the only kind of rule worth writing.
+//
+// Repo-file citations are exempt. 141 of wave 1's 198 tags name a file like
+// `bridge/schema.mjs`; a local read is not what cost anything and does not need a pack.
+{
+  let pack = null;
+  try {
+    pack = packUrls(await readFile(join(ROOT, '_research', 'pack.md'), 'utf8'));
+  } catch {
+    warns.push('no cid/_research/pack.md — run `npm run cid:research`. Until it exists, '
+      + 'citations cannot be checked and writers have no source to cite.');
+  }
+
+  if (pack) {
+    const owed = [];
+    for (const f of files.filter(scoped)) {
+      if (f.includes(`${ROOT}/_research/`)) continue;
+      const rel = relative(ROOT, f);
+      const body = await readFile(f, 'utf8');
+      for (const m of body.matchAll(/\[research:\s*(https?:\/\/[^\s\]]+)/g)) {
+        const url = m[1].replace(/[.,;)]+$/, '');
+        if (!pack.has(url)) {
+          fails.push(`${rel}: cites ${url}, which is not in the research pack. Either the `
+            + 'pack is stale (`npm run cid:research`) or the sheet fetched on its own.');
+        }
+      }
+      const n = [...body.matchAll(/\[research owed:/g)].length;
+      if (n) owed.push(`${rel} (${n})`);
+    }
+    if (owed.length) {
+      notes.push(`research owed: ${owed.join(', ')} — batch these into one fetch pass`);
+    }
+  }
+}
+
+/* ------------------------------------- 7. sheet length */
+
+// 86% of wave 1's 9,343 sheet lines were prose that the writer definition itself says
+// nothing downstream reads. This does not fail a build, so it warns rather than fails —
+// but it is the difference between a wave that fits in a session and one that does not.
+{
+  const long = [];
+  for (const f of leaves.filter(scoped)) {
+    const n = (await readFile(f, 'utf8')).split('\n').length;
+    if (n > 120) long.push({ rel: relative(ROOT, f), n });
+  }
+  if (long.length) {
+    long.sort((a, b) => b.n - a.n);
+    const excess = long.reduce((t, l) => t + l.n - 120, 0);
+    warns.push(`${long.length} sheet(s) over the 120-line budget by ${excess} lines total. `
+      + `Worst: ${long.slice(0, 3).map((l) => `${l.rel} (${l.n})`).join(', ')}. `
+      + 'Every line here is also paid by every later writer that reads the digest.');
   }
 }
 

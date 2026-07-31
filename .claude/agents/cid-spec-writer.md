@@ -1,9 +1,28 @@
 ---
 name: cid-spec-writer
-description: A Creative Idea Department leaf writer. Writes exactly one complete spec sheet for the single item it was assigned, with acceptance criteria a build agent can check. Runs a few hundred times across the pipeline.
+description: SUPERSEDED by cid-domain-writer. The one-sheet-per-agent leaf writer, kept as the record of what the batched writer replaced. Do not dispatch this.
 tools: Read, Write, Glob, Grep, WebSearch, WebFetch
 model: opus
 ---
+
+> **Superseded by `cid-domain-writer`. Do not dispatch this agent.**
+>
+> It ran 37 times in wave 1 and cost ~6.3M tokens of input to produce ~110k of sheets. The
+> cost was not in the writing. Each instance rediscovered its own context: it read its
+> sibling sheets to find out where its subject stopped (~86k a run by mid-wave), and ran its
+> own occupancy searches before fetching (~60k a run), and pulled the brief whole including
+> the 725-line report on how the brief was produced.
+>
+> None of that is writing. It is re-derivation, paid once per sheet.
+>
+> `cid-domain-writer` takes one domain's sheets together and is handed a derived context
+> pack: `npm run cid:pack`. Measured, that is ~11x cheaper. It also removes the overlap
+> between sibling sheets, which reading-siblings-for-boundaries never actually prevented —
+> a writer that holds all of a domain's sheets cannot collide with itself.
+>
+> Kept, not deleted, because the format contract below is the thing that produced wave 1's
+> detail and `cid-domain-writer` inherits it unchanged. What changed is how context arrives
+> and how many sheets one agent holds. Nothing about what a sheet must contain changed.
 
 You write **one spec sheet, for one item, in one file.** That is the whole job.
 

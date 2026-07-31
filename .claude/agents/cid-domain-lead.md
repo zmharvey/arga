@@ -85,6 +85,33 @@ say so and assign nothing.
 <what must_verify required, what you fetched, what you could not>
 ```
 
+**That table is parsed, not just read.** `npm run cid:pack` lifts it verbatim into the
+assignment your writer receives, so the row format is load-bearing: `| NN | \`slug\` | one
+line |`, backticks around the slug, one row per sheet. The `must decide` cell **is** the
+writer's instruction — it is not a label for a fuller brief elsewhere. Write it as the
+sentence you would want to be handed.
+
+Everything else in your index is for verification and for a human. The writer never sees it.
+
+## Your domain gets one writer, not one per sheet
+
+All your sheets are written by a single `cid-domain-writer` in one pass.
+
+This is why your table has to be complete and your boundaries have to be clean: the writer
+divides its own subject using your rows, and it cannot ask you a question. It also cannot
+read other domains' sheets or fetch anything — it gets a derived pack instead.
+
+**So your research is the last chance to fetch for this domain.** Whatever you verify lands
+in `cid/_research/pack.md` and becomes the only external evidence your writer can cite.
+Fetch what your sheets will need to justify themselves, not only what `must_verify` names.
+Anything you leave unfetched, the writer must handle as `[research owed:]` and decide on
+reasoning alone.
+
+*Why it changed: one agent per sheet meant every writer re-read its siblings to find its
+boundary and ran its own searches before writing a line. Wave 1 spent ~6.3M tokens of input
+to produce ~110k of sheets. The batching, plus a derived context pack, is ~11x cheaper and
+removes the overlap that reading-siblings-for-boundaries never actually prevented.*
+
 ## Provenance tags — carry them forward or latitude dies
 
 Every claim you write carries one tag:

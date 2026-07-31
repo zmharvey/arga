@@ -26,7 +26,10 @@
     "test": "node --test concept/test/gate.test.mjs ui-forge/test/patterns.test.mjs bridge/test/bridge.test.mjs && luau game/test/config.spec.luau",
     "place": "rojo build game/default.project.json -o game/arga.rbxl",
     "bridge": "node bridge/cli.mjs",
-    "cid:verify": "node bridge/verify-sheets.mjs"
+    "cid:verify": "node bridge/verify-sheets.mjs",
+    "cid:digest": "node bridge/cid.mjs digest",
+    "cid:research": "node bridge/cid.mjs research",
+    "cid:pack": "node bridge/cid.mjs pack"
   },
   "engines": {
     "node": ">=20"
