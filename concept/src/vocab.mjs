@@ -58,6 +58,7 @@ export const keysOf = (vocab) => Object.keys(vocab);
 export const GENRES = {
   simulator: 'incremental collection/multiplication loop — hatch, farm, upgrade, rebirth',
   tycoon: 'build and expand a plot or factory that produces income over time',
+  'delivery-logistics': 'accept contracts and move cargo along routes; the journey is the content, not the destination',
   'clicker-idle': 'income accrues from taps or passively; upgrades multiply the rate',
   obby: 'skill-based platforming through hazard courses toward a goal',
   'tower-defense': 'place and upgrade defenders against escalating enemy waves',

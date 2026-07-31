@@ -21,7 +21,8 @@
     "emit": "node ui-forge/src/cli.mjs emit",
     "calibrate": "node ui-forge/src/cli.mjs calibrate",
     "feedback": "node ui-forge/src/cli.mjs feedback",
-    "forge": "node ui-forge/src/cli.mjs forge"
+    "forge": "node ui-forge/src/cli.mjs forge",
+    "concept:lint": "node concept/src/lint-sheets.mjs"
   },
   "engines": {
     "node": ">=20"
