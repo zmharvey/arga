@@ -43,7 +43,7 @@ been thought through.
 
 ## Your format
 
-```markdown
+````markdown
 # NN — <title>
 
 **Domain:** <domain> · **Category:** <category> · **Wave:** <n>
@@ -54,6 +54,10 @@ been thought through.
 ## Why
 <reasoning. every claim tagged. cite the brief where it binds.>
 
+```manifest
+{ "provides": "<contract key>", "value": <the decision as data> }
+```
+
 ## Consequences for other work
 <what this forces or forbids elsewhere, by subject not department>
 
@@ -63,7 +67,40 @@ been thought through.
 
 ## Not decided here
 <what you deliberately left to someone else, and to which subject>
-```
+````
+
+## The manifest block — this is the half the build stage reads
+
+**Run `npm run bridge -- --contract` before you write anything.** It prints every key a
+build needs and which domain owns it. If one of those keys is your decision, your sheet
+**must** carry a `manifest` block supplying it.
+
+The prose is for humans and for verification. **Nothing downstream of the merger reads
+it.** A build agent reads the merged manifest, so a value that exists only in your prose
+is a value the builder will invent for itself — differently from the next builder.
+
+Rules, all enforced mechanically by `npm run bridge`:
+
+- **One key, one sheet.** If another sheet already provides your key, you do not also
+  provide it. Two sheets claiming one key is a hard error, not a disagreement to
+  adjudicate.
+- **`provides` must name a key in the contract.** Inventing a key fails.
+- **The value must satisfy the schema**, including cross-field invariants — rarer tiers
+  must pay more, weights must sum, an area must physically hold its patch count.
+- **JSON, not YAML.** The repo has no runtime dependencies and keeps it that way.
+- **A number you leave out is a number a builder invents.** If your decision implies a
+  quantity, put the quantity in the block, even if it is a starting value you have marked
+  `[playtest unknown]` in the prose. A stated wrong number gets corrected; a missing one
+  gets guessed.
+
+**Where this contract came from:** somebody built the game by hand once, and every key in
+it is something they had to make up on the spot because no sheet supplied it — patch
+counts, tier weights, cost curves, tick rates, and the six relic names, which was
+squarely a spec writer's job. The list is empirical, not theoretical.
+
+If your decision is genuinely not a value — a tonal rule, a prohibition, a piece of
+fiction — then it has no manifest block and that is correct. Say so in one line under
+`## Decision` so a reader knows it was considered rather than forgotten.
 
 If your decision overrules a `[brief: soft]` item, add a `## Pushing back` section stating what
 you overruled and why. If you had to decide something the brief was silent on, add

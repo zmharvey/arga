@@ -1,31 +1,26 @@
 --!strict
 --[[
-	Every number in the game, in one place.
+	GENERATED FILE — do not edit.
 
-	Taken from `concept/spec/incremental-spinoff-v2/`. Where the brief settled
-	something it is cited; where the brief explicitly left a number open it is
-	marked PLAYTEST and carries a starting value, because a stated wrong number can
-	be corrected and a missing one cannot.
+	Emitted from CID spec sheets by `npm run bridge -- --emit`. Edit the sheet that
+	owns a value and re-emit; a hand edit here is overwritten and, worse, silently
+	diverges from the sheet that is supposed to be the record.
 
-	The brief's own words on this: "how long an area should take, the cost curve on
-	clearing upgrades, how density scales with depth" are left open. So these are
-	starting values, not decisions.
+	Every number below was supplied by a named sheet. `npm run bridge` prints which.
+
+	This module constructs no Roblox types — RGB triples and plain numbers only — so it
+	loads outside the engine and its curves can be executed by
+	`game/test/config.spec.luau`. Config that only loads inside Roblox is config
+	nobody checks.
 ]]
 
 local GameConfig = {}
 
--- Overgrowth tiers.
+-- Overgrowth tiers. From gameplay/systems/01-overgrowth-tiers.md.
 --
--- ACCESSIBILITY, and it is a hard constraint rather than a preference:
--- 04-PRESENTATION.md requires that "rarity tiers must differ by shape or
--- silhouette, not only hue", because four tiers of green foliage is exactly the
--- case red-green colour blindness breaks, and tier is a core economic signal.
--- So `shape` is the primary channel here and `color` is secondary. A tier is
--- readable with the colour thrown away.
--- Colours are plain RGB triples and positions are plain numbers, deliberately: this
--- module constructs no Roblox types, so it loads and runs outside the engine and its
--- curves can actually be tested. Config that only loads inside Roblox is config
--- nobody checks. The server converts at use.
+-- `shape` is the primary channel and `rgb` is secondary, because rarity has to stay
+-- readable with the colour thrown away. The schema refuses two tiers that share a
+-- shape, so this property cannot be lost by editing a sheet.
 GameConfig.Tiers = {
 	{ name = "Moss", shape = "Block", rgb = { 104, 142, 76 }, value = 1, weight = 52, height = 1.6 },
 	{ name = "Fern", shape = "Cylinder", rgb = { 78, 128, 66 }, value = 3, weight = 28, height = 2.4 },
@@ -33,13 +28,7 @@ GameConfig.Tiers = {
 	{ name = "Heartvine", shape = "Wedge", rgb = { 44, 86, 52 }, value = 20, weight = 6, height = 3.4 },
 }
 
--- The three clearing upgrades. 02-GAMEPLAY.md settles the axes: "value per unit,
--- clear radius, and move speed". Relic luck was offered and declined, so it is
--- absent on purpose.
---
--- PLAYTEST: cost base and growth. 1.6x is the skill's own worked example, not a
--- researched figure — the brief could not source the reference's curve across
--- three source types.
+-- The spend side of the loop. From gameplay/balance/01-upgrade-ladder.md.
 GameConfig.Upgrades = {
 	{
 		id = "value",
@@ -48,7 +37,7 @@ GameConfig.Upgrades = {
 		costBase = 25,
 		costGrowth = 1.6,
 		maxLevel = 10,
-		perLevel = 0.25, -- +25% payout per level, additive
+		perLevel = 0.25,
 	},
 	{
 		id = "radius",
@@ -57,7 +46,7 @@ GameConfig.Upgrades = {
 		costBase = 40,
 		costGrowth = 1.75,
 		maxLevel = 8,
-		perLevel = 1.1, -- studs added to the clearing radius per level
+		perLevel = 1.1,
 	},
 	{
 		id = "speed",
@@ -66,31 +55,38 @@ GameConfig.Upgrades = {
 		costBase = 60,
 		costGrowth = 1.8,
 		maxLevel = 6,
-		perLevel = 1.6, -- walkspeed added per level
+		perLevel = 1.6,
 	},
 }
 
-GameConfig.BaseClearRadius = 5.5 -- studs. PLAYTEST: "reach is the primary sensation"
-GameConfig.BaseWalkSpeed = 16 -- Roblox default, so PACE reads as a real change
+-- Movement, before upgrades. From gameplay/mechanics/01-reach-and-pace.md.
+GameConfig.BaseClearRadius = 5.5
+GameConfig.BaseWalkSpeed = 16
 
--- The area. 03-META.md: "discrete spaces that are cleared and permanently done",
--- and depth is progression. This slice ships one area, which is priority 1's
--- smallest honest version.
+-- One patch's physical footprint. From art/objects/01-patch-footprint.md.
+GameConfig.Patch = {
+	footprint = 3,
+	collides = false,
+	material = "Grass",
+}
+
+-- The area. From gameplay/meta/01-the-area.md.
+--
+-- The schema checks that patchCount actually fits at this size and spacing, so an
+-- area cannot quietly under-fill and be smaller than it claims.
 GameConfig.Area = {
 	id = "east-terrace",
 	label = "EAST TERRACE",
 	originXZ = { 0, 0 },
-	size = 120, -- studs square
-	patchCount = 140, -- PLAYTEST: sets lap length, the number the brief could not source
+	size = 120,
+	patchCount = 140,
 	minSpacing = 6,
 }
 
--- The collection. 02-GAMEPLAY.md: "~24 objects in 4 sets of 6", each set tied to
--- area depth, completing a set grants a permanent bonus.
+-- The collection. From gameplay/meta/02-the-collection.md.
 --
--- Only set 1 is reachable in this slice, because only one area exists. The other
--- three sets are declared so the collection reads as 6-of-24 rather than 6-of-6 —
--- the brief is explicit that the long-term objective is all four sets.
+-- These names are CID's work, not the builder's. When they were absent the builder
+-- invented six of them, which is the exact failure this seam exists to remove.
 GameConfig.RelicSets = {
 	{ id = "terrace", label = "Terrace", depth = 1, relics = { "Sundial", "Ewer", "Hinge", "Tessera", "Stylus", "Bellcast" } },
 	{ id = "cistern", label = "Cistern", depth = 2, relics = { "Sluice", "Weight", "Siphon", "Chain", "Grate", "Cup" } },
@@ -98,21 +94,16 @@ GameConfig.RelicSets = {
 	{ id = "spire", label = "Spire", depth = 4, relics = { "Gnomon", "Lens", "Vane", "Crest", "Orrery", "Finial" } },
 }
 
-GameConfig.RelicsPerArea = 6 -- one set's worth buried in the area
+GameConfig.RelicsPerArea = 6
 
--- 02-GAMEPLAY.md onboarding: "the first patch they clear has something under it"
--- and "the shuffle must not be allowed to decide this one". So the first relic is
--- placed deterministically next to spawn rather than rolled.
+-- From gameplay/onboarding/01-first-find.md. The first find is placed, not rolled, so the promise
+-- that the first patch has something under it cannot be broken by the shuffle.
 GameConfig.GuaranteedFirstRelic = true
 
--- Server authority. 04-PRESENTATION.md integrity: "clearing and currency awards
--- must be server-validated, or a client claiming arbitrary clears owns the game."
--- Clearing here is observed by the server rather than requested by the client, so
--- there is no clear-request to forge. This is the tick rate for that observation.
-GameConfig.ClearTickRate = 0.12 -- seconds
-
-GameConfig.DataStoreName = "ArgaRuin_v1"
+-- Server cadences. From tech/architecture/01-server-cadences.md.
+GameConfig.ClearTickRate = 0.12
 GameConfig.SaveIntervalSeconds = 45
+GameConfig.DataStoreName = "ArgaRuin_v1"
 
 function GameConfig.upgradeCost(upgrade: { costBase: number, costGrowth: number }, level: number): number
 	return math.floor(upgrade.costBase * (upgrade.costGrowth ^ level))

@@ -228,11 +228,15 @@ local function makePatchPart(tier): BasePart
 		p.Shape = (Enum.PartType :: any)[tier.shape]
 		part = p
 	end
+	-- Footprint, collision and material all come from the manifest rather than from
+	-- here. Non-colliding especially: a patch that blocks the player turns clearing
+	-- into navigation, and the brief specifies movement-only input with no aiming.
+	local spec = GameConfig.Patch
 	part.Anchored = true
-	part.CanCollide = false
-	part.Material = Enum.Material.Grass
+	part.CanCollide = spec.collides
+	part.Material = (Enum.Material :: any)[spec.material]
 	part.Color = Color3.fromRGB(tier.rgb[1], tier.rgb[2], tier.rgb[3])
-	part.Size = Vector3.new(3, tier.height, 3)
+	part.Size = Vector3.new(spec.footprint, tier.height, spec.footprint)
 	return part
 end
 
