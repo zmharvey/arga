@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The arga pipeline as a graph: every step typed as either an agent (judgement, costly) or a derivation (code, free), with the measured token cost of moving work between them.">
+<style>
+  /* minimal reset — the hosted artifact wrapper supplies one; a standalone file must not assume it */
+  *, *::before, *::after { box-sizing: border-box; }
+  body, h1, h2, h3, p, dl, dd { margin: 0; }
+  img, svg { max-width: 100%; display: block; }
+</style>
+<title>arga — the pipeline</title>
+<style>
+  :root {
+    --paper:      #EEF1EC;
+    --ground:     #E4E9E3;
+    --card:       #F7F9F6;
+    --ink:        #171E1B;
+    --ink-soft:   #4C5A54;
+    --ink-faint:  #7A8781;
+    --rule:       #CBD4CD;
+    --rule-soft:  #DDE4DD;
+
+    --agent:      #A85F22;
+    --agent-tint: #F2E3D4;
+    --agent-edge: #D9A876;
+
+    --deriv:      #226E68;
+    --deriv-tint: #DCEAE7;
+    --deriv-edge: #7FB4AE;
+
+    --warn:       #8A6D1F;
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --serif: ui-serif, Charter, "Iowan Old Style", "Source Serif Pro", Georgia, serif;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:      #121815;
+      --ground:     #0D1211;
+      --card:       #1A221E;
+      --ink:        #E2E9E4;
+      --ink-soft:   #A3B0AA;
+      --ink-faint:  #6F7D77;
+      --rule:       #2C3733;
+      --rule-soft:  #232C29;
+
+      --agent:      #E0A468;
+      --agent-tint: #2E231A;
+      --agent-edge: #6B4F2E;
+
+      --deriv:      #6FC4BB;
+      --deriv-tint: #142A28;
+      --deriv-edge: #33605C;
+
+      --warn:       #D4B45E;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:      #121815;
+    --ground:     #0D1211;
+    --card:       #1A221E;
+    --ink:        #E2E9E4;
+    --ink-soft:   #A3B0AA;
+    --ink-faint:  #6F7D77;
+    --rule:       #2C3733;
+    --rule-soft:  #232C29;
+    --agent:      #E0A468;
+    --agent-tint: #2E231A;
+    --agent-edge: #6B4F2E;
+    --deriv:      #6FC4BB;
+    --deriv-tint: #142A28;
+    --deriv-edge: #33605C;
+    --warn:       #D4B45E;
+  }
+
+  :root[data-theme="light"] {
+    --paper:      #EEF1EC;
+    --ground:     #E4E9E3;
+    --card:       #F7F9F6;
+    --ink:        #171E1B;
+    --ink-soft:   #4C5A54;
+    --ink-faint:  #7A8781;
+    --rule:       #CBD4CD;
+    --rule-soft:  #DDE4DD;
+    --agent:      #A85F22;
+    --agent-tint: #F2E3D4;
+    --agent-edge: #D9A876;
+    --deriv:      #226E68;
+    --deriv-tint: #DCEAE7;
+    --deriv-edge: #7FB4AE;
+    --warn:       #8A6D1F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px 96px;
+  }
+
+  /* ---------------------------------------------------------- masthead */
+
+  .masthead {
+    padding: 72px 0 40px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 20px;
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(30px, 5.2vw, 50px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.06;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+
+  .thesis {
+    max-width: var(--measure);
+    font-size: 19px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  .thesis strong { color: var(--ink); font-weight: 600; }
+
+  /* ------------------------------------------------------------ legend */
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    margin-top: 34px;
+    padding-top: 26px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .swatch {
+    width: 26px; height: 13px;
+    flex: none;
+    transform: translateY(1px);
+  }
+  .swatch.is-agent { background: var(--agent-tint); border: 1.5px solid var(--agent); }
+  .swatch.is-deriv { background: var(--deriv-tint); border: 1.5px dashed var(--deriv); }
+  .swatch.is-art   { background: none; border: none; border-bottom: 2px dotted var(--ink-faint); height: 8px; }
+
+  /* ------------------------------------------------------------- bands */
+
+  .band {
+    display: grid;
+    grid-template-columns: 218px 1fr;
+    gap: 40px;
+    padding: 46px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .rail-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    margin: 0 0 8px;
+  }
+
+  .rail h2 {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    color: var(--ink);
+  }
+
+  .rail p {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    max-width: 34ch;
+  }
+
+  .status {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border: 1px solid currentColor;
+    color: var(--deriv);
+  }
+  .status.is-partial { color: var(--warn); }
+  .status.is-thin    { color: var(--agent); }
+
+  /* ------------------------------------------------------------- flow */
+
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .chev {
+    align-self: center;
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--ink-faint);
+    flex: none;
+    user-select: none;
+  }
+
+  .node {
+    flex: 1 1 190px;
+    min-width: 178px;
+    padding: 14px 15px 15px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+  }
+
+  .node-kind {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0 0 7px;
+    color: var(--ink-faint);
+  }
+
+  .node-name {
+    font-size: 16px;
+    line-height: 1.28;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+
+  .node-note {
+    font-size: 13.5px;
+    line-height: 1.48;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  .node-note code {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    background: var(--ground);
+    padding: 1px 4px;
+  }
+
+  /* agents: judgement. filled, sharp, name set in serif italic. */
+  .node.agent {
+    background: var(--agent-tint);
+    border-color: var(--agent-edge);
+  }
+  .node.agent .node-kind { color: var(--agent); }
+  .node.agent .node-name { font-style: italic; font-weight: 500; }
+  .node.agent .node-note code { background: color-mix(in srgb, var(--agent) 12%, transparent); }
+
+  /* derivations: code. outlined, dashed, the real command in mono. */
+  .node.deriv {
+    background: var(--deriv-tint);
+    border: 1.5px dashed var(--deriv-edge);
+  }
+  .node.deriv .node-kind { color: var(--deriv); }
+  .node.deriv .node-name {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* artifacts: bare. a filename on a dotted rule, nothing more. */
+  .node.artifact {
+    background: none;
+    border: none;
+    border-bottom: 2px dotted var(--ink-faint);
+    padding: 14px 2px 10px;
+    flex: 0 1 168px;
+  }
+  .node.artifact .node-name {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    word-break: break-all;
+  }
+
+  .node.gate {
+    background: var(--deriv-tint);
+    border: 1.5px solid var(--deriv);
+    box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4.5px var(--deriv-edge);
+  }
+  .node.gate .node-kind { color: var(--deriv); }
+  .node.gate .node-name { font-family: var(--mono); font-size: 13.5px; font-weight: 600; }
+
+  .loop {
+    margin-top: 14px;
+    padding: 11px 14px;
+    border-left: 2px solid var(--ink-faint);
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    background: var(--ground);
+  }
+  .loop b { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; color: var(--ink); text-transform: uppercase; }
+
+  /* ------------------------------------------------------------ ledger */
+
+  .section-head {
+    padding: 58px 0 8px;
+  }
+  .section-head h2 {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 14px;
+  }
+  .section-head p {
+    max-width: var(--measure);
+    color: var(--ink-soft);
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .ledger { width: 100%; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 200px 1fr 116px;
+    gap: 20px;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .row:first-child { border-top: 1px solid var(--rule); }
+
+  .row-label {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+  .row-label span {
+    display: block;
+    color: var(--ink-faint);
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .bars { display: flex; flex-direction: column; gap: 5px; }
+
+  .bar-line { display: flex; align-items: center; gap: 10px; }
+
+  .bar {
+    height: 13px;
+    flex: none;
+    min-width: 2px;
+  }
+  .bar.was  { background: var(--agent); opacity: 0.62; }
+  .bar.now  { background: var(--deriv); }
+
+  .bar-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .row-mult {
+    font-family: var(--mono);
+    font-size: 17px;
+    font-weight: 600;
+    text-align: right;
+    color: var(--deriv);
+    font-variant-numeric: tabular-nums;
+  }
+  .row-mult span { display: block; font-size: 10px; font-weight: 400; letter-spacing: 0.1em; color: var(--ink-faint); text-transform: uppercase; margin-top: 2px; }
+
+  /* ------------------------------------------------------------- rules */
+
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 2px; margin-top: 30px; }
+
+  .rule-card {
+    padding: 22px 22px 24px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+  }
+  .rule-card h3 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .rule-card p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-soft); }
+  .rule-card p + p { margin-top: 10px; }
+  .rule-card em { color: var(--ink); font-style: italic; }
+
+  /* ------------------------------------------------------------- notes */
+
+  .colophon {
+    margin-top: 60px;
+    padding-top: 26px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 26px;
+  }
+  .fact { }
+  .fact dt {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 6px;
+  }
+  .fact dd {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .fact dd small { display: block; font-family: var(--serif); font-size: 13.5px; color: var(--ink-soft); margin-top: 5px; line-height: 1.45; }
+
+  a { color: var(--deriv); }
+  a:focus-visible, .node:focus-visible { outline: 2px solid var(--agent); outline-offset: 3px; }
+
+  @media (max-width: 820px) {
+    .band { grid-template-columns: 1fr; gap: 22px; padding: 34px 0; }
+    .rail p { max-width: var(--measure); }
+    .row { grid-template-columns: 1fr; gap: 10px; }
+    .row-mult { text-align: left; }
+    .chev { display: none; }
+    .node { flex: 1 1 100%; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">arga · pipeline as of 31 July 2026</p>
+    <h1>Roblox game, start to finish, in two kinds of step</h1>
+    <p class="thesis">
+      Every seam in this pipeline is either an <strong>agent</strong> (judgement, expensive,
+      never reproducible twice) or a <strong>derivation</strong> (code, free, identical every
+      run). The architecture is one long argument for moving work from the first kind into the
+      second. Prose has to be re-interpreted by whoever reads it next, and interpretation is
+      where two build agents quietly become two different games.
+    </p>
+
+    <div class="legend">
+      <span class="legend-item"><span class="swatch is-agent"></span> agent · LLM, costs tokens</span>
+      <span class="legend-item"><span class="swatch is-deriv"></span> derivation · code, costs nothing</span>
+      <span class="legend-item"><span class="swatch is-art"></span> artifact on disk</span>
+    </div>
+  </header>
+
+  <!-- ================================================== stage 0 -->
+  <section class="band">
+    <div class="rail">
+      <p class="rail-num">STAGE 0</p>
+      <h2>Concept</h2>
+      <p>
+        An interview, not a prompt. It researches real competitors, questions the developer
+        across several rounds, and tags every line with who decided it. That tag is what tells
+        all 55 downstream agents how much latitude they have.
+      </p>
+      <span class="status">working · 4 runs recorded</span>
+    </div>
+    <div>
+      <div class="flow">
+        <div class="node agent">
+          <p class="node-kind">agent</p>
+          <p class="node-name">/game-concept</p>
+          <p class="node-note">Interviews, fetches references, writes provenance-tagged sheets.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node artifact">
+          <p class="node-kind">artifact</p>
+          <p class="node-name">concept/spec/{slug}/</p>
+          <p class="node-note">11 files. <code>HANDOFF.md</code> routes readers by subject.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node gate">
+          <p class="node-kind">gate · deterministic</p>
+          <p class="node-name">concept:lint</p>
+          <p class="node-note">Audit-table coverage, malformed tags, placeholders, glossary gaps. 31 tests behind it.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node agent">
+          <p class="node-kind">agent</p>
+          <p class="node-name">concept-verifier</p>
+          <p class="node-note">Six lenses: contradiction, occupancy, feasibility, dead ends, overlap, authority.</p>
+        </div>
+      </div>
+      <p class="loop">
+        <b>Why both a gate and a verifier.</b> The gate runs first and finds everything countable,
+        so the agent's whole budget goes on judgement. Run them the other way around and you pay
+        an LLM to count rows.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================== CID -->
+  <section class="band">
+    <div class="rail">
+      <p class="rail-num">CREATIVE IDEA DEPARTMENT</p>
+      <h2>CID</h2>
+      <p>
+        Nine categories, 55 domains. Stage 0 settles the constraints; CID makes the actual
+        decisions inside them, in enough detail that a build agent never infers. This is where
+        almost all the money goes.
+      </p>
+      <span class="status is-partial">wave 1 of 7 · 14 domains · 37 sheets</span>
+    </div>
+    <div>
+      <div class="flow">
+        <div class="node agent">
+          <p class="node-kind">agent · ×9</p>
+          <p class="node-name">cid-category-lead</p>
+          <p class="node-note">Relays binding constraints to its domains, provenance intact.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node agent">
+          <p class="node-kind">agent · ×55</p>
+          <p class="node-name">cid-domain-lead</p>
+          <p class="node-note">Enumerates one domain, assigns one sheet per real decision. <b>The last step allowed to fetch.</b></p>
+        </div>
+      </div>
+
+      <div class="flow" style="margin-top:12px">
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">npm run cid:research</p>
+          <p class="node-note">Banks every fetched page into one deduped file. 45 sources. Fetch once, cite many.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">npm run cid:pack</p>
+          <p class="node-note">One domain's entire context: assignment, brief list, keys it owns, every decision made elsewhere. 151 lines.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">npm run cid:digest</p>
+          <p class="node-note">Every sheet's decision and stated boundary. 9,343 lines of sheet down to 40.</p>
+        </div>
+      </div>
+
+      <div class="flow" style="margin-top:12px">
+        <div class="node agent">
+          <p class="node-kind">agent · ×55</p>
+          <p class="node-name">cid-domain-writer</p>
+          <p class="node-note">Writes a whole domain's sheets in one pass. <b>No fetch tools.</b> Reads the pack, not the repo.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node artifact">
+          <p class="node-kind">artifact</p>
+          <p class="node-name">cid/**/NN-*.md</p>
+          <p class="node-note">Prose for humans, a fenced <code>manifest</code> block for machines.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node gate">
+          <p class="node-kind">gate · deterministic</p>
+          <p class="node-name">npm run cid:verify</p>
+          <p class="node-note">Index matches disk, one key one owner, one word one spelling, cited URLs exist, prose budget.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node agent">
+          <p class="node-kind">agent · ×10</p>
+          <p class="node-name">cid-verifier</p>
+          <p class="node-note">Contradiction and feasibility only. Everything countable is already gone.</p>
+        </div>
+      </div>
+
+      <p class="loop">
+        <b>The rule that makes this affordable.</b> A writer may not read a sibling sheet and may
+        not fetch. Both are handed to it pre-derived. Reading siblings cost roughly 86,000 tokens
+        a sheet to learn about 90 lines of fact, and it never actually prevented the overlap it
+        was meant to prevent. One writer holding a whole domain cannot collide with itself.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================== bridge -->
+  <section class="band">
+    <div class="rail">
+      <p class="rail-num">THE SEAM</p>
+      <h2>Bridge</h2>
+      <p>
+        Deliberately not an agent. A merger cannot interpret, which is the entire point: it
+        collects declared values, refuses duplicates, and checks them against a contract that
+        knows rarer tiers must pay more and an area must physically hold its patch count.
+      </p>
+      <span class="status">working · 11/11 keys · 54 tests</span>
+    </div>
+    <div>
+      <div class="flow">
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">merge.mjs</p>
+          <p class="node-note">Lifts every <code>manifest</code> block. Two sheets claiming one key is a hard error naming both files.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">schema.mjs</p>
+          <p class="node-note">11 keys and their cross-field invariants. Two tiers may not share a shape, so rarity survives colour-blindness by construction.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node artifact">
+          <p class="node-kind">artifact</p>
+          <p class="node-name">GameConfig.luau</p>
+          <p class="node-note">Generated. Loads outside Roblox, so its curves are testable.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node artifact">
+          <p class="node-kind">artifact</p>
+          <p class="node-name">docs/BUILD-ORDER.md</p>
+          <p class="node-note">11 modules, topologically sorted, each with acceptance criteria.</p>
+        </div>
+      </div>
+      <p class="loop">
+        <b>Why this exists.</b> The game was built by hand once, first. Every key in the contract
+        is something the builder had to invent on the spot because no sheet supplied it: patch
+        counts, tier weights, cost curves, tick rates, and the six relic names, which was squarely
+        a spec writer's job. The list is empirical, not theoretical.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================== stage 1 + ship -->
+  <section class="band">
+    <div class="rail">
+      <p class="rail-num">STAGE 1 · SHIP</p>
+      <h2>ui-forge, then Rojo</h2>
+      <p>
+        Built because Claude's Roblox UI was consistently ugly, and the diagnosis was two missing
+        systems rather than bad prompting: nothing forbade inventing colours, and nothing ever
+        rendered. Tokens fix the first, the render-and-critique loop fixes the second.
+      </p>
+      <span class="status is-thin">working · 1 pattern · narrowest point</span>
+    </div>
+    <div>
+      <div class="flow">
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">compose(brief, theme)</p>
+          <p class="node-note">Brief plus theme to spec, in pure code. Specs are build artifacts and are never hand-edited.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node agent">
+          <p class="node-kind">agent · loop</p>
+          <p class="node-name">render → shoot → critique</p>
+          <p class="node-note">Generation stops being blind. A critic that finds a fault edits the brief and recompiles.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node deriv">
+          <p class="node-kind">derivation</p>
+          <p class="node-name">npm run emit</p>
+          <p class="node-note">Luau for Rojo. Preview and runtime are tested to stay in step.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node artifact">
+          <p class="node-kind">artifact</p>
+          <p class="node-name">game/ → Roblox</p>
+          <p class="node-note">5,932 lines of Luau. Playable.</p>
+        </div>
+      </div>
+      <p class="loop">
+        <b>The known gap.</b> ui-forge has exactly one pattern, a centred dismissible panel with a
+        grid of items. CID routinely asks for shapes outside it: persistent HUDs, settings lists,
+        maps, text inputs. Everything upstream is now cheaper than the thing it feeds.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================== ledger -->
+  <div class="section-head">
+    <h2>What the derivations bought</h2>
+    <p>
+      Measured on wave 1's own files, not projected. Wave 1 ran one agent per sheet and spent
+      about 97% of its tokens on input, most of it the same bytes delivered 37 separate times.
+    </p>
+  </div>
+
+  <div class="ledger">
+    <div class="row">
+      <div class="row-label">sibling sheets<span>read to find a boundary</span></div>
+      <div class="bars">
+        <div class="bar-line"><div class="bar was" style="width:86%"></div><span class="bar-tag">9,343 lines, per writer</span></div>
+        <div class="bar-line"><div class="bar now" style="width:0.37%"></div><span class="bar-tag">40-line digest</span></div>
+      </div>
+      <div class="row-mult">234×<span>smaller</span></div>
+    </div>
+
+    <div class="row">
+      <div class="row-label">occupancy research<span>search, then fetch</span></div>
+      <div class="bars">
+        <div class="bar-line"><div class="bar was" style="width:60%"></div><span class="bar-tag">~60k per sheet, searched fresh</span></div>
+        <div class="bar-line"><div class="bar now" style="width:5.5%"></div><span class="bar-tag">45 sources, banked once</span></div>
+      </div>
+      <div class="row-mult">11×<span>smaller</span></div>
+    </div>
+
+    <div class="row">
+      <div class="row-label">the brief<span>handed to every writer</span></div>
+      <div class="bars">
+        <div class="bar-line"><div class="bar was" style="width:100%"></div><span class="bar-tag">1,667 lines</span></div>
+        <div class="bar-line"><div class="bar now" style="width:56.5%"></div><span class="bar-tag">942, minus the report on its own making</span></div>
+      </div>
+      <div class="row-mult">1.8×<span>smaller</span></div>
+    </div>
+
+    <div class="row">
+      <div class="row-label">theme/tone, measured<span>4 sheets, same brief</span></div>
+      <div class="bars">
+        <div class="bar-line"><div class="bar was" style="width:100%"></div><span class="bar-tag">~640,000 tokens · 4 agents</span></div>
+        <div class="bar-line"><div class="bar now" style="width:23%"></div><span class="bar-tag">147,494 tokens · 1 agent</span></div>
+      </div>
+      <div class="row-mult">4.3×<span>cheaper</span></div>
+    </div>
+  </div>
+
+  <!-- ================================================== rules -->
+  <div class="section-head">
+    <h2>Three rules that are load-bearing</h2>
+    <p>Everything above follows from these. They are in the repo's CLAUDE.md, and breaking one is how the pipeline regresses.</p>
+  </div>
+
+  <div class="rules">
+    <div class="rule-card">
+      <h3>Seams are derivations, never prompts</h3>
+      <p>
+        Every handoff between stages is pure code: <em>compose(brief, theme)</em>, the manifest
+        merger, the context pack. Prose gets re-interpreted downstream, and interpretation is
+        where visual and design variance re-enters.
+      </p>
+    </div>
+    <div class="rule-card">
+      <h3>Prefer changes that make bad output impossible</h3>
+      <p>
+        Tokens, validators and lint passes beat making one screen prettier by hand. The schema
+        refuses two tiers that share a shape, so rarity stays readable with colour thrown away.
+        Nobody has to remember that.
+      </p>
+    </div>
+    <div class="rule-card">
+      <h3>A budget on prose, never on checks</h3>
+      <p>
+        Learned the hard way this week. Given a flat line cap, a writer cut a twelve-entry
+        exclusion list to six and dropped every named object, keeping the paragraphs that
+        explained itself.
+      </p>
+      <p>
+        A build agent cannot count <em>not spooky</em>. It can count cobwebs. Tables are now
+        exempt from the budget.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================== colophon -->
+  <dl class="colophon">
+    <div class="fact">
+      <dt>Built</dt>
+      <dd>4 of 5 stages
+        <small>Stage 0, CID wave 1, bridge and ui-forge all run. Waves 2 to 7 are the remaining work.</small>
+      </dd>
+    </div>
+    <div class="fact">
+      <dt>Contract</dt>
+      <dd>11 keys
+        <small>Each one a value a human builder had to invent because no sheet supplied it.</small>
+      </dd>
+    </div>
+    <div class="fact">
+      <dt>Tests</dt>
+      <dd>85 + Luau
+        <small>38 bridge, 16 context, 31 stage-0 gate, plus config curves that run outside Roblox.</small>
+      </dd>
+    </div>
+    <div class="fact">
+      <dt>Open</dt>
+      <dd>5 categories
+        <small>UI/UX, Audio, Analytics, Live Ops and Discovery own no contract key, so today they would produce prose with no path into a build.</small>
+      </dd>
+    </div>
+  </dl>
+
+</div>
+
+</body>
+</html>
