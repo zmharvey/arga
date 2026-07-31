@@ -38,15 +38,15 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/shared/GameConfig.luau",
       "side": "shared",
       "responsibility": "Hold every tuned value. Generated from spec sheets by the bridge, never authored.",
-      "reads": [],
-      "exposes": ["GameConfig table", "upgradeCost(upgrade, level)", "tierByWeight(roll)"],
+      "reads": ["tree"],
+      "exposes": ["GameConfig table", "upgradeCost(upgrade, level)", "upgradeEffect(upgrade, level)", "tierByWeight(roll)"],
       "dependsOn": [],
       "forbids": [
         "hand-editing this file — the bridge overwrites it and the sheet becomes a lie",
         "constructing any Roblox type, so the module stays loadable outside the engine"
       ],
       "criteria": [
-        "regenerating with `npm run bridge -- --emit` produces no diff",
+        "regenerating with `npm run architect -- --emit` produces no diff — that command, not `npm run bridge -- --emit`, which cannot see the technical keys and errors on runtime.clearTickRate",
         "`luau game/test/config.spec.luau` passes with the file loaded outside Roblox"
       ]
     },
@@ -55,7 +55,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/shared/Layout.luau",
       "side": "shared",
       "responsibility": "Produce the area's patch positions, tiers and buried relics deterministically from a fixed seed.",
-      "reads": ["area", "collection", "onboarding", "tiers"],
+      "reads": ["area", "collection", "onboarding", "tiers", "tree", "stateShape", "interfaces"],
       "exposes": ["build(): { Patch }"],
       "dependsOn": ["config"],
       "forbids": [
@@ -74,7 +74,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/shared/Protocol.luau",
       "side": "shared",
       "responsibility": "Name the remotes and define the shape of the state snapshot both sides agree on.",
-      "reads": ["collection", "upgrades", "currency"],
+      "reads": ["collection", "upgrades", "currency", "tree", "stateShape", "interfaces"],
       "exposes": ["REMOTES table", "snapshotShape()"],
       "dependsOn": ["config"],
       "forbids": [
@@ -90,7 +90,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Persistence.luau",
       "side": "server",
       "responsibility": "Load and save a player's currency, upgrades, collection and cleared state, and collapse a finished area to one flag.",
-      "reads": ["runtime", "area", "playerState"],
+      "reads": ["runtime", "area", "stateShape", "tree", "interfaces", "wiring"],
       "exposes": ["load(player): PlayerState", "save(player, state)", "defaultState(): PlayerState"],
       "dependsOn": ["config"],
       "forbids": [
@@ -108,7 +108,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Progression.luau",
       "side": "server",
       "responsibility": "Own currency, upgrade levels, purchase validation, and every quantity derived from an upgrade level: clear radius, walk speed and the payout multiplier.",
-      "reads": ["upgrades", "movement", "playerState"],
+      "reads": ["upgrades", "movement", "stateShape", "tree", "interfaces"],
       "exposes": [
         "award(state, amount)",
         "tryBuy(state, upgradeId): boolean",
@@ -132,8 +132,8 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Plots.luau",
       "side": "server",
       "responsibility": "Build and tear down one player's plot of patch Instances, and hold the slot it occupies.",
-      "reads": ["area", "patch", "tiers", "playerState"],
-      "exposes": ["claimSlot(): number", "releaseSlot(n)", "spawn(player, state)", "despawn(state)"],
+      "reads": ["area", "patch", "tiers", "stateShape", "tree", "interfaces", "representation"],
+      "exposes": ["claimSlot(): number", "releaseSlot(n)", "spawn(player, state): CFrame", "despawn(state)"],
       "dependsOn": ["config", "layout"],
       "forbids": [
         "deriving a plot's position from the live player count — a slot is claimed once and held, or plots move out from under their owners as people join and leave",
@@ -151,9 +151,9 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/Clearing.luau",
       "side": "server",
       "responsibility": "Observe player positions on a tick, clear patches within reach, award currency and reveal relics.",
-      "reads": ["runtime", "tiers", "movement", "playerState"],
+      "reads": ["runtime", "tiers", "movement", "stateShape", "tree", "interfaces", "wiring", "representation"],
       "applies": ["radius", "value"],
-      "exposes": ["tick(states)", "start()"],
+      "exposes": ["tick(states)", "start(states)"],
       "dependsOn": ["config", "progression", "plots"],
       "forbids": [
         "accepting any client message about clearing — the server observes, it never asks",
@@ -171,7 +171,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/server/init.server.luau",
       "side": "server",
       "responsibility": "Wire lifecycle: create remotes, load and save around join and leave, start the tick, bind shutdown, and apply derived character properties on spawn and after a purchase.",
-      "reads": ["runtime", "playerState", "upgrades"],
+      "reads": ["runtime", "stateShape", "upgrades", "tree", "interfaces", "wiring", "movement"],
       "applies": ["speed"],
       "exposes": ["none — this is the entry point"],
       "dependsOn": ["protocol", "persistence", "progression", "plots", "clearing"],
@@ -190,7 +190,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/client/HudBinding.luau",
       "side": "client",
       "responsibility": "Find the named nodes in the ui-forge HUD and write live state into them.",
-      "reads": ["upgrades", "currency"],
+      "reads": ["upgrades", "currency", "collection", "area", "tree", "interfaces", "representation"],
       "exposes": ["bind(root, gui): (snapshot) -> ()"],
       "dependsOn": ["protocol"],
       "forbids": [
@@ -208,7 +208,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/client/Input.luau",
       "side": "client",
       "responsibility": "Turn player input into purchase requests.",
-      "reads": [],
+      "reads": ["upgrades", "tree", "interfaces"],
       "exposes": ["connect(remotes)"],
       "dependsOn": ["protocol"],
       "forbids": [
@@ -224,7 +224,7 @@ that already exists in code rather than one that sounded right on paper.
       "path": "game/src/client/init.client.luau",
       "side": "client",
       "responsibility": "Boot the HUD screen, connect the binding and the input, and ask the server for initial state.",
-      "reads": [],
+      "reads": ["tree", "interfaces", "wiring", "representation"],
       "exposes": ["none — this is the entry point"],
       "dependsOn": ["protocol", "hud-binding", "input"],
       "forbids": [
@@ -250,13 +250,25 @@ that already exists in code rather than one that sounded right on paper.
 
 ## Acceptance criteria
 
-1. Every module's `reads` names a real contract key.
+1. Every module's `reads` names a real key in one of the two contracts — the nine creative keys
+   in `bridge/schema.mjs` or the seven technical ones in `architect/schema.mjs`.
 2. No dependency cycle, and no cross-side dependency except on `shared`.
 3. Every module has at least one acceptance criterion.
-4. `npm run bridge -- --emit` produces a build order whose module count matches this list.
+4. `npm run architect -- --emit` produces a build order whose module count matches this list.
+5. Every function in an `exposes` list appears in `interfaces` with its parameters resolved, and
+   the reverse. The architect gate refuses a mismatch in one direction; the other is this
+   criterion.
 
 ## Not decided here
 
 Implementation of any module. The save schema's field names (Persistence's own sheet). The
 HUD's structure (UI/UX). Whether six server modules is right for a game this size — flagged
 above as arguable.
+
+**Amended by `05-interfaces.md`:** `config` gained `upgradeEffect(upgrade, level)`, which exists
+in the generated file and which `progression`'s three derived quantities each call, so leaving it
+undeclared made three modules re-decide "additive or compounding". `clearing.start()` became
+`clearing.start(states)`, because it owns the tick cadence and therefore has to be handed the
+collection it ticks. `plots.spawn` now states its return, a `CFrame`, because
+`onboarding.guaranteedFirstRelic` is kept by where the character arrives and `server-main` may
+not derive that point a second time.

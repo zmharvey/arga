@@ -250,17 +250,27 @@ test('a brief with no process artifact reports no exclusions', async () => {
 /* ---------------------------------------------------------------- contract */
 
 test('contractSlice splits the contract into mine and everyone else', async () => {
-  // Architecture gained `playerState` after the first build trial found that eleven keys
-  // described every value and not one type, so two builders invented the state table
-  // differently an hour apart.
-  const { mine, others } = contractSlice('tech/architecture');
-  assert.deepEqual(mine.map((k) => k.key).sort(), ['modules', 'playerState', 'runtime']);
+  const { mine, others } = contractSlice('gameplay/systems');
+  assert.deepEqual(mine.map((k) => k.key).sort(), ['currency', 'tiers']);
   assert.ok(others.length > 0);
-  assert.ok(!others.some((k) => k.owner === 'tech/architecture'));
+  assert.ok(!others.some((k) => k.owner === 'gameplay/systems'));
+});
+
+test('the creative contract owns no technical key', async () => {
+  // `modules`, `runtime` and the state shape moved to `architect/` once two build trials
+  // showed that ~15 of 21 things stopping a builder were not creative questions. CID's
+  // "Tech & Data" category was a category error, and this is the guard against it
+  // reappearing: no creative domain may own a technical key again.
+  const { SCHEMA } = await import('../schema.mjs');
+  const { TECH_SCHEMA } = await import('../../architect/schema.mjs');
+  const overlap = Object.keys(SCHEMA).filter((k) => k in TECH_SCHEMA);
+  assert.deepEqual(overlap, [], `in both contracts: ${overlap.join(', ')}`);
+  assert.ok(!Object.values(SCHEMA).some((s) => s.owner.startsWith('tech/')),
+    'no creative key may be owned by a tech/* domain');
 });
 
 test('a domain owning nothing gets an empty list, not an error', async () => {
   const { mine, others } = contractSlice('theme/tone');
   assert.deepEqual(mine, []);
-  assert.ok(others.length >= 11, 'every key belongs to somebody else');
+  assert.ok(others.length >= 9, 'every key belongs to somebody else');
 });

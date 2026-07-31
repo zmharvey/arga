@@ -30,7 +30,8 @@
     "cid:digest": "node bridge/cid.mjs digest",
     "cid:research": "node bridge/cid.mjs research",
     "cid:pack": "node bridge/cid.mjs pack",
-    "build:pack": "node bridge/cid.mjs build"
+    "build:pack": "node bridge/cid.mjs build",
+    "architect": "node architect/cli.mjs"
   },
   "engines": {
     "node": ">=20"

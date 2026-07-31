@@ -38,10 +38,15 @@ async function walk(dir) {
 }
 
 /**
- * @param {string} root directory of CID spec sheets
+ * @param {string} root directory of spec sheets
+ * @param {object} [schema] which contract to merge against. Defaults to the creative one.
+ *   The architect passes `TECH_SCHEMA` to merge technical sheets through the same collector,
+ *   because "one key, one owning sheet" is worth enforcing on both contracts and is not
+ *   worth writing twice. When a custom schema is given, validation is the caller's job:
+ *   only this contract's own `validateManifest` knows the creative cross-key invariants.
  * @returns {Promise<{manifest: object, problems: string[], missing: string[], provenance: Record<string,string>, sheetsRead: number, sheetsContributing: number}>}
  */
-export async function mergeSheets(root) {
+export async function mergeSheets(root, schema = SCHEMA) {
   const files = await walk(root);
   const manifest = {};
   /** @type {Record<string,string>} key -> the sheet that provided it */
@@ -68,8 +73,8 @@ export async function mergeSheets(root) {
         problems.push(`${rel}: manifest block needs a "provides" naming the key it supplies`);
         continue;
       }
-      if (!(key in SCHEMA)) {
-        problems.push(`${rel}: provides "${key}", which is not in the build contract. Known keys: ${Object.keys(SCHEMA).join(', ')}`);
+      if (!(key in schema)) {
+        problems.push(`${rel}: provides "${key}", which is not in the build contract. Known keys: ${Object.keys(schema).join(', ')}`);
         continue;
       }
       if (!('value' in block)) {
@@ -92,8 +97,14 @@ export async function mergeSheets(root) {
     if (found) contributing += 1;
   }
 
-  const { problems: schemaProblems, missing } = validateManifest(manifest);
-  problems.push(...schemaProblems);
+  // Only the creative contract's validator knows the creative cross-key invariants. A
+  // caller merging a different schema validates it itself.
+  let missing = [];
+  if (schema === SCHEMA) {
+    const { problems: schemaProblems, missing: absent } = validateManifest(manifest);
+    problems.push(...schemaProblems);
+    missing = absent;
+  }
 
   return {
     manifest,

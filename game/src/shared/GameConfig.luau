@@ -140,7 +140,7 @@ GameConfig.FindNoun = { singular = "Find", plural = "Finds" }
 -- that the first patch has something under it cannot be broken by the shuffle.
 GameConfig.GuaranteedFirstRelic = true
 
--- Server cadences. From tech/architecture/01-server-cadences.md.
+-- Server cadences. From 01-runtime.md.
 GameConfig.ClearTickRate = 0.12
 GameConfig.SaveIntervalSeconds = 45
 GameConfig.DataStoreName = "ArgaRuin_v1"

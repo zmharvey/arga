@@ -46,6 +46,28 @@ function topoSort(modules) {
 const bullet = (items) => (items.length ? items.map((i) => `- ${i}`).join('\n') : '- none');
 
 /**
+ * Technical keys that describe the whole build rather than one module.
+ *
+ * These are read by most modules, so emitting them per module duplicated them badly: the
+ * first build order after the architect stage landed was 6,427 lines, of which roughly 200k
+ * characters were `interfaces` (14.8k chars) repeated for the ten modules that read it, plus
+ * `tree` eleven times and `wiring` four.
+ *
+ * That is the same "same bytes delivered N times" waste the CID context pack was built to
+ * remove, reappearing one stage down. A global fact belongs in one place a builder reads
+ * once.
+ *
+ * `interfaces` is the exception that stays per module: a builder needs its own signatures
+ * and its dependencies', and emphatically not the other eighteen.
+ */
+const GLOBAL_KEYS = ['tree', 'stateShape', 'wiring', 'representation'];
+
+const jsonBlock = (key, value, provenance) => {
+  const from = provenance[key] ? ` *(from ${provenance[key]})*` : '';
+  return `#### \`${key}\`${from}\n\n\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\``;
+};
+
+/**
  * @param {object} manifest validated build manifest
  * @param {Record<string,string>} provenance key -> sheet that provided it
  * @returns {string} markdown build order
@@ -76,12 +98,37 @@ UI modules are absent on purpose: screens come from \`ui-forge\` via
 \`npm run emit\`, not from here.
 `);
 
+  /* ---------------- the technical layer, stated once for every module ---------------- */
+
+  const globals = GLOBAL_KEYS.filter((k) => manifest[k] !== undefined);
+  if (globals.length) {
+    out.push(`
+---
+
+# How this build is put together
+
+**Read this once. It applies to every module below**, so it is not repeated in each one.
+These are the architect's decisions, not the designers': where code lives, what a player's
+state looks like, what each object is made of, and what happens in what order.
+
+${globals.map((k) => jsonBlock(k, manifest[k], provenance)).join('\n\n')}
+`);
+  }
+
   ordered.forEach((m, i) => {
-    const resolved = (m.reads ?? []).map((key) => {
-      const value = manifest[key];
-      const from = provenance[key] ? ` *(from ${provenance[key]})*` : '';
-      return `#### \`${key}\`${from}\n\n\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\``;
-    });
+    // Per module: the creative values it reads, plus only the signatures it can actually
+    // call — its own and its dependencies'. Handing a builder all 22 interfaces was how the
+    // brief for one module reached 982 lines.
+    const ownAndDeps = new Set([m.id, ...(m.dependsOn ?? [])]);
+    const resolved = (m.reads ?? [])
+      .filter((key) => !GLOBAL_KEYS.includes(key))
+      .map((key) => {
+        if (key === 'interfaces') {
+          const mine = (manifest.interfaces ?? []).filter((i) => ownAndDeps.has(i.module));
+          return jsonBlock('interfaces (yours and your dependencies\')', mine, provenance);
+        }
+        return jsonBlock(key, manifest[key], provenance);
+      });
 
     out.push(`
 ---

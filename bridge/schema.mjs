@@ -173,46 +173,6 @@ export const SCHEMA = {
     },
   },
 
-  playerState: {
-    doc: 'The shape of one player\'s live state: every field, who writes it, and what survives a rejoin.',
-    owner: 'tech/architecture',
-    shape: {
-      fields: 'array',
-      types: 'object',
-    },
-    check(ps) {
-      const problems = [];
-      if (!Array.isArray(ps.fields) || !ps.fields.length) {
-        problems.push('playerState.fields must be a non-empty array');
-        return problems;
-      }
-      const names = new Set();
-      for (const f of ps.fields) {
-        if (!f?.name || !f?.type || !f?.writtenBy) {
-          problems.push(`playerState field ${JSON.stringify(f?.name ?? '?')} needs a name, a type and a writtenBy`);
-          continue;
-        }
-        if (names.has(f.name)) problems.push(`two playerState fields are both called "${f.name}"`);
-        names.add(f.name);
-        if (typeof f.persisted !== 'boolean') {
-          // Left unstated, every module guesses, and the guesses only disagree in
-          // production when a player rejoins.
-          problems.push(`playerState field "${f.name}" does not say whether it is persisted`);
-        }
-      }
-      // A named type that nothing uses is dead weight; a used type that is not named is
-      // the gap that made two builders invent the same record differently.
-      for (const f of ps.fields) {
-        const named = String(f.type ?? '').replace(/[[\]?<>]/g, ' ').split(/[\s,]+/).filter(Boolean);
-        for (const t of named) {
-          if (/^[A-Z]/.test(t) && !(t in (ps.types ?? {}))) {
-            problems.push(`playerState field "${f.name}" is typed "${f.type}" but "${t}" is not defined in playerState.types`);
-          }
-        }
-      }
-      return problems;
-    },
-  },
 
   patch: {
     doc: 'The physical footprint of one piece of overgrowth.',
@@ -288,95 +248,17 @@ export const SCHEMA = {
     },
   },
 
-  modules: {
-    doc: 'The build plan: which modules exist, what each owns, and what it may not do.',
-    owner: 'tech/architecture',
-    minItems: 1,
-    array: {
-      id: 'slug',
-      path: 'string',
-      side: 'enum:server,client,shared',
-      responsibility: 'string',
-      reads: 'array',
-      exposes: 'array',
-      dependsOn: 'array',
-      criteria: 'array',
-    },
-    check(modules) {
-      const problems = [];
-      const byId = new Map(modules.map((m) => [m.id, m]));
-      const paths = new Set();
 
-      for (const m of modules) {
-        if (paths.has(m.path)) problems.push(`two modules claim the path ${m.path}`);
-        paths.add(m.path);
-
-        // A module reading a key nobody supplies is a build that stops halfway.
-        for (const key of m.reads) {
-          if (!(key in SCHEMA) || key === 'modules') {
-            problems.push(`module "${m.id}" reads "${key}", which is not a contract key`);
-          }
-        }
-        for (const dep of m.dependsOn) {
-          if (!byId.has(dep)) problems.push(`module "${m.id}" depends on "${dep}", which does not exist`);
-        }
-        if (m.criteria.length === 0) {
-          problems.push(`module "${m.id}" has no acceptance criteria; a builder cannot prove it finished`);
-        }
-        if (m.exposes.length === 0 && m.side !== 'client') {
-          problems.push(`module "${m.id}" exposes nothing and is not a client entry point; either it is dead or its interface is unstated`);
-        }
-        // Sides can only depend inward: client and server may read shared, never
-        // each other. Getting this wrong produces a require that cannot resolve at
-        // runtime, which is a class of bug worth refusing on paper.
-        for (const dep of m.dependsOn) {
-          const d = byId.get(dep);
-          if (!d) continue;
-          if (m.side !== d.side && d.side !== 'shared') {
-            problems.push(`module "${m.id}" (${m.side}) depends on "${dep}" (${d.side}); only shared may be depended on across sides`);
-          }
-        }
-      }
-
-      // A cycle means there is no order a builder can work in.
-      const state = new Map();
-      const visit = (id, trail) => {
-        if (state.get(id) === 'done') return;
-        if (state.get(id) === 'open') {
-          problems.push(`dependency cycle: ${[...trail, id].join(' -> ')}`);
-          return;
-        }
-        state.set(id, 'open');
-        for (const dep of byId.get(id)?.dependsOn ?? []) visit(dep, [...trail, id]);
-        state.set(id, 'done');
-      };
-      for (const m of modules) visit(m.id, []);
-
-      return problems;
-    },
-  },
-
-  runtime: {
-    doc: 'Server cadences and storage identity. Technical, not creative.',
-    owner: 'tech/architecture',
-    shape: {
-      clearTickRate: 'number>0',
-      saveIntervalSeconds: 'number>0',
-      dataStoreName: 'string',
-    },
-    check(r) {
-      const problems = [];
-      if (r.clearTickRate > 0.25) {
-        problems.push(`runtime.clearTickRate ${r.clearTickRate}s is slow enough to feel laggy on contact; proximity clearing needs a tick under 0.25s`);
-      }
-      return problems;
-    },
-  },
 };
 
 /* ------------------------------------------------------------------ checking */
 
-function typeError(path, value, spec) {
+/**
+ * Exported so `architect/` validates its technical contract with the same type language
+ * rather than a second, subtly different copy. Two validators that disagree about what
+ * `number>0` means is exactly the class of divergence this repo exists to prevent.
+ */
+export function typeError(path, value, spec) {
   const t = typeof value;
   if (spec === 'string' || spec === 'slug') {
     if (t !== 'string' || value.length === 0) return `${path} must be a non-empty string`;
@@ -528,141 +410,19 @@ const PROSE_PATHS = [/\.blurb$/, /\.flavour$/];
  * the exact failure this seam exists to remove. A banned word is the part of a naming rule
  * that a machine can hold, so it is held here.
  */
-/**
- * Every upgrade the player can buy must have a module that turns its level into an effect.
+/*
+ * Three cross-key checks used to live here: an upgrade nothing computed, a state field with
+ * no writer, and an upgrade base disagreeing with movement. All three needed `modules`,
+ * which is a technical key and now belongs to the architect.
  *
- * Found by the first agent that ever tried to build from this contract, in 84k tokens,
- * after three CID verification passes and every check in this file had already passed.
- *
- * `upgrades` carried `value` with `perLevel: 0.25` and `maxLevel: 10`, so a player could
- * spend 25 → 1099 shards on ten levels of it. No module's `exposes` list produced a value
- * multiplier. Meanwhile `clearing`'s acceptance criterion 3 read "payout equals tier value
- * times the player's value multiplier" — a criterion depending on a number nobody was told
- * to compute. `radius` and `speed` were fine, because `progression` happened to expose
- * `clearRadius` and `walkSpeed`.
- *
- * Nothing caught it because every existing check looks *within* one key. This one looks
- * across two: the thing the player buys, and the thing that reads what they bought.
- *
- * The match is by name and deliberately loose (`value` matching `valueMultiplier`,
- * `payoutMultiplier`, `getValue`). A false negative here costs a build agent an hour; a
- * false positive costs a designer an argument with a linter, so it errs toward silence.
+ * They were also three special cases of one rule, each added after a build trial found the
+ * next instance. `architect/validate.mjs` states the rule once instead: every declared
+ * thing has a producer and a consumer.
  */
-function orphanedUpgrades(manifest) {
-  const { upgrades, modules } = manifest;
-  if (!Array.isArray(upgrades) || !Array.isArray(modules)) return [];
 
-  const surface = modules
-    .flatMap((m) => (Array.isArray(m.exposes) ? m.exposes : []))
-    .map((e) => String(e).toLowerCase());
-  if (!surface.length) return [];
-
-  const problems = [];
-  for (const u of upgrades) {
-    const id = String(u.id ?? '').toLowerCase();
-    if (!id) continue;
-    // "radius" is consumed by `clearRadius(state)`; substring either way catches the
-    // realistic namings without needing a vocabulary of synonyms.
-    const consumed = surface.some((fn) => fn.includes(id) || id.includes(fn.replace(/\(.*/, '')));
-    if (!consumed) {
-      problems.push(
-        `upgrade "${u.id}" costs up to ${Math.floor(u.costBase * u.costGrowth ** (u.maxLevel - 1))} `
-        + `across ${u.maxLevel} levels, but no module exposes anything that reads it — `
-        + `a player can buy it and nothing in the build changes. Either a module must expose `
-        + `a getter derived from "${u.id}", or the upgrade should not be in the ladder.`,
-      );
-    }
-  }
-  return problems;
-}
-
-/**
- * The two structural gaps the first build trial exposed, now checkable.
- *
- * Both were invisible to every existing check because every existing check looked at one
- * key in isolation, and both cost a builder real time:
- *
- * 1. `radius` and `speed` take their level-0 value from `movement`, and now also carry a
- *    `base`. Two numbers for one fact drift silently, so they are compared.
- * 2. Every `playerState` field claims a writing module. If that module does not exist, or
- *    the field is written by nobody, the state table has an author nobody can find.
- */
-function structuralProblems(manifest) {
-  const problems = [];
-  const { upgrades, movement, playerState, modules } = manifest;
-
-  if (Array.isArray(upgrades) && movement) {
-    const externalBase = { radius: 'baseClearRadius', speed: 'baseWalkSpeed' };
-    for (const u of upgrades) {
-      const key = externalBase[u.id];
-      if (key && movement[key] !== undefined && u.base !== movement[key]) {
-        problems.push(
-          `upgrade "${u.id}" has base ${u.base} but movement.${key} is ${movement[key]}; `
-          + 'one of them is what the player starts with and the other is a stale copy.',
-        );
-      }
-    }
-  }
-
-  // Computing a value is not the same as applying it, and the gap between the two is
-  // invisible to every check above. The second build trial found `Progression.walkSpeed`
-  // existing, satisfying `orphanedUpgrades`, and nothing writing it to a Humanoid: both
-  // modules that touch the character declined it in their reports, and the build order
-  // named no third. The Pace upgrade was purchasable with no effect.
-  //
-  // `applies` is the module-side answer, mirroring `playerState.writtenBy`: exactly one
-  // module takes responsibility for making each upgrade visible to the player.
-  if (Array.isArray(upgrades) && Array.isArray(modules)) {
-    const appliedBy = new Map();
-    for (const m of modules) {
-      for (const id of Array.isArray(m.applies) ? m.applies : []) {
-        if (appliedBy.has(id)) {
-          problems.push(`upgrades "${id}" is applied by both "${appliedBy.get(id)}" and "${m.id}"; two modules writing one effect race`);
-        }
-        appliedBy.set(id, m.id);
-      }
-    }
-    const anyDeclared = appliedBy.size > 0;
-    for (const u of upgrades) {
-      if (!appliedBy.has(u.id)) {
-        // Only fires once some module has declared `applies`, so a manifest predating the
-        // field is not spammed with eleven problems it cannot act on.
-        if (anyDeclared) {
-          problems.push(
-            `upgrade "${u.id}" is computed but no module declares it in "applies"; `
-            + 'a player can buy it and see nothing change. Name the module that makes it take effect.',
-          );
-        }
-      }
-    }
-    for (const [id, mod] of appliedBy) {
-      if (!upgrades.some((u) => u.id === id)) {
-        problems.push(`module "${mod}" applies "${id}", which is not an upgrade`);
-      }
-    }
-  }
-
-  if (playerState && Array.isArray(playerState.fields) && Array.isArray(modules)) {
-    const ids = new Set(modules.map((m) => m.id));
-    for (const f of playerState.fields) {
-      if (f?.writtenBy && !ids.has(f.writtenBy)) {
-        problems.push(`playerState field "${f.name}" is written by "${f.writtenBy}", which is not a module`);
-      }
-    }
-    // The upgrades map is keyed by upgrade id. If a ladder gains an axis and the state
-    // shape does not say so, the persisted table quietly stops round-tripping.
-    const upgradeField = playerState.fields.find((f) => /upgrade/i.test(f?.name ?? ''));
-    if (Array.isArray(upgrades) && !upgradeField) {
-      problems.push('playerState has no field holding upgrade levels, but the ladder has '
-        + `${upgrades.length}; a purchase would have nowhere to be recorded`);
-    }
-  }
-
-  return problems;
-}
 
 function crossCuttingProblems(manifest) {
-  const problems = [...orphanedUpgrades(manifest), ...structuralProblems(manifest)];
+  const problems = [];
   const vocab = manifest.vocabulary;
   if (!vocab || !Array.isArray(vocab.bannedWords)) return problems;
 

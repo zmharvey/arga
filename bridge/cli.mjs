@@ -59,19 +59,16 @@ if (problems.length) {
 
 const ok = problems.length === 0 && missing.length === 0;
 
-if (ok && flag('emit')) {
-  const luau = emitGameConfig(manifest, provenance);
-  await mkdir(dirname(outPath), { recursive: true });
-  await writeFile(outPath, luau, 'utf8');
-  console.log(`\n  emitted ${outPath} (${luau.split('\n').length} lines)`);
-
-  const orderPath = resolve(opt('order-out', 'docs/BUILD-ORDER.md'));
-  const order = emitBuildOrder(manifest, provenance);
-  await mkdir(dirname(orderPath), { recursive: true });
-  await writeFile(orderPath, order, 'utf8');
-  console.log(`  emitted ${orderPath} (${manifest.modules.length} modules, ${order.split('\n').length} lines)`);
-} else if (flag('emit')) {
-  console.log('\n  not emitting — the manifest is incomplete or invalid');
+// Emitting needs both contracts. `GameConfig.luau` carries `runtime`, and `BUILD-ORDER.md`
+// is built from `modules` — both technical keys the architect owns. This command validates
+// the creative half only, so it cannot emit and should say so rather than crash on an
+// undefined key.
+if (flag('emit')) {
+  console.log('\n  --emit moved to `npm run architect -- --emit`.');
+  console.log('  A build reads both contracts: this one checks what the game is, the');
+  console.log('  architect checks how it gets built, and only the architect has the');
+  console.log('  technical keys the emitted files need.\n');
+  process.exit(ok ? 0 : 1);
 }
 
 console.log(`\n${ok ? 'COMPLETE' : 'INCOMPLETE'} — ${supplied.length}/${supplied.length + missing.length} keys supplied, ${problems.length} problem(s)\n`);
