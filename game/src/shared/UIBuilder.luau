@@ -437,8 +437,9 @@ local function buildNode(node, theme, vpClass, parent): GuiObject
 	end
 	-- X was missing here while the spec vocabulary already accepted `auto: 'x'`, so a
 	-- node asking to size to its own width silently got none and collapsed in-engine.
-	-- The HTML preview had the same hole, which hid it: both were wrong the same way,
-	-- so the render loop showed nothing. Keep all three arms in step.
+	-- The HTML preview had the identical hole, which hid it: both were wrong the same
+	-- way, so the render loop reported "clean" on broken output. Keep all three arms
+	-- in step — `ui-forge/test/patterns.test.mjs` asserts that they are.
 	if node.auto == "x" then
 		inst.AutomaticSize = Enum.AutomaticSize.X
 	elseif node.auto == "y" then
