@@ -60,21 +60,26 @@ const TECH = {
   },
   interfaces: [
     { module: 'progression', fn: 'valueMultiplier(state)', returns: 'number', note: 'reads only', params: [{ name: 'state', type: 'PlayerState' }] },
+    { module: 'plots', fn: 'spawn(state)', returns: 'CFrame', note: 'builds the plot', params: [{ name: 'state', type: 'PlayerState' }] },
   ],
   representation: [
-    { subject: 'patch', kind: 'part', rationale: 'one part per patch, no asset pipeline needed' },
-    { subject: 'relic', kind: 'part', rationale: 'placeholder until Art specs meshes' },
+    { subject: 'patch', kind: 'part', rationale: 'one part per patch, no asset pipeline needed', createdBy: 'plots' },
+    { subject: 'relic', kind: 'none', rationale: 'a Find has no Instance; clearing sets state.found', createdBy: 'nothing' },
   ],
   wiring: {
-    onJoin: [{ module: 'persistence', does: 'load or construct the state' }],
-    onSpawn: [{ module: 'server-main', does: 'write Humanoid.WalkSpeed', applies: 'speed' }],
-    onLeave: [{ module: 'persistence', does: 'save' }],
-    constructs: [{ module: 'persistence', initialises: ['currency', 'upgrades'] }],
+    onJoin: [{ module: 'plots', fn: 'spawn(state)', calledBy: 'server-main', does: 'build the plot' }],
+    onSpawn: [{ module: 'progression', fn: 'valueMultiplier(state)', calledBy: 'server-main', does: 'derive the multiplier' }],
+    onLeave: [{ module: 'plots', fn: 'spawn(state)', calledBy: 'server-main', does: 'tear down' }],
+    constructs: [{ module: 'progression', initialises: ['currency', 'upgrades'] }],
   },
+  // Graph-complete on purpose. One traversal now checks every node, so a fixture that
+  // satisfies six narrow checks is no longer enough — and making it complete is what proved
+  // `exposes` had to create fn nodes rather than only point at them.
   modules: [
-    { id: 'config', path: 'a.luau', side: 'shared', responsibility: 'values', reads: [], exposes: ['GameConfig'], dependsOn: [], criteria: ['x'] },
-    { id: 'progression', path: 'b.luau', side: 'server', responsibility: 'derive', reads: ['upgrades'], exposes: ['valueMultiplier(state)'], dependsOn: ['config'], applies: ['value'], criteria: ['x'] },
-    { id: 'server-main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: [], exposes: ['none — this is the entry point'], dependsOn: ['progression'], criteria: ['x'] },
+    { id: 'config', path: 'a.luau', side: 'shared', responsibility: 'values', reads: ['tiers', 'movement', 'patch', 'area', 'collection', 'onboarding', 'currency', 'runtime', 'upgrades'], exposes: ['GameConfig'], dependsOn: [], criteria: ['x'] },
+    { id: 'progression', path: 'b.luau', side: 'server', responsibility: 'derive', reads: ['upgrades', 'stateShape', 'tree', 'interfaces'], exposes: ['valueMultiplier(state)'], dependsOn: ['config'], applies: ['value'], criteria: ['x'] },
+    { id: 'plots', path: 'd.luau', side: 'server', responsibility: 'build the plot', reads: ['representation'], exposes: ['spawn(state)'], dependsOn: ['config'], criteria: ['x'] },
+    { id: 'server-main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: ['wiring'], exposes: [], entryPoint: true, dependsOn: ['progression', 'plots'], criteria: ['x'] },
   ],
 };
 
@@ -130,12 +135,6 @@ test('a quantity parameter with a meaning passes', () => {
   assert.deepEqual(validateShapes(TECH_SCHEMA, t).problems, []);
 });
 
-test('an interface no module declares is rejected', () => {
-  const t = tech();
-  t.interfaces.push({ module: 'progression', fn: 'secretSauce(state)', returns: 'number', note: 'n', params: [] });
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('not in that module\'s exposes')));
-});
-
 /* -------------------------------------------------------- representation */
 
 test('a mesh or model with no named asset is rejected', () => {
@@ -145,10 +144,17 @@ test('a mesh or model with no named asset is rejected', () => {
   assert.ok(validateShapes(TECH_SCHEMA, t).problems.some((p) => p.includes('names no asset')));
 });
 
-test('the game\'s own objects must all be accounted for', () => {
+test('a subject nothing creates is rejected', () => {
   const t = tech();
-  t.representation = t.representation.filter((r) => r.subject !== 'relic');
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('"relic"')));
+  t.representation[0].createdBy = 'nothing'; // a part that nothing builds
+  const p = unconnected(creative(), t).find((x) => x.includes('subject "patch"'));
+  assert.ok(p, 'a part with no creator must be caught');
+  assert.match(p, /nothing creates it/);
+});
+
+test('a subject with no Instance is exempt from needing a creator', () => {
+  // A Find has no Instance at any point: clearing sets state.found and fires a channel.
+  assert.ok(!unconnected(creative(), tech()).some((p) => p.includes('subject "relic"')));
 });
 
 /* ----------------------------------------------------------------- state */
@@ -176,7 +182,7 @@ test('the collection holding many states is itself a contract', () => {
 test('a state field written by a module that does not exist is rejected', () => {
   const t = tech();
   t.stateShape.fields[0].writtenBy = 'ghost';
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('"ghost", which is not a module')));
+  assert.ok(unconnected(creative(), t).some((p) => p.includes('"ghost" is named as a module but no such module exists')));
 });
 
 /* ---------------------------------------------------------------- wiring */
@@ -205,7 +211,7 @@ test('a persisted field nothing initialises is rejected', () => {
 test('constructing a field that does not exist is rejected', () => {
   const t = tech();
   t.wiring.constructs[0].initialises.push('vibes');
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('"vibes", which is not a state field')));
+  assert.ok(unconnected(creative(), t).some((p) => p.includes('"vibes" is named as a field but no such field exists')));
 });
 
 /* --------------------------------------------------------------- modules */
@@ -251,11 +257,10 @@ test('a clear tick slow enough to feel laggy is rejected', () => {
 //
 // Each previously had its own bolted-on check. This is the rule.
 
-test('an upgrade nothing computes is rejected', () => {
-  const t = tech();
-  t.modules[1].exposes = ['somethingElse()'];
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('nothing computes its effect')));
-});
+// The old "nothing computes its effect" rule matched upgrade ids against exposed function
+// names by substring. It was a workaround: `applies` states the same fact exactly, and an
+// upgrade nothing applies is already rejected below. Fuzzy matching is gone rather than kept
+// alongside, because two rules for one fact disagree eventually.
 
 test('an upgrade computed but never applied is rejected', () => {
   const t = tech();
@@ -267,7 +272,7 @@ test('an upgrade computed but never applied is rejected', () => {
 test('two modules applying one upgrade is rejected as a race', () => {
   const t = tech();
   t.modules[2].applies = ['value'];
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('two writers race')));
+  assert.ok(unconnected(creative(), t).some((p) => p.includes('is applies by 2 modules')));
 });
 
 test('a module nothing depends on must be an entry point', () => {
@@ -278,14 +283,11 @@ test('a module nothing depends on must be an entry point', () => {
   assert.match(p, /never run/);
 });
 
-test('a dependency edge nothing uses is rejected', () => {
-  // The fourth instance, never patched before: clearing declared plots and called none of
-  // its four functions. Either the edge is dead or a function is missing.
-  const t = tech();
-  t.modules.push({ id: 'plots', path: 'f.luau', side: 'server', responsibility: 'plots', reads: [], exposes: ['spawn(p)'], dependsOn: ['config'], criteria: ['x'] });
-  t.modules[2].dependsOn = ['progression', 'plots'];
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('no interface or wiring step connects them')), 'a dead dependency edge must be caught');
-});
+// The "dead dependency edge" rule is gone too. It asked whether any interface or wiring step
+// connected two modules, which the contract does not record: wiring holds lifecycle steps,
+// not every call. It produced 13 false positives on functions genuinely called from inside
+// another module's implementation. Reachability is covered one level up — a module nothing
+// depends on is rejected — and that is the honest granularity available.
 
 test('an entry point is exempt from the depended-on rule', () => {
   assert.ok(!unconnected(creative(), tech()).some((p) => p.includes('server-main')));
@@ -388,7 +390,9 @@ test('a module that fires a channel without depending on its owner is rejected',
 test('firing a channel nobody declared is rejected', () => {
   const t = WITH_PROTOCOL();
   t.modules[2].fires = ['SomethingInvented'];
-  assert.ok(unconnected(creative(), t).some((p) => p.includes('not a declared remote')));
+  const p = unconnected(creative(), t).find((x) => x.includes('SomethingInvented'));
+  assert.ok(p, 'firing a channel nobody declared must be caught');
+  assert.match(p, /no such channel exists/);
 });
 
 test('a module that depends on the channel owner may fire', () => {
@@ -399,4 +403,35 @@ test('a module that depends on the channel owner may fire', () => {
 
 test('firing nothing is not a problem', () => {
   assert.ok(!unconnected(creative(), tech()).some((p) => p.includes('fires')));
+});
+
+/* -------------------------------- the checks must read the fields they demand */
+
+test('an entry point is recognised from its declared field, not from its name', () => {
+  // The check demanded `entryPoint: true`, then went on inferring one from `/main$/` on the
+  // id plus prose in `exposes` — prose the same release had outlawed. So the inference was
+  // half dead and half a naming convention, and a module called `bootstrap` was reported as
+  // unreachable. Found by the architect reading the check that had just demanded the field.
+  const t = tech();
+  t.modules[3].id = 'bootstrap';
+  t.modules[3].path = 'boot.luau';
+  assert.ok(!unconnected(creative(), t).some((p) => p.includes('bootstrap')), 'a declared entry point must be exempt whatever it is called');
+});
+
+test('a module named like an entry point but not declared as one is still checked', () => {
+  const t = tech();
+  delete t.modules[3].entryPoint;
+  t.modules[3].exposes = ['run()'];
+  t.interfaces.push({ module: 'server-main', fn: 'run()', returns: '()', note: 'n', params: [] });
+  const p = unconnected(creative(), t).find((x) => x.includes('server-main'));
+  assert.ok(p, 'the /main$/ naming convention must no longer grant an exemption');
+  assert.match(p, /never run/);
+});
+
+test('the emitted brief tells a builder a module is an entry point', () => {
+  // With `exposes: []` the brief used to print "- none", which drops the fact at the seam.
+  // A check that holds in the validator and vanishes from the artifact does not prevent
+  // anything: that is how the third trial's builder came to invent a remote lookup.
+  const order = emitBuildOrder(full(), {});
+  assert.match(order, /nothing\. This is an entry point/);
 });

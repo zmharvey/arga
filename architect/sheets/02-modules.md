@@ -4,7 +4,7 @@
 
 ## Decision
 
-Eleven modules: three shared, six server, two client. Split along **who owns a piece of
+Eleven modules: three shared, five server, three client. Split along **who owns a piece of
 state**, not along what reads like a tidy layer diagram.
 
 The boundaries below are not a guess. They are a decomposition of a working
@@ -25,9 +25,26 @@ that already exists in code rather than one that sounded right on paper.
 - **Sides may only depend inward.** Client and server both read `shared`; neither reads
   the other. The schema refuses violations, because a cross-side require is a runtime
   failure that is cheap to catch on paper.
-- `[cid: decided]` The split into six server modules rather than three. The monolith
+- `[cid: decided]` The split into five server modules rather than one file. The monolith
   worked, but `persistence` and `clearing` in one file meant a save-format change touched
   the clearing tick. Flagged as arguable: a smaller game might justify fewer.
+- **`exposes` carries a name or a signature and never a sentence.** Two entries used to be
+  prose, and both cost the graph an edge. `config` offered `"GameConfig table"` and `protocol`
+  offered `"REMOTES table"`; the parser turns each entry into a node by taking the text up to
+  the first parenthesis, so those became nodes called `GameConfig table` and `REMOTES table`,
+  which no `interfaces` entry could match — `protocol.REMOTES` was declared as an interface and
+  read as exposed by nobody. The word *table* was doing real work, so it moved to where a
+  machine can read it: **an exposed name with parentheses is a callable and must have its
+  parameters resolved in `interfaces`; a bare name is data.** `GameConfig` and `REMOTES` are
+  the only two bare names in the game, and `05-interfaces.md` now carries an entry for each
+  saying what is in it.
+- **An entry point declares itself in a field, not in a sentence.** `server-main` and
+  `client-main` exposed `"none — this is the entry point"`, which read as a function called
+  *none* and left the fact that nothing may require these two files inferable only by a human.
+  Both now carry `"entryPoint": true` with an empty `exposes`. The pair is enforced both ways:
+  a module that exposes nothing must set the flag, and a module that sets it must expose
+  nothing, because an entry point is called by the engine and requiring one is a second
+  execution of the whole boot sequence.
 - **There is one way to get a RemoteEvent, and `protocol` owns it end to end.** The third build
   trial found `clearing` required to fire `FindRevealed` and `AreaRestored` while `protocol`
   exposed only names, and `clearing` did not depend on it. The builder resolved the gap by
@@ -60,7 +77,7 @@ that already exists in code rather than one that sounded right on paper.
       "side": "shared",
       "responsibility": "Hold every tuned value. Generated from spec sheets by the bridge, never authored.",
       "reads": ["tree"],
-      "exposes": ["GameConfig table", "upgradeCost(upgrade, level)", "upgradeEffect(upgrade, level)", "tierByWeight(roll)"],
+      "exposes": ["GameConfig", "upgradeCost(upgrade, level)", "upgradeEffect(upgrade, level)", "tierByWeight(roll)"],
       "dependsOn": [],
       "forbids": [
         "hand-editing this file — the bridge overwrites it and the sheet becomes a lie",
@@ -96,7 +113,7 @@ that already exists in code rather than one that sounded right on paper.
       "side": "shared",
       "responsibility": "Own the remote channels end to end — name them, create the Instances, and hand any module the Instance for a name — and define the shape of the state snapshot both sides agree on.",
       "reads": ["collection", "upgrades", "currency", "tree", "stateShape", "interfaces"],
-      "exposes": ["REMOTES table", "snapshotShape()", "createRemotes()", "channel(name)"],
+      "exposes": ["REMOTES", "snapshotShape()", "createRemotes()", "channel(name)"],
       "declaresRemotes": ["RequestState", "StateChanged", "BuyUpgrade", "FindRevealed", "AreaRestored"],
       "dependsOn": ["config"],
       "forbids": [
@@ -214,9 +231,11 @@ that already exists in code rather than one that sounded right on paper.
       "reads": ["runtime", "stateShape", "upgrades", "tree", "interfaces", "wiring", "movement"],
       "applies": ["speed"],
       "fires": ["StateChanged"],
-      "exposes": ["none — this is the entry point"],
+      "exposes": [],
+      "entryPoint": true,
       "dependsOn": ["protocol", "persistence", "progression", "plots", "clearing"],
       "forbids": [
+        "being required by any other module. This is the server entry point — entryPoint true, exposes empty — and Roblox is its only caller; a require would run this whole boot sequence a second time, creating a second remotes folder and a second clear tick",
         "containing game logic; anything with a rule in it belongs in one of the modules above",
         "creating a remote itself, choosing where the remotes live, or naming one in a literal — protocol.createRemotes() creates them and protocol.channel(name) resolves them"
       ],
@@ -271,9 +290,11 @@ that already exists in code rather than one that sounded right on paper.
       "responsibility": "Boot the HUD screen, connect the binding and the input, connect every server-to-client channel, and ask the server for initial state.",
       "reads": ["tree", "interfaces", "wiring", "representation"],
       "fires": ["RequestState"],
-      "exposes": ["none — this is the entry point"],
+      "exposes": [],
+      "entryPoint": true,
       "dependsOn": ["protocol", "hud-binding", "input"],
       "forbids": [
+        "being required by any other module. This is the client entry point — entryPoint true, exposes empty — and Roblox is its only caller; a require would build a second ScreenGui and a second set of handlers",
         "assuming the server's spawn-time push arrived; state is requested once handlers are live",
         "resolving a remote by name or by search; protocol.channel(name) is the only lookup",
         "leaving FindRevealed or AreaRestored unconnected. Their presentation is not specified yet and their handlers are empty, but an unconnected channel is an output with nothing at the end of it"
@@ -304,13 +325,17 @@ that already exists in code rather than one that sounded right on paper.
 2. No dependency cycle, and no cross-side dependency except on `shared`.
 3. Every module has at least one acceptance criterion.
 4. `npm run architect -- --emit` produces a build order whose module count matches this list.
-5. Every function in an `exposes` list appears in `interfaces` with its parameters resolved, and
-   the reverse. The architect gate refuses a mismatch in one direction; the other is this
-   criterion.
-6. Every module that originates remote traffic declares it in `fires`, depends on the module
+5. Every entry in an `exposes` list is a bare name or a signature, never prose, and every
+   entry point carries `entryPoint: true` with an empty `exposes`. The architect gate refuses
+   both failures.
+6. Every exposed *callable* — every entry carrying parentheses — appears in `interfaces` with its
+   parameters resolved, and every `interfaces` entry names a function its module exposes. The
+   gate now refuses both directions. A bare name is exempt from the first, since a table has no
+   parameters; `GameConfig` and `REMOTES` are the only two, and both carry an entry anyway.
+7. Every module that originates remote traffic declares it in `fires`, depends on the module
    holding `declaresRemotes`, and fires only names on that list. The architect gate refuses all
    three failures.
-7. Each of `protocol`'s five channels has exactly one originating module across every `fires`
+8. Each of `protocol`'s five channels has exactly one originating module across every `fires`
    list, and every one of those five names appears in some `fires` list. A channel nobody fires is
    a dead channel; a channel two modules fire is only allowed for `StateChanged`, which carries a
    whole snapshot and is therefore idempotent, and is stated in `interfaces`.
@@ -318,10 +343,13 @@ that already exists in code rather than one that sounded right on paper.
 ## Not decided here
 
 Implementation of any module. The save schema's field names (Persistence's own sheet). The
-HUD's structure (UI/UX). Whether six server modules is right for a game this size — flagged
+HUD's structure (UI/UX). Whether five server modules is right for a game this size — flagged
 above as arguable.
 
-**Amended by `05-interfaces.md`:** `input.connect(remotes)` became `input.connect()`, because
+**Amended by `05-interfaces.md`:** `config.GameConfig` and `protocol.REMOTES` each gained an
+`interfaces` entry, because the explanation that used to sit inside the `exposes` string ("table")
+needs somewhere to live and a builder still has to be told what is in each of them.
+`input.connect(remotes)` became `input.connect()`, because
 `protocol.channel(name)` exists and passing resolved Instances between modules is a second way to
 get one. `config` gained `upgradeEffect(upgrade, level)`, which exists
 in the generated file and which `progression`'s three derived quantities each call, so leaving it

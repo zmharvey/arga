@@ -4,8 +4,10 @@
 
 ## Decision
 
-**Twenty-four callable functions across nine modules, every parameter resolved.** Four
-answers in here are the ones that cost a build trial a guess each:
+**Twenty-five interface entries across nine modules, every parameter resolved: twenty-three
+callable functions and two data tables.** The two entry points, `server-main` and `client-main`,
+appear here not at all — they expose nothing and are called by the engine. Four answers in here
+are the ones that cost a build trial a guess each:
 
 - **`upgradeCost(upgrade, level)` — `level` is the level currently HELD, not the target.**
   The first purchase of Reach is `upgradeCost(reach, 0)` and costs `costBase`, 40. Reading
@@ -85,6 +87,17 @@ so it has to be handed the collection it ticks).
   every one of them again, every rejoin, without bound. The payload is still one boolean, which is
   what `persistence` is forbidden to exceed. `[cid: decided]`
   `theme/setting/04-permanence-and-passage.md` `W2`: entering a finished part spawns **0** patches.
+- **Two of these entries are not functions, and that is the point of the rule that put them
+  here.** `config.GameConfig` and `protocol.REMOTES` are tables the module returns. Both used to
+  be described inside their `exposes` string — `"GameConfig table"`, `"REMOTES table"` — and the
+  graph builds a node from the text up to the first parenthesis, so both became nodes with a
+  space in the name that nothing could match: `protocol.REMOTES` was declared here and read as
+  exposed by nobody, which is a defect the check found and a human would not have. The
+  distinction the word *table* was carrying is now structural rather than editorial: **an exposed
+  name with parentheses is a callable and must appear here with every parameter resolved; a bare
+  name is data and appears here with `params: []` and its contents written out.** A builder needs
+  the second as much as the first — knowing `GameConfig` exists is worthless without knowing that
+  the patch count is at `GameConfig.Area.patchCount`.
 - **The HUD node names are not a convention a builder should have to infer.** They are already
   fixed by the emitted screen at `game/src/shared/Screens/hud.luau`, which a builder is
   allowed to read; the mapping from state field to node path is written out under
@@ -94,6 +107,13 @@ so it has to be handed the collection it ticks).
 {
   "provides": "interfaces",
   "value": [
+    {
+      "module": "config",
+      "fn": "GameConfig",
+      "params": [],
+      "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+      "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+    },
     {
       "module": "config",
       "fn": "upgradeCost(upgrade, level)",
@@ -135,7 +155,7 @@ so it has to be handed the collection it ticks).
       "fn": "REMOTES",
       "params": [],
       "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-      "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+      "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
       "channels": [
         { "name": "RequestState", "class": "RemoteFunction", "direction": "client -> server", "payload": "no arguments; returns one snapshot", "firedBy": "client-main", "handledBy": "server-main, which sets OnServerInvoke at boot", "why": "client-main may not assume the join-time push arrived, so it pulls once after its updater is live" },
         { "name": "StateChanged", "class": "RemoteEvent", "direction": "server -> client", "payload": "one snapshot, exactly the fields snapshotShape() names", "firedBy": "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed", "handledBy": "client-main, which passes it to the updater hud-binding.bind returned", "why": "TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a delta, so a duplicate is idempotent and an extra push is harmless. currency, clearedCount and found only ever change inside the tick, so without clearing firing it the balance readout and the progress bar sit frozen until the next purchase — the same defect shape as a computed walk speed nobody writes." },
@@ -334,8 +354,10 @@ A builder may **not** assume:
 
 ## Acceptance criteria
 
-1. Every `interfaces` entry names a module that exists and a function in that module's
-   `exposes`; the architect gate refuses otherwise.
+1. Every `interfaces` entry names a module that exists and a name in that module's `exposes`,
+   and every exposed callable — every `exposes` entry carrying parentheses — has an entry here.
+   The architect gate refuses both directions. A bare name is exempt from the second, having no
+   parameters to resolve; `GameConfig` and `REMOTES` are the only two and both carry an entry.
 2. `upgradeCost(def, 0)` equals `def.costBase` for all three upgrades, and
    `upgradeEffect(def, 0)` equals `def.base`.
 3. `clearRadius` at level 0 equals `movement.baseClearRadius` and `walkSpeed` at level 0

@@ -127,6 +127,10 @@ export const SCHEMA = {
   vocabulary: {
     doc: 'Naming rules every player-facing string in this contract is checked against.',
     owner: 'theme/vocabulary',
+    // Enforced by the merger over every player-facing string, not read by any module at
+    // runtime. Declared so the graph does not report it as a decision that never reaches
+    // the build: it reaches the build by rejecting values, which is stronger than being read.
+    consumedBy: 'tooling',
     shape: {
       bannedWords: 'array',
       maxLabelChars: 'integer>0',
@@ -308,6 +312,8 @@ export function validateManifest(manifest) {
       continue;
     }
 
+    const before = problems.length;
+
     if (spec.array) {
       if (!Array.isArray(value)) {
         problems.push(`${key} must be an array`);
@@ -341,9 +347,10 @@ export function validateManifest(manifest) {
       }
     }
 
-    // Cross-field invariants only run once the shape is sound, or they report
-    // noise about fields that are simply absent.
-    if (spec.check && problems.length === 0) {
+    // Cross-field invariants run once *this key's* shape is sound. Guarding on the
+    // total instead meant one key's shape error skipped every later key's check, which
+    // is how two format rules on `modules` sat dead in the architect's schema.
+    if (spec.check && problems.length === before) {
       problems.push(...spec.check(value));
     }
   }

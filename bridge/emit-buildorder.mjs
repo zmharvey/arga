@@ -166,7 +166,9 @@ ${globals.map((k) => jsonBlock(k, manifest[k], provenance)).join('\n\n')}
 
 ### Must expose
 
-${bullet((m.exposes ?? []).map((e) => `\`${e}\``))}
+${m.entryPoint
+      ? '- nothing. This is an entry point: the engine runs it, and no module may require it.'
+      : bullet((m.exposes ?? []).map((e) => `\`${e}\``))}
 
 ### Must not
 

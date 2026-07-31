@@ -494,20 +494,20 @@ state looks like, what each object is made of, and what happens in what order.
     "kind": "none",
     "rationale": "A Find has no Instance at any point in its life. gameplay/core-loop/03-reveal-placement.md settles that it is revealed on contact at the instant its patch clears — an event, not an object left standing. Its durable existence is a key in state.found; its transient existence is one FindRevealed remote carrying a name. Representing it as a model would demand 24 assets that do not exist, block the build on them, and create a second source of truth for a fact the collection map already holds.",
     "class": null,
-    "createdBy": "nothing. clearing sets state.found[name] and fires FindRevealed",
+    "createdBy": "nothing",
     "destroyedBy": "nothing",
     "asset": null,
-    "note": "Which patch hides which Find is layout's Patch.relic, a string or nil, set at build time. That field is the entire world-side representation of a Find and it is data, not an Instance."
+    "note": "createdBy is \"nothing\" in the strict sense the graph needs: no module creates an Instance for a Find, at any point, ever. What DOES happen on a reveal is that clearing sets state.found[name] and fires FindRevealed — a state write and a channel, both of which are edges the graph already carries elsewhere, and neither of which is a creation. Which patch hides which Find is layout's Patch.relic, a string or nil, set at build time. That field is the entire world-side representation of a Find and it is data, not an Instance."
   },
   {
     "subject": "hud",
     "kind": "gui",
     "rationale": "Built by ui-forge from ui-forge/briefs/hud.brief.json and emitted to game/src/shared/Screens/hud.luau, which is DATA that UIBuilder.build turns into Instances. Deliberately outside the build order: no module in it authors UI structure.",
-    "class": "ScreenGui, created by client-main; its contents created by UIBuilder.build",
-    "createdBy": "client-main, once, and it survives a character respawn rather than being rebuilt",
+    "class": "ScreenGui",
+    "createdBy": "client-main",
     "destroyedBy": "nothing during a session",
     "asset": null,
-    "note": "hud-binding writes text and sizes into named nodes and is forbidden from creating any Instance except a Tween. The node paths are in interfaces, under hud-binding.bind."
+    "note": "client-main creates the ScreenGui itself, ONCE, in wiring.onClientBoot step 1, and it survives every character respawn rather than being rebuilt — client-main's second criterion. Its CONTENTS are created by UIBuilder.build(Screens.hud, Theme, screenGui) from the emitted screen DATA at game/src/shared/Screens/hud.luau, which is why no module in this build authors UI structure: ui-forge owns the shape, client-main owns the one Instance it hangs from, and neither is the other. hud-binding writes text and sizes into named nodes and is forbidden from creating any Instance except a Tween. The node paths are in interfaces, under hud-binding.bind."
   }
 ]
 ```
@@ -524,7 +524,7 @@ state looks like, what each object is made of, and what happens in what order.
 
 ### Must expose
 
-- `GameConfig table`
+- `GameConfig`
 - `upgradeCost(upgrade, level)`
 - `upgradeEffect(upgrade, level)`
 - `tierByWeight(roll)`
@@ -714,6 +714,13 @@ state looks like, what each object is made of, and what happens in what order.
 [
   {
     "module": "config",
+    "fn": "GameConfig",
+    "params": [],
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+  },
+  {
+    "module": "config",
     "fn": "upgradeCost(upgrade, level)",
     "params": [
       {
@@ -833,6 +840,13 @@ state looks like, what each object is made of, and what happens in what order.
 
 ```json
 [
+  {
+    "module": "config",
+    "fn": "GameConfig",
+    "params": [],
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+  },
   {
     "module": "config",
     "fn": "upgradeCost(upgrade, level)",
@@ -1008,6 +1022,13 @@ state looks like, what each object is made of, and what happens in what order.
 [
   {
     "module": "config",
+    "fn": "GameConfig",
+    "params": [],
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+  },
+  {
+    "module": "config",
     "fn": "upgradeCost(upgrade, level)",
     "params": [
       {
@@ -1148,7 +1169,7 @@ state looks like, what each object is made of, and what happens in what order.
 
 ### Must expose
 
-- `REMOTES table`
+- `REMOTES`
 - `snapshotShape()`
 - `createRemotes()`
 - `channel(name)`
@@ -1283,6 +1304,13 @@ state looks like, what each object is made of, and what happens in what order.
 [
   {
     "module": "config",
+    "fn": "GameConfig",
+    "params": [],
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+  },
+  {
+    "module": "config",
     "fn": "upgradeCost(upgrade, level)",
     "params": [
       {
@@ -1335,7 +1363,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "REMOTES",
     "params": [],
     "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
     "channels": [
       {
         "name": "RequestState",
@@ -1582,7 +1610,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "REMOTES",
     "params": [],
     "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
     "channels": [
       {
         "name": "RequestState",
@@ -1757,7 +1785,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "REMOTES",
     "params": [],
     "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
     "channels": [
       {
         "name": "RequestState",
@@ -1958,6 +1986,13 @@ state looks like, what each object is made of, and what happens in what order.
 
 ```json
 [
+  {
+    "module": "config",
+    "fn": "GameConfig",
+    "params": [],
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+  },
   {
     "module": "config",
     "fn": "upgradeCost(upgrade, level)",
@@ -2197,6 +2232,13 @@ state looks like, what each object is made of, and what happens in what order.
 [
   {
     "module": "config",
+    "fn": "GameConfig",
+    "params": [],
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.Shared.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
+  },
+  {
+    "module": "config",
     "fn": "upgradeCost(upgrade, level)",
     "params": [
       {
@@ -2249,7 +2291,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "REMOTES",
     "params": [],
     "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
     "channels": [
       {
         "name": "RequestState",
@@ -2497,10 +2539,11 @@ state looks like, what each object is made of, and what happens in what order.
 
 ### Must expose
 
-- `none — this is the entry point`
+- nothing. This is an entry point: the engine runs it, and no module may require it.
 
 ### Must not
 
+- being required by any other module. This is the client entry point — entryPoint true, exposes empty — and Roblox is its only caller; a require would build a second ScreenGui and a second set of handlers
 - assuming the server's spawn-time push arrived; state is requested once handlers are live
 - resolving a remote by name or by search; protocol.channel(name) is the only lookup
 - leaving FindRevealed or AreaRestored unconnected. Their presentation is not specified yet and their handlers are empty, but an unconnected channel is an output with nothing at the end of it
@@ -2516,7 +2559,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "REMOTES",
     "params": [],
     "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
     "channels": [
       {
         "name": "RequestState",
@@ -2640,10 +2683,11 @@ state looks like, what each object is made of, and what happens in what order.
 
 ### Must expose
 
-- `none — this is the entry point`
+- nothing. This is an entry point: the engine runs it, and no module may require it.
 
 ### Must not
 
+- being required by any other module. This is the server entry point — entryPoint true, exposes empty — and Roblox is its only caller; a require would run this whole boot sequence a second time, creating a second remotes folder and a second clear tick
 - containing game logic; anything with a rule in it belongs in one of the modules above
 - creating a remote itself, choosing where the remotes live, or naming one in a literal — protocol.createRemotes() creates them and protocol.channel(name) resolves them
 
@@ -2708,7 +2752,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "REMOTES",
     "params": [],
     "returns": "table — the five channels below, keyed by name, each with its class, direction, payload and the one module that originates it. NAMES AND CLASSES, NOT INSTANCES: protocol.channel(name) returns the Instance.",
-    "note": "Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
+    "note": "A TABLE, NOT A CALLABLE — the second of the two bare names in the game, alongside config.GameConfig, and the reason both are written out here: `exposes` may carry only a name or a signature, so `\"REMOTES table\"` stopped being legal and the explanation moved here. Exactly five, and no more. There is deliberately no clearing channel and no currency channel — the server observes clearing on a tick, so there is nothing for a client to claim. FindRevealed and AreaRestored are two channels because they are two payoff kinds: gameplay/core-loop/03-reveal-placement.md rejects carrying completion on the reveal channel behind a \"__area_complete:\" string prefix, and names this pair. Every name here appears in protocol's declaresRemotes, and every module named in firedBy carries that name in its own fires list — that pair is what the architect gate checks, and it is why an output with no path to it is now a merge failure rather than something a build trial finds.",
     "channels": [
       {
         "name": "RequestState",

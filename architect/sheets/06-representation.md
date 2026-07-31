@@ -12,7 +12,7 @@
 | `plot` | one `Part` — the ground slab, which is also the container the patches parent to | 1 per connected player |
 | `spawn-anchor` | an `Attachment` on the plot slab | 1 per plot |
 | `relic` | **nothing.** A Find has no Instance anywhere | 0 |
-| `hud` | a `ScreenGui`, built by `ui-forge`, not by this build | 1 per client |
+| `hud` | a `ScreenGui` created by `client-main`; everything inside it built by `ui-forge`, not by this build | 1 per client |
 
 ## Why
 
@@ -56,8 +56,20 @@
   relic of set one" — plus the onboarding promise both read naturally only if the player spawns
   at the origin with the terrace around them. `[architect: decided]` Centre. Patches span
   +/- `area.size / 2` on X and Z.
-- **The HUD is out of scope by construction.** `BUILD-ORDER.md` states that screens come from
-  `ui-forge` via `npm run emit`. It is listed here so a builder knows it is not its job.
+- **The HUD is out of scope by construction, but its one Instance is not.** `BUILD-ORDER.md`
+  states that screens come from `ui-forge` via `npm run emit`. It is listed here so a builder
+  knows the *structure* is not its job. `createdBy` has to be a module id or the literal
+  `"nothing"`, though, because it is an edge in the build graph — and this row used to hold the
+  sentence *"client-main, once, and it survives a character respawn rather than being rebuilt"*,
+  which read as created by nobody. Resolving it forced the split to be stated: **`client-main`
+  creates the `ScreenGui`; `UIBuilder.build` fills it.** Out of scope means the layout, not the
+  container, and "out of scope" was never going to make a `ScreenGui` appear.
+- **`relic`'s creator is `"nothing"`, flatly.** That row also held a sentence — *"nothing.
+  clearing sets state.found[name] and fires FindRevealed"* — which is true and was in the wrong
+  field twice over: a `kind: "none"` subject may not name a creator at all, and the two things
+  `clearing` does on a reveal are a state write and a channel fire, both already edges elsewhere
+  in the graph and neither of them a creation. The reasoning is in `note`; the field says
+  `nothing`.
 
 ```manifest
 {
@@ -124,20 +136,20 @@
       "kind": "none",
       "rationale": "A Find has no Instance at any point in its life. gameplay/core-loop/03-reveal-placement.md settles that it is revealed on contact at the instant its patch clears — an event, not an object left standing. Its durable existence is a key in state.found; its transient existence is one FindRevealed remote carrying a name. Representing it as a model would demand 24 assets that do not exist, block the build on them, and create a second source of truth for a fact the collection map already holds.",
       "class": null,
-      "createdBy": "nothing. clearing sets state.found[name] and fires FindRevealed",
+      "createdBy": "nothing",
       "destroyedBy": "nothing",
       "asset": null,
-      "note": "Which patch hides which Find is layout's Patch.relic, a string or nil, set at build time. That field is the entire world-side representation of a Find and it is data, not an Instance."
+      "note": "createdBy is \"nothing\" in the strict sense the graph needs: no module creates an Instance for a Find, at any point, ever. What DOES happen on a reveal is that clearing sets state.found[name] and fires FindRevealed — a state write and a channel, both of which are edges the graph already carries elsewhere, and neither of which is a creation. Which patch hides which Find is layout's Patch.relic, a string or nil, set at build time. That field is the entire world-side representation of a Find and it is data, not an Instance."
     },
     {
       "subject": "hud",
       "kind": "gui",
       "rationale": "Built by ui-forge from ui-forge/briefs/hud.brief.json and emitted to game/src/shared/Screens/hud.luau, which is DATA that UIBuilder.build turns into Instances. Deliberately outside the build order: no module in it authors UI structure.",
-      "class": "ScreenGui, created by client-main; its contents created by UIBuilder.build",
-      "createdBy": "client-main, once, and it survives a character respawn rather than being rebuilt",
+      "class": "ScreenGui",
+      "createdBy": "client-main",
       "destroyedBy": "nothing during a session",
       "asset": null,
-      "note": "hud-binding writes text and sizes into named nodes and is forbidden from creating any Instance except a Tween. The node paths are in interfaces, under hud-binding.bind."
+      "note": "client-main creates the ScreenGui itself, ONCE, in wiring.onClientBoot step 1, and it survives every character respawn rather than being rebuilt — client-main's second criterion. Its CONTENTS are created by UIBuilder.build(Screens.hud, Theme, screenGui) from the emitted screen DATA at game/src/shared/Screens/hud.luau, which is why no module in this build authors UI structure: ui-forge owns the shape, client-main owns the one Instance it hangs from, and neither is the other. hud-binding writes text and sizes into named nodes and is forbidden from creating any Instance except a Tween. The node paths are in interfaces, under hud-binding.bind."
     }
   ]
 }
@@ -158,6 +170,9 @@ A builder may now assume:
   `ReplicatedStorage.Remotes`, which is transport rather than a subject here: `protocol` creates it
   in `createRemotes()` and `interfaces` fixes its name and contents.
 - That a finished plot is a slab, a spawn Attachment and nothing else, forever.
+- That `createdBy` names exactly one module for every subject that has an Instance, and that the
+  module named there is the only one permitted to create it. `patch`, `plot` and `spawn-anchor`
+  are `plots`; `hud` is `client-main`; `relic` is `nothing` and there is nothing to create.
 
 A builder may **not** assume:
 
@@ -178,6 +193,11 @@ A builder may **not** assume:
 5. A player standing at their spawn anchor is within `movement.baseClearRadius` of the patch
    carrying the first Find of set one.
 6. No `SpawnLocation` exists in the project, and no plot is parented to `Workspace.Baseplate`.
+7. `client-main` is the only module that creates a `ScreenGui`, and it creates exactly one.
+   `grep -rln "ScreenGui" game/src/client` names `init.client.luau` and no other module file —
+   `calibrate.client.luau` is a development harness and not a module in this contract — and
+   `HudBinding.luau` contains no `Instance.new` at all, since a tween comes from
+   `TweenService:Create`.
 
 ## Not decided here
 

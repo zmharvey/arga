@@ -164,6 +164,15 @@ export const TECH_SCHEMA = {
         if ((r.kind === 'mesh' || r.kind === 'model') && !r.asset) {
           problems.push(`representation "${r.subject}" is a ${r.kind} but names no asset; a builder cannot create one`);
         }
+        // `createdBy` is an edge in the build graph, so it has to be a module id or the
+        // literal "nothing". Two of the first five rows were sentences, which meant nothing
+        // created those subjects as far as any check could tell.
+        if (r.createdBy !== undefined && !/^([a-z][a-z0-9-]*|nothing)$/.test(String(r.createdBy))) {
+          problems.push(`representation "${r.subject}" has createdBy ${JSON.stringify(r.createdBy)}; write a module id or "nothing" and move the reasoning to note`);
+        }
+        if (r.kind === 'none' && r.createdBy && r.createdBy !== 'nothing') {
+          problems.push(`representation "${r.subject}" has no Instance (kind: none) but claims to be created by "${r.createdBy}"`);
+        }
       }
       return problems;
     },
@@ -199,6 +208,9 @@ export const TECH_SCHEMA = {
   },
 
   modules: {
+    // The graph's own node list. Read by the emitters and by every rule in graph.mjs, never
+    // by a module at runtime.
+    consumedBy: 'tooling',
     doc: 'The build plan: which modules exist, what each owns, what it may not do, and which outputs it owns — `applies` for an upgrade that has to reach the engine, `fires` for a channel it originates, `declaresRemotes` for the module that owns the channel list.',
     minItems: 1,
     array: {
@@ -228,8 +240,22 @@ export const TECH_SCHEMA = {
         if (m.criteria.length === 0) {
           problems.push(`module "${m.id}" has no acceptance criteria; a builder cannot prove it finished`);
         }
-        if (m.exposes.length === 0 && m.side !== 'client') {
-          problems.push(`module "${m.id}" exposes nothing and is not a client entry point; either it is dead or its interface is unstated`);
+        // An entry point declares itself. It used to be inferred from `side === 'client'`,
+        // and server-main said so in prose ("none — this is the entry point"), which the
+        // graph could not read and reported as an undeclared interface.
+        if (m.exposes.length === 0 && !m.entryPoint) {
+          problems.push(`module "${m.id}" exposes nothing and does not set entryPoint; either it is dead or its interface is unstated`);
+        }
+        if (m.exposes.length && m.entryPoint) {
+          problems.push(`module "${m.id}" is an entryPoint but exposes ${m.exposes.length} thing(s); an entry point is called by the engine, not by another module`);
+        }
+        // Every entry must be a name or a signature, so one parser can turn the list into
+        // graph nodes. Four of the first 27 entries were prose ("GameConfig table",
+        // "none — this is the entry point"), and each became a node nothing could match.
+        for (const e of m.exposes) {
+          if (!/^[A-Za-z_][A-Za-z0-9_]*(\(|:|$)/.test(String(e))) {
+            problems.push(`module "${m.id}" exposes ${JSON.stringify(e)}, which is not a name or a signature — write \`Name\` or \`fn(args): type\` and put the explanation in the interface note`);
+          }
         }
         // Sides can only depend inward: client and server may read shared, never
         // each other. Getting this wrong produces a require that cannot resolve at
