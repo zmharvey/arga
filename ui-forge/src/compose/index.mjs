@@ -14,10 +14,12 @@
  */
 
 import { modalGrid, meta as modalGridMeta } from './patterns/modal-grid.mjs';
+import { hudOverlay, meta as hudOverlayMeta } from './patterns/hud-overlay.mjs';
 import { applyOverrides, applySlots, addressableNodes } from './overrides.mjs';
 
 export const PATTERNS = {
   'modal-grid': { build: modalGrid, meta: modalGridMeta },
+  'hud-overlay': { build: hudOverlay, meta: hudOverlayMeta },
 };
 
 /** Machine-readable capability surface, for prompting/validating an idea agent. */
@@ -61,14 +63,14 @@ export function validateBrief(brief) {
     }
   }
 
-  const c = brief.content ?? {};
-  if (!c.title) problems.push('content.title is required');
-  if (!Array.isArray(c.items) || c.items.length === 0) problems.push('content.items must be a non-empty array');
-  (c.items ?? []).forEach((item, i) => {
-    if (!item.name) problems.push(`content.items[${i}].name is required`);
-    if (!item.price) problems.push(`content.items[${i}].price is required`);
-    if (!item.art) problems.push(`content.items[${i}].art is required (placeholder key until art exists)`);
-  });
+  // Content shape is the pattern's business, not the compiler's. A HUD has no
+  // title and no priced items; a grid has no readouts. Hardcoding either here is
+  // what made this registry single-pattern in practice however open it looked.
+  if (typeof entry.meta.validateContent === 'function') {
+    problems.push(...entry.meta.validateContent(brief.content ?? {}));
+  } else {
+    problems.push(`pattern "${brief.pattern}" declares no content contract (meta.validateContent)`);
+  }
 
   return problems;
 }

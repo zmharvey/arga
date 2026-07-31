@@ -22,7 +22,8 @@
     "calibrate": "node ui-forge/src/cli.mjs calibrate",
     "feedback": "node ui-forge/src/cli.mjs feedback",
     "forge": "node ui-forge/src/cli.mjs forge",
-    "concept:lint": "node concept/src/lint-sheets.mjs"
+    "concept:lint": "node concept/src/lint-sheets.mjs",
+    "test": "node --test concept/test/gate.test.mjs ui-forge/test/patterns.test.mjs"
   },
   "engines": {
     "node": ">=20"

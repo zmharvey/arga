@@ -1,0 +1,24 @@
+{
+  "screen": "hud",
+  "pattern": "hud-overlay",
+  "purpose": "keep area-completion progress and collection count readable while the player is moving",
+  "variant": {
+    "layout": "corners",
+    "readoutStyle": "pill",
+    "bar": "chunky",
+    "density": "comfortable",
+    "anchor": "inset"
+  },
+  "ornament": { "readoutTrim": "none", "barCap": "round" },
+  "content": {
+    "readouts": [
+      { "label": "RELICS", "value": "7 / 24", "icon": "relic", "cluster": "topLeft" },
+      { "label": "SHARDS", "value": "1,240", "icon": "shard", "cluster": "topRight" }
+    ],
+    "progress": { "label": "EAST TERRACE — 62% CLEAR", "value": 0.62, "cluster": "bottomLeft" },
+    "actions": [
+      { "name": "Collection", "icon": "icon-collection" },
+      { "name": "Upgrades", "icon": "icon-upgrades" }
+    ]
+  }
+}

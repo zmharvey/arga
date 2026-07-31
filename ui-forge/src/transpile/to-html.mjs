@@ -214,8 +214,14 @@ function renderNode(baseNode, theme, ctx) {
   /* --- size (outer) ----------------------------------------------------- */
   const size = node.size;
   const autoHeight = size?.auto === 'y' || size?.auto === 'xy';
+  // Roblox AutomaticSize takes X, Y or XY. Only Y was mapped here, so `auto: 'x'`
+  // was accepted by the spec vocabulary and then silently did nothing — an element
+  // asking to size to its content got no width at all and collapsed. Worst kind of
+  // gap: no error, wrong output. `fit-content` is the 1:1 mapping for AutomaticSize.X.
+  const autoWidth = size?.auto === 'x' || size?.auto === 'xy';
   if (size) {
-    if (size.s?.[0] || size.o?.[0]) outer.push(`width: ${udim(size.s?.[0], px(size.o?.[0]))}`);
+    if (autoWidth) outer.push('width: fit-content');
+    else if (size.s?.[0] || size.o?.[0]) outer.push(`width: ${udim(size.s?.[0], px(size.o?.[0]))}`);
     if (autoHeight) outer.push('height: auto');
     else if (size.s?.[1] || size.o?.[1]) outer.push(`height: ${udim(size.s?.[1], px(size.o?.[1]))}`);
   }
@@ -500,7 +506,13 @@ function renderNode(baseNode, theme, ctx) {
     'pointer-events: none',
   ]);
 
-  const contentGeom = ['position: relative', 'width: 100%', autoHeight ? 'height: auto' : 'height: 100%'];
+  // `width: 100%` inside a `fit-content` parent is circular, so auto-width has to
+  // propagate to the inner surface as well.
+  const contentGeom = [
+    'position: relative',
+    autoWidth ? 'width: auto' : 'width: 100%',
+    autoHeight ? 'height: auto' : 'height: 100%',
+  ];
 
   return [
     `${pad}<div ${idAttrs} ${styleAttr(outer)}>`,
