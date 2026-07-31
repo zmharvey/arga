@@ -23,9 +23,9 @@ compounds (value) and the most expensive being the one that trivialises traversa
 {
   "provides": "upgrades",
   "value": [
-    { "id": "value",  "label": "VALUE", "blurb": "Each patch pays more",             "costBase": 25, "costGrowth": 1.6,  "maxLevel": 10, "perLevel": 0.25 },
-    { "id": "radius", "label": "REACH", "blurb": "Clear a wider sweep as you walk",  "costBase": 40, "costGrowth": 1.75, "maxLevel": 8,  "perLevel": 1.1 },
-    { "id": "speed",  "label": "PACE",  "blurb": "Move faster between patches",      "costBase": 60, "costGrowth": 1.8,  "maxLevel": 6,  "perLevel": 1.6 }
+    { "id": "value",  "label": "Value", "blurb": "Each patch pays more",             "costBase": 25, "costGrowth": 1.6,  "maxLevel": 10, "perLevel": 0.25 },
+    { "id": "radius", "label": "Reach", "blurb": "Clear a wider sweep as you walk",  "costBase": 40, "costGrowth": 1.75, "maxLevel": 8,  "perLevel": 1.1 },
+    { "id": "speed",  "label": "Pace",  "blurb": "Move faster between patches",      "costBase": 60, "costGrowth": 1.8,  "maxLevel": 6,  "perLevel": 1.6 }
   ]
 }
 ```

@@ -24,7 +24,7 @@ studs**. Named the East Terrace.
   "provides": "area",
   "value": {
     "id": "east-terrace",
-    "label": "EAST TERRACE",
+    "label": "East Terrace",
     "originXZ": [0, 0],
     "size": 120,
     "patchCount": 140,

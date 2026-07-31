@@ -74,7 +74,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 ```json
 {
   "id": "east-terrace",
-  "label": "EAST TERRACE",
+  "label": "East Terrace",
   "originXZ": [
     0,
     0
@@ -258,7 +258,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 ```json
 {
   "id": "east-terrace",
-  "label": "EAST TERRACE",
+  "label": "East Terrace",
   "originXZ": [
     0,
     0
@@ -305,7 +305,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 [
   {
     "id": "value",
-    "label": "VALUE",
+    "label": "Value",
     "blurb": "Each patch pays more",
     "costBase": 25,
     "costGrowth": 1.6,
@@ -314,7 +314,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   },
   {
     "id": "radius",
-    "label": "REACH",
+    "label": "Reach",
     "blurb": "Clear a wider sweep as you walk",
     "costBase": 40,
     "costGrowth": 1.75,
@@ -323,7 +323,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   },
   {
     "id": "speed",
-    "label": "PACE",
+    "label": "Pace",
     "blurb": "Move faster between patches",
     "costBase": 60,
     "costGrowth": 1.8,
@@ -440,7 +440,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 [
   {
     "id": "value",
-    "label": "VALUE",
+    "label": "Value",
     "blurb": "Each patch pays more",
     "costBase": 25,
     "costGrowth": 1.6,
@@ -449,7 +449,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   },
   {
     "id": "radius",
-    "label": "REACH",
+    "label": "Reach",
     "blurb": "Clear a wider sweep as you walk",
     "costBase": 40,
     "costGrowth": 1.75,
@@ -458,7 +458,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   },
   {
     "id": "speed",
-    "label": "PACE",
+    "label": "Pace",
     "blurb": "Move faster between patches",
     "costBase": 60,
     "costGrowth": 1.8,
@@ -510,7 +510,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 [
   {
     "id": "value",
-    "label": "VALUE",
+    "label": "Value",
     "blurb": "Each patch pays more",
     "costBase": 25,
     "costGrowth": 1.6,
@@ -519,7 +519,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   },
   {
     "id": "radius",
-    "label": "REACH",
+    "label": "Reach",
     "blurb": "Clear a wider sweep as you walk",
     "costBase": 40,
     "costGrowth": 1.75,
@@ -528,7 +528,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
   },
   {
     "id": "speed",
-    "label": "PACE",
+    "label": "Pace",
     "blurb": "Move faster between patches",
     "costBase": 60,
     "costGrowth": 1.8,
@@ -610,7 +610,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 ```json
 {
   "id": "east-terrace",
-  "label": "EAST TERRACE",
+  "label": "East Terrace",
   "originXZ": [
     0,
     0

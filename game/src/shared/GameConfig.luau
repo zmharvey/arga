@@ -32,7 +32,7 @@ GameConfig.Tiers = {
 GameConfig.Upgrades = {
 	{
 		id = "value",
-		label = "VALUE",
+		label = "Value",
 		blurb = "Each patch pays more",
 		costBase = 25,
 		costGrowth = 1.6,
@@ -41,7 +41,7 @@ GameConfig.Upgrades = {
 	},
 	{
 		id = "radius",
-		label = "REACH",
+		label = "Reach",
 		blurb = "Clear a wider sweep as you walk",
 		costBase = 40,
 		costGrowth = 1.75,
@@ -50,7 +50,7 @@ GameConfig.Upgrades = {
 	},
 	{
 		id = "speed",
-		label = "PACE",
+		label = "Pace",
 		blurb = "Move faster between patches",
 		costBase = 60,
 		costGrowth = 1.8,
@@ -87,7 +87,7 @@ GameConfig.Patch = {
 -- area cannot quietly under-fill and be smaller than it claims.
 GameConfig.Area = {
 	id = "east-terrace",
-	label = "EAST TERRACE",
+	label = "East Terrace",
 	originXZ = { 0, 0 },
 	size = 120,
 	patchCount = 140,
