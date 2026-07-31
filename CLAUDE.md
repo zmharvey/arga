@@ -7,15 +7,25 @@ end to end at once.
 ## Stages
 
 ```
-idea → [stage 0: concept] → spec sheets → [CID: NOT BUILT] → [stage 1: ui-forge] → Luau → Rojo → Roblox
+idea → [0: concept] → spec sheets → [CID] → [bridge] → BUILD-ORDER.md → [BUILD: DOES NOT EXIST] → game
+                                                                         ui-forge handles screens only
 ```
 
 | stage | where | state |
 |---|---|---|
-| **0 — concept** | `.claude/skills/game-concept/`, `concept/` | working; two real runs recorded |
-| **CID** — Creative Idea Department | — | **not built.** See `docs/CID.md` |
-| **1 — ui-forge** | `ui-forge/` | working; renders + emits Luau |
-| **game** | `game/` | Rojo project, 7 emitted screens |
+| **0 — concept** | `.claude/skills/game-concept/`, `concept/` | working; four runs recorded |
+| **CID** — Creative Idea Department | `.claude/agents/cid-*`, `cid/` | wave 1 of 7; 14 domains, 37 sheets. See `docs/CID.md` |
+| **bridge** — the seam | `bridge/` | working; 11/11 contract keys, emits config + build order |
+| **build** | — | **does not exist.** Nothing consumes `docs/BUILD-ORDER.md` |
+| **ui-forge** — screens only | `ui-forge/` | working; one pattern. Deliberately outside the build order |
+| **game** | `game/` | playable; **hand-written**, as the control that produced the contract |
+
+**The pipeline has six agents and none of them build.** Four CID roles plus two verifiers.
+`BUILD-ORDER.md` is addressed to *"whoever builds these"* and is currently addressed to nobody:
+11 modules, dependency-ordered, every value resolved, each with acceptance criteria. Writing the
+agents that consume it is the next stage, not more design waves.
+
+`docs/workflow.html` is this diagram as a page, in plain language, for showing people.
 
 ## Stage 0 — concept
 

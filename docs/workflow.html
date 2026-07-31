@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="How a game idea becomes a real Roblox game: every step is either an AI making a judgement call or a script doing the same thing every time.">
+<meta name="description" content="How a game idea becomes a real Roblox game: every step is either an AI making a judgement call or a script doing the same thing every time. Steps 1 to 3 work; step 4 does not exist yet.">
 <style>
   /* minimal reset — the hosted artifact wrapper supplies one; a standalone file must not assume it */
   *, *::before, *::after { box-sizing: border-box; }
@@ -178,6 +178,7 @@
   .swatch.is-agent { background: var(--agent-tint); border: 1.5px solid var(--agent); }
   .swatch.is-deriv { background: var(--deriv-tint); border: 1.5px dashed var(--deriv); }
   .swatch.is-art   { background: none; border: none; border-bottom: 2px dotted var(--ink-faint); height: 8px; }
+  .swatch.is-gap   { background: none; border: 2px dashed var(--warn); }
 
   /* ------------------------------------------------------------- bands */
 
@@ -327,6 +328,32 @@
   }
   .node.gate .node-kind { color: var(--deriv); }
   .node.gate .node-name { font-family: var(--mono); font-size: 13.5px; font-weight: 600; }
+
+  /* the hole. an empty outline where a step should be, so it reads as absent
+     rather than as something small. */
+  .node.missing {
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 7px,
+      color-mix(in srgb, var(--warn) 11%, transparent) 7px,
+      color-mix(in srgb, var(--warn) 11%, transparent) 14px
+    );
+    border: 2px dashed var(--warn);
+  }
+  .node.missing .node-kind { color: var(--warn); }
+  .node.missing .node-name { color: var(--warn); font-weight: 600; }
+
+  .band.is-aside {
+    border-bottom: none;
+    padding-top: 14px;
+  }
+  .band.is-aside .rail h2 { color: var(--ink-soft); font-size: 17px; }
+  .band.is-aside::before {
+    content: "";
+    grid-column: 1 / -1;
+    border-top: 1px dashed var(--rule);
+    margin-bottom: 8px;
+  }
 
   .loop {
     margin-top: 14px;
@@ -485,11 +512,18 @@
       as much work as possible out of the first kind and into the second. AI steps cost real money
       and never give you the same answer twice. Scripts are free and always do.
     </p>
+    <p class="thesis" style="margin-top:16px">
+      Steps 1 to 3 all work. <strong>Step 4, the one that actually writes the game, does not exist
+      yet.</strong> Everything above it produces instructions for a builder nobody has made. The
+      game that runs today was typed out by a person, on purpose, to find out what those
+      instructions needed to say.
+    </p>
 
     <div class="legend">
       <span class="legend-item"><span class="swatch is-agent"></span> AI step · costs money, never repeats exactly</span>
       <span class="legend-item"><span class="swatch is-deriv"></span> script · free, identical every run</span>
       <span class="legend-item"><span class="swatch is-art"></span> a file it produces</span>
+      <span class="legend-item"><span class="swatch is-gap"></span> a step that does not exist yet</span>
     </div>
   </header>
 
@@ -672,25 +706,68 @@
     </div>
   </section>
 
-  <!-- ================================================== stage 1 + ship -->
+  <!-- ================================================== the build -->
   <section class="band">
     <div class="rail">
       <p class="rail-num">STEP 4</p>
-      <h2>The screens, then the game</h2>
+      <h2>The build</h2>
       <p>
-        This exists because Claude's Roblox screens were reliably ugly, and the cause turned out to
-        be two missing pieces rather than badly written instructions. Nothing stopped it inventing
-        its own colours, and it never once looked at what it had made. A fixed palette fixes the
-        first. Drawing it and then criticising it fixes the second.
+        Everything above exists to make this step boring: hand a builder a numbered list of code to
+        write, with every value already decided and a way to check each piece works. The list gets
+        written. Nothing reads it yet.
       </p>
-      <span class="status is-thin">working · only one screen shape · the bottleneck</span>
+      <span class="status is-thin">does not exist</span>
+    </div>
+    <div>
+      <div class="flow">
+        <div class="node artifact">
+          <p class="node-kind">file</p>
+          <p class="node-name">the build order</p>
+          <p class="node-note">11 pieces of code, in the order they have to be written. Every number resolved, so nobody has to open a design document.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node missing">
+          <p class="node-kind">nothing here yet</p>
+          <p class="node-name">Builders</p>
+          <p class="node-note">There would be one per piece of code. There are currently zero. Every AI in this pipeline designs; none of them build.</p>
+        </div>
+        <span class="chev">→</span>
+        <div class="node artifact">
+          <p class="node-kind">the game</p>
+          <p class="node-name">running in Roblox</p>
+          <p class="node-note">5,932 lines. Playable. <b>Written by hand, by a person, in one sitting.</b></p>
+        </div>
+      </div>
+      <p class="loop">
+        <b>Why a human wrote the game anyway.</b> It was built by hand deliberately, before any of
+        this existed, to find out what a builder actually needs. Every number the design department
+        now produces is on that list because the person building it had to invent one on the spot:
+        how many plants, what upgrades cost, how often it saves, the names of the six buried
+        objects. The build order is addressed to a builder who does not exist. That is the honest
+        state of it, and it is the next thing to make.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================================================== ui-forge, a side branch -->
+  <section class="band is-aside">
+    <div class="rail">
+      <p class="rail-num">OFF TO ONE SIDE</p>
+      <h2>The screen builder</h2>
+      <p>
+        Not a step in the line above. The build order leaves screens out on purpose, because they
+        come from here instead. It exists because Claude's Roblox screens were reliably ugly, and
+        the cause was two missing pieces rather than badly written instructions: nothing stopped it
+        inventing its own colours, and it never once looked at what it made.
+      </p>
+      <span class="status is-partial">working · one screen shape only</span>
     </div>
     <div>
       <div class="flow">
         <div class="node deriv">
           <p class="node-kind">script</p>
           <p class="node-name">Description plus look, into a layout</p>
-          <p class="node-note">Turns what the screen does and how it should feel into an exact layout, in code. Nobody hand-edits the result.</p>
+          <p class="node-note">Turns what a screen does and how it should feel into an exact layout. Nobody hand-edits the result.</p>
         </div>
         <span class="chev">→</span>
         <div class="node agent">
@@ -704,19 +781,13 @@
           <p class="node-name">Turn it into Roblox code</p>
           <p class="node-note">The preview and the real thing are tested against each other, so what you approved is what ships.</p>
         </div>
-        <span class="chev">→</span>
-        <div class="node artifact">
-          <p class="node-kind">the game</p>
-          <p class="node-name">running in Roblox</p>
-          <p class="node-note">5,932 lines of code. Playable right now.</p>
-        </div>
       </div>
       <p class="loop">
-        <b>The known weak point.</b> This can build exactly one shape of screen: a panel in the
-        middle holding a grid of things. The design department keeps asking for other shapes, like
-        a bar that stays on screen while you play, a settings list, a map, a text box. Everything
-        feeding into it just got four times cheaper, so this is now the narrowest part of the whole
-        pipeline.
+        <b>Its one weak point.</b> It can build exactly one shape of screen: a panel in the middle
+        holding a grid of things. The design department keeps asking for other shapes, like a bar
+        that stays on screen while you play, a settings list, a map, a text box. Everything feeding
+        into it just got four times cheaper, so it is now the narrowest working part of the whole
+        thing.
       </p>
     </div>
   </section>
@@ -810,26 +881,26 @@
   <dl class="colophon">
     <div class="fact">
       <dt>Working today</dt>
-      <dd>4 of 5 steps
-        <small>The interview, the first design round, the handoff and the screen builder all run end to end. Design rounds 2 through 7 are what is left.</small>
+      <dd>3 of 4 steps
+        <small>The interview, the design department and the handoff all run end to end. Step 4 has never existed.</small>
+      </dd>
+    </div>
+    <div class="fact">
+      <dt>Designs, does not build</dt>
+      <dd>6 AI roles, 0 builders
+        <small>Four design roles and two critics. Everything written so far is instructions for a builder nobody has made yet.</small>
       </dd>
     </div>
     <div class="fact">
       <dt>The handoff carries</dt>
       <dd>11 numbers
-        <small>Each one a value a human had to make up on the spot, because no document supplied it.</small>
+        <small>Each one a value the person who built the game by hand had to make up on the spot, because no document supplied it.</small>
       </dd>
     </div>
     <div class="fact">
-      <dt>Automated tests</dt>
-      <dd>85, plus the game
-        <small>Covering the handoff, the summarising, the interview checker, and the game's own difficulty curves.</small>
-      </dd>
-    </div>
-    <div class="fact">
-      <dt>Biggest hole</dt>
+      <dt>Also unfinished</dt>
       <dd>5 of 9 departments
-        <small>Screens, sound, analytics, live updates and marketing do not own any of the 11 numbers. As things stand they would produce writing with no route into the actual game.</small>
+        <small>Screens, sound, analytics, live updates and marketing do not own any of the 11 numbers, so as things stand they would produce writing with no route into the game.</small>
       </dd>
     </div>
   </dl>
