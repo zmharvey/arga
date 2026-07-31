@@ -469,8 +469,56 @@ const PROSE_PATHS = [/\.blurb$/, /\.flavour$/];
  * the exact failure this seam exists to remove. A banned word is the part of a naming rule
  * that a machine can hold, so it is held here.
  */
-function crossCuttingProblems(manifest) {
+/**
+ * Every upgrade the player can buy must have a module that turns its level into an effect.
+ *
+ * Found by the first agent that ever tried to build from this contract, in 84k tokens,
+ * after three CID verification passes and every check in this file had already passed.
+ *
+ * `upgrades` carried `value` with `perLevel: 0.25` and `maxLevel: 10`, so a player could
+ * spend 25 → 1099 shards on ten levels of it. No module's `exposes` list produced a value
+ * multiplier. Meanwhile `clearing`'s acceptance criterion 3 read "payout equals tier value
+ * times the player's value multiplier" — a criterion depending on a number nobody was told
+ * to compute. `radius` and `speed` were fine, because `progression` happened to expose
+ * `clearRadius` and `walkSpeed`.
+ *
+ * Nothing caught it because every existing check looks *within* one key. This one looks
+ * across two: the thing the player buys, and the thing that reads what they bought.
+ *
+ * The match is by name and deliberately loose (`value` matching `valueMultiplier`,
+ * `payoutMultiplier`, `getValue`). A false negative here costs a build agent an hour; a
+ * false positive costs a designer an argument with a linter, so it errs toward silence.
+ */
+function orphanedUpgrades(manifest) {
+  const { upgrades, modules } = manifest;
+  if (!Array.isArray(upgrades) || !Array.isArray(modules)) return [];
+
+  const surface = modules
+    .flatMap((m) => (Array.isArray(m.exposes) ? m.exposes : []))
+    .map((e) => String(e).toLowerCase());
+  if (!surface.length) return [];
+
   const problems = [];
+  for (const u of upgrades) {
+    const id = String(u.id ?? '').toLowerCase();
+    if (!id) continue;
+    // "radius" is consumed by `clearRadius(state)`; substring either way catches the
+    // realistic namings without needing a vocabulary of synonyms.
+    const consumed = surface.some((fn) => fn.includes(id) || id.includes(fn.replace(/\(.*/, '')));
+    if (!consumed) {
+      problems.push(
+        `upgrade "${u.id}" costs up to ${Math.floor(u.costBase * u.costGrowth ** (u.maxLevel - 1))} `
+        + `across ${u.maxLevel} levels, but no module exposes anything that reads it — `
+        + `a player can buy it and nothing in the build changes. Either a module must expose `
+        + `a getter derived from "${u.id}", or the upgrade should not be in the ladder.`,
+      );
+    }
+  }
+  return problems;
+}
+
+function crossCuttingProblems(manifest) {
+  const problems = [...orphanedUpgrades(manifest)];
   const vocab = manifest.vocabulary;
   if (!vocab || !Array.isArray(vocab.bannedWords)) return problems;
 

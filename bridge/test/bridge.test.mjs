@@ -50,6 +50,10 @@ const GOOD = {
   },
   modules: [
     { id: 'config', path: 'game/src/shared/GameConfig.luau', side: 'shared', responsibility: 'values', reads: [], exposes: ['GameConfig'], dependsOn: [], criteria: ['regenerates with no diff'] },
+    // Every upgrade needs a module that reads it. Before the orphaned-upgrade check
+    // existed this fixture had `value` in the ladder and nothing consuming it, which is
+    // exactly the defect that shipped to a build agent.
+    { id: 'progression', path: 'game/src/server/Progression.luau', side: 'server', responsibility: 'derive', reads: ['upgrades'], exposes: ['valueMultiplier(state): number'], dependsOn: ['config'], criteria: ['maxed value multiplier matches the ladder'] },
   ],
 };
 
@@ -252,7 +256,7 @@ test('a ban entry with no reason is rejected — a ban nobody can argue with is 
 const MODULES = [
   { id: 'config', path: 'a.luau', side: 'shared', responsibility: 'values', reads: [], exposes: ['t'], dependsOn: [], criteria: ['x'] },
   { id: 'layout', path: 'b.luau', side: 'shared', responsibility: 'layout', reads: ['area'], exposes: ['build()'], dependsOn: ['config'], criteria: ['x'] },
-  { id: 'main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: [], exposes: ['none'], dependsOn: ['layout'], criteria: ['x'] },
+  { id: 'main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: [], exposes: ['valueMultiplier(s)'], dependsOn: ['layout'], criteria: ['x'] },
 ];
 const withModules = (mods) => ({ ...clone(), modules: mods });
 
@@ -402,4 +406,71 @@ test('every scalar contract value reaches the emitted config', () => {
   for (const s of [GOOD.currency.name, GOOD.collection.className, GOOD.area.label]) {
     assert.ok(luau.includes(`"${s}"`), `${s} must appear in the emitted config`);
   }
+});
+
+/* ------------------------------------------------- orphaned upgrades */
+
+// The defect the first build agent found, in 84k tokens, after three CID verification
+// passes and every other check in schema.mjs had already passed.
+//
+// `upgrades` carried `value` with a cost ladder running to four figures. No module's
+// `exposes` produced a value multiplier, so a player could buy ten levels of it and
+// nothing in the build would change. Meanwhile `clearing`'s acceptance criteria required
+// "the player's value multiplier" — a criterion depending on a number nobody was told to
+// compute.
+//
+// Every check that existed looked within one key. This one looks across two.
+
+test('an upgrade no module reads is rejected', () => {
+  const m = clone();
+  m.upgrades = [{ id: 'value', label: 'Value', blurb: 'b', costBase: 25, costGrowth: 1.6, maxLevel: 10, perLevel: 0.25 }];
+  m.modules = [{ id: 'config', path: 'a.luau', side: 'shared', responsibility: 'v', reads: [], exposes: ['GameConfig'], dependsOn: [], criteria: ['x'] }];
+  const { problems } = validateManifest(m);
+  assert.ok(
+    problems.some((p) => p.includes('upgrade "value"') && p.includes('no module exposes')),
+    `expected an orphaned-upgrade problem, got: ${problems.join(' | ')}`,
+  );
+});
+
+test('the problem names what a player could waste on it', () => {
+  const m = clone();
+  m.upgrades = [{ id: 'value', label: 'Value', blurb: 'b', costBase: 25, costGrowth: 1.6, maxLevel: 10, perLevel: 0.25 }];
+  m.modules = [{ id: 'config', path: 'a.luau', side: 'shared', responsibility: 'v', reads: [], exposes: ['GameConfig'], dependsOn: [], criteria: ['x'] }];
+  const p = validateManifest(m).problems.find((x) => x.includes('upgrade "value"'));
+  // 25 * 1.6^9 = 1717. A reader should see the stakes without doing the arithmetic.
+  assert.match(p, /1717/);
+  assert.match(p, /10 levels/);
+});
+
+test('a getter named for the upgrade satisfies it, whatever the verb', () => {
+  for (const fn of ['valueMultiplier(state): number', 'payoutValue(s)', 'getValue(state)']) {
+    const m = clone();
+    m.upgrades = [{ id: 'value', label: 'Value', blurb: 'b', costBase: 25, costGrowth: 1.6, maxLevel: 10, perLevel: 0.25 }];
+    m.modules = [{ id: 'p', path: 'a.luau', side: 'server', responsibility: 'v', reads: ['upgrades'], exposes: [fn], dependsOn: [], criteria: ['x'] }];
+    const { problems } = validateManifest(m);
+    assert.ok(!problems.some((x) => x.includes('no module exposes')), `"${fn}" should count as consuming "value"`);
+  }
+});
+
+test('radius and speed were never orphaned, so the check must not flag them', () => {
+  // Guards against a fix that trades one false negative for two false positives.
+  const m = clone();
+  m.upgrades = [
+    { id: 'radius', label: 'Reach', blurb: 'b', costBase: 40, costGrowth: 1.75, maxLevel: 8, perLevel: 1.1 },
+    { id: 'speed', label: 'Pace', blurb: 'b', costBase: 60, costGrowth: 1.8, maxLevel: 6, perLevel: 1.6 },
+  ];
+  m.modules = [{
+    id: 'progression', path: 'a.luau', side: 'server', responsibility: 'v', reads: ['upgrades'],
+    exposes: ['clearRadius(state): number', 'walkSpeed(state): number'], dependsOn: [], criteria: ['x'],
+  }];
+  const { problems } = validateManifest(m);
+  assert.ok(!problems.some((x) => x.includes('no module exposes')), problems.join(' | '));
+});
+
+test('the check stays quiet when there is no module list to check against', () => {
+  // Partial manifests are normal mid-wave. A missing key is already reported by name;
+  // this check must not add noise on top of it.
+  const m = clone();
+  delete m.modules;
+  assert.ok(!validateManifest(m).problems.some((p) => p.includes('no module exposes')));
 });

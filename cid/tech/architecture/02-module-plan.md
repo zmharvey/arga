@@ -107,13 +107,14 @@ that already exists in code rather than one that sounded right on paper.
       "id": "progression",
       "path": "game/src/server/Progression.luau",
       "side": "server",
-      "responsibility": "Own currency, upgrade levels, purchase validation and the derived clear radius and walk speed.",
+      "responsibility": "Own currency, upgrade levels, purchase validation, and every quantity derived from an upgrade level: clear radius, walk speed and the payout multiplier.",
       "reads": ["upgrades", "movement"],
       "exposes": [
         "award(state, amount)",
         "tryBuy(state, upgradeId): boolean",
         "clearRadius(state): number",
-        "walkSpeed(state): number"
+        "walkSpeed(state): number",
+        "valueMultiplier(state): number"
       ],
       "dependsOn": ["config"],
       "forbids": [

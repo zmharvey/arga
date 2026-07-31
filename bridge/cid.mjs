@@ -231,11 +231,47 @@ a builder needs.
   process.exit(0);
 }
 
+/* ------------------------------------------------------------- build pack */
+
+if (cmd === 'build') {
+  const { buildPack, renderBuildPack, listModules } = await import('./build-pack.mjs');
+  const order = await readFile(opt('order', 'docs/BUILD-ORDER.md'), 'utf8');
+  const module_ = opt('module', null);
+
+  if (!module_) {
+    console.log('\nmodules in the build order, in dependency sequence:\n');
+    for (const m of listModules(order)) console.log(`  ${String(m.n).padStart(2)}. ${m.name.padEnd(14)} ${m.side}`);
+    console.log('\n  npm run build:pack -- --module <name> [--out <file>]\n');
+    process.exit(0);
+  }
+
+  let pack;
+  try {
+    pack = buildPack(order, module_);
+  } catch (err) {
+    console.error(err.message);
+    process.exit(2);
+  }
+
+  const body = renderBuildPack(pack);
+  const outPath = opt('out', null);
+  if (outPath) {
+    await mkdir(dirname(resolve(outPath)), { recursive: true });
+    await writeFile(resolve(outPath), body, 'utf8');
+    console.error(`build:pack — ${module_} → ${outPath} (${body.split('\n').length} lines, `
+      + `${pack.deps.length} dependency brief(s))`);
+  } else {
+    process.stdout.write(body);
+  }
+  process.exit(0);
+}
+
 console.error(`
-cid.mjs — context assembly for CID agents
+cid.mjs — context assembly for the agents in this pipeline
 
   digest      what every written sheet decided, one row each
   research    rebuild ${PACK_PATH} from committed sheets
   pack        --domain <category/domain> --brief <spec dir> [--out <file>]
+  build       --module <name> [--out <file>]   one module's complete build brief
 `);
 process.exit(2);

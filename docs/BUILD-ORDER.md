@@ -281,7 +281,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 
 **Write to:** `game/src/server/Progression.luau`
 
-**Owns:** Own currency, upgrade levels, purchase validation and the derived clear radius and walk speed.
+**Owns:** Own currency, upgrade levels, purchase validation, and every quantity derived from an upgrade level: clear radius, walk speed and the payout multiplier.
 
 **Depends on:** `config`
 
@@ -291,6 +291,7 @@ UI modules are absent on purpose: screens come from `ui-forge` via
 - `tryBuy(state, upgradeId): boolean`
 - `clearRadius(state): number`
 - `walkSpeed(state): number`
+- `valueMultiplier(state): number`
 
 ### Must not
 

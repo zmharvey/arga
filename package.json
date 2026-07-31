@@ -29,7 +29,8 @@
     "cid:verify": "node bridge/verify-sheets.mjs",
     "cid:digest": "node bridge/cid.mjs digest",
     "cid:research": "node bridge/cid.mjs research",
-    "cid:pack": "node bridge/cid.mjs pack"
+    "cid:pack": "node bridge/cid.mjs pack",
+    "build:pack": "node bridge/cid.mjs build"
   },
   "engines": {
     "node": ">=20"
