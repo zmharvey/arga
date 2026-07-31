@@ -100,22 +100,38 @@ through.
 every later domain reads. Write them as if they are the only thing anyone will see, because
 for every writer after you, they are.
 
-## Length — 120 lines a sheet, hard
+## Length — 100 lines of *prose*. Checks are not counted and must never be cut to fit.
 
-Wave 1 averaged 345 lines a sheet. Measured afterwards, **86% of those lines were prose that
-nothing downstream reads** — this repo's own writer definition says so: *"The prose is for
-humans and for verification. Nothing downstream of the merger reads it."* The load-bearing
-parts were 13%.
+Wave 1 averaged 345 lines a sheet, and measured afterwards **86 to 95% of every sheet was
+prose**. The tables — the rules, the exclusions, the checks, the things a reviewer actually
+points at — were 5 to 14%. That is where the waste was, and it is the only place to cut.
 
-`npm run cid:verify` warns above 120. Spend the lines on the Decision, the manifest block, and
-the criteria.
+`npm run cid:verify` counts **prose lines only**: table rows, fenced blocks and manifest
+blocks are exempt. It warns above 100.
 
-Long is not thorough. Wave 1's longest sheet was 460 lines and supplied no contract key; its
-shortest was 76 and supplied one.
+**A check is never traded for length.** If your subject genuinely has twelve exclusions, write
+twelve rows. Naming the specific thing is the entire job — *"zero cobwebs, dust sheets, grave
+markers or bones"* is worth more to a build agent than three paragraphs explaining why the
+game should not feel haunted. A build agent cannot count "not spooky". It can count cobwebs.
 
-Specifically, do not write: a restatement of the brief you were given, a summary of what you
-are about to decide, a recap of what you just decided, a list of things you considered and
-rejected for no stated reason, or a table whose rows are all the same verdict.
+*This rule exists because the first run of this agent got it backwards. Handed a flat
+120-line cap, it cut a 12-entry exclusion list to 6 and dropped every named object — cobwebs,
+padlocks on empty slots, gain floaters, camera shake, vignettes, whether a held tool reads as
+a weapon. It kept the reasoning and cut the specifics, which is the opposite of useful. The
+whole point of a spec sheet is that a builder never has to infer.*
+
+So, to be explicit:
+
+| cut | keep |
+|---|---|
+| a restatement of the brief you were handed | every named object, string, count and threshold |
+| a summary of what you are about to decide | every row of a rule or exclusion table |
+| a recap of what you just decided | the source citation on each row |
+| paragraphs arguing why an entry is important | the check that makes the entry countable |
+| the same verdict repeated across a table's rows | acceptance criteria |
+
+Long is not thorough. But short is not disciplined either, if it got short by deleting the
+part a builder needs.
 
 ## The manifest block — the half the build stage reads
 

@@ -198,16 +198,26 @@ Every source any sheet has fetched is in \`${PACK_PATH}\` (${packCount} sources)
 
 ---
 
-## 6. Budget
+## 6. Budget — 100 lines of *prose*. Checks are exempt and never cut to fit.
 
-**120 lines per sheet, hard.** \`cid:verify\` warns above it.
+\`cid:verify\` counts prose only. **Table rows, fenced blocks and manifest blocks do not
+count against the budget**, so a rule table as long as your subject requires is free.
 
-Wave 1 averaged 345 lines a sheet and 86% of those lines were prose that nothing
-downstream reads — the spec-writer definition says so itself. The load-bearing parts are
-the Decision, the manifest block, and the acceptance criteria. Spend the lines there.
+Wave 1 averaged 345 lines a sheet and **86-95% of every sheet was prose**. Its tables — the
+rules, exclusions and checks a reviewer actually points at — were 5-14%. That is the only
+place to cut.
 
-Long does not mean thorough. Wave 1's longest sheet was 460 lines; its shortest was 76 and
-supplied a contract key.
+**Never trade a check for length.** If your subject has twelve exclusions, write twelve
+rows. Naming the specific thing is the job: *"zero cobwebs, dust sheets, grave markers or
+bones"* is worth more than three paragraphs on why the game should not feel haunted. A
+build agent cannot count "not spooky". It can count cobwebs.
+
+Cut instead: restatements of the brief, summaries of what you are about to decide, recaps
+of what you just decided, paragraphs arguing an entry's importance, and any table whose
+rows all carry the same verdict.
+
+Long is not thorough. Short is not disciplined either, if it got short by deleting the part
+a builder needs.
 `;
 
   const outPath = opt('out', null);

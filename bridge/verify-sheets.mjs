@@ -210,23 +210,36 @@ for (const f of files.filter(scoped)) {
   }
 }
 
-/* ------------------------------------- 7. sheet length */
+/* ------------------------------------- 7. prose budget */
 
-// 86% of wave 1's 9,343 sheet lines were prose that the writer definition itself says
-// nothing downstream reads. This does not fail a build, so it warns rather than fails —
-// but it is the difference between a wave that fits in a session and one that does not.
+// 86-95% of every wave-1 sheet was prose; its tables — the rules, exclusions and checks a
+// reviewer actually points at — were 5-14%. So the budget binds prose and exempts tables,
+// fenced blocks and manifest blocks.
+//
+// The distinction is not cosmetic. Handed a flat all-lines cap, the first batched writer
+// cut a 12-entry exclusion list to 6 and dropped every named object (cobwebs, padlocks on
+// empty slots, gain floaters, camera shake) while keeping the paragraphs explaining why
+// the game should not feel haunted. It optimised the measure instead of the thing. A build
+// agent cannot count "not spooky"; it can count cobwebs.
+//
+// Warns rather than fails: length is a cost problem, not a correctness one.
+const PROSE_BUDGET = 100;
 {
   const long = [];
   for (const f of leaves.filter(scoped)) {
-    const n = (await readFile(f, 'utf8')).split('\n').length;
-    if (n > 120) long.push({ rel: relative(ROOT, f), n });
+    const body = await readFile(f, 'utf8');
+    const n = body
+      .replace(/```[\s\S]*?```/g, '')
+      .split('\n')
+      .filter((l) => l.trim() && !/^\s*\|/.test(l)).length;
+    if (n > PROSE_BUDGET) long.push({ rel: relative(ROOT, f), n });
   }
   if (long.length) {
     long.sort((a, b) => b.n - a.n);
-    const excess = long.reduce((t, l) => t + l.n - 120, 0);
-    warns.push(`${long.length} sheet(s) over the 120-line budget by ${excess} lines total. `
+    const excess = long.reduce((t, l) => t + l.n - PROSE_BUDGET, 0);
+    warns.push(`${long.length} sheet(s) over the ${PROSE_BUDGET}-line prose budget by ${excess} lines total. `
       + `Worst: ${long.slice(0, 3).map((l) => `${l.rel} (${l.n})`).join(', ')}. `
-      + 'Every line here is also paid by every later writer that reads the digest.');
+      + 'Tables and manifest blocks are exempt — cut the argument, never a check.');
   }
 }
 
