@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="The arga pipeline as a graph: every step typed as either an agent (judgement, costly) or a derivation (code, free), with the measured token cost of moving work between them.">
+<meta name="description" content="How a game idea becomes a real Roblox game: every step is either an AI making a judgement call or a script doing the same thing every time.">
 <style>
   /* minimal reset — the hosted artifact wrapper supplies one; a standalone file must not assume it */
   *, *::before, *::after { box-sizing: border-box; }
   body, h1, h2, h3, p, dl, dd { margin: 0; }
   img, svg { max-width: 100%; display: block; }
 </style>
-<title>arga — the pipeline</title>
+<title>arga · how it works</title>
 <style>
   :root {
     --paper:      #EEF1EC;
@@ -317,7 +317,7 @@
     font-family: var(--mono);
     font-size: 12.5px;
     font-weight: 500;
-    word-break: break-all;
+    overflow-wrap: anywhere;
   }
 
   .node.gate {
@@ -472,71 +472,70 @@
     .node { flex: 1 1 100%; }
   }
 </style>
-
 </head>
 <body>
 <div class="wrap">
 
   <header class="masthead">
-    <p class="eyebrow">arga · pipeline as of 31 July 2026</p>
-    <h1>Roblox game, start to finish, in two kinds of step</h1>
+    <p class="eyebrow">arga · how it works, as of 31 July 2026</p>
+    <h1>Turning a game idea into a real Roblox game</h1>
     <p class="thesis">
-      Every seam in this pipeline is either an <strong>agent</strong> (judgement, expensive,
-      never reproducible twice) or a <strong>derivation</strong> (code, free, identical every
-      run). The architecture is one long argument for moving work from the first kind into the
-      second. Prose has to be re-interpreted by whoever reads it next, and interpretation is
-      where two build agents quietly become two different games.
+      Every step below is one of two things: <strong>an AI making a judgement call</strong>, or
+      <strong>a script doing the same thing every time</strong>. The whole design is about moving
+      as much work as possible out of the first kind and into the second. AI steps cost real money
+      and never give you the same answer twice. Scripts are free and always do.
     </p>
 
     <div class="legend">
-      <span class="legend-item"><span class="swatch is-agent"></span> agent · LLM, costs tokens</span>
-      <span class="legend-item"><span class="swatch is-deriv"></span> derivation · code, costs nothing</span>
-      <span class="legend-item"><span class="swatch is-art"></span> artifact on disk</span>
+      <span class="legend-item"><span class="swatch is-agent"></span> AI step · costs money, never repeats exactly</span>
+      <span class="legend-item"><span class="swatch is-deriv"></span> script · free, identical every run</span>
+      <span class="legend-item"><span class="swatch is-art"></span> a file it produces</span>
     </div>
   </header>
 
   <!-- ================================================== stage 0 -->
   <section class="band">
     <div class="rail">
-      <p class="rail-num">STAGE 0</p>
-      <h2>Concept</h2>
+      <p class="rail-num">STEP 1</p>
+      <h2>The interview</h2>
       <p>
-        An interview, not a prompt. It researches real competitors, questions the developer
-        across several rounds, and tags every line with who decided it. That tag is what tells
-        all 55 downstream agents how much latitude they have.
+        You get asked about your game idea. It looks up real competing games first, then questions
+        you over several rounds, and writes down every answer next to who decided it: you, or it.
+        That last part matters more than it sounds. Every later step reads it to know what it is
+        allowed to change and what is yours and settled.
       </p>
-      <span class="status">working · 4 runs recorded</span>
+      <span class="status">working · 4 real runs</span>
     </div>
     <div>
       <div class="flow">
         <div class="node agent">
-          <p class="node-kind">agent</p>
-          <p class="node-name">/game-concept</p>
-          <p class="node-note">Interviews, fetches references, writes provenance-tagged sheets.</p>
+          <p class="node-kind">AI</p>
+          <p class="node-name">The interviewer</p>
+          <p class="node-note">Asks you about your game, looks up competitors, writes down the answers.</p>
         </div>
         <span class="chev">→</span>
         <div class="node artifact">
-          <p class="node-kind">artifact</p>
-          <p class="node-name">concept/spec/{slug}/</p>
-          <p class="node-note">11 files. <code>HANDOFF.md</code> routes readers by subject.</p>
+          <p class="node-kind">files</p>
+          <p class="node-name">concept/spec/</p>
+          <p class="node-note">11 documents. Your idea, written down properly.</p>
         </div>
         <span class="chev">→</span>
         <div class="node gate">
-          <p class="node-kind">gate · deterministic</p>
-          <p class="node-name">concept:lint</p>
-          <p class="node-note">Audit-table coverage, malformed tags, placeholders, glossary gaps. 31 tests behind it.</p>
+          <p class="node-kind">check · script</p>
+          <p class="node-name">The write-up checker</p>
+          <p class="node-note">Hunts for holes: questions never asked, answers with no owner, vague filler like "TBD".</p>
         </div>
         <span class="chev">→</span>
         <div class="node agent">
-          <p class="node-kind">agent</p>
-          <p class="node-name">concept-verifier</p>
-          <p class="node-note">Six lenses: contradiction, occupancy, feasibility, dead ends, overlap, authority.</p>
+          <p class="node-kind">AI</p>
+          <p class="node-name">The second reader</p>
+          <p class="node-note">Reads it all back looking for trouble: two answers that contradict, an idea another game already owns, a promise nothing could actually build.</p>
         </div>
       </div>
       <p class="loop">
-        <b>Why both a gate and a verifier.</b> The gate runs first and finds everything countable,
-        so the agent's whole budget goes on judgement. Run them the other way around and you pay
-        an LLM to count rows.
+        <b>Why there are two checkers.</b> The script goes first and catches everything you could
+        count. That way the AI spends its money on judgement instead of on counting rows, which is
+        the expensive way to do arithmetic.
       </p>
     </div>
   </section>
@@ -544,81 +543,82 @@
   <!-- ================================================== CID -->
   <section class="band">
     <div class="rail">
-      <p class="rail-num">CREATIVE IDEA DEPARTMENT</p>
-      <h2>CID</h2>
+      <p class="rail-num">STEP 2</p>
+      <h2>The design department</h2>
       <p>
-        Nine categories, 55 domains. Stage 0 settles the constraints; CID makes the actual
-        decisions inside them, in enough detail that a build agent never infers. This is where
-        almost all the money goes.
+        Nine departments covering 55 topics. The interview pinned down the rules; this is where
+        the actual decisions get made, in enough detail that whoever builds the game never has to
+        guess at anything. Nearly all the cost of the whole pipeline is here.
       </p>
-      <span class="status is-partial">wave 1 of 7 · 14 domains · 37 sheets</span>
+      <span class="status is-partial">round 1 of 7 · 14 topics · 37 documents</span>
     </div>
     <div>
       <div class="flow">
         <div class="node agent">
-          <p class="node-kind">agent · ×9</p>
-          <p class="node-name">cid-category-lead</p>
-          <p class="node-note">Relays binding constraints to its domains, provenance intact.</p>
+          <p class="node-kind">AI · 9 of them</p>
+          <p class="node-name">Department heads</p>
+          <p class="node-note">Pass your locked-in decisions down to their topics, flagging which ones came from you and cannot be argued with.</p>
         </div>
         <span class="chev">→</span>
         <div class="node agent">
-          <p class="node-kind">agent · ×55</p>
-          <p class="node-name">cid-domain-lead</p>
-          <p class="node-note">Enumerates one domain, assigns one sheet per real decision. <b>The last step allowed to fetch.</b></p>
+          <p class="node-kind">AI · 55 of them</p>
+          <p class="node-name">Topic planners</p>
+          <p class="node-note">Take one topic and list out every decision that needs making in it. <b>The last step allowed to search the web.</b></p>
         </div>
       </div>
 
       <div class="flow" style="margin-top:12px">
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">npm run cid:research</p>
-          <p class="node-note">Banks every fetched page into one deduped file. 45 sources. Fetch once, cite many.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Save the research</p>
+          <p class="node-note">Files every web page anyone looked up into one shared document. 45 pages. Look it up once, everyone reads the same copy.</p>
         </div>
         <span class="chev">→</span>
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">npm run cid:pack</p>
-          <p class="node-note">One domain's entire context: assignment, brief list, keys it owns, every decision made elsewhere. 151 lines.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Build the briefing</p>
+          <p class="node-note">Assembles one file holding everything a writer needs: its job, what to read, what has already been settled elsewhere. 151 lines.</p>
         </div>
         <span class="chev">→</span>
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">npm run cid:digest</p>
-          <p class="node-note">Every sheet's decision and stated boundary. 9,343 lines of sheet down to 40.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Summarise every decision</p>
+          <p class="node-note">Boils down every decision made so far to one line each. 9,343 lines becomes 40.</p>
         </div>
       </div>
 
       <div class="flow" style="margin-top:12px">
         <div class="node agent">
-          <p class="node-kind">agent · ×55</p>
-          <p class="node-name">cid-domain-writer</p>
-          <p class="node-note">Writes a whole domain's sheets in one pass. <b>No fetch tools.</b> Reads the pack, not the repo.</p>
+          <p class="node-kind">AI · 55 of them</p>
+          <p class="node-name">Topic writers</p>
+          <p class="node-note">Settle every decision in one topic in a single sitting. <b>Cannot search the web, cannot read other topics.</b> Both arrive pre-summarised instead.</p>
         </div>
         <span class="chev">→</span>
         <div class="node artifact">
-          <p class="node-kind">artifact</p>
-          <p class="node-name">cid/**/NN-*.md</p>
-          <p class="node-note">Prose for humans, a fenced <code>manifest</code> block for machines.</p>
+          <p class="node-kind">files</p>
+          <p class="node-name">the decisions</p>
+          <p class="node-note">One document per decision. Readable by a person, with the numbers tagged so a computer can lift them out.</p>
         </div>
         <span class="chev">→</span>
         <div class="node gate">
-          <p class="node-kind">gate · deterministic</p>
-          <p class="node-name">npm run cid:verify</p>
-          <p class="node-note">Index matches disk, one key one owner, one word one spelling, cited URLs exist, prose budget.</p>
+          <p class="node-kind">check · script</p>
+          <p class="node-name">The decision checker</p>
+          <p class="node-note">Does the plan match the files, did two writers claim the same decision, is one word spelled two ways, does a quoted web page actually exist.</p>
         </div>
         <span class="chev">→</span>
         <div class="node agent">
-          <p class="node-kind">agent · ×10</p>
-          <p class="node-name">cid-verifier</p>
-          <p class="node-note">Contradiction and feasibility only. Everything countable is already gone.</p>
+          <p class="node-kind">AI · 10 of them</p>
+          <p class="node-name">The critics</p>
+          <p class="node-note">Only read for judgement now: does this contradict that, would this really work. Everything countable is already gone.</p>
         </div>
       </div>
 
       <p class="loop">
-        <b>The rule that makes this affordable.</b> A writer may not read a sibling sheet and may
-        not fetch. Both are handed to it pre-derived. Reading siblings cost roughly 86,000 tokens
-        a sheet to learn about 90 lines of fact, and it never actually prevented the overlap it
-        was meant to prevent. One writer holding a whole domain cannot collide with itself.
+        <b>The one rule that makes this affordable.</b> A writer may not read another topic's work
+        and may not search the web. It gets both handed over, already summarised. Reading everyone
+        else's work used to cost roughly 86,000 tokens per document just to find out where your own
+        job stopped, and it never actually prevented the overlap it was meant to prevent. One
+        writer handling a whole topic cannot contradict itself.
       </p>
     </div>
   </section>
@@ -626,46 +626,48 @@
   <!-- ================================================== bridge -->
   <section class="band">
     <div class="rail">
-      <p class="rail-num">THE SEAM</p>
-      <h2>Bridge</h2>
+      <p class="rail-num">STEP 3</p>
+      <h2>The handoff</h2>
       <p>
-        Deliberately not an agent. A merger cannot interpret, which is the entire point: it
-        collects declared values, refuses duplicates, and checks them against a contract that
-        knows rarer tiers must pay more and an area must physically hold its patch count.
+        Deliberately a script and not an AI. A script cannot interpret, and that is exactly the
+        point. It collects the numbers people wrote down, refuses the whole batch if two people
+        claimed the same one, and checks them against rules like "the rarer plant has to be worth
+        more" and "the area has to be physically big enough to hold that many plants".
       </p>
-      <span class="status">working · 11/11 keys · 54 tests</span>
+      <span class="status">working · all 11 numbers · 54 tests</span>
     </div>
     <div>
       <div class="flow">
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">merge.mjs</p>
-          <p class="node-note">Lifts every <code>manifest</code> block. Two sheets claiming one key is a hard error naming both files.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Collect the numbers</p>
+          <p class="node-note">Pulls the tagged numbers out of every decision document. If two documents claim the same one, it stops and names both files.</p>
         </div>
         <span class="chev">→</span>
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">schema.mjs</p>
-          <p class="node-note">11 keys and their cross-field invariants. Two tiers may not share a shape, so rarity survives colour-blindness by construction.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Check they make sense together</p>
+          <p class="node-note">11 numbers the game needs, plus the rules connecting them. Two plant types may not share a shape, so you can still tell them apart with the colour switched off.</p>
         </div>
         <span class="chev">→</span>
         <div class="node artifact">
-          <p class="node-kind">artifact</p>
-          <p class="node-name">GameConfig.luau</p>
-          <p class="node-note">Generated. Loads outside Roblox, so its curves are testable.</p>
+          <p class="node-kind">file</p>
+          <p class="node-name">the settings file</p>
+          <p class="node-note">Written by the script. Runs outside Roblox, so the numbers can be tested without launching the game.</p>
         </div>
         <span class="chev">→</span>
         <div class="node artifact">
-          <p class="node-kind">artifact</p>
-          <p class="node-name">docs/BUILD-ORDER.md</p>
-          <p class="node-note">11 modules, topologically sorted, each with acceptance criteria.</p>
+          <p class="node-kind">file</p>
+          <p class="node-name">the build order</p>
+          <p class="node-note">11 pieces of code to write, in the order they have to be written, each with a way to tell it works.</p>
         </div>
       </div>
       <p class="loop">
-        <b>Why this exists.</b> The game was built by hand once, first. Every key in the contract
-        is something the builder had to invent on the spot because no sheet supplied it: patch
-        counts, tier weights, cost curves, tick rates, and the six relic names, which was squarely
-        a spec writer's job. The list is empirical, not theoretical.
+        <b>Why this exists at all.</b> Someone built the game by hand once, first. Every number on
+        that list of 11 is something they had to invent on the spot because no document gave them
+        one: how many plants, how rare each kind is, what upgrades cost, how often the game saves,
+        and the names of the six buried objects, which was squarely a designer's job. The list came
+        from real gaps, not from theory.
       </p>
     </div>
   </section>
@@ -673,91 +675,95 @@
   <!-- ================================================== stage 1 + ship -->
   <section class="band">
     <div class="rail">
-      <p class="rail-num">STAGE 1 · SHIP</p>
-      <h2>ui-forge, then Rojo</h2>
+      <p class="rail-num">STEP 4</p>
+      <h2>The screens, then the game</h2>
       <p>
-        Built because Claude's Roblox UI was consistently ugly, and the diagnosis was two missing
-        systems rather than bad prompting: nothing forbade inventing colours, and nothing ever
-        rendered. Tokens fix the first, the render-and-critique loop fixes the second.
+        This exists because Claude's Roblox screens were reliably ugly, and the cause turned out to
+        be two missing pieces rather than badly written instructions. Nothing stopped it inventing
+        its own colours, and it never once looked at what it had made. A fixed palette fixes the
+        first. Drawing it and then criticising it fixes the second.
       </p>
-      <span class="status is-thin">working · 1 pattern · narrowest point</span>
+      <span class="status is-thin">working · only one screen shape · the bottleneck</span>
     </div>
     <div>
       <div class="flow">
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">compose(brief, theme)</p>
-          <p class="node-note">Brief plus theme to spec, in pure code. Specs are build artifacts and are never hand-edited.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Description plus look, into a layout</p>
+          <p class="node-note">Turns what the screen does and how it should feel into an exact layout, in code. Nobody hand-edits the result.</p>
         </div>
         <span class="chev">→</span>
         <div class="node agent">
-          <p class="node-kind">agent · loop</p>
-          <p class="node-name">render → shoot → critique</p>
-          <p class="node-note">Generation stops being blind. A critic that finds a fault edits the brief and recompiles.</p>
+          <p class="node-kind">AI · on a loop</p>
+          <p class="node-name">Draw it, look at it, criticise it</p>
+          <p class="node-note">Renders the screen, screenshots it, picks it apart. When it finds a fault it fixes the description and redraws, never the picture.</p>
         </div>
         <span class="chev">→</span>
         <div class="node deriv">
-          <p class="node-kind">derivation</p>
-          <p class="node-name">npm run emit</p>
-          <p class="node-note">Luau for Rojo. Preview and runtime are tested to stay in step.</p>
+          <p class="node-kind">script</p>
+          <p class="node-name">Turn it into Roblox code</p>
+          <p class="node-note">The preview and the real thing are tested against each other, so what you approved is what ships.</p>
         </div>
         <span class="chev">→</span>
         <div class="node artifact">
-          <p class="node-kind">artifact</p>
-          <p class="node-name">game/ → Roblox</p>
-          <p class="node-note">5,932 lines of Luau. Playable.</p>
+          <p class="node-kind">the game</p>
+          <p class="node-name">running in Roblox</p>
+          <p class="node-note">5,932 lines of code. Playable right now.</p>
         </div>
       </div>
       <p class="loop">
-        <b>The known gap.</b> ui-forge has exactly one pattern, a centred dismissible panel with a
-        grid of items. CID routinely asks for shapes outside it: persistent HUDs, settings lists,
-        maps, text inputs. Everything upstream is now cheaper than the thing it feeds.
+        <b>The known weak point.</b> This can build exactly one shape of screen: a panel in the
+        middle holding a grid of things. The design department keeps asking for other shapes, like
+        a bar that stays on screen while you play, a settings list, a map, a text box. Everything
+        feeding into it just got four times cheaper, so this is now the narrowest part of the whole
+        pipeline.
       </p>
     </div>
   </section>
 
   <!-- ================================================== ledger -->
   <div class="section-head">
-    <h2>What the derivations bought</h2>
+    <h2>What replacing AI steps with scripts actually saved</h2>
     <p>
-      Measured on wave 1's own files, not projected. Wave 1 ran one agent per sheet and spent
-      about 97% of its tokens on input, most of it the same bytes delivered 37 separate times.
+      Measured on real files from the first round, not estimated. That round used one AI per
+      document and spent about 97% of its money on <em>reading</em> rather than writing, most of it
+      the same text handed to 37 different AIs one at a time.
     </p>
   </div>
 
   <div class="ledger">
     <div class="row">
-      <div class="row-label">sibling sheets<span>read to find a boundary</span></div>
+      <div class="row-label">everyone else's work<span>read to find where your job stops</span></div>
       <div class="bars">
         <div class="bar-line"><div class="bar was" style="width:86%"></div><span class="bar-tag">9,343 lines, per writer</span></div>
-        <div class="bar-line"><div class="bar now" style="width:0.37%"></div><span class="bar-tag">40-line digest</span></div>
+        <div class="bar-line"><div class="bar now" style="width:0.37%"></div><span class="bar-tag">a 40-line summary</span></div>
       </div>
       <div class="row-mult">234×<span>smaller</span></div>
     </div>
 
     <div class="row">
-      <div class="row-label">occupancy research<span>search, then fetch</span></div>
+      <div class="row-label">competitor research<span>searched, then downloaded</span></div>
       <div class="bars">
-        <div class="bar-line"><div class="bar was" style="width:60%"></div><span class="bar-tag">~60k per sheet, searched fresh</span></div>
-        <div class="bar-line"><div class="bar now" style="width:5.5%"></div><span class="bar-tag">45 sources, banked once</span></div>
+        <div class="bar-line"><div class="bar was" style="width:60%"></div><span class="bar-tag">~60k per document, searched fresh each time</span></div>
+        <div class="bar-line"><div class="bar now" style="width:5.5%"></div><span class="bar-tag">45 pages, saved once</span></div>
       </div>
       <div class="row-mult">11×<span>smaller</span></div>
     </div>
 
     <div class="row">
-      <div class="row-label">the brief<span>handed to every writer</span></div>
+      <div class="row-label">your game write-up<span>handed to every writer</span></div>
       <div class="bars">
         <div class="bar-line"><div class="bar was" style="width:100%"></div><span class="bar-tag">1,667 lines</span></div>
-        <div class="bar-line"><div class="bar now" style="width:56.5%"></div><span class="bar-tag">942, minus the report on its own making</span></div>
+        <div class="bar-line"><div class="bar now" style="width:56.5%"></div><span class="bar-tag">942, minus the report on how it was made</span></div>
       </div>
       <div class="row-mult">1.8×<span>smaller</span></div>
     </div>
 
     <div class="row">
-      <div class="row-label">theme/tone, measured<span>4 sheets, same brief</span></div>
+      <div class="row-label">one topic, start to finish<span>4 documents, same input, measured twice</span></div>
       <div class="bars">
-        <div class="bar-line"><div class="bar was" style="width:100%"></div><span class="bar-tag">~640,000 tokens · 4 agents</span></div>
-        <div class="bar-line"><div class="bar now" style="width:23%"></div><span class="bar-tag">147,494 tokens · 1 agent</span></div>
+        <div class="bar-line"><div class="bar was" style="width:100%"></div><span class="bar-tag">~640,000 tokens · 4 separate AIs</span></div>
+        <div class="bar-line"><div class="bar now" style="width:23%"></div><span class="bar-tag">147,494 tokens · 1 AI</span></div>
       </div>
       <div class="row-mult">4.3×<span>cheaper</span></div>
     </div>
@@ -765,37 +771,37 @@
 
   <!-- ================================================== rules -->
   <div class="section-head">
-    <h2>Three rules that are load-bearing</h2>
-    <p>Everything above follows from these. They are in the repo's CLAUDE.md, and breaking one is how the pipeline regresses.</p>
+    <h2>Three rules everything else follows from</h2>
+    <p>Breaking any one of these is how the whole thing quietly gets worse again.</p>
   </div>
 
   <div class="rules">
     <div class="rule-card">
-      <h3>Seams are derivations, never prompts</h3>
+      <h3>Handoffs are code, never written instructions</h3>
       <p>
-        Every handoff between stages is pure code: <em>compose(brief, theme)</em>, the manifest
-        merger, the context pack. Prose gets re-interpreted downstream, and interpretation is
-        where visual and design variance re-enters.
+        Every point where one step feeds the next is a script, not a memo. Written instructions get
+        re-read and re-interpreted by whoever picks them up, and that reinterpretation is exactly
+        where two AIs quietly drift into building two different games.
       </p>
     </div>
     <div class="rule-card">
-      <h3>Prefer changes that make bad output impossible</h3>
+      <h3>Make the bad version impossible, rather than fixing it later</h3>
       <p>
-        Tokens, validators and lint passes beat making one screen prettier by hand. The schema
-        refuses two tiers that share a shape, so rarity stays readable with colour thrown away.
-        Nobody has to remember that.
+        A fixed palette, an automatic checker, a rule that refuses. All better than making one
+        screen look nicer by hand. The checker rejects two plant types that share a shape, so you
+        can always tell them apart even in black and white. Nobody has to remember to check.
       </p>
     </div>
     <div class="rule-card">
-      <h3>A budget on prose, never on checks</h3>
+      <h3>Limit the waffle, never the checklists</h3>
       <p>
-        Learned the hard way this week. Given a flat line cap, a writer cut a twelve-entry
-        exclusion list to six and dropped every named object, keeping the paragraphs that
-        explained itself.
+        Learned the hard way this week. Given a flat limit on document length, a writer cut a
+        twelve-item list of banned things down to six and threw away every specific example, while
+        keeping all the paragraphs explaining its own reasoning.
       </p>
       <p>
-        A build agent cannot count <em>not spooky</em>. It can count cobwebs. Tables are now
-        exempt from the budget.
+        Nobody can check <em>"not spooky"</em>. Anybody can check <em>"no cobwebs"</em>. Lists are
+        now exempt from the limit.
       </p>
     </div>
   </div>
@@ -803,27 +809,27 @@
   <!-- ================================================== colophon -->
   <dl class="colophon">
     <div class="fact">
-      <dt>Built</dt>
-      <dd>4 of 5 stages
-        <small>Stage 0, CID wave 1, bridge and ui-forge all run. Waves 2 to 7 are the remaining work.</small>
+      <dt>Working today</dt>
+      <dd>4 of 5 steps
+        <small>The interview, the first design round, the handoff and the screen builder all run end to end. Design rounds 2 through 7 are what is left.</small>
       </dd>
     </div>
     <div class="fact">
-      <dt>Contract</dt>
-      <dd>11 keys
-        <small>Each one a value a human builder had to invent because no sheet supplied it.</small>
+      <dt>The handoff carries</dt>
+      <dd>11 numbers
+        <small>Each one a value a human had to make up on the spot, because no document supplied it.</small>
       </dd>
     </div>
     <div class="fact">
-      <dt>Tests</dt>
-      <dd>85 + Luau
-        <small>38 bridge, 16 context, 31 stage-0 gate, plus config curves that run outside Roblox.</small>
+      <dt>Automated tests</dt>
+      <dd>85, plus the game
+        <small>Covering the handoff, the summarising, the interview checker, and the game's own difficulty curves.</small>
       </dd>
     </div>
     <div class="fact">
-      <dt>Open</dt>
-      <dd>5 categories
-        <small>UI/UX, Audio, Analytics, Live Ops and Discovery own no contract key, so today they would produce prose with no path into a build.</small>
+      <dt>Biggest hole</dt>
+      <dd>5 of 9 departments
+        <small>Screens, sound, analytics, live updates and marketing do not own any of the 11 numbers. As things stand they would produce writing with no route into the actual game.</small>
       </dd>
     </div>
   </dl>
