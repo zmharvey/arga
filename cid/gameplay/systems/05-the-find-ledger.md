@@ -168,11 +168,13 @@ this decision that entry names a quantity with no referent.
    `discovery.record.forbiddenFields`.
 2. `collection.relicsPerArea × collection.areasPerDepth` equals the length of each depth's set,
    checked at merge; a manifest where it does not is rejected.
-3. Clear every area at every depth for one player: no name is placed on a patch twice, and
-   `foundCount` reaches `sum(collection.sets[].relics.length)` without the repeat branch entering.
-4. Clear 60 of 140 patches, find 3 of 6, rejoin: every one of the 3 outstanding Finds sits on a
-   patch `state.cleared` does not mark, and on the same patch index it sat on before the rejoin.
-5. Force a layout to assign a name outside its area's slice: the server logs a warning naming the
+3. **One scripted run, with a rejoin inside it.** Clear patches in the first area until at least
+   one of that area's Finds is still unfound, rejoin, then clear every area at every depth. All
+   four assertions hold: every Find outstanding at the rejoin reappears on the same patch index it
+   held before; each of those sits on a patch `state.cleared` does not mark; no name is placed on a
+   patch twice anywhere in the run; and `foundCount` reaches
+   `sum(collection.sets[].relics.length)` without the repeat branch ever being entered.
+4. Force a layout to assign a name outside its area's slice: the server logs a warning naming the
    Find and the patch index, the reveal channel does not fire, and the client shows nothing.
 
 ## Not decided here

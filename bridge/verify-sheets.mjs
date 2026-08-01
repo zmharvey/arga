@@ -88,8 +88,17 @@ for (const f of leaves.filter(scoped)) {
   // without them is an opinion.
   const acc = body.split('## Acceptance criteria')[1] ?? '';
   const criteria = [...acc.split(/\n## /)[0].matchAll(/^\d+\.\s+\S/gm)].length;
+  // The stated invariant is 2-4 (`docs/CID-wave-1.md`, and the writer's own definition). The
+  // check enforced 0 and 8, so the band it was written for went unmeasured on both sides: a
+  // wave-2 sheet reached 5 by absorbing a revision and nothing said so, and a single-criterion
+  // sheet — one test for a whole subject — passed silently.
+  //
+  // Warn rather than fail on both edges. A fifth criterion arriving with a real fix is a
+  // trade a writer should make consciously, not a build break; the point is that it is
+  // visible. Zero stays a hard failure, because a sheet nothing can check is an opinion.
   if (criteria === 0) fails.push(`${rel}: no numbered acceptance criteria`);
-  else if (criteria > 8) warns.push(`${rel}: ${criteria} acceptance criteria — likely a list of wishes rather than tests`);
+  else if (criteria === 1) warns.push(`${rel}: 1 acceptance criterion — the invariant is 2 to 4, and one test rarely covers a subject`);
+  else if (criteria > 4) warns.push(`${rel}: ${criteria} acceptance criteria — the invariant is 2 to 4. Above 8 it is a list of wishes rather than tests; between 5 and 8, merge or drop the weakest`);
 
   if (!TAG.test(body)) fails.push(`${rel}: carries no provenance tag, so a reader cannot tell what is binding`);
 

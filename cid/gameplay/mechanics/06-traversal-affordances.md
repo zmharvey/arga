@@ -123,10 +123,14 @@ surface to have needed one.
   owner of player-to-player collision, under the group name `Characters`. Nothing in `traversal`
   competes with it.
 - **Area-arrangement and plot-layout work:** the 12-stud walkable margin makes a plot's footprint
-  `area.size + 24` per side. That fits the shipped 160-stud pitch at depth 1, but at
-  `gameplay/core-loop/05`'s 236-stud depth-4 area it pushes the pitch past `social/02`'s S = 190
-  starting value toward its 300-stud ceiling, so **plot pitch has to decouple from area size by
-  depth 4 or co-presence legibility degrades.** Inherited here rather than discovered at build.
+  `area.size + 24` per side, which is **144 studs at the depth-1 area's 120**. `social/02` now
+  derives its separation ceiling at the phone viewport the audience actually uses and states
+  **S ≈ 128 studs** `[playtest unknown]`, test range 85 to 185. My margin therefore exceeds S
+  **at depth 1**, before any gutter between plots, so **plot pitch has to decouple from area size
+  immediately, not by depth 4.** It gets worse with depth: at `gameplay/core-loop/05`'s 236-stud
+  depth-4 area the footprint is 260 studs against the same 128. I am propagating `social/02`'s
+  number, not re-deciding it, and the margin is the only term in this that is mine: if the
+  arrangement cannot be made to work, 12 studs is what I can give back.
 - **Environment and set-dressing work (Art and Visuals):** the barrier is a bound, not an object. It
   must be at least 20 studs tall, may not read as a thing to climb, and may not be opaque along the
   inter-plot axis. Walls, terraces and built geometry are yours anywhere that does not cross that
@@ -150,7 +154,9 @@ surface to have needed one.
 
 Area dimensions, walk speed and clear radius (`gameplay/meta/01` and sheet 01, both merged and
 shipped). Patch collision (`art/objects/01`). Player-to-player collision as a value, its group name
-and its collidability matrix (`gameplay/social/01`, which holds `social`). The verb list and every
-input exclusion (sheet 02). Plot pitch and area arrangement (area-arrangement work). How the player
-moves between areas at different depths (Meta and Content). What the boundary and the ruin's built
-geometry are made of (Art and Visuals). The respawn delay's value (architecture, `01-runtime`).
+and its collidability matrix (`gameplay/social/01`, which holds `social`). The separation ceiling S
+and every figure inside its range (`gameplay/social/02`; I cite it and set none of it). The verb
+list and every input exclusion (sheet 02). Plot pitch and area arrangement (area-arrangement work).
+How the player moves between areas at different depths (Meta and Content). What the boundary and the
+ruin's built geometry are made of (Art and Visuals). The respawn delay's value (architecture,
+`01-runtime`).

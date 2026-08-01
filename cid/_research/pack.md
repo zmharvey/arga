@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 56 unique source(s); 18 were
+Extracted from `cid`. 80 unique source(s); 21 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -19,6 +19,23 @@ did not fetch" becomes checkable instead of trusted.
 - In the closest shipping analogue of a completion-shaped lap, an early small job runs "30-45 minutes" and a later one "1-2 hours solo", across 38 jobs and "around 30-35 hours to complete every job", with partial progress persisting mid-job. `` `` (fetched in this domain's planning pass, not re-fetched here). Its *smallest* early lap is 1.5x this game's entire bound session, and it survives that only because its audience sits down for long desktop sessions. This game's derived depth-1 lap is 2.7 minutes. **The analogue confirms the shape and inverts the scale**, which is the second independent…
 - `01-FOUNDATION.md` concedes lap length was unsourceable across three source types and rules the reference's number non-transferable, so this is the first stated number rather than a contradiction of a researched one. The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its smallest early lap is 1.5x this game's entire bound session and it survives that only on long desktop sittings. **It…
 - The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
+
+## https://www.roblox.com/games/113380129609386/Leaves-Incremental
+
+*Cited by 4: `gameplay/meta/_lead`, `theme/tone/01-register`, `theme/tone/04-do-nots`, `theme/tone/_lead`*
+
+- **Two sibling incrementals advertise area unlocking and publish no counts.** Pressure Wash Incremental: "[🌎] Unlock New Islands". Leaves Incremental: "Unlock new areas and discover rare leaf types" — and its Roblox page reported "There are currently no running experiences", i.e. zero live servers at fetch time. Content volume in this family is not publicly stated by its own store listings.
+- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
+- **`Leaves Incremental`** (PrestigeLabs Studios, a different studio, and the one game in the family that ships without rebirth). Description: *"A relaxing leaf-gathering simulator! Collect, upgrade, and explore colorful autumn worlds!"* plus *"Gather fallen leaves!"*, *"Unlock new areas and discover rare leaf types!"*, *"USE CODE: RELEASE"* and *"Enjoying the game?"*. Register: glyph-dense including an update badge and a leaf glyph inside the title itself, every feature line exclamatory, engagement prompts and a code promo in the description. ``
+
+## https://www.rolimons.com/game/133086043677134
+
+*Cited by 4: `gameplay/meta/_lead`, `gameplay/monetization/_lead`, `theme/fantasy/_lead`, `theme/tone/_lead`*
+
+- **The reference ships one badge and no completion structure at all.** Refetched: 38,488,789 visits, 578,470 favourites, 96.198% likes, all-time peak 10,435 CCU, current 1,659 (the brief recorded 819, so the decay has partially reversed). Its only badge is Welcome, awarded 16,306,690 times at a 100% win rate. Passes unchanged at 29 / 99 / 99 / 199 / 2,500 Robux, plus a 495,130-Robux "Test" pass that is plainly not a product.
+- The brief's reference **`[🌱] Grass Incremental Simulator`** still ships exactly the pass list the brief recorded, so the brief's monetization numbers are current rather than stale: **2x Walkspeed 29 · 2x Rebirths 99 · 2x Grass Luck 99 · 2x EXP 99 · 2x Bronze 199 · [OP] Giant Trimmer 2,500**, offsale "2x Grass" and "Nothing", at 38,488,889 visits, 135,478 upvotes and 1,659 current CCU. One extra entry appears that is **not a price point and must not be averaged into anything** — a pass named "Test" listed at 495,130 Robux, which is a developer artifact. ``
+- *Two research facts from the brief that bear directly on my subject.** The reference decayed *"10,435 peak to 819 current, while still being actively updated weekly ... satisfaction is not the same as retention"*, and *"Any spin-off inherits this shape by default"*; and its players already expect *"a luck/rarity roll to chase, and **a visible collection of what they have found**"* (`research/grass-incremental.md`) ``.
+- **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
 
 ## https://create.roblox.com/docs/workspace/collisions
 
@@ -41,12 +58,13 @@ did not fetch" becomes checkable instead of trusted.
 - *Identity work.** My test deliberately does not use the nameplate, so nothing here reopens `theme/identity/03-co-present-stranger`. But `StarterPlayer.NameDisplayDistance` defaults to **100** studs `` against a realised spawn separation of 160 today and 128 at best, so **a co-present stranger is nameless at rest either way.** If that ruling requires a readable nameplate, the display distance must rise above the realised separation — **identity's call, area arrangement's execution, not mine.**
 - `StarterPlayer.NameDisplayDistance` and `HealthDisplayDistance` default to **100** studs. ``
 
-## https://www.roblox.com/games/113380129609386/Leaves-Incremental
+## https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator
 
-*Cited by 3: `theme/tone/01-register`, `theme/tone/04-do-nots`, `theme/tone/_lead`*
+*Cited by 3: `gameplay/onboarding/_lead`, `theme/tone/01-register`, `theme/tone/_lead`*
 
+- **The reference has no discovery layer, so it never teaches one.** Its store page describes it as "A relaxing lawn-trimming simulator game 🌿 The more you rebirth and upgrade, the more fun the game becomes!" `` **This is the finding that matters: the reference's teaching order is exactly the economy-first, finds-later alternative `02-GAMEPLAY.md` explicitly declined.** It is not a model to copy in order, only in shape, and the item at position 2 is the entire divergence.
 - The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
-- **`Leaves Incremental`** (PrestigeLabs Studios, a different studio, and the one game in the family that ships without rebirth). Description: *"A relaxing leaf-gathering simulator! Collect, upgrade, and explore colorful autumn worlds!"* plus *"Gather fallen leaves!"*, *"Unlock new areas and discover rare leaf types!"*, *"USE CODE: RELEASE"* and *"Enjoying the game?"*. Register: glyph-dense including an update badge and a leaf glyph inside the title itself, every feature line exclamatory, engagement prompts and a code promo in the description. ``
+- **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
 
 ## https://www.roblox.com/games/87179205054038/reStore
 
@@ -61,6 +79,16 @@ did not fetch" becomes checkable instead of trusted.
 - The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
 - **`Scrap Incremental`** (third, taken for triangulation). Description: *"A relaxing magnet simulator game"* with a sunglasses glyph, then the same *"The more you rebirth and upgrade..."* sentence, with seven distinct glyphs, numbered feature brackets, *"Enjoying the game? Leave a Like and Favorite!"* and *"Join the Unequal Games group for in-game boosts!"*. ``
 - *A refinement to the brief's landscape research, from that last quote.** `research/landscape.md` attributes the shared marketing sentence to *"at least two different studios"* and lists Grass and Scrap as separate entries. Scrap Incremental's own description sends players to *"the Unequal Games group"*, which is the reference's studio, so Grass and Scrap are very likely one studio's template rather than two independent shippers. The independent same-sentence shipper is PrestigeLabs (Leaves). This does not weaken the brief's conclusion, it sharpens it: the genre's register norm is more…
+
+## https://www.rosenberryrooms.com/grass-incremental/
+
+*Cited by 3: `gameplay/onboarding/_lead`, `theme/tone/02-flavour-and-humor`, `theme/tone/_lead`*
+
+- The reference's teaching order is **cut → currency → upgrades → rarity → zones → rebirth**. The beginner guide's own priority is "Grass Value" then "Grass Growth Speed" then "Blade Size"; mutations (Silver, Gold, Diamond) are met after upgrades; islands and rebirth come last, with its Phase 1 covering the "First Hour" ``
+- **Structurally, immediately, and that part is sourced.** The player "spawn[s] on a small grassy platform with a basic saw blade attached to your character", and grass appears "as green blocks that you can walk through to cut and collect" ``; the action is "Simply walk through grass blocks to cut them automatically", with no animation or interaction ``. Tool equipped at spawn, standing in the resource, proximity harvest: **the first payoff is the first blade touched.** Our design inherits that shape and adds a Find to the same instant.
+- **In wall-clock seconds, `[unverified]`.** No source I reached states a measured time to first currency or to first upgrade. The two milestone figures I did get are thresholds, not durations: a first rebirth "usually around 1,000 grass" and Island 2 after "5 rebirths" ``, and they disagree with the other guide's advice to grind "approximately 10-15 rebirths before seriously pursuing the second island" ``, which is a strategy claim rather than a gate. **The specific fetch that would settle it:** a transcript or timestamped capture of the first 120 seconds of game id 133086043677134 — the…
+- *Whether this genre ships item text at all could not be established.** Two of three source types failed (HTTP 402, HTTP 405) and the third characterises the reference rather than quoting it, offering only a *"relaxing, meditative quality"* ``. Recorded as unavailable, not as absent. `[research owed: an in-client screenshot of the reference's collection panel, or a fan wiki page in this family that reproduces item text]`
+- 1. **How the register actually reads to 8–14 year olds.** Nothing fetchable settles this; it is reception, not fact. `[playtest unknown]`, starting position whatever sheet 01 sets. What would settle it: a read-back comprehension check with players in the band against the written copy, and as a cheap proxy available before any playtest, a Flesch-Kincaid score computed on the actual copy once it exists. 2. **Whether any game in this family ships item-level flavour text at all**, which would tell sheet 02 whether the surface it needs has genre precedent. Three source types were tried and two…
 
 ## https://about.roblox.com/newsroom/2026/02/moving-beyond-self-reported-age
 
@@ -96,19 +124,27 @@ did not fetch" becomes checkable instead of trusted.
 
 - `ChatWindowConfiguration.Enabled` defaults to **`true`** — "Whether to show the default chat window. Set to `false` to hide." ``
 
+## https://www.ofzenandcomputing.com/grass-incremental-tips-tricks/
+
+*Cited by 2: `gameplay/meta/_lead`, `gameplay/onboarding/_lead`*
+
+- **The reference's island count, single-sourced and low-confidence: five islands, unlocked at 5 / 25 / 100 / 500 rebirths**, with three grass "mutations" at 10x / 100x / 1000x value. The rebirth-gated island structure corroborates the skeleton the brief already has from a second source; **the count of five does not, and the same page also lists "quantum cutting mechanics", which reads as filler.** Cited as fetched, not as reliable.
+- The same order restated as the game's own loop: "Cut Grass – Walk through grass blocks to collect them, Earn Currency – Each grass block gives you grass currency, Purchase Upgrades – Spend grass on improvements, Unlock Rebirths – Reset for permanent multipliers, Access New Islands – Discover new upgrade paths" ``
+- **Structurally, immediately, and that part is sourced.** The player "spawn[s] on a small grassy platform with a basic saw blade attached to your character", and grass appears "as green blocks that you can walk through to cut and collect" ``; the action is "Simply walk through grass blocks to cut them automatically", with no animation or interaction ``. Tool equipped at spawn, standing in the resource, proximity harvest: **the first payoff is the first blade touched.** Our design inherits that shape and adds a Find to the same instant.
+- **In wall-clock seconds, `[unverified]`.** No source I reached states a measured time to first currency or to first upgrade. The two milestone figures I did get are thresholds, not durations: a first rebirth "usually around 1,000 grass" and Island 2 after "5 rebirths" ``, and they disagree with the other guide's advice to grind "approximately 10-15 rebirths before seriously pursuing the second island" ``, which is a strategy claim rather than a gate. **The specific fetch that would settle it:** a transcript or timestamped capture of the first 120 seconds of game id 133086043677134 — the…
+
+## https://www.roblox.com/games/123639373205511/Pressure-Wash-Incremental
+
+*Cited by 2: `gameplay/meta/_lead`, `theme/fantasy/_lead`*
+
+- **Two sibling incrementals advertise area unlocking and publish no counts.** Pressure Wash Incremental: "[🌎] Unlock New Islands". Leaves Incremental: "Unlock new areas and discover rare leaf types" — and its Roblox page reported "There are currently no running experiences", i.e. zero live servers at fetch time. Content volume in this family is not publicly stated by its own store listings.
+
 ## https://www.roblox.com/games/129774084106862/Scrap-Incremental
 
 *Cited by 2: `theme/vocabulary/02-banned-words`, `theme/vocabulary/_lead`*
 
 - **`relic` is another game's word for a different thing.** `Scrap Incremental` ships *"Roll rare Relics to power up your journey!"* and a *"unique 'Relic' system"*; `Faith Incremental` ships *"✨ Relics"* as a named collectible beside Faith and Souls. In both, a relic is a **rolled multiplier item**. This game's is a discovered, non-rolled, set-structured collectible. Using the word imports the wrong mental model and reads as a clone in the store listing.
 - `tier` is `Scrap Incremental`'s named progression system, so it is banned as a player-facing label while remaining fine as an internal field name.
-
-## https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator
-
-*Cited by 2: `theme/tone/01-register`, `theme/tone/_lead`*
-
-- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
-- **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
 
 ## https://www.roblox.com/games/70698000296435/Artifacts
 
@@ -122,19 +158,18 @@ did not fetch" becomes checkable instead of trusted.
 
 - **`relic` is another game's word for a different thing.** `Scrap Incremental` ships *"Roll rare Relics to power up your journey!"* and a *"unique 'Relic' system"*; `Faith Incremental` ships *"✨ Relics"* as a named collectible beside Faith and Souls. In both, a relic is a **rolled multiplier item**. This game's is a discovered, non-rolled, set-structured collectible. Using the word imports the wrong mental model and reads as a clone in the store listing.
 
-## https://www.rolimons.com/game/133086043677134
+## https://www.rolimons.com/game/126244816328678
 
-*Cited by 2: `theme/fantasy/_lead`, `theme/tone/_lead`*
+*Cited by 2: `gameplay/monetization/_lead`, `theme/fantasy/_lead`*
 
-- *Two research facts from the brief that bear directly on my subject.** The reference decayed *"10,435 peak to 819 current, while still being actively updated weekly ... satisfaction is not the same as retention"*, and *"Any spin-off inherits this shape by default"*; and its players already expect *"a luck/rarity roll to chase, and **a visible collection of what they have found**"* (`research/grass-incremental.md`) ``.
-- **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
+- **`DIG`**, the closest shipping collection-shaped game (a 601-item logbook, 56,047,649 visits), ships **6 passes and no impulse rung at all**: 99 (Car Materials), 249 (Sell Anywhere), 249 (Double XP), 299 (Appraisers Luck), 349 (Shovel Club), 499 (Spawn Vehicle Anywhere). **Floor 99.** ``
+- **DIG** (DIG Development, 28 June 2025): *"Uncover and collect hidden treasures, explore a massive open world..."* **56,030,218 visits, 89.3% likes (101,475 up / 12,115 down), all-time peak 119,871 CCU.** Its Collection is *"a detailed in-game logbook"* of 601 items, and **completing a zone unlocks Mounts** — structurally the brief's set-completion bonus. `` `` ``
 
-## https://www.rosenberryrooms.com/grass-incremental/
+## https://beebom.com/roblox-dig-locations/
 
-*Cited by 2: `theme/tone/02-flavour-and-humor`, `theme/tone/_lead`*
+*Cited by 1: `gameplay/meta/_lead`*
 
-- *Whether this genre ships item text at all could not be established.** Two of three source types failed (HTTP 402, HTTP 405) and the third characterises the reference rather than quoting it, offering only a *"relaxing, meditative quality"* ``. Recorded as unavailable, not as absent. `[research owed: an in-client screenshot of the reference's collection panel, or a fan wiki page in this family that reproduces item text]`
-- 1. **How the register actually reads to 8–14 year olds.** Nothing fetchable settles this; it is reception, not fact. `[playtest unknown]`, starting position whatever sheet 01 sets. What would settle it: a read-back comprehension check with players in the band against the written copy, and as a cheap proxy available before any playtest, a Flesch-Kincaid score computed on the actual copy once it exists. 2. **Whether any game in this family ships item-level flavour text at all**, which would tell sheet 02 whether the surface it needs has genre precedent. Three source types were tried and two…
+- **DIG gates its second island on collection completion, not on power.** "Once you complete 50% of the Cinder Island journal, you'll unlock access to the NPC at the ferry dock… he'll offer you a ferry ticket after asking about your progress." A shipping game in the collection genre uses *fraction of the index* as the unlock, which is a live alternative for sheet `04`'s gating question and is not the one `setting/04` W5 took.
 
 ## https://blizzardwatch.com/2020/03/23/hearthstones-duplicate-protection-new-player-experience-completely-change-game/
 
@@ -142,11 +177,72 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Scoping it per set is the same idea at the right width.** `` — "you won't see a duplicate until you own every card of that rarity", guaranteed independently per rarity; four sets of six is that shape. That source keys exclusion on *ever-owned*, because disposal would otherwise be a re-roll.
 
+## https://bloxg.com/statistics/roblox-retention-benchmarks
+
+*Cited by 1: `gameplay/onboarding/_lead`*
+
+- Genre benchmarks: simulator D1 32%, D7 14%, D30 6.2%, "from 850+ promoted games | Updated March 2026" — the highest D1 of the eight genres listed, attributed to progression loops ``. Recorded as context only: `00-CORE.md` makes beating the retention curve an explicit non-goal, so **no sheet of mine may argue from retention.** The three-times-reinforcement claim above is likewise context, not licence — this game has one recurring event to reinforce with.
+
+## https://bloxinformer.com/wikis/dig/cinder-island/
+
+*Cited by 1: `gameplay/meta/_lead`*
+
+- **DIG (56M visits, 119,871 peak CCU) ships two islands.** "So far there are only 2 Islands in the game, with more to come with the official release of the game." Its first island is subdivided into named regions (Cinder Shores, Cinder Cavern, Mount Cinder) with four further sub-regions inside the cavern — Azure Hollow, Monks Shrine, Solstice Shrine, Spiders Keep — so *area* count is small and *place* count inside an area is large.
+
+## https://bloxinformer.com/wikis/dig/islands
+
+*Cited by 1: `gameplay/meta/_lead`*
+
+- **DIG (56M visits, 119,871 peak CCU) ships two islands.** "So far there are only 2 Islands in the game, with more to come with the official release of the game." Its first island is subdivided into named regions (Cinder Shores, Cinder Cavern, Mount Cinder) with four further sub-regions inside the cavern — Azure Hollow, Monks Shrine, Solstice Shrine, Spiders Keep — so *area* count is small and *place* count inside an area is large.
+
 ## https://carpet-cleaning-simulator.wiki/guides/how-to-play/
 
 *Cited by 1: `theme/fantasy/01-fantasy-of-record`*
 
 - *Carpet Cleaning Simulator's loop is repeatable contracts plus rebirth**: *"Accept job → clean all required zones → collect payment → upgrade gear → unlock harder jobs"*, with rebirth from level 50 ``. At ~26.6M visits in a quarter ``, that is a much larger game delivering before-and-after revelation far more often than this one can, precisely *because* nothing it cleans stays clean. **Promising revelation is promising the thing an occupant delivers better** — my domain index's rule 6, applied.
+
+## https://create.roblox.com/docs/production/earn-on-roblox
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **Recorded once so nobody re-derives it, and used for nothing:** "Creators generally earn 70% of anything they sell in Robux in their game", and DevEx converts 10,000 Robux to $38 USD. Revenue is a declined non-goal, so no sheet in this domain may turn a price into an earnings argument. ``
+
+## https://create.roblox.com/docs/production/game-design/onboarding
+
+*Cited by 1: `gameplay/onboarding/_lead`*
+
+- *Scope check, stated because it is unusually consequential here.** Nothing in my subject is priority 3, so nothing is excluded outright. But every instrument the genre onboards with is gone by some other decision: a text tutorial (the settled quote), a guided arrow or dialogue as `create.roblox.com` suggests ``, an NPC or guide (`theme/identity/04` declares nine entity classes and none of them exists), a quest or objective marker (no such system in priority 1), a daily or login reward (priority 3), a starter currency grant (`gameplay/systems/04` fixes one faucet and one sink, so a join…
+- Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
+
+## https://create.roblox.com/docs/production/monetization
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **Roblox's own monetization overview independently corroborates `theme/tone/04` `D9` from the platform side**, advising that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims. `D9` was written from the brief's zero-tension rule; it is also platform guidance. ``
+
+## https://create.roblox.com/docs/production/monetization/developer-products
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **And the platform closes developer products for this game in one sentence too.** A developer product is "an item or ability that a user can purchase more than once, such as in-game currency, ammo, or potions", handled by `PromptProductPurchase` and a `ProcessReceipt` callback, and the docs state that for "items or abilities that a user should only purchase once" you should use passes instead. Nothing this game may legally sell is repeatable. ``
+
+## https://create.roblox.com/docs/production/monetization/game-passes
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **A pass is the right instrument and the platform says so in one sentence.** A pass lets a creator "charge users a one-time Robux fee to access special privileges inside your game", with "minimum price is 1 Robux, and the maximum price is 1 billion Robux", checked with `UserOwnsGamePassAsync()` and prompted with `PromptGamePassPurchase()`. ``
+
+## https://create.roblox.com/docs/production/monetization/paid-random-items
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **A third, platform-side reason gacha does not belong here**, on top of the content-access ban and `luckShaped: false`: any paid random outcome requires the creator to "indicate all possible outcomes and the actual numerical odds of what they may receive", as percentages summing to exactly 100%, and any purchasable luck booster must have its effect explained numerically with "the new odds … dynamically updated when these items are active". `PolicyService: GetPolicyInfoForPlayerAsync()`'s `ArePaidRandomItemsRestricted` flag can make paid random items unavailable to a given user entirely,…
+
+## https://create.roblox.com/docs/reference/engine/classes/MarketplaceService
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- The prompt methods take a `player` argument, and ownership is read with `UserOwnsGamePassAsync(userId, gamePassId)`. `` **`[unverified]`** — whether a `LocalScript` may call `PromptGamePassPurchase`, and whether ownership results are cached within a session, are not stated on the page as fetched. Settled by fetching `create.roblox.com/docs/reference/engine/classes/MarketplaceService#PromptGamePassPurchase` directly for its security context, which is the one thing sheet `02`'s "never unprompted" row and G6's trigger question turn on.
 
 ## https://create.roblox.com/docs/ui/proximity-prompts
 
@@ -164,6 +260,12 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `theme/fantasy/_lead`*
 
+
+## https://devforum.roblox.com/t/my-day-1-retention-is-awful-23-losing-half-my-players-in-under-2-minutes-what-am-i-doing-wrong-with-onboarding/4186434
+
+*Cited by 1: `gameplay/onboarding/_lead`*
+
+- A live developer case with the shape my `04` is about: 23% D1, 30% of players lost in the first minute, and the feedback centred on the first frame being overloaded — "theres like a gazillion ui on my screen" — with the advice to "keep it minimal, basic". No forced-tutorial or immediate-reward mechanism was recommended ``
 
 ## https://devforum.roblox.com/t/tycoon-button-system/1923669
 
@@ -212,6 +314,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Fisch** (~4.5bn visits, ~90%, 1.2M+ peak CCU): the Bestiary is *"a detailed, in-game logbook that records the different types of fish and items fishers have caught"*, with per-page completion rewards and thresholds at 70% and 100%. `` ``
 
+## https://generalistprogrammer.com/tutorials/roblox-game-pass-pricing-guide
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **Two independent third-party pricing guides agree on the rung structure**, which is the only corroboration available for "impulse to whale" as a shape: impulse **"25 - 75"** / **"25–75 R$ — reflex buy"**; mid **"99 - 249"** / **"100–250 R$ — considered buy"**; premium **"249 - 499"** / **"400–1,000+ R$ — commitment buy"**; and a whale band of **"999 - 4,999"**. One adds that round numbers (100, 250, 500) perform marginally better than charm prices on Roblox. `` ``
+
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/characters/appearance.md
 
 *Cited by 1: `theme/identity/_lead`*
@@ -246,10 +354,28 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `gameplay/core-loop/_lead`*
 
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/game-design/onboarding.md
+
+*Cited by 1: `gameplay/onboarding/_lead`*
+
+- Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
+
 ## https://roblox.fandom.com/wiki/Pink_Slime_Studios/Lawn_Mowing_Simulator
 
 *Cited by 1: `theme/fantasy/_lead`*
 
+
+## https://rolearn.dev/guidance/first-week-retention-optimization/
+
+*Cited by 1: `gameplay/onboarding/_lead`*
+
+- Vendor-published benchmarks, useful as direction and **not as measured data** — treat the numbers as claims by parties selling retention services. Simulator-specific: "If it is a simulator, they should be clicking, collecting, and seeing numbers go up before the first minute ends"; comparison points of an obby jumping within 10 seconds and a tycoon placing a first machine within 30; "A 15-second mandatory cutscene … can cost you 5% of all new players before they ever touch a control"; "Every second of non-gameplay in the first five minutes costs you roughly 2-3% of your new player cohort" ``
+
+## https://rolearn.dev/guidance/roblox-gamepass-pricing-strategy-guide/
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **Two independent third-party pricing guides agree on the rung structure**, which is the only corroboration available for "impulse to whale" as a shape: impulse **"25 - 75"** / **"25–75 R$ — reflex buy"**; mid **"99 - 249"** / **"100–250 R$ — considered buy"**; premium **"249 - 499"** / **"400–1,000+ R$ — commitment buy"**; and a whale band of **"999 - 4,999"**. One adds that round numbers (100, 250, 500) perform marginally better than charm prices on Roblox. `` ``
 
 ## https://rowatcher.com/news/what-the-roblox-algorithm-actually-rewards-in-2026-not-ccu
 
@@ -289,11 +415,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - *P9 is decided against the one piece of evidence that contradicts it.** For glanceable isolated words, *"Lowercase lettering required 26% more time for accurate reading than uppercase"*, though character size dominates case ``. P9 still forbids stored all-caps, because `theme/vocabulary/01-naming-form` (pack §4) already fixed Title Case, uppercase is lossy, and rendered case is typography that UI/UX can apply to a whole class of label at draw time. `[cid: decided]`
 
-## https://www.roblox.com/games/123639373205511/Pressure-Wash-Incremental
-
-*Cited by 1: `theme/fantasy/_lead`*
-
-
 ## https://www.roblox.com/games/126244816328678/DIG
 
 *Cited by 1: `theme/fantasy/_lead`*
@@ -315,6 +436,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/fantasy/_lead`*
 
 
+## https://www.robloxgo.com/game/113380129609386/Leaves-Incremental
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- 1. **`Leaves Incremental` and `Scrap Incremental` price lists — unavailable after four attempts of three kinds.** Rolimons returned HTTP 404 for both place ids (`113380129609386`, `92876036717311`, `129774084106862`); the legacy `games.roblox.com/v1/games/8974089723/game-passes` returned 404 for the universe id resolved from `apis.roblox.com/universes/v1/places/113380129609386/universe`; and robloxgo carries the game but no store section. **Materiality is low**: robloxgo reports Leaves at **53,468 visits** ``, three orders of magnitude below the other samples, so it is a weak price reference…
+
 ## https://www.robloxgo.com/game/124374448373637/Carpet-Cleaning-Simulator
 
 *Cited by 1: `theme/fantasy/_lead`*
@@ -330,11 +457,42 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/fantasy/_lead`*
 
 
-## https://www.rolimons.com/game/126244816328678
+## https://www.rolimons.com/game/124374448373637
 
-*Cited by 1: `theme/fantasy/_lead`*
+*Cited by 1: `gameplay/monetization/_lead`*
 
-- **DIG** (DIG Development, 28 June 2025): *"Uncover and collect hidden treasures, explore a massive open world..."* **56,030,218 visits, 89.3% likes (101,475 up / 12,115 down), all-time peak 119,871 CCU.** Its Collection is *"a detailed in-game logbook"* of 601 items, and **completing a zone unlocks Mounts** — structurally the brief's set-completion bonus. `` `` ``
+- **`Carpet Cleaning Simulator`** (28,261,668 visits) is the smallest ladder found and the counter-example to "more rungs is safer": **exactly one live pass, "VIP Cleaner - Lifetime Pass" at 1,499 Robux**, with three currency packs (Starter, Pro, Mega Cash) taken offsale and their prices no longer listed. ``
+
+## https://www.rolimons.com/game/7009799230
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **`Pressure Wash Simulator`**, cleaning-and-restoration shaped and the largest game sampled at 141,055,601 visits, ships **7 passes with a floor of 199**: 199 (Extra Jump Height), 199 (Double Speed), 299 (Ultra Circle Nozzle), 399 (Double Money), 399 (Jetski), 699 (The ONE), 799 (Infinity Tank). ``
+
+## https://www.rolimons.com/game/94264573845314
+
+*Cited by 1: `gameplay/monetization/_lead`*
+
+- **`Faith Incremental`**, the same `X Incremental` family, ships **18 live passes** across a 20-fold range: 25 (Pray Anywhere), 25 (3x Bible Collection Radius), 25 (Auto Drain Spirits), 49 (2x Walkspeed), 59 six times, 69 twice, 99 four times, 139, and 499 (5x Walkspeed), at 10,262,143 visits and 321 CCU. **Floor 25, median 59, ceiling 499** — and note that a *second* rung of the same multiplier (2x then 5x walkspeed at 49 then 499) is how this family builds a premium rung without inventing a new axis. ``
+- **The axis-matched read across those five, which is the directly usable finding:** the same multiplier sells across two orders of magnitude and **the axis does not set the price, the rung does.** Radius/reach ships at 25 (Faith's 3x Bible Collection Radius), 299 (Pressure Wash's Ultra Circle Nozzle) and 2,500 (Grass's [OP] Giant Trimmer, which `research/grass-incremental.md` identifies as a radius upgrade and the whale item). Move speed ships at 29 (Grass), 49 and 499 (Faith's 2x and 5x) and 199 (Pressure Wash). Currency value ships at 59 (Faith), 199 (Grass), 249 (DIG) and 399 (Pressure…
+
+## https://www.rolimons.com/gamebadge/1768992749628648
+
+*Cited by 1: `gameplay/meta/_lead`*
+
+- **Finishing one area's collection is a 0.4% event in a shipping game.** DIG's badge "Journal Complete: Cinder Shores" — "You have discovered 100% of the items in Cinder Shores!" — has 60,426 earners at a 0.4% win rate, and "Journal Complete: Mount Cinder" has 78,433 at 0.4%. These are per-*area* completions, not the full 601-item index.
+
+## https://www.rolimons.com/gamebadge/2794455631182407
+
+*Cited by 1: `gameplay/meta/_lead`*
+
+- **Finishing one area's collection is a 0.4% event in a shipping game.** DIG's badge "Journal Complete: Cinder Shores" — "You have discovered 100% of the items in Cinder Shores!" — has 60,426 earners at a 0.4% win rate, and "Journal Complete: Mount Cinder" has 78,433 at 0.4%. These are per-*area* completions, not the full 601-item index.
+
+## https://www.spaceport.xyz/blog/how-to-hook-players-in-the-first-2-minutes-game-retention-tips-for-roblox-devs
+
+*Cited by 1: `gameplay/onboarding/_lead`*
+
+- "The most decisive moment in a player's journey is the first 10 seconds" and "50% of your traffic is gone within the first two minutes", with advice to show mechanics visually rather than in text and to reinforce a new mechanic at least three times with rewards before assuming it landed. The ten-second figure independently corroborates the brief's own choice of window, which was made without a source ``
 
 ## https://www.treyexgaming.com/bring-back-the-sun-ancient-ruins-walkthrough-guide/
 
