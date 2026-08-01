@@ -21,8 +21,8 @@ A wave advanced on a PARTIAL is a wave that will be rebuilt.
 | wave | categories / domains | status | verdict |
 |---|---|---|---|
 | 1 | Theme & Narrative (6) ‖ Gameplay stage 1 — Core Loop | **done** | see below |
-| 2 | Gameplay stage 2 — Systems, Mechanics, Multiplayer & Social | written, verifying | mechanical PASS |
-| 3 | Gameplay stage 3 — Meta & Content, Monetization, Onboarding | not started | — |
+| 2 | Gameplay stage 2 — Systems, Mechanics, Multiplayer & Social | **closed** | round 1 FAIL (16) → round 2 PARTIAL (3) → all 19 closed; **1 escalated** |
+| 3 | Gameplay stage 3 — Meta & Content, Monetization, Onboarding | writing | 3 indexes done, 11 sheets in flight |
 | 4 | Gameplay stage 4 — Balance & Tuning | not started | — |
 | 5 | Tech & Data ‖ UI/UX ‖ Analytics | not started | — |
 | 6 | Art & Visuals ‖ Audio | not started | — |
@@ -124,6 +124,50 @@ waves 3–7 already see these as decided facts.
   unchanged, gating nothing") survives whatever the number is.
 - The brief's ~70% mobile figure is uncorroborated by anything fetched. Nothing in wave 2
   rests on it, and `mechanics/03` says so in the sheet rather than quietly avoiding it.
+
+## Escalations that need the developer, not another revision round
+
+Both are at the point the skill calls a design disagreement rather than a defect: the sheets
+have argued, contained and flagged, and another round would produce the same sheet with more
+words.
+
+### 1. The input overrule — `mechanics/02-verb-roster`
+
+`buy` is a discrete select on a persistent pressable, overruling the brief's `[brief: soft]`
+*"Input: movement only. No aiming, clicking, or ability buttons."* Contained to one input
+class, two verbs, four controls, stated in the manifest so a later sheet cannot widen it
+without failing a criterion.
+
+**Why it happened:** the walk-into pad was the literal-compliance answer and does not survive
+arithmetic — 10.6 s round trip at depth 1, 13.0 s at `core-loop/05`'s 236-stud depth-4 area
+with speed already maxed, both legs over cleared ground that pays nothing, and bounding the
+detour under `core-loop/01`'s 3-second tick ceiling needs 25 pad clusters in one depth-1 area.
+
+**The part worth your attention:** `core-loop/01` mandated no-travel *while believing the
+surface that ruling requires could not be built* — it names "the persistent HUD that
+`OPEN.md §4` already flags as unbuildable". `hud-overlay` exists and is a persistent HUD; what
+it lacks is `PRESSABLE` **by default**, which is a default and not an incapability.
+
+**Your call:** accept reading B as written, or reopen `core-loop/01`'s no-travel ruling now
+that its premise is false. Four alternatives are ranked in the sheet's
+`## Flagged to the developer`.
+
+### 2. `relicsPerArea` is over-constrained by two approved sheets
+
+- `core-loop/01` criterion 2 — `collection.relicsPerArea >= 4`
+- `theme/fantasy/02` criterion 1 — `ceil(24 / relicsPerArea) >= 8`, i.e. `<= 3`, recommends 3
+- `systems/05` partition equality — at a six-member set, only (6,1), (3,2), (2,3), (1,6)
+
+**No value satisfies both, and neither sheet cites the other.** `meta/04` must overrule one and
+will say which. The real resolution may instead be revising the brief's "4 sets of 6"
+`[you accepted: R4 Q4]`, which is yours and not a writer's.
+
+### Related, and probably the same conversation
+
+The `must_verify` for content volume found **DIG ships two islands against a 601-item
+collection**, gating the second on 50% journal completion rather than on power, with per-area
+100% badges at a 0.4% win rate. This game ships four areas and a collection `core-loop/04`
+dates at **minute 11 of session 1**. That is the under-scoping the check was pointed at.
 
 ## Open `[cid: decided]` questions for the developer
 

@@ -81,8 +81,11 @@ happen to turn. Criterion 1 requires that fixed.
 ## No manifest block
 
 This sheet carries no manifest block: it constrains the `social` key rather than supplying it.
-`01-server-and-co-presence.md` holds the key. If a build needs S as data, the field it would
-occupy is `social.maxCoPresenceSeparationStuds`.
+**S itself is data, and `01-server-and-co-presence.md` carries it** as
+`social.maxCoPresenceSeparationStuds` — the value, its unit, its test range, the viewport it
+was measured at, and a pointer back to this sheet. Join against that field, never against this
+prose: the derivation lives here, the number lives there, and a sheet that re-types the number
+inherits whichever value was current the day it was written.
 
 ## Consequences for other work
 
@@ -130,11 +133,12 @@ inside S. The area boundary is the live case, and criterion 3 is what catches it
 ## Not decided here
 
 The plot slot pitch, the spawn point's position and orientation, and the area arrangement that
-satisfy S — area-arrangement and plot-layout work. The nameplate, its distance, and what a
-co-present stranger *is* — `theme/identity/03-co-present-stranger`, inherited. The boundary's
-height, material and opacity — traversal-affordance and set-dressing work; I state only that it
-may not obstruct the sightline. Chat, collision, plot tenure, friend surfacing and the
-`maxPlayers` band — `01`, this domain. What may never be built between two players — `03`, this
-domain. What clearing looks and sounds like at any distance — VFX, SFX and mood-and-beat work.
-Whether enough players are concurrently online for two to be connected at all — outside
+satisfy S — area-arrangement and plot-layout work. The carrier of S as data, which is
+`social.maxCoPresenceSeparationStuds` in `01`, this domain. The nameplate, its distance, and
+what a co-present stranger *is* — `theme/identity/03-co-present-stranger`, inherited. The
+boundary's height, material and opacity — traversal-affordance and set-dressing work; I state
+only that it may not obstruct the sightline. Chat, collision, plot tenure, friend surfacing and
+the `maxPlayers` band — `01`, this domain. What may never be built between two players — `03`,
+this domain. What clearing looks and sounds like at any distance — VFX, SFX and mood-and-beat
+work. Whether enough players are concurrently online for two to be connected at all — outside
 everyone's control, and stated as the condition on every criterion above.

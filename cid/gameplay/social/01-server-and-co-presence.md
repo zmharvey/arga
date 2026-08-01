@@ -26,6 +26,7 @@ is a decision, not a restatement.
 | `chat` | off. Chat window off, bubble chat off, voice off, and zero player-authored strings reach another client | `ChatWindowConfiguration.Enabled` defaults to **`true`** `[research: https://robloxapi.github.io/ref/class/ChatWindowConfiguration.html]`, so silence ships text chat to an 8–14 audience `[brief: binding]` (`00-CORE.md`, R1 Q4). Nothing in the game needs a channel: there is no coordination, no trading, no group objective. A chat surface is also a moderation and filtering obligation, which "social proof at zero systems cost" does not buy | `[cid: decided]` |
 | `friendSurfacing` | none. The game calls no friend API, shows no friend-joined notice and builds no invite or follow affordance | the default is that a game reads nothing about friends, and reading the social graph is a system. Confirming the default rather than contesting it | `[cid: decided]` |
 | `plotTenure` | claimed on join at the lowest free slot index, held for the whole connected session, released immediately on leave, and **any** free slot on rejoin — never a reserved one | a slot index carries no player-visible meaning, because the plot's contents are rebuilt from the returning player's own save. Reserving a slot holds capacity for someone who is not there, which caps the server below its band for nothing. Lowest-free-index claiming is also what keeps occupied slots contiguous, which `02`'s separation requirement depends on | `[cid: decided]` |
+| `maxCoPresenceSeparationStuds` | **128 studs** `[playtest unknown]`, test range 85 to 185, carried with the viewport it was measured at | `02` derives it and owns the reasoning; this key carries the number, because a bound that lives only in prose is one a neighbouring sheet joins against by re-typing it — which already happened once, at a value this sheet had since superseded | `[cid: decided]` |
 | `maxPlayers` | a band of **12 to 20**, not a figure | the brief's 12–20 is `[I assumed — no source]` and `OPEN.md §5 #4` routes it to Social and Tech & Data; `_category.md` gives me the requirement and Balance & Tuning plus Tech & Data the figure. I have no source either, so I confirm the band and state what breaks at each edge instead of inventing a number inside it | `[brief: soft]` |
 
 **The collision group name is this key's, and it is `Characters`.** One group for player
@@ -33,6 +34,14 @@ characters, non-colliding with itself and colliding with `Default`, is the only 
 requirement in the game. Traversal-affordance work states the same ruling in prose and carries
 no group name; patch non-collision is `art/objects/01`'s and is not restated here. `[cid:
 decided]` Two keys naming one group is how a builder ends up creating two.
+
+**The separation bound travels with its viewport, and that is not decoration.** S is a pixel
+result, so 128 studs means nothing without the 1280×720 viewport, the 70° field of view and the
+20-pixel floor it was measured at — `measuredAt` carries all four, so a reader who needs the
+bound at another resolution recomputes it instead of guessing. `realisedStuds` and
+`satisfiedByShippedBuild` sit in the block for the same reason: the shipped geometry fails this
+bound today, and a failing state is worth being machine-readable rather than a sentence in a
+neighbouring sheet.
 
 **Below 12**, median concurrent occupancy falls low enough that a player can spend a whole
 10–20 minute session `[brief: binding]` alone, and "social proof at zero systems cost" is not
@@ -67,6 +76,26 @@ and no claim about age-gating is made here.
       "setVia": "place configuration",
       "belowMinBreaks": "a player can spend a whole session alone and receives no social proof",
       "aboveMaxBreaks": "per-plot instance count and plot-row length exceed the mobile budget"
+    },
+    "maxCoPresenceSeparationStuds": {
+      "value": 128,
+      "unit": "studs",
+      "status": "playtest unknown",
+      "testRangeStuds": [85, 185],
+      "derivedIn": "cid/gameplay/social/02-presence-sufficiency.md",
+      "requirement": "whenever two or more players are connected, from any occupied plot's spawn point the spawn point of at least one other occupied plot lies within this distance, with an unobstructed sightline",
+      "measuredAt": {
+        "viewportWidthPx": 1280,
+        "viewportHeightPx": 720,
+        "fieldOfViewDegrees": 70,
+        "fieldOfViewAxis": "vertical",
+        "subjectHeightStuds": 5,
+        "legibilityFloorPx": 20,
+        "legibilityFloorViewportFraction": 0.0278,
+        "formula": "px = viewportHeightPx * (subjectHeightStuds / distanceStuds) / (2 * tan(fieldOfViewDegrees / 2))"
+      },
+      "realisedStuds": 160,
+      "satisfiedByShippedBuild": false
     },
     "progressScope": "per-player",
     "worldStateScope": "per-player",
@@ -136,6 +165,12 @@ and no claim about age-gating is made here.
 
 ## Consequences for other work
 
+**Any sheet reasoning about co-presence distance.** Read
+`social.maxCoPresenceSeparationStuds` from the merged manifest. Do not copy the figure into
+another key and do not quote it from a sheet: it carries a `measuredAt` block, and the number
+is wrong without it. This field exists because a neighbouring sheet joined against the prose
+form and inherited a superseded value.
+
 **Traversal-affordance work.** `social.characterCollision` is the sole carrier of the group
 name and the collidability matrix. A `traversal` key may keep `playerVsWorld` and may state the
 no-body-blocking ruling in prose, but must not carry `collisionGroup`, `playerVsPlayer`,
@@ -150,7 +185,7 @@ name, and two keys naming it is the divergence this closes.
 place-configuration emitter or a named boot module. **I state the requirement; the emitter is
 not mine to design.**
 
-**Area arrangement and plot layout.** Occupied slots must stay contiguous, because `02`'s
+**Area arrangement and plot layout.** Occupied slots must stay contiguous, because the
 separation requirement assumes lowest-free-index claiming. Random or reserved slot assignment
 breaks it. Plot fencing must remain owner-only, but must not be the *only* thing preventing
 body-blocking — the collision group is.
@@ -188,15 +223,18 @@ The brief rules on none of these four. Alternatives were live; these are my call
    contains a write to `Players.MaxPlayers`.
 4. A player who disconnects mid-area and rejoins has the same `clearedCount` and `areaComplete`
    as at disconnect, and receives the lowest free slot index, which need not be the one held.
+5. `social.maxCoPresenceSeparationStuds.value` lies inside its own `testRangeStuds`, and that
+   figure appears in exactly one key of the merged manifest.
 
 ## Not decided here
 
-What a player must be able to *perceive* of another, and the separation at which it still holds
-— `02`, this domain. What may never be built between two players — `03`, this domain, which
-decides the contents of `social.forbidden` that this block carries. The nameplate ruling and
-what a co-present stranger *is* — `theme/identity/03-co-present-stranger`, inherited and not
-reopened. The figure inside the `maxPlayers` band — Balance & Tuning and Tech & Data. The plot
-slot pitch, area arrangement, boundary height and appearance, and spawn orientation —
-area-arrangement, plot-layout and traversal-affordance work. The save format for a partial area
-— persistence work. Codes, daily rewards, seasons and events — live-ops work; they are
-priority-3 excluded and not between players, so they are not `03`'s.
+What a player must be able to *perceive* of another, and the derivation of the separation bound
+this key carries — `02`, this domain. What may never be built between two players — `03`, this
+domain, which decides the contents of `social.forbidden` that this block carries. The nameplate
+ruling and what a co-present stranger *is* — `theme/identity/03-co-present-stranger`, inherited
+and not reopened. The figure inside the `maxPlayers` band — Balance & Tuning and Tech & Data.
+The plot slot pitch, area arrangement, boundary height and appearance, and the spawn position
+and orientation that satisfy the bound — area-arrangement, plot-layout and traversal-affordance
+work. The save format for a partial area — persistence work. Codes, daily rewards, seasons and
+events — live-ops work; they are priority-3 excluded and not between players, so they are not
+`03`'s.
