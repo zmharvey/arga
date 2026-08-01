@@ -39,8 +39,18 @@ Four agent definitions do all the work. The graph configures them:
 |---|---|---|
 | `cid-category-lead` | 9 | the Category Lead node |
 | `cid-domain-lead` | 55 | the Domain Lead node |
-| `cid-spec-writer` | ~200+ | its lead's index assignment |
+| `cid-domain-writer` | 55 | its lead's index, via `npm run cid:pack` |
 | `cid-verifier` | 10 | the Verification node's `checks` |
+
+`cid-spec-writer` is **superseded and must not be dispatched.** It ran once per sheet (~200
+agents), and each one read its siblings to find its boundary — which cost more than writing
+the sheet and still produced overlap. `cid-domain-writer` writes a whole domain in one pass
+from a derived context pack: measured 11x cheaper, and the overlap goes away, because a writer
+holding all of a domain's sheets cannot collide with itself.
+
+**Neither lead nor writer has Bash.** They cannot run `cid:digest`, `cid:pack` or `bridge`.
+Telling one to is an instruction it cannot follow, and the failure is silent: it writes an
+index without knowing where its neighbours stop. You run the commands, they read files.
 </context>
 
 <waves>
@@ -77,13 +87,31 @@ developer should know what it will cost before it runs.
 **3. Category leads first, in parallel.** One per category in this wave. Each gets its node's
 `spawns`, `does_not_own`, `writes_to`, plus the brief path and any upstream approved specs.
 
-**4. Domain leads, in parallel.** One per domain in this wave's categories. Each gets its
-node's `owns`, `does_not_own`, `must_verify`, `writes_to`, plus the brief path and its category
-brief path. Wait for all of them; you need every index before assigning writers.
+**3a. Run `npm run cid:leadpack`.** Writes `cid/_digest.md` (every sheet's decision and
+boundary) and `cid/_contract.md` (the keys and their owners). Both are derived and stale the
+moment a wave lands, so regenerate per wave. Leads have no Bash; these two files are how a
+lead learns where its neighbours stop without reading 9,000 lines of sibling sheets.
 
-**5. Spec writers, in parallel.** Read each index, spawn one writer per assignment. Each gets
-its item, the one-line statement of what it must decide, its domain's `owns` / `does_not_own`,
-the brief path, and its exact output path.
+**4. Domain leads, in parallel.** One per domain in this wave's categories. Each gets its
+node's `owns`, `does_not_own`, `must_verify`, `writes_to`, plus the brief path, its category
+brief path, and the two files from 3a. Wait for all of them; you need every index before
+assigning writers.
+
+**Tell a lead whether any of its sheets already exist.** Sheets written outside the wave
+process — during a build trial, say — are load-bearing if the shipped game reads their
+manifests. A lead that does not know they exist re-plans them, and re-planning rewrites a
+value the build depends on. `cid/_state.md` lists them.
+
+**5. Domain writers, in parallel — one per domain, not one per sheet.** For each domain run
+`npm run cid:pack -- --domain <c>/<d> --brief concept/spec/{slug} --out <path>`, then dispatch
+one `cid-domain-writer` pointed at that pack. The pack is its whole context: assignment, brief
+file list, keys it owns, every decision made elsewhere, research pointer.
+
+**A domain that owns no contract key still produces data.** It proposes one —
+`{"provides": "<key>", "status": "proposed", "value": …}` — which `npm run bridge` reports and
+never merges until a shape for it is written in `bridge/schema.mjs`. The contract is small
+because most domains have not run, not because their subjects have no data form. 78% of wave 1
+was prose no build step could read; that is the defect this closes.
 
 **6. Verify.** One `cid-verifier` per category, given the node's `checks`, every sheet in
 scope, the Build Capability Registry node, and the brief.

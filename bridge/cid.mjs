@@ -41,12 +41,74 @@ if (cmd === 'digest') {
   const body = renderDigest(rows);
   const sheetLines = rows.reduce((n, r) => n + r.lines, 0);
   const digestLines = body.split('\n').length;
-  process.stdout.write(`\n${body}\n`);
+  const outPath = opt('out', null);
+  if (outPath) {
+    await mkdir(dirname(resolve(outPath)), { recursive: true });
+    await writeFile(resolve(outPath), body, 'utf8');
+  } else {
+    process.stdout.write(`\n${body}\n`);
+  }
   console.error(
     `cid:digest — ${rows.length} sheet(s), ${sheetLines} lines of sheet distilled to ` +
-      `${digestLines} lines (${(sheetLines / Math.max(digestLines, 1)).toFixed(0)}x). ` +
+      `${digestLines} lines (${(sheetLines / Math.max(digestLines, 1)).toFixed(0)}x)` +
+      `${outPath ? ` -> ${outPath}` : ''}. ` +
       `A writer reads this instead of its siblings.\n`,
   );
+  process.exit(0);
+}
+
+/* --------------------------------------------------------------- leadpack */
+
+// `cid:pack` serves writers. Domain leads need the same two derivations and cannot run a
+// command to get them: the `cid-domain-lead` agent has Read/Write/Glob/Grep/WebSearch/
+// WebFetch and no Bash. Handing a lead "run npm run cid:digest" is an instruction it
+// cannot follow, and the failure is silent — it writes an index without knowing where its
+// neighbours stop, which is exactly the sibling-overlap the digest exists to remove.
+//
+// So the orchestrator regenerates these before dispatching each wave's leads, and the
+// leads read two files. Derived, never hand-edited, and stale the moment a wave lands.
+if (cmd === 'leadpack') {
+  const digestOut = join(ROOT, '_digest.md');
+  const contractOut = join(ROOT, '_contract.md');
+
+  const rows = await sheetDigest(ROOT);
+  await mkdir(ROOT, { recursive: true });
+  await writeFile(
+    digestOut,
+    `# Sheet digest — derived, do not edit\n\n`
+      + `\`npm run cid:leadpack\` regenerates this from the sheets themselves. Every sheet's\n`
+      + `decision, the contract key it supplies, and what it says is **not** its business.\n`
+      + `That last column is the boundary: if something you need sits in it, that thing is\n`
+      + `unowned and you should say so rather than assume someone has it.\n\n`
+      + `Read this **instead of** the sibling sheets. They cost ~9,000 lines to learn ~90\n`
+      + `lines of fact.\n\n${renderDigest(rows)}`,
+    'utf8',
+  );
+
+  const { contract } = await import('./schema.mjs');
+  const keys = contract();
+  await writeFile(
+    contractOut,
+    `# The creative contract — derived, do not edit\n\n`
+      + `\`npm run cid:leadpack\` regenerates this from \`bridge/schema.mjs\`. These are the\n`
+      + `keys a build reads, and the one domain that owns each.\n\n`
+      + `**${keys.length} keys is small because most domains have not run**, not because the\n`
+      + `other subjects have no data form. A domain with no key here proposes one, by carrying\n`
+      + `a fenced block tagged \`manifest\` whose contents are:\n\n`
+      // Fenced as json, not as manifest. This file lives under cid/, the merger walks cid/**
+      // for ```manifest blocks, and an illustrative block with `<key>` in it is not valid
+      // JSON — so tagging it honestly made `npm run bridge` report a parse error against a
+      // file that is documentation. Found by the merger, one commit after writing it.
+      + '```json\n{ "provides": "<key>", "status": "proposed", "value": <data> }\n```\n\n'
+      + `\`npm run bridge\` reports a proposal and never merges it, until someone writes a\n`
+      + `shape for it here. Proposing a key that already exists below is an error.\n\n`
+      + `| key | owner | what it settles |\n|---|---|---|\n`
+      + keys.map((k) => `| \`${k.key}\` | \`${k.owner}\` | ${k.doc} |`).join('\n')
+      + '\n',
+    'utf8',
+  );
+
+  console.error(`cid:leadpack — ${digestOut} (${rows.length} sheets), ${contractOut} (${keys.length} keys)\n`);
   process.exit(0);
 }
 

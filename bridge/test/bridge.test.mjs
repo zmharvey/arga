@@ -487,3 +487,19 @@ test('the shipped manifest satisfies its own copy rules', async () => {
     .filter((p) => /Title Case|allowedPattern|word limit|upper case/.test(p));
   assert.deepEqual(copy, []);
 });
+
+test('the shipped cid/ tree merges with no problems at all', async () => {
+  // The test above filters down to copy rules, so everything else in the real tree went
+  // unchecked. It let through a documentation file that carried an illustrative
+  // ```manifest block containing `<key>` — not valid JSON, so the merger reported a parse
+  // error against a file that was never meant to contribute. `npm run bridge` caught it;
+  // nothing in the suite did.
+  //
+  // Waves 2-7 add ~160 sheets to this tree. Every one of them can break the merge in a way
+  // no unit test with a synthetic fixture would notice, which is the argument for asserting
+  // against the real thing.
+  const { mergeSheets: merge } = await import('../merge.mjs');
+  const { problems, missing } = await merge('cid');
+  assert.deepEqual(problems, [], 'cid/ must merge clean — run `npm run bridge` to see it');
+  assert.deepEqual(missing, [], 'every contract key must have an owning sheet');
+});
