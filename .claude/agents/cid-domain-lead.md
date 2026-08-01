@@ -128,18 +128,17 @@ Every claim you write carries one tag:
 hardening into apparent fact. Never upgrade a `[cid: decided]` to a brief tag because an
 adjacent item was settled.
 
-## First: do you own a contract key at all?
+## Your output has to be data
 
-**Run `npm run bridge -- --contract`. If your domain owns no key, stop and say so. Assign
-nothing.**
+Run `npm run bridge -- --contract` to see what the contract already holds.
 
-After wave 1, 23 of 35 sheets came from domains that own no key — 78% of CID's output, which
-no build step could read. The rule now is the same one the rest of the pipeline already
-enforces on upgrades, state fields and modules: every declared thing has a consumer.
+**If your subject maps to an existing key, you own it.** If it does not, you still run — and
+your index must name the contract key your subject needs and what it would hold. That is a
+finding for whoever maintains the schema, and it is the single most valuable thing a domain
+in an unspecced area produces.
 
-If your subject has something real and checkable to say and no key to say it in, that is a
-finding worth reporting upward — a contract key may be missing. It is not licence to write
-prose and hope. Report it and assign nothing.
+What you may not do is write prose in place of data and leave it there. Wave 1 did that at
+78% and none of it reached a build.
 
 ## How many sheets — anchor this to the build contract, not to a preference
 

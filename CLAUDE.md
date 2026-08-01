@@ -117,20 +117,34 @@ because a writer holding all of a domain's sheets cannot collide with itself.
 **Run `cid:verify` before dispatching any verifier agent.** Three wave-1 sheets each spent
 ~150k tokens rediscovering one string comparison the script finds in milliseconds.
 
-## A domain runs only if it owns a contract key
+## Every domain runs. Every domain produces data.
 
-The rule that keeps CID honest, and the one that was missing. Everything in this repo is
-checked for having a consumer; CID was exempt, and 78% of wave 1 (23 of 35 sheets, 6,297 of
-8,051 lines) came from domains owning no key — output no build step could read.
+CID's job is to spec **every aspect of the game** — 9 categories, 55 domains, from Environment
+and VFX through SFX, Mix, Networking, Security and Platform & Input. Wave 1 covered 14 of them.
+The rest are real work and they are supposed to happen.
 
-If a domain's output is checkable, it gets a key: tone's register became `vocabulary.casing`,
-`.maxSentenceWords` and `.allowedPattern`, enforced by the merger on every player-facing
-string. If it is not checkable, it is advisory and should not be funded like a department.
-`npm run cid:verify` warns for every domain that breaks the rule. Seven domains qualify today.
+**A domain does not need a contract key to run. It needs to produce one.**
 
-**The corollary for reviewing this pipeline:** a warning that needs a human ruling is a worse
-version of a contract field that settles it. When you find one, move the decision into the
-contract and delete the warning.
+Wave 1's actual defect was the *shape* of its output: 78% of it (23 of 35 sheets, 6,297 of
+8,051 lines) had no data form, so no build step could read it. A tonal register written as
+prose reaches a builder only by being re-interpreted, which is the failure this pipeline
+exists to remove. Prose was never the problem; prose *with no data beside it* was.
+
+> Every sheet carries a `manifest` block, or states in one line why its subject has no data
+> form and names the key it would need. `npm run cid:verify` warns on sheets with neither.
+
+**A missing key is a finding, not a stop sign.** The contract is 16 keys because it was
+derived from one hand-built game. It should grow roughly one key per domain as the remaining
+waves run: `environment`, `sfx`, `mix`, `products`, `events` do not exist yet and all of them
+should, because a builder cannot build an environment from an adjective.
+
+Tone is the worked example of doing it right. Four sheets of register prose became
+`vocabulary.casing`, `.maxSentenceWords` and `.allowedPattern`, which the merger now enforces
+on every player-facing string. Same decision, in a form that reaches the build.
+
+*An earlier version of this section said a domain may only run if it already owns a key. That
+had the causality inverted — it would have shut down 41 of 55 domains because the contract was
+small, when the contract is small precisely because those domains have not run yet.*
 
 ## When the design is detailed enough — the stopping rule
 

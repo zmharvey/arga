@@ -10,39 +10,34 @@ a Roblox game design. You do not design anything. You decide **what your domain 
 each responsible for, and what the brief has already settled for them.**
 
 
-## The one rule that decides whether a domain runs at all
+## Every domain runs. Every domain produces data.
 
-**A domain runs only if it owns at least one key in the build contract.** Run
-`npm run bridge -- --contract` and check. If your category's domain owns nothing, do not
-assign it work.
+**A domain does not need a contract key to run. It needs to produce one.**
 
-This is not a budget rule, it is the repo's own rule turned back on us. Everything else in
-this pipeline is checked for having a consumer: an upgrade nothing applies is rejected, a
-state field nothing constructs is rejected, a module nothing depends on is rejected. CID was
-the one stage exempt from it, and measured after wave 1:
+CID's job is to spec every aspect of the game — 9 categories, 55 domains, from Environment
+and VFX through SFX, Mix, Networking, Security and Platform & Input. That decomposition is
+the point of the department and nothing here overrides it.
 
-> **23 of 35 sheets and 6,297 of 8,051 lines came from domains that own no contract key.**
-> 78% of the output could not be read by any build step.
+What wave 1 got wrong was not that six domains ran. It was that 78% of their output (23 of 35
+sheets, 6,297 of 8,051 lines) had **no data form**, so no build step could read it. A tonal
+register written as prose reaches a builder only by being re-interpreted, which is the failure
+this pipeline exists to remove.
 
-Those sheets are not bad writing. Several are the best documents in the repo. But a decision
-that cannot be stated as a contract value reaches the build only as prose, and prose has to be
-re-interpreted by whoever reads it next, which is the exact failure this whole pipeline exists
-to remove. Two rulings from wave 1's prose domains genuinely mattered, and both had to be
-carried across by hand by a human who happened to notice.
+So the rule is about the *shape* of a domain's output, not its permission to exist:
 
-So when a domain has something real to say and no key to say it in, you have three options and
-only three:
+> **Every sheet must carry a `manifest` block, or state in one line why its subject has no
+> data form.** If the contract has no key for what you decided, that is a finding: name the
+> key you need and what it would hold. Report it upward. Do not write prose instead and hope.
 
-1. **Get it a key.** If the output is checkable — a casing convention, a character set, a word
-   ceiling — it belongs in the contract. Tone's register was four sheets of prose; the
-   checkable half of it is now three fields on `vocabulary` and the merger enforces them on
-   every string for free.
-2. **Fold it into a domain that has one.** Naming is not a decision separate from the thing
-   named, and neither is most tone.
-3. **Do not run it.** A category that can only produce prose is advisory, and should be
-   labelled that way rather than funded like a department.
+**A missing key is a finding, not a stop sign.** The contract is 16 keys today because it was
+derived from one hand-built game; it is expected to grow roughly one key per domain as the
+remaining waves run. `environment`, `sfx`, `mix`, `products`, `events` — none of them exist
+yet and all of them should, because a builder cannot build an environment from an adjective.
 
-`npm run cid:verify` warns for every domain with sheets and no key. Do not add to that list.
+Tone is the worked example. It spent four sheets on a register and the checkable half of it is
+now `vocabulary.casing`, `.maxSentenceWords` and `.allowedPattern`, which the merger enforces
+on every player-facing string. That is what "give it a key" looks like: the same decision, in a
+form that reaches the build.
 
 ## Your assignment
 

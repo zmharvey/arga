@@ -232,49 +232,44 @@ const PROSE_BUDGET = 100;
   }
 }
 
-/* --------------------- 8. a domain that owns no contract key should not run */
+/* ------------------ 8. every sheet produces data, or says why it cannot */
 
-// The simplification rule, measured before it was written: 23 of 35 sheets and 6,297 of
-// 8,051 lines came from domains that own no contract key. 78% of CID produced output no
-// build step could read.
+// The corrected version of a check that had it backwards.
 //
-// This is the repo's own rule — every declared thing has a consumer — turned back on the
-// stage that produces the declarations. A domain that cannot state its output as a contract
-// value is writing prose, and prose has to be re-interpreted by whoever reads it next, which
-// is the failure the whole pipeline exists to remove.
+// It used to warn that a domain owned no contract key, which reads as "do not run" — and
+// under it 41 of the graph's 55 domains would have been told to assign nothing, including
+// Environment, VFX, SFX and Platform & Input. CID's job is to spec every aspect of the game;
+// a gate that shuts down three quarters of it because the contract is currently small has
+// the causality inverted. The contract is small because it was derived from one hand-built
+// game, and it is supposed to grow.
 //
-// It warns rather than fails, because the existing wave-1 sheets are a record worth keeping
-// and deleting them retroactively buys nothing. What it stops is the *next* wave: waves 2-7
-// were going to add 41 more domains under the old rule.
+// What wave 1 actually got wrong was the *shape* of the output: 78% of it had no data form,
+// so no build step could read it. That is what this measures now — did the sheet produce
+// data, or at least say plainly why its subject has none.
 {
-  const owners = new Set(Object.values(SCHEMA).map((s) => s.owner));
-  const withSheets = new Map();
+  const NO_DATA = /##\s*No manifest block|no data form|carries no manifest block|supplies no value/i;
+  const silent = [];
   for (const f of leaves.filter(scoped)) {
-    const domain = relative(ROOT, dirname(f));
-    withSheets.set(domain, (withSheets.get(domain) ?? 0) + 1);
+    const body = await readFile(f, 'utf8');
+    if (body.includes('```manifest')) continue;
+    if (NO_DATA.test(body)) continue;
+    silent.push(relative(ROOT, f));
+  }
+  if (silent.length) {
+    warns.push(`${silent.length} sheet(s) carry no manifest block and do not say why: `
+      + `${silent.slice(0, 4).join(', ')}${silent.length > 4 ? ', …' : ''}. `
+      + 'Either supply a contract value, or state in one line that the subject has no data '
+      + 'form and name the key it would need. Prose with neither reaches no builder.');
   }
 
-  const orphans = [...withSheets].filter(([d]) => !owners.has(d));
-  if (orphans.length) {
-    let lines = 0;
-    for (const [d] of orphans) {
-      for (const f of leaves.filter((x) => relative(ROOT, dirname(x)) === d)) {
-        lines += (await readFile(f, 'utf8')).split('\n').length;
-      }
-    }
-    const sheets = orphans.reduce((n, [, c]) => n + c, 0);
-    warns.push(`${orphans.length} domain(s) own no contract key: `
-      + `${orphans.map(([d, c]) => `${d} (${c})`).join(', ')}. `
-      + `That is ${sheets} sheets and ${lines} lines the build cannot read. `
-      + 'A domain that cannot state its output as a contract value produces prose. Either '
-      + 'give it a key, fold it into a domain that has one, or do not run it.');
-  }
-
-  // The other direction: a key nobody is writing sheets for.
-  for (const owner of owners) {
-    if (!withSheets.has(owner)) {
-      notes.push(`${owner} owns a contract key but has no sheets yet`);
-    }
+  // A domain that decided something real and found no key for it is the signal that the
+  // contract needs to grow. Surfaced as a note, because it is work for the schema owner.
+  const owners = new Set(Object.values(SCHEMA).map((s) => s.owner));
+  const domains = new Set(leaves.filter(scoped).map((f) => relative(ROOT, dirname(f))));
+  const keyless = [...domains].filter((d) => !owners.has(d));
+  if (keyless.length) {
+    notes.push(`${keyless.length} domain(s) own no contract key yet: ${keyless.join(', ')}. `
+      + 'Expected while the contract is still growing — each should name the key it needs.');
   }
 }
 
