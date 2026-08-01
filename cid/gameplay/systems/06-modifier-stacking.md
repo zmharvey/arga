@@ -57,7 +57,6 @@ ids are `value`, `radius`, `speed` — the ids `upgrades` already ships, not the
 ```manifest
 {
   "provides": "modifiers",
-  "status": "proposed",
   "value": {
     "modifierObject": {
       "fields": [

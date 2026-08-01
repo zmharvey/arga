@@ -98,7 +98,6 @@ surface to have needed one.
 ```manifest
 {
   "provides": "traversal",
-  "status": "proposed",
   "value": {
     "jump": { "exists": true, "jumpHeight": 7.2, "useJumpPower": false, "changesGameState": false, "upgradable": false, "gatedContent": 0 },
     "fall": { "damage": false, "voidBelowPlayArea": false, "maxSurvivableFallStuds": null },

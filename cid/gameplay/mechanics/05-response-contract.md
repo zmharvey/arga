@@ -96,7 +96,6 @@ Ten rules. G4 in the form a build can be failed against.
 ```manifest
 {
   "provides": "response",
-  "status": "proposed",
   "value": {
     "controlEverAffected": false,
     "sequencedBeats": ["upgradePurchased", "findReveal", "setComplete", "areaComplete"],

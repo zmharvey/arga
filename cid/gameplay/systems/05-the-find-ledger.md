@@ -62,7 +62,6 @@ re-places nothing. The record is **one boolean per name in `collection`, and not
 ```manifest
 {
   "provides": "discovery",
-  "status": "proposed",
   "value": {
     "pool": {
       "scope": "per player, per depth",

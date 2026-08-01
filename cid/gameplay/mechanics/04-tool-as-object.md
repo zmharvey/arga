@@ -66,7 +66,6 @@ Twelve rules. Each is a thing a builder could add without noticing it broke some
 ```manifest
 {
   "provides": "tool",
-  "status": "proposed",
   "value": {
     "held": true,
     "count": 1,

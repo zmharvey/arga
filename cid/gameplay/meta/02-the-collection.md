@@ -4,8 +4,23 @@
 
 ## Decision
 
-**24 finds in 4 sets of 6**, one set per area depth. Six are buried in each area, so
-completing an area completes exactly one set.
+**24 finds in 4 sets of 6**, one set per area depth. **Three are buried in each area and two
+areas sit at each depth**, so the two areas at one depth partition that depth's set and
+completing *both* completes exactly one set.
+
+> **Revised 2026-08-01 by ruling R-2** (`cid/_state.md`), at the request of
+> `04-the-depth-ladder`, which owns the depth ladder in this same domain. `relicsPerArea`
+> 6 → 3, `areasPerDepth` 1 → 2, and criterion 4 restated as the partition equality.
+>
+> **Why the old pair was not merely a different choice but illegal:** `core-loop/01`
+> criterion 2 requires `relicsPerArea >= 4` and `theme/fantasy/02` criterion 1 requires
+> `ceil(24 / relicsPerArea) >= 8`, i.e. `<= 3`. No value satisfies both, and neither sheet
+> cited the other. R-2 overrules `core-loop/01` and takes the pair `theme/fantasy/02` names.
+>
+> **What this switches on:** `gameplay/systems/05-the-find-ledger`'s draw-without-replacement
+> rule was written for exactly this equality and was a no-op while `areasPerDepth` was 1. The
+> duplicate problem is live from here, so the draw is load-bearing and must be tested rather
+> than assumed.
 
 Set one, the Terrace: Sundial, Ewer, Hinge, Tessera, Stylus, Bellcast.
 
@@ -42,8 +57,8 @@ Set one, the Terrace: Sundial, Ewer, Hinge, Tessera, Stylus, Bellcast.
   "value": {
     "className": "Find",
     "classPlural": "Finds",
-    "relicsPerArea": 6,
-    "areasPerDepth": 1,
+    "relicsPerArea": 3,
+    "areasPerDepth": 2,
     "sets": [
       { "id": "terrace", "label": "Terrace", "depth": 1, "relics": ["Sundial", "Ewer", "Hinge", "Tessera", "Stylus", "Bellcast"] },
       { "id": "cistern", "label": "Cistern", "depth": 2, "relics": ["Sluice", "Weight", "Siphon", "Chain", "Grate", "Cup"] },
@@ -67,7 +82,8 @@ Set one, the Terrace: Sundial, Ewer, Hinge, Tessera, Stylus, Bellcast.
 1. 24 finds total across 4 sets.
 2. No find name appears in two sets.
 3. No player-facing string here matches a word on Vocabulary's ban list.
-4. `relicsPerArea` is not fewer than the largest set, or that set can never complete.
+4. `relicsPerArea × areasPerDepth` equals the size of every set, so the areas at one depth
+   partition that depth's set exactly — no name buried twice, none unreachable.
 5. Every name is one word and reads at 12px in a grid cell.
 
 ## Not decided here

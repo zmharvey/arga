@@ -66,7 +66,6 @@ and no claim about age-gating is made here.
 ```manifest
 {
   "provides": "social",
-  "status": "proposed",
   "value": {
     "model": "shared-server-parallel-progression",
     "maxPlayers": {

@@ -125,7 +125,55 @@ waves 3–7 already see these as decided facts.
 - The brief's ~70% mobile figure is uncorroborated by anything fetched. Nothing in wave 2
   rests on it, and `mechanics/03` says so in the sheet rather than quietly avoiding it.
 
-## Escalations that need the developer, not another revision round
+## Rulings — decided by the orchestrator, 2026-08-01
+
+The developer declined to arbitrate and asked for a working wave 1–3. These are the calls and
+the reasoning, so a later reader can overturn any of them on the argument rather than on taste.
+
+### R-1 · The input overrule stands. `buy` is a pressable.
+
+The pad was the literal-compliance answer and does not survive arithmetic: 10.6 s round trip
+at depth 1, 13.0 s at depth 4, and bounding the detour under `core-loop/01`'s 3-second tick
+ceiling needs ~25 pad clusters in one depth-1 area.
+
+The deciding fact is that **`core-loop/01` mandated no-travel while believing the surface it
+requires could not be built** — it names "the persistent HUD that `OPEN.md §4` already flags as
+unbuildable". `hud-overlay` exists and is a persistent HUD; what it lacks is `PRESSABLE` *by
+default*, which is a default, not an incapability. A ruling whose stated premise is false does
+not bind the sheet that discovered it.
+
+The brief line being overruled is `[brief: soft]`, the overrule is contained to one input
+class / two verbs / four controls and stated in the manifest so nothing can widen it quietly,
+and it **closes the largest known gap in `CLAUDE.md`** — a mobile-heavy audience that cannot
+spend currency.
+
+### R-2 · The 3/2 collection revision is applied.
+
+`relicsPerArea` 6 → 3, `areasPerDepth` 1 → 2. Four depths, two areas each, eight areas.
+
+It is the only pair satisfying both approved criteria; it validates clean against every
+existing `collection` check; and `systems/05`'s draw rule was designed for exactly this
+equality. The `sets` structure does not change — the partition `3 × 2 = 6` is derived, so the
+revision is two scalars.
+
+**The cost, stated plainly:** the duplicate problem goes live. `systems/05`'s safety argument
+was "at today's 6×1 this is a no-op", and that expires here. That is acceptable because the
+draw rule is what makes it safe, not the no-op — but it means the draw is now load-bearing and
+must be tested rather than assumed.
+
+### R-3 · The game is not expanded past eight areas. The under-scoping finding is recorded and declined.
+
+DIG ships two islands against a 601-item collection; this game completes its collection at
+minute 11. That is a real observation and it is **not actionable here**, because `00-CORE.md`
+binds this project to *"the smallest game that still gives every creative area real work"* and
+lists **"Beating the genre's retention curve. Offered and declined"** as a non-goal. The
+under-scoping argument is a retention argument, and that argument is closed in this project.
+
+R-2 already doubles content from four areas to eight, which is as far as a *correctness* fix
+carries it. Going further would be growing the game to answer a question the brief declined to
+ask — the exact failure `CLAUDE.md`'s stopping rule names.
+
+## Escalations that were resolved by the rulings above
 
 Both are at the point the skill calls a design disagreement rather than a defect: the sheets
 have argued, contained and flagged, and another round would produce the same sheet with more

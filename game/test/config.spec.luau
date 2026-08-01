@@ -105,7 +105,10 @@ print("\n-- collection --")
 local total = 0
 for _, s in ipairs(GC.RelicSets) do total += #s.relics end
 check(total == 24, "24 relics across 4 sets, per 02-GAMEPLAY.md")
-check(GC.RelicsPerArea == 6, "one set's worth buried per area")
+-- Wave 3 partitioned a set across the areas at its depth rather than burying a whole set
+-- in one area: collection.relicsPerArea is 3 and areasPerDepth is 2, and
+-- gameplay/systems/05 makes their product the size of every set an invariant.
+check(GC.RelicsPerArea * GC.AreasPerDepth == 6, "a depth's two areas partition its set of six")
 check(GC.GuaranteedFirstRelic, "the first find is guaranteed, not rolled (onboarding promise)")
 
 print(string.format("\n%s (%d failure(s))\n", failures == 0 and "PASS" or "FAIL", failures))

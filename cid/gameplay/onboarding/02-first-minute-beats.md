@@ -81,7 +81,6 @@ from the player.** Area completion, set completion and depth are out of reach: a
 ```manifest
 {
   "provides": "firstSession",
-  "status": "proposed",
   "value": {
     "armDistanceStuds": 2.0,
     "armScope": "perCharacterSpawn",

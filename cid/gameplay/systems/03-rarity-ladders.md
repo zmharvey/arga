@@ -49,7 +49,6 @@ lit, framed or sounded as one. **Find placement may not read a patch's tier.**
 ```manifest
 {
   "provides": "rarity",
-  "status": "proposed",
   "value": {
     "gradedLadderCount": 1,
     "ladders": [

@@ -54,7 +54,6 @@ nothing, and is neither capped nor hidden.**
 ```manifest
 {
   "provides": "economy",
-  "status": "proposed",
   "value": {
     "currencyKey": "currency",
     "startingBalance": 0,

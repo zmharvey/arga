@@ -32,7 +32,7 @@ change it.**
   `init`, so it *is* a plain Folder and behaves the way people expect. The three roots are
   three different shapes and that is the whole hazard.
 - **`UIForge` is kept, and it is a bad name.** `game/src/shared` now holds `GameConfig`,
-  `Layout` and `Protocol`, none of which is a UI concern; the name is left over from
+  `Layout`, `Protocol` and `Modifiers`, none of which is a UI concern; the name is left over from
   `ui-forge` claiming that directory first. It stays because renaming it means editing
   `game/default.project.json` and `game/src/client/calibrate.client.luau`, **and no module in
   the build order owns either file.** A rename would be a required step with no owner, which
@@ -82,7 +82,14 @@ change it.**
       "serverModuleFromTheServerEntryPoint": "local Persistence = require(script.Persistence)",
       "serverModuleFromAnotherServerModule": "local Progression = require(script.Parent.Progression)",
       "clientModuleFromTheClientEntryPoint": "local HudBinding = require(script.HudBinding)",
-      "clientModuleFromAnotherClientModule": "local Input = require(script.Parent.Input)"
+      "clientModuleFromAnotherClientModule": "local Input = require(script.Parent.Input)",
+      "sharedModuleFromAnotherSharedModule": "local GameConfig = require(script.Parent.GameConfig)"
+    },
+    "moduleFiles": {
+      "shared": ["GameConfig.luau", "Types.luau (generated)", "Layout.luau", "Protocol.luau", "Modifiers.luau"],
+      "server": ["init.server.luau (the root itself)", "World.luau", "Persistence.luau", "Progression.luau", "Entitlements.luau", "Plots.luau", "Tool.luau", "Clearing.luau"],
+      "client": ["init.client.luau (the root itself)", "HudBinding.luau", "Pressables.luau", "IndexScreen.luau", "Beats.luau", "Input.luau"],
+      "note": "Seven of these are new in this revision — Modifiers, World, Entitlements, Tool, Pressables, IndexScreen and Beats — and every one is a plain PascalCase.luau ModuleScript under an EXISTING root. NO FOURTH ROOT IS NEEDED and game/default.project.json still needs no edit, which is the property this key exists to protect."
     },
     "fileNaming": {
       "module": "PascalCase.luau -> a ModuleScript of the same name. Persistence.luau -> ServerScriptService.Game.Persistence",
@@ -115,8 +122,10 @@ A builder may now assume:
 A builder may **not** assume:
 
 - That `UIForge` means UI. It is the shared root for everything, game modules included.
-- That `Workspace.Baseplate` in the project file is the terrace. It is a lobby floor; the
-  ground a player walks on is per-plot and comes from `representation`.
+- That the baseplate in the project file is the terrace. It is a lobby floor; the ground a
+  player walks on is per-lane and comes from `representation`.
+- That a new module needs a new root. Seven modules were added in this revision and all seven
+  are ordinary children of the three roots above.
 
 ## Acceptance criteria
 

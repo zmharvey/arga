@@ -99,7 +99,6 @@ on-screen-layout domain satisfies rather than a design:
 ```manifest
 {
   "provides": "input",
-  "status": "proposed",
   "value": {
     "closed": true,
     "gameBoundInputClasses": ["pressable"],

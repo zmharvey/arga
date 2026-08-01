@@ -348,7 +348,10 @@ test('a brief with no process artifact reports no exclusions', async () => {
 
 test('contractSlice splits the contract into mine and everyone else', async () => {
   const { mine, others } = contractSlice('gameplay/systems');
-  assert.deepEqual(mine.map((k) => k.key).sort(), ['currency', 'tiers']);
+  // Subset, not equality: this domain owned two keys at wave 1 and owns six after wave 2
+  // promoted its proposals. The property under test is the split, not the tally.
+  const mineKeys = mine.map((k) => k.key);
+  for (const k of ['currency', 'tiers']) assert.ok(mineKeys.includes(k), `${k} should be systems'`);
   assert.ok(others.length > 0);
   assert.ok(!others.some((k) => k.owner === 'gameplay/systems'));
 });

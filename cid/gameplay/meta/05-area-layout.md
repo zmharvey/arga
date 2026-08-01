@@ -75,7 +75,6 @@ three finds are spread across the whole walk rather than rolled anywhere.
 ```manifest
 {
   "provides": "layout",
-  "status": "proposed",
   "value": {
     "chunk": { "widthStuds": 120, "depthStuds": 30, "footprintStuds2": 3600, "edgeKeepoutStuds": 1.5 },
     "chunksPerFamily": 8,
@@ -144,9 +143,12 @@ three finds are spread across the whole walk rather than rolled anywhere.
 1. For every area ordinal 1 to 8, the generated run holds `depths.areas[k].chunkCount`
    variants, no variant twice (R1), every chunk from that area's depth family (R4), and the
    run's total anchor count equals `depths.areas[k].patchCount`.
-2. Every generated area buries exactly `collection.relicsPerArea` finds, one in each of the
-   `relicsPerArea` contiguous chunk groups, and the multiset of names buried equals
-   `depths.areas[k].relicSlice` applied to that set.
+2. Every generated area **at ordinals 1 to 8** buries exactly `collection.relicsPerArea`
+   finds, one in each of the `relicsPerArea` contiguous chunk groups, and the multiset of
+   names buried equals `depths.areas[k].relicSlice` applied to that set. Post-terminal bays
+   (ordinal > 8) bury nothing — see `07-after-the-last-find`, whose stop-applying table
+   carries the resolution. Without this scope word a verifier running the criterion against a
+   post-terminal bay fails a build that is behaving correctly.
 3. In area 1 the find in group 1 is on the patch with the smallest XZ distance to the plot
    origin; in areas 2 to 8 the group-1 find is not on that patch unless the seed drew it.
 4. Two calls to the layout builder with the same (`layoutSeed`, `ordinal`) and different

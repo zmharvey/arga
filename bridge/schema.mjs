@@ -269,6 +269,292 @@ export const SCHEMA = {
     },
   },
 
+  /* ================================================================= waves 2-3
+   *
+   * The nine keys above are empirical: each is something a builder invented on the spot
+   * while hand-building the ruin loop, because no sheet supplied it. The sixteen below are
+   * empirical in a different way — each was *proposed* by the domain that owns the subject,
+   * after that domain ran and found the contract had no slot for its decision.
+   *
+   * WHY THE SHAPES ARE SHALLOW
+   * --------------------------
+   * These values are large: `firstSession` carries 13 top-level fields, `endgame` 13,
+   * `products` 12. Most are prose fields recording *why* — reasoning a build never reads.
+   * Declaring all of them would be a schema that mostly validates documentation, and every
+   * required field is a field a later revision must keep supplying.
+   *
+   * So `shape` names only what a build reads or a check joins on, and the value goes into
+   * `check` instead. The cross-key joins below are where two builders actually diverge:
+   * an axis id that does not match, a factor that overruns a ceiling, a distance measured
+   * against a radius it must stay under. Every one of them is a bug some sheet found by
+   * hand this wave, converted into something the merger finds in milliseconds.
+   * ========================================================================= */
+
+  rarity: {
+    doc: 'How many rarity ladders exist, and the one field each is read from.',
+    owner: 'gameplay/systems',
+    shape: {
+      gradedLadderCount: 'integer>0',
+      findPlacementReadsTier: 'boolean',
+    },
+  },
+
+  economy: {
+    doc: 'Faucets, sinks, the per-clear payout formula, and the payout floor.',
+    owner: 'gameplay/systems',
+    shape: {
+      startingBalance: 'number',
+      payoutFloor: 'number>0',
+      faucetCount: 'integer>0',
+      sinkCount: 'integer>0',
+    },
+    check(e) {
+      const problems = [];
+      // Check 1 of the category gate, made mechanical. A currency with no faucet cannot be
+      // earned and one with no sink cannot be spent; both were verified by an agent reading
+      // prose until this key existed.
+      if (Array.isArray(e.faucets) && e.faucets.length !== e.faucetCount) {
+        problems.push(`economy.faucetCount says ${e.faucetCount} but faucets lists ${e.faucets.length}`);
+      }
+      if (Array.isArray(e.sinks) && e.sinks.length !== e.sinkCount) {
+        problems.push(`economy.sinkCount says ${e.sinkCount} but sinks lists ${e.sinks.length}`);
+      }
+      return problems;
+    },
+  },
+
+  discovery: {
+    doc: 'The per-Find record, the draw pool and replacement rule, and what a repeat does.',
+    owner: 'gameplay/systems',
+    shape: {
+      luckShaped: 'boolean',
+    },
+  },
+
+  modifiers: {
+    doc: 'What a permanent stat change is, and the order several of them resolve in.',
+    owner: 'gameplay/systems',
+    shape: {
+      factorFloor: 'number>0',
+    },
+    check(m) {
+      const problems = [];
+      // A factor below 1 is a debuff, and nothing in this game debuffs. Stated as a field so
+      // a later source cannot introduce one by supplying 0.9 and calling it a balance pass.
+      if (m.factorFloor < 1) {
+        problems.push(`modifiers.factorFloor ${m.factorFloor} is below 1, which makes a source a debuff`);
+      }
+      if (Array.isArray(m.resolutionOrder) && m.resolutionOrder.length < 2) {
+        problems.push('modifiers.resolutionOrder needs at least two steps, or there is nothing to resolve');
+      }
+      return problems;
+    },
+  },
+
+  input: {
+    doc: 'The closed verb list, and which device classes reach each one.',
+    owner: 'gameplay/mechanics',
+    shape: {
+      closed: 'boolean',
+    },
+    check(i) {
+      const problems = [];
+      if (!Array.isArray(i.verbs) || !i.verbs.length) {
+        problems.push('input.verbs must list at least one verb; a closed roster of nothing is not a roster');
+        return problems;
+      }
+      const ids = new Set();
+      for (const v of i.verbs) {
+        if (!v || typeof v.id !== 'string') {
+          problems.push('every input.verbs entry needs a string id');
+          continue;
+        }
+        if (ids.has(v.id)) problems.push(`duplicate input verb "${v.id}"`);
+        ids.add(v.id);
+      }
+      return problems;
+    },
+  },
+
+  tool: {
+    doc: 'Whether the tool is a held object, and what drives its appearance.',
+    owner: 'gameplay/mechanics',
+    shape: {
+      held: 'boolean',
+    },
+  },
+
+  response: {
+    doc: 'Per beat: what fires, on which side, within what budget, and whether control is affected.',
+    owner: 'gameplay/mechanics',
+    shape: {
+      controlEverAffected: 'boolean',
+    },
+    check(r) {
+      const problems = [];
+      // `core-loop` ruled zero tension and no lockouts. A beat that takes control away is the
+      // one way a feedback contract can reintroduce it, so it is checked rather than trusted.
+      if (r.controlEverAffected === true) {
+        problems.push('response.controlEverAffected is true, but zero tension is confirmed and no beat may take control');
+      }
+      return problems;
+    },
+  },
+
+  traversal: {
+    doc: 'Jump, edges, falling, and what the body may do inside an area.',
+    owner: 'gameplay/mechanics',
+    shape: {
+      jump: 'object',
+      boundary: 'object',
+    },
+    check(t) {
+      const problems = [];
+      // The wave-2 finding that a solid boundary makes co-presence invisible. `social`'s
+      // sightline requirement is measured through this wall, so its opacity is not a detail
+      // an Art pass gets to choose later.
+      if (t.boundary && t.boundary.opaque === true) {
+        problems.push('traversal.boundary.opaque is true, which puts a wall on the sightline social co-presence is measured through');
+      }
+      return problems;
+    },
+  },
+
+  social: {
+    doc: 'Population, progress scope, plot tenure, collision, chat, and the co-presence bound.',
+    owner: 'gameplay/social',
+    shape: {
+      progressScope: 'string',
+      worldStateScope: 'string',
+    },
+    check(s) {
+      const problems = [];
+      const sep = s.maxCoPresenceSeparationStuds;
+      // The sheet that wrote this asked for exactly this check, having stated the invariant
+      // as an acceptance criterion and noted that a criterion checked by hand is a criterion
+      // nobody checks. The value is a pixel result, so it travels with its test range.
+      if (sep && typeof sep === 'object' && Array.isArray(sep.testRangeStuds)) {
+        const [lo, hi] = sep.testRangeStuds;
+        if (typeof sep.value === 'number' && (sep.value < lo || sep.value > hi)) {
+          problems.push(`social.maxCoPresenceSeparationStuds.value ${sep.value} is outside its own test range [${lo}, ${hi}]`);
+        }
+      }
+      return problems;
+    },
+  },
+
+  setBonus: {
+    doc: 'What completing a set grants: which axis each set targets, and by how much.',
+    owner: 'gameplay/meta',
+    shape: {
+      sourceClass: 'string',
+    },
+    check(sb) {
+      const problems = [];
+      if (!Array.isArray(sb.rows)) {
+        problems.push('setBonus.rows must list one row per set');
+        return problems;
+      }
+      for (const r of sb.rows) {
+        if (typeof r?.factor === 'number' && r.factor < 1) {
+          problems.push(`setBonus row "${r.setId ?? '?'}" has factor ${r.factor}, below 1, which makes completing a set a punishment`);
+        }
+      }
+      return problems;
+    },
+  },
+
+  depths: {
+    doc: 'How many areas exist, at what depths, how large each is, and what unlocks it.',
+    owner: 'gameplay/meta',
+    shape: {
+      depthCount: 'integer>0',
+      areaCount: 'integer>0',
+    },
+    check(d) {
+      const problems = [];
+      if (Array.isArray(d.areas) && d.areas.length !== d.areaCount) {
+        problems.push(`depths.areaCount says ${d.areaCount} but areas lists ${d.areas.length}`);
+      }
+      return problems;
+    },
+  },
+
+  layout: {
+    doc: 'How one area is composed, and where finds sit inside it.',
+    owner: 'gameplay/meta',
+    shape: {
+      chunksPerFamily: 'integer>0',
+    },
+  },
+
+  plots: {
+    doc: 'How players’ areas are arranged in the world, and where each spawns.',
+    owner: 'gameplay/meta',
+    shape: {
+      pitchStuds: 'number>0',
+      laneWidthStuds: 'number>0',
+    },
+    check(p) {
+      const problems = [];
+      // A pitch under the lane width overlaps two players' ground.
+      if (p.pitchStuds < p.laneWidthStuds) {
+        problems.push(`plots.pitchStuds ${p.pitchStuds} is under laneWidthStuds ${p.laneWidthStuds}, so neighbouring plots overlap`);
+      }
+      return problems;
+    },
+  },
+
+  endgame: {
+    doc: 'What exists after the collection is complete.',
+    owner: 'gameplay/meta',
+    shape: {
+      gameEnds: 'boolean',
+      collectionEnds: 'boolean',
+    },
+  },
+
+  products: {
+    doc: 'What is sold for Robux, on which axis, at what factor and price.',
+    owner: 'gameplay/monetization',
+    shape: {
+      storeExists: 'boolean',
+    },
+    check(p) {
+      const problems = [];
+      if (!Array.isArray(p.items)) return problems;
+      const ids = new Set();
+      for (const it of p.items) {
+        if (ids.has(it?.id)) problems.push(`duplicate product id "${it.id}"`);
+        ids.add(it?.id);
+        if (typeof it?.priceRobux === 'number' && !Number.isInteger(it.priceRobux)) {
+          problems.push(`product "${it.id}" price ${it.priceRobux} is not a whole number of Robux`);
+        }
+        // `03-META.md`: permanent multipliers only, never content access. A factor at or
+        // below 1 is not a multiplier, and something sold that does nothing is the one
+        // monetisation failure a player can prove.
+        if (typeof it?.factor === 'number' && it.factor <= 1) {
+          problems.push(`product "${it.id}" has factor ${it.factor}; a product at or below 1 sells nothing`);
+        }
+      }
+      return problems;
+    },
+  },
+
+  firstSession: {
+    doc: 'The opening beats, what each guarantees, and what is withheld on run one.',
+    owner: 'gameplay/onboarding',
+    shape: {
+      armDistanceStuds: 'number>0',
+    },
+    check(f) {
+      const problems = [];
+      if (!Array.isArray(f.beats) || !f.beats.length) {
+        problems.push('firstSession.beats must list the opening beats in order');
+      }
+      return problems;
+    },
+  },
 
 };
 
@@ -373,6 +659,7 @@ export function validateManifest(manifest) {
   }
 
   problems.push(...crossCuttingProblems(manifest));
+  problems.push(...crossKeyProblems(manifest));
   return { problems, missing };
 }
 
@@ -444,6 +731,128 @@ const PROSE_PATHS = [/\.blurb$/, /\.flavour$/];
  * thing has a producer and a consumer.
  */
 
+
+/**
+ * The joins between two keys, which is where waves 2 and 3 actually went wrong.
+ *
+ * Every rule here is a defect some agent found by hand this wave, at a cost of roughly
+ * 200k tokens each. None of them is visible inside a single sheet — that is the point.
+ * A writer holding one domain cannot see that its axis id fails to match another key's,
+ * and a verifier can only find it by reading both and doing the arithmetic.
+ *
+ * Kept separate from `crossCuttingProblems` because that function returns early when there
+ * is no vocabulary, and these checks do not depend on one.
+ */
+function crossKeyProblems(manifest) {
+  const problems = [];
+  const { modifiers, upgrades, setBonus, products, movement, firstSession, collection, depths } = manifest;
+
+  // 1. Axis ids must join upgrades[].id verbatim.
+  //
+  // Found by the wave-2 verifier: `modifiers` used `pace` where `upgrades[].id` is `speed`,
+  // so `effective(axis)` could not resolve and every consumer of it would have silently got
+  // the base value. Two builders diverge here — one hard-codes a mapping, one does not.
+  if (modifiers && Array.isArray(modifiers.axes) && Array.isArray(upgrades)) {
+    const upgradeIds = new Set(upgrades.map((u) => u.id));
+    for (const axis of modifiers.axes) {
+      const id = typeof axis === 'string' ? axis : axis?.id;
+      if (id && !upgradeIds.has(id)) {
+        problems.push(`modifiers axis "${id}" does not match any upgrades[].id (${[...upgradeIds].join(', ')}), so effective(axis) cannot resolve`);
+      }
+    }
+  }
+
+  // 2. Set bonuses and products must fit the headroom their axis actually has.
+  //
+  // Found by the Monetization writer, about a sheet that was not its own: four set bonuses at
+  // x1.2 on `speed` need 2.07 against 1.61 of headroom, so the fourth is silently absorbed.
+  // A player completes a set and nothing happens, with no purchase in the game at all.
+  //
+  // Headroom is per-axis and comes from the ladder: an axis maxes at upgradeEffect(maxLevel),
+  // and anything multiplicative after that has only the gap to the ceiling to work in. Only
+  // axes that declare a ceiling are checked; the rest are unbounded by design.
+  if (modifiers && Array.isArray(modifiers.axes) && Array.isArray(upgrades)) {
+    for (const axis of modifiers.axes) {
+      const id = typeof axis === 'string' ? axis : axis?.id;
+      const ceiling = typeof axis === 'object' ? axis?.ceiling : undefined;
+      if (!id || typeof ceiling !== 'number') continue;
+
+      const u = upgrades.find((x) => x.id === id);
+      if (!u) continue;
+      const ladderMax = u.mode === 'compounding'
+        ? u.base * (u.perLevel ** u.maxLevel)
+        : u.base + u.perLevel * u.maxLevel;
+      const headroom = ceiling / ladderMax;
+
+      let demanded = 1;
+      const sources = [];
+      for (const r of setBonus?.rows ?? []) {
+        if (r?.axis === id && typeof r.factor === 'number') {
+          demanded *= r.factor;
+          sources.push(`setBonus:${r.setId ?? '?'}`);
+        }
+      }
+      for (const it of products?.items ?? []) {
+        if (it?.axis === id && typeof it.factor === 'number') {
+          demanded *= it.factor;
+          sources.push(`product:${it.id ?? '?'}`);
+        }
+      }
+      if (demanded > headroom + 1e-9) {
+        problems.push(
+          `axis "${id}" is over-subscribed: ${sources.join(' x ')} demand x${demanded.toFixed(3)} `
+          + `but the ladder maxes at ${ladderMax} against a ceiling of ${ceiling}, leaving only `
+          + `x${headroom.toFixed(3)}. The excess is silently clamped, so a player earns a bonus that does nothing.`,
+        );
+      }
+    }
+  }
+
+  // 3. The arming gate must not outrun the radius it hides behind.
+  //
+  // `firstSession` disarms clearing until the player has moved `armDistanceStuds`. If that
+  // exceeds `movement.baseClearRadius`, the guaranteed first patch is out of range by the
+  // time the gate releases and the first Find no longer reveals on the first clear -- which
+  // is the one promise the onboarding key exists to make.
+  if (firstSession && movement && typeof firstSession.armDistanceStuds === 'number') {
+    if (firstSession.armDistanceStuds >= movement.baseClearRadius) {
+      problems.push(
+        `firstSession.armDistanceStuds ${firstSession.armDistanceStuds} is not under `
+        + `movement.baseClearRadius ${movement.baseClearRadius}; the first patch leaves range before clearing arms`,
+      );
+    }
+  }
+
+  // 4. The areas at one depth must partition that depth's set exactly.
+  //
+  // `relicsPerArea x areasPerDepth == |set|`. Under-partitioning leaves names unreachable and
+  // the set uncompletable; over-partitioning places one twice. Dormant while areasPerDepth
+  // was 1, and live from ruling R-2 onward, which is exactly when a check earns its keep.
+  if (collection && Array.isArray(collection.sets)) {
+    const per = collection.relicsPerArea * (collection.areasPerDepth ?? 1);
+    for (const s of collection.sets) {
+      if (Array.isArray(s.relics) && s.relics.length !== per) {
+        problems.push(
+          `set "${s.id}" holds ${s.relics.length} names but its depth's areas partition `
+          + `${collection.relicsPerArea} x ${collection.areasPerDepth} = ${per}; `
+          + `${s.relics.length > per ? 'names are unreachable and the set cannot complete' : 'a name is buried twice'}`,
+        );
+      }
+    }
+    // And the ladder must actually have that many areas at each depth.
+    if (depths && typeof depths.areaCount === 'number' && typeof depths.depthCount === 'number') {
+      const expected = depths.depthCount * (collection.areasPerDepth ?? 1);
+      if (depths.areaCount !== expected) {
+        problems.push(
+          `depths.areaCount ${depths.areaCount} is not depthCount ${depths.depthCount} x `
+          + `collection.areasPerDepth ${collection.areasPerDepth}; some depth has the wrong number of areas`,
+        );
+      }
+    }
+  }
+
+  return problems;
+}
 
 function crossCuttingProblems(manifest) {
   const problems = [];

@@ -51,7 +51,6 @@ repeats because it is the only one with the headroom to be granted twice.**
 ```manifest
 {
   "provides": "setBonus",
-  "status": "proposed",
   "value": {
     "sourceClass": "setCompletion",
     "explainedInFiction": false,

@@ -186,7 +186,9 @@ test('missing keys are reported by name with their owner', () => {
   delete partial.collection;
   delete partial.patch;
   const { missing } = validateManifest(partial);
-  assert.equal(missing.length, 2);
+  // Asserted by name, not by count. The count was 2 when the contract was 9 keys and the
+  // fixture supplied all of them; waves 2-3 promoted 16 more, so a count assertion measures
+  // how big the contract is rather than whether a deleted key is reported.
   assert.ok(missing.some((m) => m.startsWith('collection') && m.includes('gameplay/meta')));
   assert.ok(missing.some((m) => m.startsWith('patch') && m.includes('art/objects')));
 });
@@ -194,9 +196,13 @@ test('missing keys are reported by name with their owner', () => {
 /* -------------------------------------------------------------- invariants */
 
 test('the reference manifest validates clean', () => {
-  const { problems, missing } = validateManifest(GOOD);
+  // `missing` is deliberately not asserted empty. GOOD is a hand-written fixture covering the
+  // nine original keys, and it is the right size for what these tests exercise -- tier shapes,
+  // cost ladders, copy rules. Growing it to 25 keys to satisfy a completeness assertion would
+  // make every future promotion edit a fixture that tests none of it. Completeness of the real
+  // tree is asserted by 'the shipped cid/ tree merges with no problems at all'.
+  const { problems } = validateManifest(GOOD);
   assert.deepEqual(problems, []);
-  assert.deepEqual(missing, []);
 });
 
 test('two tiers sharing a shape is rejected — rarity must survive losing colour', () => {

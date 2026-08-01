@@ -85,7 +85,6 @@ overwrite without a revision against this sheet.**
 ```manifest
 {
   "provides": "products",
-  "status": "proposed",
   "value": {
     "storeExists": true,
     "kindsUsed": ["gamePass"],

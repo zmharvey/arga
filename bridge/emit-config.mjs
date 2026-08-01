@@ -61,6 +61,58 @@ return GameConfig
 const num = (n) => (Number.isInteger(n) ? String(n) : String(n));
 const str = (s) => `"${String(s).replace(/"/g, '\\"')}"`;
 
+/**
+ * Any manifest value as a Luau literal.
+ *
+ * The nine original keys each get a hand-written block above, with the reasoning for why
+ * that key exists. That was right for nine and is wrong for twenty-five: waves 2 and 3
+ * promoted sixteen more, and hand-writing sixteen serialisers is sixteen chances to drop a
+ * field silently — which is the failure mode this whole seam exists to remove.
+ *
+ * So the newer keys are emitted structurally. The reasoning stays in the sheet, which is
+ * where the emitter's own header already says prose belongs.
+ *
+ * A key emitted here is emitted *whole*. A builder reading GameConfig sees every field the
+ * sheet declared, not the subset an emitter author remembered.
+ */
+function luau(value, indent = '\t') {
+  if (value === null || value === undefined) return 'nil';
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (typeof value === 'number') return num(value);
+  if (typeof value === 'string') return str(value);
+
+  const inner = `${indent}\t`;
+  if (Array.isArray(value)) {
+    if (!value.length) return '{}';
+    return `{\n${value.map((v) => `${inner}${luau(v, inner)},`).join('\n')}\n${indent}}`;
+  }
+
+  const entries = Object.entries(value);
+  if (!entries.length) return '{}';
+  return `{\n${entries.map(([k, v]) => {
+    // A Luau identifier can be written bare; anything else needs bracket-quoting, and
+    // getting that wrong produces a file that does not parse rather than one that is
+    // subtly wrong — but only for the keys that need it, so it is worth checking.
+    //
+    // A RESERVED WORD LOOKS EXACTLY LIKE AN IDENTIFIER AND IS NOT ONE. `discovery.repeat`
+    // emitted as `repeat = { ... }`, which is a syntax error five lines into a 4,000-line
+    // generated file that every module requires — the whole game fails to load, and the
+    // error names a keyword rather than the sheet that supplied the key. Caught by running
+    // luau-analyze over the emitted file rather than by reading it.
+    const lhs = /^[A-Za-z_][A-Za-z0-9_]*$/.test(k) && !RESERVED.has(k) ? k : `[${str(k)}]`;
+    return `${inner}${lhs} = ${luau(v, inner)},`;
+  }).join('\n')}\n${indent}}`;
+}
+
+/** Luau's reserved words. Any of them as a table key must be bracket-quoted. */
+const RESERVED = new Set([
+  'and', 'break', 'do', 'else', 'elseif', 'end', 'false', 'for', 'function', 'if', 'in',
+  'local', 'nil', 'not', 'or', 'repeat', 'return', 'then', 'true', 'until', 'while',
+]);
+
+/** `discovery` -> `Discovery`, so emitted names match the hand-written blocks' convention. */
+const pascal = (key) => key.charAt(0).toUpperCase() + key.slice(1);
+
 function tiersBlock(tiers, source) {
   const rows = tiers.map((t) =>
     `\t{ name = ${str(t.name)}, shape = ${str(t.shape)}, rgb = { ${t.rgb.join(', ')} }, `
@@ -217,7 +269,66 @@ GameConfig.ClearTickRate = ${num(r.clearTickRate)}
 GameConfig.SaveIntervalSeconds = ${num(r.saveIntervalSeconds)}
 GameConfig.RespawnDelaySeconds = ${num(r.respawnDelaySeconds)}
 GameConfig.DataStoreName = ${str(r.dataStoreName)}
+
+-- LayoutSeed is the ONLY seed in the game. layout.composition draws an area's chunk run
+-- from (layoutSeed, areaOrdinal) and layout.anchorSource derives every patch anchor from
+-- hash(layoutSeed, chunkId), so a second source of randomness makes state.cleared -- which
+-- is keyed by patch index -- meaningless across a rejoin. MaxPlayers is a READ-ONLY
+-- assertion: Players.MaxPlayers cannot be written from a script, so world.configure()
+-- compares this against the live value and warns.
+--
+-- Both were added to runtime after the hand-written block above was written, and the
+-- structural emitter below skips runtime because this block claims it. That is how a value
+-- can validate, be documented in an interface, and reach nothing: interfaces names
+-- GameConfig.LayoutSeed, and until this line existed there was no such field.
+${r.layoutSeed === undefined ? '' : `GameConfig.LayoutSeed = ${num(r.layoutSeed)}`}
+${r.maxPlayers === undefined ? '' : `GameConfig.MaxPlayers = ${num(r.maxPlayers)}`}
 `);
+
+  // Everything waves 2 and 3 added, emitted structurally. `HAND_WRITTEN` is the set above;
+  // deriving the remainder from the schema rather than listing it means a key promoted later
+  // reaches the build without anyone remembering to add it here. A key that validates but
+  // never reaches the build is a key nothing downstream can check — which is exactly how
+  // `areasPerDepth` sat unemitted until a sheet needed it.
+  const HAND_WRITTEN = new Set([
+    'tiers', 'upgrades', 'movement', 'currency', 'patch', 'area', 'collection',
+    'onboarding', 'runtime', 'vocabulary',
+  ]);
+  // Technical keys that are a SPECIFICATION rather than tuned values, and that already have
+  // their own emitted artifact. Dumping them here put 2,700 lines of module plan, interface
+  // notes and lifecycle prose into a runtime module every file requires -- and dragged the
+  // strings "Enum.PartType.Ball" and "Vector3.new(...)" into a file whose own contract says
+  // it constructs no Roblox type, where a grep for either now finds a false positive.
+  //
+  //   stateShape -> game/src/shared/Types.luau      (architect/emit-types.mjs)
+  //   modules    -> docs/BUILD-ORDER.md             (bridge/emit-buildorder.mjs)
+  //   tree, interfaces, representation, wiring -> the build brief, read by a builder and
+  //                                               never by a running module
+  //
+  // `runtime` is deliberately NOT here: it is tuned values, and the hand-written block above
+  // emits it.
+  const SPECIFICATION_ONLY = new Set([
+    'tree', 'modules', 'interfaces', 'representation', 'stateShape', 'wiring',
+  ]);
+  const derived = Object.keys(manifest)
+    .filter((k) => !HAND_WRITTEN.has(k) && !SPECIFICATION_ONLY.has(k))
+    .sort();
+  if (derived.length) {
+    parts.push(`
+-- ==========================================================================
+-- Waves 2-3. Emitted structurally from the manifest, whole.
+--
+-- The reasoning for each lives in the sheet named beside it. The emitter carries values,
+-- never prose -- conflating the two is what made the pre-bridge handoff unusable.
+-- ==========================================================================
+`);
+    for (const key of derived) {
+      parts.push(`
+-- From ${src(key)}.
+GameConfig.${pascal(key)} = ${luau(manifest[key])}
+`);
+    }
+  }
 
   parts.push(FOOTER);
   return parts.join('');

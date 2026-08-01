@@ -88,7 +88,6 @@ one 122 studs away.
 ```manifest
 {
   "provides": "plots",
-  "status": "proposed",
   "value": {
     "rowAxis": "+X",
     "laneAxis": "+Z",

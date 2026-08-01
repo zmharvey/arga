@@ -89,7 +89,6 @@ area before it is finished, and that is the only condition in the game.**
 ```manifest
 {
   "provides": "depths",
-  "status": "proposed",
   "value": {
     "depthCount": 4,
     "areaCount": 8,
@@ -160,6 +159,27 @@ area before it is finished, and that is the only condition in the game.**
   diverge.
 - **Tech and Performance** sizes against 640 anchored patch parts per plot, not 140, and
   against exactly one live area per player at a time.
+
+## Acceptance criteria
+
+1. `depths.areas` holds 8 rows, exactly 2 at each of depths 1, 2, 3 and 4, and row 1 equals
+   the merged `area` verbatim: `footprintStuds2` 14,400 = `area.size` squared, `patchCount`
+   140 = `area.patchCount`, `minSpacing` 6 = `area.minSpacing`.
+2. `game/test/config.spec.luau` walks the 8 rows and asserts, for every one, that
+   `footprintStuds2 / tau(k) * ROUTE_SLACK` is inside 75 to 200 both at arrival throughput
+   and one upgrade level behind arrival on both throughput axes. It prints
+   **164 / 149 / 161 / 163 / 157 / 157 / 157 / 157** at arrival, and
+   **186 / 192 / 191 / 182 / 182 / 182 / 182** one level behind for rows 2 to 8, and the file
+   still exits `PASS`.
+3. The same section asserts, for every row, all four of: `patchCount` at most
+   `lapSeconds / (2 * runtime.clearTickRate)`, printing 140/683, 245/621, 407/669, 518/678,
+   624/655, 624/655, 640/655, 640/655; `patchCount / footprintStuds2` non-decreasing in
+   ordinal and strictly larger at each depth step; `minSpacing` strictly above
+   `movement.baseClearRadius`; and `footprintStuds2` at most 73,216.
+4. `collection.relicsPerArea * collection.areasPerDepth` equals the length of every
+   `collection.sets[].relics`; the two `relicSlice` values at each depth partition that set
+   with no overlap and no gap; and every row's `unlock` is the string `previousAreaComplete`
+   except row 1's, which is `none`. No row carries any other condition of any kind.
 
 ## Pushing back
 
