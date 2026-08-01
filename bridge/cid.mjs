@@ -200,9 +200,45 @@ if (cmd === 'pack') {
   const toWrite = assignments.filter((a) => !adopted.has(a.n));
   const inherited = assignments.filter((a) => adopted.has(a.n));
 
-  const subject = (lead.match(/\*\*Subject:\*\*([\s\S]*?)(?=\n\n|\n##)/) ?? [, ''])[1]
-    .replace(/\s+/g, ' ')
-    .trim();
+  // Which keys the inherited sheets already supply. Section 3 otherwise lists a key as the
+  // domain's responsibility with nothing saying it is already met, and a writer that missed
+  // the out-of-band warning would supply it a second time — which the merger rejects, but
+  // only after the sheet is written.
+  const suppliedByInherited = new Map();
+  for (const a of inherited) {
+    const path = join(ROOT, domain, `${a.n}-${a.slug}.md`);
+    try {
+      const body = await readFile(path, 'utf8');
+      for (const m of body.matchAll(/```manifest\s*\n([\s\S]*?)\n```/g)) {
+        try {
+          const key = JSON.parse(m[1]).provides;
+          if (typeof key === 'string') suppliedByInherited.set(key, `${a.n}-${a.slug}.md`);
+        } catch { /* merge.mjs reports the parse error */ }
+      }
+    } catch { /* the index plans it but it is not on disk; cid:verify reports that */ }
+  }
+
+  // The subject comes from the graph, which is where it is actually defined, not from a
+  // `**Subject:**` field in the index. No lead ever wrote one — the `cid-domain-lead` output
+  // template has no such field — so this line rendered `(see index)` for every writer in
+  // wave 1 and wave 2, and the pack's own header sat empty while the graph held the answer.
+  let subject = '';
+  let boundary = '';
+  try {
+    const graph = JSON.parse(await readFile('docs/cid-workflow.json', 'utf8'));
+    const node = graph.nodes.find(
+      (n) => n.typeName === 'Domain Lead' && (n.values?.writes_to ?? '').includes(`/${domain}/`),
+    );
+    subject = (node?.values?.owns ?? '').replace(/\s+/g, ' ').trim();
+    boundary = (node?.values?.does_not_own ?? '').replace(/\s+/g, ' ').trim();
+  } catch {
+    /* graph unreadable — fall through to the index */
+  }
+  if (!subject) {
+    subject = (lead.match(/\*\*Subject:\*\*([\s\S]*?)(?=\n\n|\n##)/) ?? [, ''])[1]
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
 
   const { mine, others } = contractSlice(domain);
   const digest = renderDigest((await sheetDigest(ROOT)).filter((r) => r.domain !== domain));
@@ -238,6 +274,7 @@ Three rules, and they are what make this affordable:
 ## 1. Your assignment
 
 **Subject:** ${subject || '(see index)'}
+${boundary ? `\n**Not your subject:** ${boundary}\n` : ''}
 
 You write **${toWrite.length} sheet(s)**, all of them, in one pass:
 
@@ -276,14 +313,13 @@ Your own index, for the reasoning behind your assignment: \`${leadPath}\`
 ## 3. Contract keys you own
 
 ${mine.length
-      ? `${mine.map((k) => `- \`${k.key}\` — ${k.doc}`).join('\n')}
+      ? `${mine.map((k) => `- \`${k.key}\` — ${k.doc}${suppliedByInherited.get(k.key)
+          ? ` · **already supplied by \`${suppliedByInherited.get(k.key)}\`, which is not yours to touch. Do not supply it again.**`
+          : ''}`).join('\n')}
 
-**A sheet of yours must carry a \`\`\`manifest block for each.** A key you own and do not
-supply is a number a build agent invents.${inherited.length
-        ? ` Check the inherited sheets in section 1 first — if
-one of them already supplies a key above, it is supplied, and a second sheet claiming it is a
-hard error in the merge, not a disagreement to adjudicate.`
-        : ''}`
+**A sheet of yours must carry a \`\`\`manifest block for each key above that is not already
+supplied.** A key you own and do not supply is a number a build agent invents; a key supplied
+twice is a hard error in the merge, not a disagreement to adjudicate.`
       : `**None yet — and that is a job, not a let-off.** The contract is ${mine.length + others.length} keys because it
 was derived from one hand-built game, and most domains have not run. Yours is one of them.`}
 

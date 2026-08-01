@@ -276,10 +276,15 @@ const PROSE_BUDGET = 100;
   const waiting = keyless.filter((d) => proposedBy.has(d));
   const mute = keyless.filter((d) => !proposedBy.has(d));
 
-  if (waiting.length) {
-    notes.push(`${waiting.length} domain(s) propose a key the contract does not have yet: `
-      + `${waiting.map((d) => `${d} -> ${proposedBy.get(d)}`).join(', ')}. `
-      + 'Promote in bridge/schema.mjs to make one binding.');
+  // Every proposal, not only those from keyless domains. The first version reported the
+  // keyless ones, which showed 1 of wave 2's 9: Systems already owns `tiers` and `currency`
+  // and proposed four more, Mechanics owns `movement` and proposed four. Owning a key says
+  // nothing about whether the rest of the subject has one, so filtering on it hid the
+  // contract-growth queue almost entirely.
+  if (proposals.length) {
+    notes.push(`${proposals.length} proposed key(s) with no schema slot yet: `
+      + `${proposals.map((p) => `${p.key} (${dirname(p.sheet)})`).join(', ')}. `
+      + 'Promote in bridge/schema.mjs to make one binding, or leave it as a recorded finding.');
   }
   if (mute.length) {
     warns.push(`${mute.length} domain(s) own no contract key and propose none: ${mute.join(', ')}. `

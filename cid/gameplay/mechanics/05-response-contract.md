@@ -80,11 +80,11 @@ Ten rules. G4 in the form a build can be failed against.
 | R1 | no input lockout, of any duration, for any beat |
 | R2 | no forced movement: no auto-walk, no stop, no pull, no push, no teleport |
 | R3 | no camera lock, pan, zoom, auto-frame, look-at or shake |
-| R4 | no slow motion, time freeze, or change to walk speed |
+| R4 | no slow motion, no time freeze, and no walk-speed change other than a purchased Pace level taking effect |
 | R5 | no modal, panel or screen opened, focused or dismissed by any beat |
 | R6 | no beat requires acknowledgment, confirmation or dismissal to end |
 | R7 | no beat blocks or delays another verb, including a purchase happening in the same second |
-| R8 | no beat writes any `Humanoid` property |
+| R8 | no beat writes a `Humanoid` property, with one exception: `WalkSpeed`, written by `upgradePurchased` and only as the Pace axis's purchased effect |
 | R9 | no beat prevents, pauses or slows clearing while it plays |
 | R10 | no failure, rejection or negative beat exists: a refused purchase and an unconfirmed clear emit nothing |
 
@@ -101,6 +101,7 @@ Ten rules. G4 in the form a build can be failed against.
     "minSustainedOnsetsPerSecond": 8,
     "onOverload": "overlap",
     "channelExclusivity": { "atPatch": "findReveal", "notice": ["areaComplete", "setComplete"] },
+    "humanoidWritesAllowed": ["WalkSpeed"],
     "beats": [
       { "id": "patchClear", "rank": 5, "cause": "clearRadiusContainsStandingPatch", "decidedBy": "clientPredictedServerAuthoritative", "acknowledgmentBudgetMs": 80, "budgetTestRangeMs": [40, 120], "payoutBudgetMs": 250, "payoutTestRangeMs": [150, 400], "channels": ["atPatch", "readout"], "controlAffected": false, "queued": false, "residueLifetimeSeconds": 0.4 },
       { "id": "findReveal", "rank": 1, "cause": "patchHidingItCleared", "decidedBy": "server", "acknowledgmentBudgetMs": 300, "budgetTestRangeMs": [200, 500], "channels": ["atPatch", "audio"], "forbiddenChannels": ["notice"], "controlAffected": false, "queued": true, "dwellSeconds": 2.5, "dwellTestRangeSeconds": [1.5, 4.0], "grantedAt": "reveal" },
@@ -134,8 +135,8 @@ Ten rules. G4 in the form a build can be failed against.
 ## Acceptance criteria
 
 1. At every beat, the player's movement input continues to move the character with no interruption,
-   no camera change, and no walk-speed change, measured across an area completion that coincides
-   with a Find reveal and a set completion.
+   no camera change, and no walk-speed change other than a purchased Pace level, measured across an
+   area completion that coincides with a Find reveal and a set completion.
 2. An ordinary clear leaves zero objects at the patch position 0.4 s after it fires; a reveal leaves
    exactly one, for 2.5 s.
 3. No two sequenced beats begin within 1.2 s of each other, and no `patchClear` is ever delayed or

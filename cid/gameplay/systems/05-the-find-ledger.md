@@ -115,10 +115,9 @@ goes. **Nothing in this game is luck-shaped.**
 
 - **Content-structure work (currently Meta & Content) inherits a hard equality.** Raising
   `areasPerDepth` above 1 now requires lowering `relicsPerArea` to match, so a depth's six Finds
-  spread across its areas rather than repeat into each. It also inherits what that buys: every
-  area at every depth buries a full quota of Finds the player does not have, so no session can be
-  spent in an area with nothing new in it — the brief's highest-risk objective ("find at least one
-  new relic") protected structurally rather than by tuning.
+  spread across its areas rather than repeat into each. What that buys: every area at every depth
+  buries a full quota of Finds the player lacks, so no session is spent in an area with nothing new
+  in it — the brief's highest-risk objective protected structurally rather than by tuning.
 - **The clearing path must change.** `Clearing.luau:209` reads `if relic ~= nil and not
   state.found[relic]` and drops a repeat with no payout and no event. The condition is right and
   stays. The silence is not: reaching that branch means the draw is broken, so it must warn.
@@ -146,9 +145,8 @@ this decision that entry names a quantity with no referent.
 ## Flagged to the developer
 
 If the offer ladder wants a luck-shaped SKU, the one quantity still random is **how early in an
-area a Find surfaces**. A multiplier on it is legal (it cannot change *which* Finds a player gets,
-so completion stays unbuyable) and it is real. **My recommendation is not to build it**: one SKU
-does not pay for a system, and revenue is a stated non-goal.
+area a Find surfaces** — legal, because it cannot change *which* Finds a player gets, so completion
+stays unbuyable. **My recommendation is not to build it**: revenue is a stated non-goal.
 
 ## Acceptance criteria
 

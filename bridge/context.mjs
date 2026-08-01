@@ -305,13 +305,19 @@ export async function briefSlice(briefDir) {
     const n = body.split('\n').length;
     // Report what was actually dropped, not what the rule would drop. A pack claiming to
     // have excluded a file the brief never had is a small lie that makes the rest suspect.
+    // Relative to the brief directory, not the basename. `briefDir/research/landscape.md`
+    // flattened to `landscape.md`, and the pack renders `join(brief, part.name)` — so the
+    // path it told every writer to read was `briefDir/landscape.md`, which does not exist.
+    // Two writers in wave 2 reported the Read failing; HANDOFF.md calls one of those two
+    // files "read this". Wave 1 had the same bug and nobody said so.
+    const name = relative(briefDir, f);
     if (BRIEF_EXCLUDE.has(basename(f))) {
-      excluded.push({ name: basename(f), lines: n });
+      excluded.push({ name, lines: n });
       excludedLines += n;
       continue;
     }
     lines += n;
-    parts.push({ name: basename(f), body });
+    parts.push({ name, body });
   }
   return { parts, lines, excluded, excludedLines };
 }

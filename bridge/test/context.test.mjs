@@ -279,6 +279,20 @@ test('briefSlice drops VERIFIED.md and reports what it actually dropped', async 
   assert.ok(excludedLines > lines, 'the process artifact outweighed the design content');
 });
 
+test('a brief file in a subdirectory keeps its path, because the pack joins it back on', async () => {
+  // `research/landscape.md` came back as `landscape.md`, and the pack renders
+  // `join(brief, name)` — so every writer since wave 1 was told to read
+  // `<brief>/landscape.md`, which does not exist. Two wave-2 writers reported the Read
+  // failing; HANDOFF.md says of one of those two files, "read this".
+  const dir = await fixture({
+    '00-CORE.md': 'core\n',
+    'research/landscape.md': 'why the noun cannot differentiate\n',
+  });
+  const { parts } = await briefSlice(dir);
+  await rm(dir, { recursive: true, force: true });
+  assert.deepEqual(parts.map((p) => p.name).sort(), ['00-CORE.md', 'research/landscape.md']);
+});
+
 test('a brief with no process artifact reports no exclusions', async () => {
   const dir = await fixture({ '00-CORE.md': 'core\n' });
   const { excluded, excludedLines } = await briefSlice(dir);
