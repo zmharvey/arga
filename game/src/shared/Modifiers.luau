@@ -138,6 +138,12 @@ local FACTOR_FLOOR: number = Config.Modifiers.factorFloor
 
 local Modifiers = {}
 
+-- Forward declaration. The audit calls Modifiers.ceiling and Modifiers.ceiling calls the
+-- audit, so one of the two has to be named before it is defined. It stays a local rather
+-- than a member because the Must-expose list is exactly two functions and a third one on
+-- the returned table is an invitation to call it.
+local runAudit: () -> ()
+
 -- ---------------------------------------------------------------------------
 -- Lookups. All linear over three-to-eight-entry arrays; GameConfig exposes no
 -- by-id accessor, and a module may do no work at require time, so no index is built.
@@ -224,7 +230,7 @@ end
 	         interface note gives the same 45.83 from it.
 ]]
 function Modifiers.ceiling(axis: string, areaOrdinal: number): number?
-	Modifiers._audit()
+	runAudit()
 	requireAxis(axis)
 
 	if axis == RADIUS_ID then
@@ -379,9 +385,9 @@ local function auditHeadroom()
 	end
 end
 
--- Guarded so the audit runs once per server, and so ceiling() calling itself from
--- auditHeadroom does not recurse.
-function Modifiers._audit()
+-- Guarded so the audit runs once per server, and so auditHeadroom calling ceiling(),
+-- which calls this, does not recurse: the flag is set before any of it runs.
+function runAudit()
 	if audited then
 		return
 	end
@@ -456,7 +462,7 @@ end
 	are empty products.
 ]]
 function Modifiers.effective(state: PlayerState, axis: string): number
-	Modifiers._audit()
+	runAudit()
 
 	local def = requireAxis(axis)
 
