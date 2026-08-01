@@ -26,9 +26,10 @@ makes proximity legible.
   is a radius upgrade `[brief: soft]`, `research/grass-incremental.md`. Held gives wave-3
   premium-SKU work an object to attach to that is still a permanent multiplier and still touches no
   content, which is the binding monetization rule.
-- **The argument against, answered.** "Movement only" bans press verbs, not objects. A tool that is
-  never activated, never equipped and never swung adds no input at all, and sheet 02's roster stays
-  at five verbs with `equip`, `unequip`, `stow` and `drop` all absent.
+- **The argument against, answered.** The brief's "movement only" line bans press verbs aimed at the
+  world, not objects. A tool that is never activated, never equipped and never swung adds no input
+  at all, and sheet 02's roster stays at five verbs with `equip`, `unequip`, `stow` and `drop` all
+  absent.
 
 **Reach drives it, and Value and Pace never do.** Reach is the axis the brief calls primary; a tool
 that grew on three axes at once would read as none of them, and a builder handed "the tool reflects
@@ -38,8 +39,10 @@ upgrades" would scale it three ways.
 so a head literally spanning the cleared diameter would be 11 studs wide against a roughly 2-stud
 character. The mapping is therefore monotonic in Reach level, not equal to the radius: **1.2 studs at
 level 0, plus 0.35 studs per level**, reaching 4.0 studs at the ladder's top. That is a 3.3x visible
-growth that stays smaller than twice the character.
-`[playtest unknown]` starting value 0.35 studs per level, test range 0.2 to 0.6.
+growth that stays smaller than twice the character. **Both figures are `[playtest unknown]`:**
+starting base 1.2 studs, test range 0.8 to 1.8; starting per-level 0.35 studs, test range 0.2 to
+0.6. What is not open to tuning is the ordering, that the head is monotonic in Reach and changes on
+no other axis.
 
 ## What the tool may never do
 
@@ -50,7 +53,7 @@ Twelve rules. Each is a thing a builder could add without noticing it broke some
 | T1 | never swings, and plays no swing, chop, sweep or attack animation | clearing is contact, not an action `[brief: soft]` |
 | T2 | never has a hitbox: `CanCollide`, `CanTouch` and `CanQuery` are all false, and it is `Massless` | a hitbox is a second clearing system, and the brief forbids designing clearing and discovering as separate systems |
 | T3 | never contacts a patch, and no clear is ever attributed to it | the radius test is the character's, not the tool's |
-| T4 | is **not** a Roblox `Tool` instance and never enters the Backpack | a `Tool` grants a free click and tap activation, which would be a press verb sheet 02 does not have |
+| T4 | is **not** a Roblox `Tool` instance and never enters the Backpack | a `Tool` grants a free click and tap activation aimed at the world, which would be a third game-bound verb; sheet 02's two pressables are the whole bound surface |
 | T5 | never leaves the hand: no drop, no stow, no unequip, no slot, no hotbar, no inventory | there is exactly one and it is always held |
 | T6 | has no durability, charges, ammo, cooldown, heat, condition or wear | all six are tension, and zero tension is confirmed `[brief: soft]`, stated three times in the brief |
 | T7 | exactly one tool exists, granted at spawn, before anything is cleared | a second tool implies a choice, and a choice implies a select verb |
@@ -71,7 +74,9 @@ Twelve rules. Each is a thing a builder could add without noticing it broke some
     "drivenBy": "radius",
     "appearanceChannel": "headWidth",
     "headWidthBaseStuds": 1.2,
+    "headWidthBaseTestRangeStuds": [0.8, 1.8],
     "headWidthPerLevelStuds": 0.35,
+    "headWidthPerLevelTestRangeStuds": [0.2, 0.6],
     "attachment": "RightHand",
     "instanceClass": "Model",
     "isRobloxToolInstance": false,
@@ -104,8 +109,9 @@ Twelve rules. Each is a thing a builder could add without noticing it broke some
 - **World-inventory work (`theme/setting/05-inventory`):** the carve-out is used. A held tool is now
   a real object in every player's hand and still not place matter, so the closed list is unchanged
   by this sheet.
-- **Balance and Tuning:** `upgrades[].maxLevel` for the radius axis now has a second consumer. If it
-  moves, the head's top width moves with it; nothing else about the tool changes.
+- **Balance and Tuning:** the radius axis's `maxLevel` now has a second consumer. If it moves, the
+  head's top width moves with it; nothing else about the tool changes. The two width figures above
+  are inside my own key and carry test ranges, so they are yours to settle, not to re-own.
 - **Animation and rig work:** there is none to do. T1 and T4 together mean no animation asset, no
   `AnimationController` and no `Animator` state for the tool at any level.
 
@@ -113,8 +119,8 @@ Twelve rules. Each is a thing a builder could add without noticing it broke some
 
 1. Every player has exactly one tool welded to the right hand within one second of spawning, before
    any patch is cleared, and it is not a `Tool` instance and does not appear in the Backpack.
-2. Tool head width equals `1.2 + 0.35 * radiusLevel` studs at every level, and buying a Value or a
-   Pace level changes zero properties of the tool.
+2. Tool head width equals `headWidthBaseStuds + headWidthPerLevelStuds * radiusLevel` at every
+   level, and buying a Value or a Pace level changes zero properties of the tool.
 3. The tool's parts report `CanCollide = false`, `CanTouch = false`, `CanQuery = false`,
    `Massless = true`, and the game contains zero `Touched` handlers and zero animation tracks on it.
 
@@ -123,5 +129,6 @@ Twelve rules. Each is a thing a builder could add without noticing it broke some
 What the tool is, what it is made of, and what it looks like at any width (Art and Visuals). Its
 name and any player-facing string about it (Theme, Vocabulary). Every price, rung, threshold and
 ladder for a premium version (premium-SKU work). The radius values themselves and `maxLevel`
-(Balance and Tuning, already merged). Whether the tool is visible to other players at all, which
-follows from co-presence rules (Multiplayer and Social).
+(Balance and Tuning, already merged), and the two width figures inside their stated ranges (Balance
+and Tuning). Whether the tool is visible to other players at all, which follows from co-presence
+rules (`gameplay/social/02`).

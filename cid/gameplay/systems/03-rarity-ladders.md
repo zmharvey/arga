@@ -18,28 +18,33 @@ lit, framed or sounded as one. **Find placement may not read a patch's tier.**
   depth** — rarity and location are one axis, so there is one concept to learn rather than
   two." `[brief: soft]` ← `[you accepted: R4 Q4]`. Two ladders is the reading that contradicts
   the brief; one is the reading that satisfies both lines at once.
-- **The accessibility constraint prices the alternative, and this is the cost my lead asked me
-  to state rather than let Art discover.** `04-PRESENTATION.md` makes shape-not-hue a
-  requirement because "tier is a core economic signal"; `HANDOFF.md` repeats it as one of six
-  pre-design facts. `[brief: soft]` ← `[you accepted: R6 Q4]`. Four foliage silhouettes in a
-  green frame on a phone is already the hard case. A second graded ladder would put a second
-  silhouette system on 24 hand-authored objects, readable at the same instant, in the same
-  frame, under the same rule — and the reveal is the loudest moment in the game, so it would
-  be read under motion. That is affordable in a game whose primary creative work is content
-  (`00-CORE.md`), and it is not affordable *twice*. Art draws four silhouettes and no more.
+- **The accessibility constraint prices the alternative, and this is the cost stated so Art can
+  price it rather than discover it.** `04-PRESENTATION.md` makes shape-not-hue a requirement
+  because "tier is a core economic signal"; `HANDOFF.md` repeats it as one of six pre-design
+  facts. `[brief: soft]` ← `[you accepted: R6 Q4]`. Four foliage silhouettes in a green frame on
+  a phone is already the hard case. A second graded ladder would put a second silhouette system
+  on 24 hand-authored objects, readable at the same instant, in the same frame, under the same
+  rule — and read under motion, because the reveal is the loudest moment in the game. That is
+  affordable in a game whose primary creative work is content (`00-CORE.md`), and it is not
+  affordable *twice*. Art draws four silhouettes and no more.
+- **Two approved sheets already assume this answer.** `gameplay/meta/02-the-collection` gives
+  Audio "one reveal cue, reused 24 times, so it must survive repetition" — one cue, not one per
+  rank. `gameplay/core-loop/05-depth-escalation` routes "whether `tiers[].weight` shifts toward
+  the rare end with depth" to content work and then Balance, which is the overgrowth channel
+  this sheet names and not a Find property. Neither reads as written under two ladders.
 - **The shipped build already answers this way and I ratify it.** `Layout.luau:130-153` places
-  the whole of set one with no reference to `tierIndex`; every patch is an equally likely
-  host. `[research: game/src/shared/Layout.luau]`
+  Finds with no reference to `tierIndex`; every patch is an equally likely host.
+  `[research: game/src/shared/Layout.luau]`
 - **Weighted placement would also break a `[brief: soft]` guarantee.** `onboarding` fixes the
   first Find under the patch nearest spawn, deterministically. If rarity biased placement, that
   patch would additionally need a tier the shuffle cannot promise, and the guarantee would
-  depend on two rolls instead of none.
+  depend on a roll instead of none.
 - **Where depth's "rarer" goes instead.** `03-META.md` says deeper areas "hide rarer sets"
   `[brief: soft]`. Under one ladder that promise is kept on the overgrowth: the tier mix shifts
   toward the rare end with depth, so a deeper area *is* rarer material and the Finds in it are
-  simply later. `[cid: decided]` — the brief never says which channel carries it. The blocker
-  is named in the manifest: `tiers` is a flat array with no depth dimension, and adding one is
-  a revision to `01-overgrowth-tiers`, which I may not edit.
+  simply later. `[cid: decided]` — the brief never says which channel carries it. The blocker is
+  named in the manifest: `tiers` is a flat array with no depth dimension, and adding one is a
+  revision to `01-overgrowth-tiers`, which I may not edit.
 
 ```manifest
 {
@@ -74,7 +79,7 @@ lit, framed or sounded as one. **Find placement may not read a patch's tier.**
     ],
     "findRarityField": null,
     "findPlacementReadsTier": false,
-    "findPlacementWeighting": "uniform over the area's patches",
+    "findPlacementWeighting": "blind to tier: the probability a patch carries a Find is independent of its tierIndex. Whether that choice is spatially uniform or spread is content-structure work's, not this key's.",
     "depthRarityChannel": "tiers[].weight, shifted toward the rare end per depth",
     "depthRarityBlocker": "tiers has no depth dimension; adding one is a revision to 01-overgrowth-tiers, not a change made here",
     "forbidden": [
@@ -96,15 +101,16 @@ lit, framed or sounded as one. **Find placement may not read a patch's tier.**
 - **Rarity-legibility work (currently Art & Visuals) draws one ladder, four rungs.** It is not
   being asked to make two systems readable at once, and it may not invent a per-Find grade to
   fill the space. The 24 objects differ by *what they are*, never by rank.
-- **Reveal-cue work (Audio — Stingers; Art — VFX) gets one cue, not four.** A Find reveal
-  sounds and looks the same at depth 1 and depth 4. The tier note the brief's audio default
-  assigns per rarity belongs to the clear, not the reveal.
-- **Content-structure work inherits a live blocker:** if depth is to read as rarer, `tiers`
-  needs a per-depth weight dimension. That is a change to sheet `01`'s key and it needs the
-  key owner, not a downstream reader assuming a second field exists.
+- **Reveal-cue work (Audio — Stingers; Art — VFX) gets one cue, not four.** A Find reveal sounds
+  and looks the same at depth 1 and depth 4, which is the same cue `meta/02` already sized to
+  survive 24 firings. The tier note the brief's audio default assigns per rarity belongs to the
+  clear, not the reveal.
+- **Content-structure work inherits a live blocker:** if depth is to read as rarer, `tiers` needs
+  a per-depth weight dimension. That is a change to sheet `01`'s key and it needs the key owner,
+  not a downstream reader assuming a second field exists.
 - **Balance & Tuning** gets a channel with no values in it: the per-depth tier mix. I set none.
-- **Offer-ladder work** may not sell a "find better Finds" multiplier: there is no per-Find
-  rank for a multiplier to move. Sheet `05` closes the rate half of the same question.
+- **Offer-ladder work** may not sell a "find better Finds" multiplier: there is no per-Find rank
+  for a multiplier to move. Sheet `05` closes the rate half of the same question.
 
 ## Pushing back
 
@@ -118,9 +124,9 @@ system, which the brief prices as a requirement rather than a nicety.
 
 1. `rarity.findRarityField` is `null`, and no manifest key, emitted config field or module
    carries a rarity, grade, tier, star or quality value attached to a Find.
-2. Place 10,000 Finds through the layout routine and bucket the host patches by `tierIndex`:
-   the resulting distribution matches `tiers[].weight` with no significant difference, because
-   placement is uniform and blind to tier.
+2. Build the layout under 10,000 different seeds and bucket the Find-carrying patches by
+   `tierIndex`: the distribution matches `tiers[].weight` with no significant difference,
+   because placement is blind to tier.
 3. In a greyscale screenshot of an area, the four overgrowth silhouettes remain distinguishable
    and no revealed Find carries a rank marking of any kind.
 4. Exactly one entry in `rarity.ladders` has `perObjectVisualGrade: true`.
@@ -128,8 +134,8 @@ system, which the brief prices as a requirement rather than a nicety.
 ## Not decided here
 
 The tier names, shapes, colours, heights, weights and payouts (`01-overgrowth-tiers`, same
-domain, already supplied as `tiers`). What pool a Find is drawn from and what a repeat does
-(`05-the-find-ledger`, same domain). Which patch hides which Find within an area, and the
-per-depth discovery rates (content-structure work, currently Meta & Content; then Balance &
-Tuning for the figures). What any tier or any Find actually looks like (Art & Visuals). The
-per-depth weight values, once `tiers` can hold them (Balance & Tuning).
+domain, already supplied as `tiers`). What pool a Find comes from, where the seed puts it, and
+what a repeat does (`05-the-find-ledger`, same domain). Whether burial is spatially uniform or
+spread, and the per-depth discovery rates (content-structure work, currently Meta & Content; then
+Balance & Tuning for the figures). What any tier or any Find actually looks like (Art & Visuals).
+The per-depth weight values, once `tiers` can hold them (Balance & Tuning).

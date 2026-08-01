@@ -5,8 +5,9 @@
 ## Decision
 
 **Jump exists at the platform default and changes no game state. The world cannot kill, drop or
-damage the player, and an area is bounded by a wall the player cannot pass rather than by an edge
-they can fall off. One player's body cannot block another's: player-to-player collision is off.**
+damage the player. An area's edge is a barrier that stops the body and not the eye: solid to walk
+into, and non-opaque, so it never breaks the co-presence sightline.** Player-to-player collision is
+off, and the value that says so lives in `social.characterCollision`, not here.
 
 ## Why
 
@@ -15,11 +16,12 @@ jump moves the body without touching a single game value. Removing it means acti
 control every device already draws, including the mobile jump button, which reads as broken rather
 than as minimal, and it is the first thing an 8-14 player tries `[brief: binding]` ← `[you chose:
 R1 Q4]`, `00-CORE.md`. The price of keeping it is one rule: **nothing may ever be gated behind a
-jump.** No patch, no Find, no marked place and no route may require leaving the ground, so a player
-who never jumps is never behind.
+jump.** No patch, no Find and no route may require leaving the ground, so a player who never jumps
+is never behind.
 
-The engine defaults are `JumpHeight = 7.2` with `UseJumpPower = false`, which I carry unchanged so a
-player's jump feels like every other Roblox game's.
+The engine defaults are `JumpHeight = 7.2` with `UseJumpPower = false`, carried unchanged so a
+player's jump feels like every other Roblox game's. The literal is in the manifest so a builder does
+not invent one, and it is the platform default that is binding rather than the number.
 `[research owed: Roblox's current StarterPlayer and Humanoid jump defaults, specifically whether
 CharacterJumpHeight is 7.2 with UseJumpPower false in the current engine version]`
 
@@ -36,22 +38,30 @@ that a player who died stayed dead for the session, so deleting the path is wors
 Its cost is fixed at nothing: no currency loss, no progress loss, no cleared-state loss, respawn at
 the area spawn, and no game-authored death cue of any kind.
 
-**The edge is a barrier, not a drop.** `[cid: decided]` A drop implies a fall, a fall implies either
-death or a recovery, and both are tension the brief forbids three times. A wall implies neither, and
-it is the setting's own architecture: the ruin is "level platforms cut and walled into a hillside"
-`[research: cid/_digest.md]`, `theme/setting/01`. The barrier is placed past the patch field so the
-player never clears with their back against it, and it is taller than a jump can reach so it is not
-a puzzle.
+**The edge is a barrier, not a drop, and the barrier is not opaque.** `[cid: decided]` A drop implies
+a fall, a fall implies either death or a recovery, and both are tension the brief forbids three
+times. A wall implies neither. But `gameplay/social/02-presence-sufficiency` requires that "the
+sightline between two spawn points must be unobstructed: no opaque wall, hedge, terrain rise or fog
+density may sit between neighbouring plots", and a plot-edge barrier is exactly what sits there.
+**Co-presence wins, because it is the only social system the game has and a solid-looking boundary
+is worth nothing to the player.** So the barrier stops the body and not the eye. The ruin's walled
+architecture, which is `theme/setting/01`'s terraced hillside, may still be built anywhere inside a
+plot that does not cross the inter-plot sightline.
 
 **G9, can one body block another.** No. `[cid: decided]` The binding social rule is "shared server,
 parallel progression, own areas, no interaction. Interaction: none mechanical" `[brief: soft]` ←
 `[you accepted: R6 Q2]`, `02-GAMEPLAY.md`, stated twice. A body that blocks another body is a
-mechanical interaction, and it is the only one the game affords: standing on a purchase pad,
-blocking a doorway, or parking on a Find mid-dwell are each achievable by a stranger who cannot do
-anything else. Player characters collide by default on Roblox, since "All BaseParts automatically
-belong to this default group unless assigned to another group"
-`[research: https://create.roblox.com/docs/workspace/collisions]`, so this requires an explicit
-collision group and will not happen by omission. Player-to-world collision stays on.
+mechanical interaction, and it is the only one the game affords: blocking a route or parking on a
+Find mid-dwell are each achievable by a stranger who cannot do anything else. Player characters
+collide by default on Roblox, since "All BaseParts automatically belong to this default group unless
+assigned to another group" `[research: https://create.roblox.com/docs/workspace/collisions]`, so
+this requires an explicit collision group and will not happen by omission.
+
+**The value lives in one key and it is not mine.** `gameplay/social/01-server-and-co-presence`
+supplies `social.characterCollision` with the group name `Characters` and a full collidability
+matrix. My first draft carried the same decision in `traversal.collision` under the group name
+`Players`, which is one decision in two keys with two names. **`social` owns it.** The ruling above
+stays here because G9 was routed to this sheet; the data does not.
 
 **The boundary with sheet 02:** exclusions of *inputs* are 02's, exclusions of *world affordances*
 are mine. Sheet 02 rules that there is no climb verb; this sheet rules that there is no climbable
@@ -62,8 +72,8 @@ surface to have needed one.
 | property | value | note |
 |---|---|---|
 | jump | exists, platform default | `JumpHeight = 7.2`, `UseJumpPower = false` |
-| jump gates | zero | no patch, Find, marked place or route requires it |
-| jump upgrades | zero | no axis touches jump; Pace is walk speed only |
+| jump gates | zero | no patch, Find or route requires it |
+| jump upgrades | zero | no axis touches jump; the speed axis is walk speed only |
 | fall damage | none | at any height |
 | damage sources in the world | zero | no killbrick, no hazard, no trap, no drowning, no burning |
 | void below the play area | none | the ground is continuous under every walkable surface |
@@ -72,17 +82,17 @@ surface to have needed one.
 | respawn location | the area's spawn point | the delay's value is owned by runtime work, `architect/01-runtime`, not set here |
 | loss on respawn | none | no currency, no upgrade level, no Find, no cleared patch |
 | death cue | none authored | no screen, no sound, no colour flash, no message |
-| area boundary | a collision barrier | 12 studs of walkable margin past the patch field on every side, then a wall 20 studs tall |
+| area boundary | a collision barrier | 12 studs of walkable margin past the patch field on every side, then a barrier 20 studs tall |
+| barrier opacity | **not opaque** | it may not obstruct the sightline `gameplay/social/02` requires between neighbouring spawn points |
 | barrier behaviour | stops the character | not passable, not climbable, not jumpable; no teleport-back, no warning, no cue, no damage |
-| maximum step height on any route | 2 studs | between spawn, every patch and every marked place |
+| maximum step height on any route | 2 studs | on every route between the spawn point and every patch |
 | maximum slope where a patch may stand | 30 degrees | so no patch is unreachable by walking |
 | climbable surfaces, ladders, trusses | zero | |
 | seats, vehicles, mounts, ziplines | zero | |
 | water, swimming, mud, slow ground | zero | no surface changes the player's speed |
 | teleports inside an area | zero | every point is reached by walking |
-| player-to-player collision | off | one collision group for characters, non-colliding with itself |
 | player-to-world collision | on | unchanged from the engine default |
-| pushing, shoving, standing on another player | impossible | follows from non-collision |
+| player-to-player collision | off, **owned by `social.characterCollision`** | this sheet states the ruling and carries no value for it |
 | lockouts, hazards, fall penalties, timers | zero | zero tension is confirmed and instructed |
 
 ```manifest
@@ -93,9 +103,9 @@ surface to have needed one.
     "jump": { "exists": true, "jumpHeight": 7.2, "useJumpPower": false, "changesGameState": false, "upgradable": false, "gatedContent": 0 },
     "fall": { "damage": false, "voidBelowPlayArea": false, "maxSurvivableFallStuds": null },
     "death": { "possibleByDesign": false, "damageSources": 0, "healthWrittenByGameCode": false, "respawnAt": "areaSpawn", "lossOnRespawn": "none", "authoredCue": "none", "respawnDelayOwner": "architect/01-runtime" },
-    "boundary": { "kind": "collisionBarrier", "walkableMarginStuds": 12, "heightStuds": 20, "passable": false, "climbable": false, "jumpable": false, "cue": "none", "teleportBack": false },
+    "boundary": { "kind": "collisionBarrier", "walkableMarginStuds": 12, "heightStuds": 20, "passable": false, "climbable": false, "jumpable": false, "opaque": false, "sightlineObstruction": "none", "cue": "none", "teleportBack": false },
     "surface": { "maxStepStuds": 2, "maxSlopeDegreesWherePatchesStand": 30, "climbSurfaces": 0, "ladders": 0, "seats": 0, "vehicles": 0, "water": 0, "speedModifyingSurfaces": 0, "teleportsWithinArea": 0 },
-    "collision": { "playerVsPlayer": false, "playerVsWorld": true, "collisionGroup": "Players", "pushable": false, "standOnOtherPlayers": false },
+    "collision": { "playerVsWorld": true, "playerVsPlayerOwner": "social.characterCollision" },
     "hazards": 0,
     "fallPenalties": 0,
     "lockouts": 0
@@ -105,40 +115,42 @@ surface to have needed one.
 
 ## Consequences for other work
 
-- **Presence-sufficiency work (currently Multiplayer and Social, wave 2):** presence is carried
-  entirely by sight and sound. A stranger cannot be bumped, blocked, pushed or stood on, so if the
-  cheapest warmth-adding touch turns out to be needed, **it may not be physical.** This also removes
-  the game's only griefing surface, which is worth having before the question is asked.
-- **Area-layout work (Meta and Content):** the walkable surface extends 12 studs past the patch
-  field on every side before the barrier, and every route from spawn to every patch and every marked
-  place must be walkable within a 2-stud step and a 30-degree slope. No layout may place a patch, a
-  Find or a marked place anywhere reachable only by jumping.
-- **Environment and set-dressing work (Art and Visuals):** the barrier is a bound, not an object.
-  What stands at the boundary is yours, inside two constraints: it must be at least 20 studs tall
-  and it may not read as a thing to climb.
+- **Presence-sufficiency work (`gameplay/social/02`):** the boundary is non-opaque, so criterion 3's
+  requirement that the line between two spawn points intersects zero instances with
+  `Transparency < 1` survives my barrier. Presence stays carried entirely by sight and sound, and a
+  stranger still cannot be bumped, blocked, pushed or stood on.
+- **Server-and-co-presence work (`gameplay/social/01`):** `social.characterCollision` is the sole
+  owner of player-to-player collision, under the group name `Characters`. Nothing in `traversal`
+  competes with it.
+- **Area-arrangement and plot-layout work:** the 12-stud walkable margin makes a plot's footprint
+  `area.size + 24` per side. That fits the shipped 160-stud pitch at depth 1, but at
+  `gameplay/core-loop/05`'s 236-stud depth-4 area it pushes the pitch past `social/02`'s S = 190
+  starting value toward its 300-stud ceiling, so **plot pitch has to decouple from area size by
+  depth 4 or co-presence legibility degrades.** Inherited here rather than discovered at build.
+- **Environment and set-dressing work (Art and Visuals):** the barrier is a bound, not an object. It
+  must be at least 20 studs tall, may not read as a thing to climb, and may not be opaque along the
+  inter-plot axis. Walls, terraces and built geometry are yours anywhere that does not cross that
+  sightline.
 - **Architecture and runtime work:** `Players.CharacterAutoLoads` and `RespawnDelaySeconds` stay
   yours. This sheet requires only that a lost character is playing again at the area spawn with zero
   loss; whether the respawn stays hand-rolled is your call.
-- **Tech and performance work:** one collision group for player characters, configured
-  non-colliding with itself, is the only collision-group requirement in the game. Patch
-  non-collision is already set by `art/objects/01` and is not restated here.
 
 ## Acceptance criteria
 
 1. `Humanoid.Health` is written by zero lines of game code, the place contains zero damage sources,
    and a character walking or jumping anywhere in the area for ten minutes never dies.
-2. Two characters standing in the same spot pass through each other, and neither can be pushed,
-   blocked or stood upon; both still collide with the ground and the boundary.
-3. Every patch, every Find and all four marked places in the area are reachable from the spawn point
-   without leaving the ground, and the barrier cannot be crossed by walking, jumping, or both.
+2. The straight line between any two occupied spawn points intersects zero boundary instances with
+   `Transparency < 1`, and the barrier still stops a character walking or jumping into it.
+3. Every patch and every Find in the area is reachable from the spawn point without leaving the
+   ground, and the barrier cannot be crossed by walking, jumping, or both.
 4. A character forced into death by a debug command is playable again at the area spawn with the
    same currency, upgrade levels, Finds and cleared patches it had, and no cue is emitted.
 
 ## Not decided here
 
 Area dimensions, walk speed and clear radius (`gameplay/meta/01` and sheet 01, both merged and
-shipped). Patch collision (`art/objects/01`). The verb list, the trigger contract and every input
-exclusion (sheet 02). How the player moves between areas at different depths, and whether that
-transition is a walk, a load or a teleport (Meta and Content). What the boundary and the ruin's
-built geometry are made of (Art and Visuals). The respawn delay's value and the character-loading
-path (architecture, `01-runtime`).
+shipped). Patch collision (`art/objects/01`). Player-to-player collision as a value, its group name
+and its collidability matrix (`gameplay/social/01`, which holds `social`). The verb list and every
+input exclusion (sheet 02). Plot pitch and area arrangement (area-arrangement work). How the player
+moves between areas at different depths (Meta and Content). What the boundary and the ruin's built
+geometry are made of (Art and Visuals). The respawn delay's value (architecture, `01-runtime`).

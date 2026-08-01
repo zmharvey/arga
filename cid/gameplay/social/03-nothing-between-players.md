@@ -35,7 +35,7 @@ currency readout needs to know that the objection is the ranking, not the readou
 | X7 | any replicated payload containing a player identifier other than the recipient's | the wire is the only route by which X3 and X6 could be rebuilt on the client; closing it makes them unbuildable rather than merely unbuilt | the client-bound state payload contains exactly one player's fields and no second `UserId` |
 | X8 | `DataStoreService:GetOrderedDataStore`, and any global, weekly, all-time or hall-of-fame ranking | priority 3, "leaderboards" | zero calls to `GetOrderedDataStore` under `game/src` |
 | X9 | any remote handler accepting a string that is later rendered on a different client — a plot sign, a name-your-ruin field, a worded emote | a player-authored string reaching another player is a filtering and moderation obligation; `social.chat` is off and must not be rebuilt through a side channel | zero remote handlers take a string parameter whose value reaches a second client's screen |
-| X10 | any cue caused by one player's input and perceptible to another, beyond the two `02` requires | the perceptible set is closed by `02`; anything added to it is an interaction verb | what a second client renders because of player A's input is exactly: A's character in motion, and A's own patch instances disappearing |
+| X10 | any cue, visual or audible, caused by one player's input and perceptible to another beyond the perceptible set `02` fixes | that set is closed by `02`; anything added to it is an interaction verb dressed as feedback | what a second client renders or plays because of player A's input is exactly two things: A's character in motion, and A's own patches clearing — the instance disappearing and the clear cue that accompanies it |
 | X11 | join or leave notices, toasts, sounds or on-screen strings naming another player | it needs the verb "be told about another player"; the payload is presence, not notification | zero strings rendered on any client contain another player's `Name` or `DisplayName` |
 | X12 | `ProximityPrompt` or `ClickDetector` parented into a character model | both are interaction verbs by definition, and input is movement only | zero `ProximityPrompt` or `ClickDetector` instances under any character model |
 | X13 | writes to another character's `Humanoid.Health`, calls to `Humanoid:TakeDamage` on a character that is not the actor's, and any force, `BodyMover` or `AssemblyLinearVelocity` applied to another character | there is no failure state, so health is not a game surface and pushing is not a move | zero writes to `Humanoid.Health`, `TakeDamage` or `AssemblyLinearVelocity` targeting a non-local character |
@@ -66,9 +66,11 @@ snapshot type must not have a field capable of holding a second player's identif
 
 **Persistence work.** X8 removes ordered data stores from the available storage kinds.
 
-**Character and animation work.** X10 bounds what any character-attached effect may be: it may
-be locomotion, and it may be the disappearance of that player's own patches. Anything a second
-client can see or hear because of the first player's input beyond those two fails.
+**Response-contract, SFX and VFX work.** X10 bounds what any character-attached cue may be, in
+every channel: locomotion, and the clearing of that player's own patches with the cue that
+accompanies it. A neighbour's clear may be seen and heard at range — that is `02` B3 working —
+but anything a second client sees or hears because of the first player's input beyond those two
+events fails.
 
 **Verification work.** Every row above is a grep or a runtime inspection, deliberately, because
 a prohibition list with no manifest block reaches a build only if someone checks it.
@@ -90,9 +92,10 @@ a prohibition list with no manifest block reaches a build only if someone checks
 
 Chat, voice, character collision, plot access, plot tenure, friend surfacing and the
 `maxPlayers` band — `01`, this domain, which holds the key. What must be perceptible between
-two players and at what separation — `02`, this domain. The nameplate and what a co-present
-stranger is — `theme/identity/03-co-present-stranger`, inherited. How a currency readout is
-laid out once `leaderstats` is unavailable — HUD and readout work. Codes, daily rewards,
-seasons and events — live-ops work; they are priority-3 excluded but are not things that pass
-between two players, so they are not this sheet's to enumerate. Whether the world contains a
-shared space at all — area-arrangement work.
+two players and at what separation — `02`, this domain. What the clearing cue actually sounds
+and looks like, and how it attenuates with distance — response-contract, SFX and VFX work. The
+nameplate and what a co-present stranger is — `theme/identity/03-co-present-stranger`,
+inherited. How a currency readout is laid out once `leaderstats` is unavailable — HUD and
+readout work. Codes, daily rewards, seasons and events — live-ops work; they are priority-3
+excluded but are not things that pass between two players, so they are not this sheet's to
+enumerate. Whether the world contains a shared space at all — area-arrangement work.

@@ -5,9 +5,10 @@
 ## Decision
 
 **Every verb in sheet 02 must be reachable on all three device classes, touch, keyboard-and-mouse
-and gamepad, through one code path with no per-device branch.** A build in which any verb's device
-set is smaller than all three does not ship. This sheet **carries no manifest block**: it constrains
-`input.verbs[].devices` from sheet 02 and supplies no key of its own.
+and gamepad, and no verb's only path may be an input one device class lacks.** Since sheet 02 gives
+the game exactly one bound input class, the whole of parity reduces to: **every pressable the game
+draws is tappable, clickable and gamepad-selectable.** This sheet **carries no manifest block**: it
+constrains `input.verbs[].devices` and `input.pressable` from sheet 02 and supplies no key of its own.
 
 ## Why
 
@@ -19,70 +20,74 @@ and it is a coverage failure rather than a design disagreement.
 
 **No requirement here rests on the 70/25/5 split.** Those percentages are `[brief: soft]` ←
 `[I assumed]`, `00-CORE.md`, and the wave-2 research pass states plainly that the ~70% mobile figure
-is not corroborated by anything it fetched. The requirement rests on the band, which is binding, and
-on cost: under sheet 02's answer full coverage is one occupancy test, so there is no percentage at
-which excluding a device class would pay.
+is not corroborated by anything it fetched. The requirement rests on the band, which is binding.
 
-**Gamepad is required despite ~5% console**, and the reason is recorded so nobody re-derives it: an
-occupancy trigger has no per-device branch to write, so including gamepad costs nothing. Had it cost
-anything, a figure the brief itself marks assumed would have been too weak to justify it.
+**Gamepad is required despite ~5% console**, and the reason is recorded so nobody re-derives it: a
+`GuiButton` is selectable on a gamepad for the cost of one property and one selection group, so
+including gamepad is close to free. Had it cost a second code path, a figure the brief itself marks
+assumed would have been too weak to justify it.
 
-**Parity is not a preference and it is not new scope.** "Three clearing upgrades" is already
-priority 1 `[brief: soft]`, `03-META.md`; this sheet adds no system, it states that the verb which
-buys them must be reachable by the audience already fixed, and turns that into five checks.
+**The checks are narrowed to what the game binds, and that narrowing is the point.** An earlier
+draft of this sheet asked for "zero pressables" and "every verb exercisable with the movement control
+alone" — checks a correct build fails, because the platform draws a jump button on touch and `look`
+needs a second finger there. Parity is a claim about the game's own surface; the platform's controls
+are already parity-complete and are not mine to audit.
+
+**Parity is not new scope.** "Three clearing upgrades" is already priority 1 `[brief: soft]`,
+`03-META.md`; this sheet adds no system, it states that the verb which buys them must be reachable
+by the audience already fixed, and turns that into five checks.
 
 ## The input class each verb requires
 
-Written for on-screen-layout work to satisfy without re-deciding anything. Every row's supply column
-is "nothing", which is the point: under sheet 02 no verb needs a control surface that the platform
-does not already draw.
-
-| verb | input class | what layout work must supply | what layout work must not do |
-|---|---|---|---|
-| `move` | continuous directional | nothing; the platform default movement control | occlude, replace, shrink or overlay the default movement control region |
-| `look` | continuous free-look | nothing; the platform default camera control | lock, clamp, auto-frame or shake the camera for any beat |
-| `jump` | discrete impulse | nothing; the platform default jump control | remove, re-purpose or re-label the default jump control |
-| `buy` | occupancy, no control surface | nothing | add a pressable that duplicates it, or gate it behind a screen |
-| `openIndex` | occupancy, no control surface | nothing; the panel closes when the character leaves | require a press to open or to dismiss it |
+| verb | input class | bound by | what layout work must supply | what layout work must not do |
+|---|---|---|---|---|
+| `move` | continuous directional | the platform | nothing | occlude, replace, shrink or overlay the default movement control region |
+| `look` | continuous free-look | the platform | nothing | lock, clamp, auto-frame or shake the camera for any beat |
+| `jump` | discrete impulse | the platform | nothing | remove, re-purpose or re-label the default jump control |
+| `buy` | discrete select | **the game** | three persistent pressables, each tappable, clickable and gamepad-selectable, reachable with no travel | require a hold, chord, drag, double-tap or keyboard key; hide them behind another screen; signal affordability by colour alone |
+| `openIndex` | discrete select | **the game** | one pressable, same three activations | make its screen dismissible only by a control a device class cannot reach |
 
 ## The five checks
 
 | # | check | passes when |
 |---|---|---|
-| P1 | key sweep | zero references to `Enum.KeyCode`, `Enum.UserInputType` or `ContextActionService:BindAction` anywhere in game client code |
-| P2 | device set | all 5 entries of `input.verbs[].devices` equal `["touch","keyboard","gamepad"]` |
-| P3 | one thumb | every verb is exercisable using the movement control alone; no verb requires two simultaneous inputs, a chord, a hold, or a second finger |
-| P4 | no branch | zero reads of `UserInputService.TouchEnabled`, `.KeyboardEnabled` or `.GamepadEnabled` in game code, because a branch is a second path that can rot |
-| P5 | pressable independence | the game is completable start to finish with zero pressables in the interface |
+| P1 | activation parity | each of the 4 game-drawn pressables is activatable by a touch tap, a mouse click, and a gamepad selection; a run with each input class alone completes a purchase |
+| P2 | device set | all 5 entries of `input.verbs[].devices` equal `["touch","keyboard","gamepad"]`, and exactly 2 have `boundByGame: true` |
+| P3 | no game-bound input beyond the pressable | no verb the game defines requires an input the game binds other than a single activation of one pressable: no chord, no hold, no drag, no double-tap, and no two simultaneous game-bound inputs |
+| P4 | no per-device verb path | zero reads of `UserInputService.TouchEnabled`, `.KeyboardEnabled` or `.GamepadEnabled` that change which verbs exist, which pressables are drawn, or how any verb adjudicates. A read that only sizes or positions an affordance passes |
+| P5 | reachability of the game's own surface | every game-drawn pressable is `Selectable`, sits in one navigable selection group, is no smaller than the platform's own jump button on that device, and intersects neither the platform's movement nor its jump control region |
 
 ## Consequences for other work
 
-- **On-screen control-layout work (currently UI/UX, Platform and Input):** you own the surface, and
-  under this ruling the surface for verbs is empty. Your obligation reduces to leaving the platform's
-  default control regions alone. `ui-forge`'s `hud-overlay` pattern states that nothing in it is
-  `PRESSABLE` by default `[research: ui-forge/src/compose/patterns/hud-overlay.mjs]`; that default is
-  **not a blocker here**, because no verb needs a pressable and the HUD stays a readout.
+- **On-screen control-layout work (currently UI/UX, Platform and Input):** you own four pressables
+  and P5 is your floor. The two regions you may not touch are the platform's movement and jump
+  controls, and the touch target you draw is measured against the platform's own jump button rather
+  than against a pixel count I would have invented.
+- **`ui-forge` pattern work:** `hud-overlay` states that nothing in it is `PRESSABLE` by default
+  `[research: ui-forge/src/compose/patterns/hud-overlay.mjs]`. Under sheet 02 that default now
+  blocks the game's only currency sink, so it is the one `ui-forge` change this wave requires. It is
+  a default to change, not a capability to add: the pattern is a persistent HUD already.
 - **Whoever maintains the repo's known-gap list:** the entry reading "no touch or gamepad purchase
-  path, closing it needs a `pressable` readout in `hud-overlay`" is answered by a world pad instead,
-  so it closes without a `ui-forge` change. That is a correction to the gap's stated cause, not a
-  claim about what `ui-forge` can build.
-- **Accessibility work:** the brief already claims movement-only input and one-handed play as
-  accessible by construction `[brief: soft]`, `04-PRESENTATION.md`. P3 is what makes that claim
-  checkable rather than asserted, and it now covers spending as well as clearing.
-- **Build and QA work:** parity is testable without a device farm. P1, P2 and P4 are static reads of
-  the source and the manifest; only P3 and P5 need a person, and both are one pass each.
+  path" is real and is closed by P1 through P5, not by a world pad. The same list's claim that
+  `ui-forge` has one pattern is stale; it exports two.
+- **Accessibility work:** the brief claims movement-only input and one-handed play as accessible by
+  construction `[brief: soft]`, `04-PRESENTATION.md`. That claim is now weaker by exactly one tap
+  per purchase, which P3 bounds: a purchase is a single activation with no hold and no chord, so it
+  stays inside one-handed play even though it is no longer inside movement alone.
+- **Build and QA work:** P2 through P5 are static reads of source and manifest; only P1 needs a
+  device, and it is three short runs.
 
 ## Acceptance criteria
 
 1. P1 through P5 all pass on the shipped build, and each is recorded as pass or fail by name.
 2. A player on a touch device with no keyboard and no gamepad attached can raise every upgrade axis
-   to its maximum level and open the collection index, using the movement control only.
-3. Game code contains zero per-device conditionals: no verb has two implementations.
+   to its maximum level and open the collection index.
+3. Game code contains zero device conditionals that change which verbs exist or how one adjudicates.
 
 ## Not decided here
 
-The verb list itself, its trigger contract and its preconditions (sheet 02, this domain). Anything
-about layout, position, size, art or the platform default control regions' geometry (on-screen
-control-layout work). What the collection index panel contains and how it is composed (UI/UX).
-Whether `RespawnDelaySeconds`, `CharacterAutoLoads` or any other engine default is set, and by whom
-(architecture, and sheet 06 for what the player's body may do).
+The verb list itself, its trigger contract and its preconditions (sheet 02, this domain). Where any
+pressable sits, its size in pixels, its label, its colour and its states (on-screen control-layout
+and HUD work). What the collection index panel contains (UI/UX). Whether `RespawnDelaySeconds`,
+`CharacterAutoLoads` or any other engine default is set, and by whom (architecture, and sheet 06 for
+what the player's body may do).

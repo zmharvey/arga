@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 57 unique source(s); 18 were
+Extracted from `cid`. 56 unique source(s); 18 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -24,7 +24,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 3: `gameplay/mechanics/06-traversal-affordances`, `gameplay/social/01-server-and-co-presence`, `gameplay/social/_lead`*
 
-- *G9, can one body block another.** No. `[cid: decided]` The binding social rule is "shared server, parallel progression, own areas, no interaction. Interaction: none mechanical" `[brief: soft]` ← `[you accepted: R6 Q2]`, `02-GAMEPLAY.md`, stated twice. A body that blocks another body is a mechanical interaction, and it is the only one the game affords: standing on a purchase pad, blocking a doorway, or parking on a Find mid-dwell are each achievable by a stranger who cannot do anything else. Player characters collide by default on Roblox, since "All BaseParts automatically belong to this…
+- *G9, can one body block another.** No. `[cid: decided]` The binding social rule is "shared server, parallel progression, own areas, no interaction. Interaction: none mechanical" `[brief: soft]` ← `[you accepted: R6 Q2]`, `02-GAMEPLAY.md`, stated twice. A body that blocks another body is a mechanical interaction, and it is the only one the game affords: blocking a route or parking on a Find mid-dwell are each achievable by a stranger who cannot do anything else. Player characters collide by default on Roblox, since "All BaseParts automatically belong to this default group unless assigned to…
 - Player characters collide by default; "All BaseParts automatically belong to this default group unless assigned to another group, meaning that they will collide with all other objects in the Default group", and all groups are configured to collide with each other. ``
 
 ## https://currently.att.yahoo.com/att/full-powerwash-simulator-2-mission-140000826.html
@@ -33,6 +33,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - In the closest shipping analogue of a completion-shaped lap, an early small job runs "30-45 minutes" and a later one "1-2 hours solo", across 38 jobs and "around 30-35 hours to complete every job", with partial progress persisting mid-job. `` `` (fetched in this domain's planning pass, not re-fetched here). Its *smallest* early lap is 1.5x this game's entire bound session, and it survives that only because its audience sits down for long desktop sessions. This game's derived depth-1 lap is 2.7 minutes. **The analogue confirms the shape and inverts the scale**, which is the second independent…
 - The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
+
+## https://robloxapi.github.io/ref/class/StarterPlayer.html
+
+*Cited by 3: `_digest`, `gameplay/social/02-presence-sufficiency`, `gameplay/social/_lead`*
+
+- *Identity work.** My test deliberately does not use the nameplate, so nothing here reopens `theme/identity/03-co-present-stranger`. But `StarterPlayer.NameDisplayDistance` defaults to **100** studs `` against a realised spawn separation of 160 today and 128 at best, so **a co-present stranger is nameless at rest either way.** If that ruling requires a readable nameplate, the display distance must rise above the realised separation — **identity's call, area arrangement's execution, not mine.**
+- `StarterPlayer.NameDisplayDistance` and `HealthDisplayDistance` default to **100** studs. ``
 
 ## https://www.roblox.com/games/113380129609386/Leaves-Incremental
 
@@ -89,13 +96,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - `ChatWindowConfiguration.Enabled` defaults to **`true`** — "Whether to show the default chat window. Set to `false` to hide." ``
 
-## https://robloxapi.github.io/ref/class/StarterPlayer.html
-
-*Cited by 2: `gameplay/social/02-presence-sufficiency`, `gameplay/social/_lead`*
-
-- *Identity work.** My test deliberately does not use the nameplate, so nothing here reopens `theme/identity/03-co-present-stranger`. But `StarterPlayer.NameDisplayDistance` defaults to **100** studs `` against a realised spawn separation of 160, so **a co-present stranger is currently nameless at rest.** If that ruling requires a readable nameplate, either the display distance must exceed the realised pitch or the pitch must fall below it — **that is identity's call and area arrangement's execution, not mine.**
-- `StarterPlayer.NameDisplayDistance` and `HealthDisplayDistance` default to **100** studs. ``
-
 ## https://www.roblox.com/games/129774084106862/Scrap-Incremental
 
 *Cited by 2: `theme/vocabulary/02-banned-words`, `theme/vocabulary/_lead`*
@@ -140,7 +140,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `gameplay/systems/05-the-find-ledger`*
 
-- **Scoping it per set is the same idea at the right width.** `` — "you won't see a duplicate until you own every card of that rarity", guaranteed independently per rarity; four sets of six is that shape. The same source keys exclusion on *ever-owned*, because disposal would otherwise be a re-roll. Nothing can leave this collection, so the two coincide today; saying `ever-found` forecloses the exploit before a refinement can open it.
+- **Scoping it per set is the same idea at the right width.** `` — "you won't see a duplicate until you own every card of that rarity", guaranteed independently per rarity; four sets of six is that shape. That source keys exclusion on *ever-owned*, because disposal would otherwise be a re-roll.
 
 ## https://carpet-cleaning-simulator.wiki/guides/how-to-play/
 
@@ -152,13 +152,13 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `gameplay/mechanics/02-verb-roster`*
 
-- 1. **The walk-into purchase pad is the defining purchase verb of the Roblox tycoon family, not a workaround.** It is an invisible trigger on a world part, filed under core mechanics as foundational to "every successful tycoon game on Roblox", with a world-space price readout and the cash check server-side ``, and a working script confirms the mechanism is `Touched` on a world part guarded by an affordability test ``. Because it triggers on walking it is input-agnostic by construction, so reading A is *cheaper* than reading B, not merely stricter. 2. **Reading B keeps a desktop-only spending…
+- *The documented press-verb alternative stays on the shelf.** A `ProximityPrompt` is directly tappable on a phone "regardless of the `ClickablePrompt` property's value" and auto-displays the right glyph per input type ``, but it is anchored to a world object and therefore carries the same travel cost as the pad.
 
 ## https://devforum.roblox.com/t/how-would-i-go-about-making-a-index-like-find-the-markers/1715824
 
 *Cited by 1: `gameplay/systems/05-the-find-ledger`*
 
-- **The record shape.** `` — the Roblox-native finite index is a per-item boolean with the UI derived from it, never stored separately. `Persistence.luau:124` already holds `found = {}` as `{[string]: boolean}` ``, recorded by my lead as unable to represent a repeat. It is, and under this draw rule that is **correct rather than defective**.
+- **The record shape.** `` — the Roblox-native finite index is a per-item boolean with the UI derived from it, never stored. `Persistence.luau:124` already holds `found = {}` as `{[string]: boolean}` ``. Under this pool that shape is **correct rather than defective**: it cannot express a duplicate, and no duplicate exists.
 
 ## https://devforum.roblox.com/t/jungle-ruins-looking-for-feedback-and-suggestions/1192396
 
@@ -169,7 +169,6 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `gameplay/mechanics/02-verb-roster`*
 
-- 1. **The walk-into purchase pad is the defining purchase verb of the Roblox tycoon family, not a workaround.** It is an invisible trigger on a world part, filed under core mechanics as foundational to "every successful tycoon game on Roblox", with a world-space price readout and the cash check server-side ``, and a working script confirms the mechanism is `Touched` on a world part guarded by an affordability test ``. Because it triggers on walking it is input-agnostic by construction, so reading A is *cheaper* than reading B, not merely stricter. 2. **Reading B keeps a desktop-only spending…
 
 ## https://dig-it-roblox.fandom.com/wiki/Collection
 
@@ -213,12 +212,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Fisch** (~4.5bn visits, ~90%, 1.2M+ peak CCU): the Bestiary is *"a detailed, in-game logbook that records the different types of fish and items fishers have caught"*, with per-page completion rewards and thresholds at 70% and 100%. `` ``
 
-## https://game8.co/games/Genshin-Impact/archives/301611
-
-*Cited by 1: `gameplay/systems/05-the-find-ledger`*
-
-- **The mechanism I did not need.** `` — a duplicate deepening the specific entry through a token bound to that one character, non-fungible by design. Correct if a pool must stay repeatable; unused here because there is no repeat to deepen. Recorded so the priority-2 "duplicate-handling refinement" has a shape waiting rather than a blank.
-
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/characters/appearance.md
 
 *Cited by 1: `theme/identity/_lead`*
@@ -241,7 +234,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `gameplay/systems/05-the-find-ledger`*
 
-- **The configuration I am avoiding has a name and a documented history.** `` — complete gacha, a set-completion reward laid over a random draw, makes the *last* member of each set the bottleneck, cites the coupon collector's problem as the governing maths, and in its paid form was declared illegal in Japan. Four sets of six with a permanent bonus on each completion is that configuration unless the draw is bounded. No monetary exposure here, but the same frustration, in the one system the brief calls the differentiator.
+- **The configuration I am avoiding has a name and a documented history.** `` — complete gacha, a set-completion reward laid over a random draw, makes the *last* member of each set the bottleneck, cites the coupon collector's problem, and in its paid form was declared illegal in Japan. Four sets of six with a bonus on each completion is that unless the pool is bounded.
 
 ## https://prospecting.miraheze.org/wiki/Quests
 
@@ -283,13 +276,12 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `gameplay/mechanics/02-verb-roster`*
 
-- 1. **The walk-into purchase pad is the defining purchase verb of the Roblox tycoon family, not a workaround.** It is an invisible trigger on a world part, filed under core mechanics as foundational to "every successful tycoon game on Roblox", with a world-space price readout and the cash check server-side ``, and a working script confirms the mechanism is `Touched` on a world part guarded by an affordability test ``. Because it triggers on walking it is input-agnostic by construction, so reading A is *cheaper* than reading B, not merely stricter. 2. **Reading B keeps a desktop-only spending…
 
 ## https://www.gamerefinery.com/the-complete-guide-to-mobile-game-gachas-in-2022/
 
 *Cited by 1: `gameplay/systems/05-the-find-ledger`*
 
-- **Draw-without-replacement is a shipped, named mechanic.** `` — the box gacha, where a prize is "permanently removed from the gacha prize pool", and the source states that no currency appears anywhere in the mechanism.
+- **Draw-without-replacement is a shipped, named mechanic.** `` — the box gacha, a prize "permanently removed from the gacha prize pool", no currency anywhere in the mechanism.
 
 ## https://www.nngroup.com/articles/glanceable-fonts/
 

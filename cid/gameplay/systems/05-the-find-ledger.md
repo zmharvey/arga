@@ -4,57 +4,60 @@
 
 ## Decision
 
-**Duplicates are removed, not resolved.** An area's Finds are drawn **without replacement** from
-its depth's set minus what that player has ever found, and the areas at one depth **partition**
-the set rather than each re-offering it — so `relicsPerArea × areasPerDepth == |set|` at every
-depth. The record is **one boolean per Find name and nothing else**. A repeat cannot occur;
-**the silent discard at `Clearing.luau:209` is NOT ratified** — the guard stays, the silence
-goes. **Nothing in this game is luck-shaped.**
+**Duplicates are removed, not resolved.** The areas at one depth **partition** that depth's set —
+`relicsPerArea × areasPerDepth == |set|` — so no name exists in two places and no draw can repeat
+one. **Placement is derived from the fixed layout seed and never from player state**, so a rejoin
+re-places nothing. The record is **one boolean per name in `collection`, and nothing else**.
+**The silent discard at `Clearing.luau:209` is NOT ratified** — the guard stays, the silence goes.
+**Nothing in this game is luck-shaped.**
 
 ## Why
 
 - **The constraint, aimed at this domain by name.** `02-GAMEPLAY.md`: "**Constraint on whoever
   designs systems — solve duplicates without adding a currency.**" Both escapes, a duplicate-find
-  currency and a discovery currency, were "offered and declined", and `HANDOFF.md` repeats it as
-  one of six pre-design facts. `[brief: soft]`, treated as firm. A draw that cannot repeat
-  satisfies it a fortiori: no duplicate exists, so nothing needs a sink.
+  currency and a discovery currency, were "offered and declined". `[brief: soft]`, treated as firm.
+  A pool that cannot repeat satisfies it a fortiori: no duplicate exists, so nothing needs a sink.
 - **Draw-without-replacement is a shipped, named mechanic.**
   `[research: https://www.gamerefinery.com/the-complete-guide-to-mobile-game-gachas-in-2022/]` —
-  the box gacha, where a prize is "permanently removed from the gacha prize pool", and the source
-  states that no currency appears anywhere in the mechanism.
+  the box gacha, a prize "permanently removed from the gacha prize pool", no currency anywhere in
+  the mechanism.
 - **Scoping it per set is the same idea at the right width.**
   `[research: https://blizzardwatch.com/2020/03/23/hearthstones-duplicate-protection-new-player-experience-completely-change-game/]`
   — "you won't see a duplicate until you own every card of that rarity", guaranteed independently
-  per rarity; four sets of six is that shape. The same source keys exclusion on *ever-owned*,
-  because disposal would otherwise be a re-roll. Nothing can leave this collection, so the two
-  coincide today; saying `ever-found` forecloses the exploit before a refinement can open it.
+  per rarity; four sets of six is that shape. That source keys exclusion on *ever-owned*, because
+  disposal would otherwise be a re-roll.
 - **The configuration I am avoiding has a name and a documented history.**
   `[research: https://machinations.io/articles/an-in-depth-look-at-gacha-boxes]` — complete gacha,
   a set-completion reward laid over a random draw, makes the *last* member of each set the
-  bottleneck, cites the coupon collector's problem as the governing maths, and in its paid form
-  was declared illegal in Japan. Four sets of six with a permanent bonus on each completion is
-  that configuration unless the draw is bounded. No monetary exposure here, but the same
-  frustration, in the one system the brief calls the differentiator.
-- **The partition is what actually closes the hole.** `collection`'s merge check permits
-  over-supply (`areasPerDepth × relicsPerArea >= |set|`), and over-supply is what manufactures the
-  repeat: at `areasPerDepth = 2` with `relicsPerArea = 6`, the second area either re-offers six
-  names the player has or buries nothing. I tighten it to equality. **At today's values (6 × 1 =
-  6) the rule is a no-op**, which is what makes it safe to state now rather than after
-  content-structure work moves `areasPerDepth`.
+  bottleneck, cites the coupon collector's problem, and in its paid form was declared illegal in
+  Japan. Four sets of six with a bonus on each completion is that unless the pool is bounded.
+- **The partition is what closes the hole.** `collection`'s merge check permits over-supply
+  (`areasPerDepth × relicsPerArea >= |set|`), and over-supply manufactures the repeat: at
+  `areasPerDepth = 2` with `relicsPerArea = 6`, the second area either re-offers six names the
+  player has or buries nothing. I tighten it to equality. **At today's values (6 × 1 = 6) the rule
+  is a no-op**, which is what makes it safe to state before content work moves `areasPerDepth`.
+- **Placement is the seed's, never the player's — the correction R2 forced, and a simplification.**
+  `Layout.build()` takes no player state and resolves everything from one fixed seed, and
+  `Plots.luau:366` calls it on every join *before* applying `state.cleared`
+  `[research: game/src/server/Plots.luau]`. My first version told layout to draw from the set minus
+  the player's found names; on a mid-area rejoin that re-places the outstanding Finds over all
+  patches, drops some onto cleared ones, and makes the set uncompletable. **The partition already
+  guarantees no name repeats, so the found set has no work to do in placement.** The seed picks the
+  slots, the slice fills them in order, and an unfound Find's slot is never a cleared patch because
+  clearing a patch is what reveals it. `social/01`'s rejoin-stability requirement then holds
+  exactly rather than approximately.
 - **The record shape.**
   `[research: https://devforum.roblox.com/t/how-would-i-go-about-making-a-index-like-find-the-markers/1715824]`
-  — the Roblox-native finite index is a per-item boolean with the UI derived from it, never stored
-  separately. `Persistence.luau:124` already holds `found = {}` as `{[string]: boolean}`
-  `[research: game/src/server/Persistence.luau]`, recorded by my lead as unable to represent a
-  repeat. It is, and under this draw rule that is **correct rather than defective**.
-- **The mechanism I did not need.**
-  `[research: https://game8.co/games/Genshin-Impact/archives/301611]` — a duplicate deepening the
-  specific entry through a token bound to that one character, non-fungible by design. Correct if a
-  pool must stay repeatable; unused here because there is no repeat to deepen. Recorded so the
-  priority-2 "duplicate-handling refinement" has a shape waiting rather than a blank.
+  — the Roblox-native finite index is a per-item boolean with the UI derived from it, never stored.
+  `Persistence.luau:124` already holds `found = {}` as `{[string]: boolean}`
+  `[research: game/src/server/Persistence.luau]`. Under this pool that shape is **correct rather
+  than defective**: it cannot express a duplicate, and no duplicate exists.
+- A with-replacement pool would instead need a per-item, non-fungible deepening mechanism rather
+  than any conversion. That shape is in the research pack and is deliberately not described here:
+  it is the priority-2 refinement, and this design ships without it.
 - `[research owed: the index or bestiary page of a shipping Roblox game with a finite roster and a
   stated repeat rule — Fisch's fish index is the named candidate]`. The pass states plainly that no
-  such Roblox game was reached; I do not present the four precedents above as Roblox-native.
+  such Roblox game was reached; I do not present the precedents above as Roblox-native.
 
 ```manifest
 {
@@ -65,24 +68,28 @@ goes. **Nothing in this game is luck-shaped.**
       "scope": "per player, per depth",
       "source": "collection.sets[depth].relics",
       "replacement": "without",
-      "exclusionKey": "ever-found, not currently-held",
       "areasPartitionTheSet": true,
       "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
       "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
-      "orderWithinArea": "the area's slice is shuffled; which patch hides which Find is uniform over patches",
+      "placementIsPlayerIndependent": true,
+      "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
+      "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
+      "stableAcrossRejoin": true,
+      "exclusionKey": "ever-found; it governs what a slot yields, never where a slot is",
+      "spatialDistribution": "content-structure work's, not decided here",
       "tierWeighting": "none, per the rarity key",
-      "guaranteedException": "onboarding's first Find is placed, not drawn, and consumes the first slot of depth 1's slice"
+      "guaranteedException": "onboarding's first Find sits on the patch nearest the plot origin, from the same seed, and consumes the first slot of depth 1's slice"
     },
     "record": {
       "keyedBy": "the Find's name, from collection.sets[].relics[].name",
-      "entries": 24,
+      "entries": "sum(collection.sets[].relics.length)",
       "fields": [
         { "name": "found", "type": "boolean", "default": false, "persisted": true, "writtenBy": "server, at the instant the hiding patch clears", "clearedBy": "nothing, ever" }
       ],
       "derived": [
         "foundCount = the number of true entries",
         "setComplete(setId) = every name in that set is true",
-        "collectionComplete = all 24 are true",
+        "collectionComplete = every name in collection is true",
         "newThisSession = compared against a snapshot taken at join, held in memory, never saved"
       ],
       "forbiddenFields": [
@@ -90,23 +97,23 @@ goes. **Nothing in this game is luck-shaped.**
         "condition", "quality", "variant", "restoredLevel", "favourite",
         "seen", "isNew", "equipped", "sortIndex", "tradeable"
       ],
-      "growth": "fixed at the roster size; the record never grows with play"
+      "growth": "one boolean per name in collection, and nothing else; the record never grows with play"
     },
     "repeat": {
       "possible": false,
-      "cause": "only a layout that places an already-found name, which is a build defect and not a game state",
+      "cause": "only a layout that assigns a name outside its area's slice, which is a build defect and not a game state",
       "runtimeBehaviour": "the patch hides nothing, the server logs a warning naming the Find and the patch index, the reveal channel does not fire",
       "silentDiscardRatified": false,
-      "playerFacing": "nothing: no message, no cue, no consolation, no partial credit, no pity counter"
+      "playerFacing": "nothing, and no player can reach this branch; it is a defect path, not the silent duplicate case core-loop/03 forbids"
     },
     "luckShaped": false,
-    "luckShapedDetail": "the pool is bounded and the partition is fixed, so the SET of Finds a depth yields is fully determined. There is no drop rate, so there is no rate for a multiplier to act on.",
+    "luckShapedDetail": "the partition is fixed and placement is seed-derived, so the SET of Finds a depth yields is fully determined. There is no drop rate, so there is no rate for a multiplier to act on.",
     "theOnlyRandomQuantities": [
-      "the order in which a depth's slice is assigned to its areas",
-      "which patch inside an area hides each Find"
+      "which patch indices the seed picks to carry a slice",
+      "the order in which a depth's slices are assigned to its areas"
     ],
     "sellableLuck": null,
-    "persistenceRequirement": "24 booleans and nothing else; this is the one part of save data bounded by design rather than by collapse"
+    "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
   }
 }
 ```
@@ -114,20 +121,23 @@ goes. **Nothing in this game is luck-shaped.**
 ## Consequences for other work
 
 - **Content-structure work (currently Meta & Content) inherits a hard equality.** Raising
-  `areasPerDepth` above 1 now requires lowering `relicsPerArea` to match, so a depth's six Finds
-  spread across its areas rather than repeat into each. What that buys: every area at every depth
-  buries a full quota of Finds the player lacks, so no session is spent in an area with nothing new
-  in it — the brief's highest-risk objective protected structurally rather than by tuning.
-- **The clearing path must change.** `Clearing.luau:209` reads `if relic ~= nil and not
-  state.found[relic]` and drops a repeat with no payout and no event. The condition is right and
-  stays. The silence is not: reaching that branch means the draw is broken, so it must warn.
-- **The layout routine must change.** `Layout.luau:130-153` places `relicNames[1..relicTarget]`
-  unconditionally; it must draw from the depth's set minus the player's found names. At current
-  values both produce the same result, and they diverge the moment a player re-enters a depth.
-- **Persistence work** gets a bounded answer to the thing `OPEN.md §2` flags as growing: the
-  collection record is 24 booleans forever. Per-area cleared state is still theirs.
+  `areasPerDepth` requires lowering `relicsPerArea` to match, so a depth's set spreads across its
+  areas rather than repeating into each. What that buys: every area at every depth buries a full
+  quota of Finds the player lacks, so no session is spent in an area with nothing new in it — the
+  brief's highest-risk objective protected structurally rather than by tuning.
+- **The layout routine changes, but not the way my first version said.** `Layout.luau:130-153`
+  places set one unconditionally; it must place *the area's slice*, which at `areasPerDepth = 1`
+  is set one and is identical today. It must **not** take the player's found set as an input.
+- **`core-loop/03` required that any duplicate answer "must also produce an audible event, or
+  contact placement has a silent case in it".** This satisfies it by removing the case: no
+  reachable duplicate exists, so there is no silent clear to sound. `Clearing.luau:209`'s guard
+  stays and must warn to the server, because reaching it means the build is wrong, not the player.
+- **Persistence work** gets a bounded answer to the thing `OPEN.md §2` flags as growing, and
+  `social/01`'s rejoin-stability requirement is satisfied by placement being seed-derived.
 - **Offer-ladder work (currently Monetization) is unblocked with a no.** There is no discovery
-  rate, so a relic-luck multiplier has no quantity to move. Do not price one.
+  rate, so a relic-luck multiplier has no quantity to move. The one quantity still random is how
+  early in an area a Find surfaces; **my recommendation is not to build a SKU on it**, because
+  revenue is a stated non-goal.
 - **Feedback-UI and reveal-cue work** never need a duplicate state: no "already found" toast, no
   slot that fills twice, no consolation cue.
 
@@ -135,36 +145,43 @@ goes. **Nothing in this game is luck-shaped.**
 
 `02-GAMEPLAY.md` states as a known consequence that a 24-object roster with depth-tiered sets
 "**guarantees repeat finds**" `[brief: soft]` ← `[you accepted: R5 Q3 → R4 Q3]`. **I overrule the
-premise, not the constraint:** that guarantee holds only for a with-replacement draw, and nothing
-in the brief requires one. The constraint is satisfied more strongly than it asked.
+premise, not the constraint:** that holds only for a with-replacement pool, and nothing requires one.
+
+`core-loop/04` (stage 1, approved) recommends dropping `relicsPerArea` and raising `areasPerDepth`
+to about 15 so the collection outlasts one session, on the stated premise that "duplicates are
+already guaranteed by the brief". **My invariant forecloses that, and I name it rather than let
+stage 3 hit it as a wall.** Under equality a 6-member set permits `areasPerDepth ∈ {1, 2, 3, 6}`,
+capping the collection at 24 laps rather than the ~59 modelled. That still satisfies
+`core-loop/04`'s own criterion — 24 laps at its 164 s target is far past a floor session — and
+`core-loop/05` argues the opposite way from mine, that at ~15 areas per depth the ladder maxes
+inside depth 1 and "deeper areas are larger" becomes false. My cap lands between the two. The
+alternative I decline is `>=` with disjoint slices, which buys laps by leaving areas that bury
+nothing, and an area with no Find in it is exactly where the session objective silently fails.
 
 `03-META.md` lists "relic luck" among allowed paid multipliers `[brief: soft]` while
 `02-GAMEPLAY.md` declines it as an earned axis. I resolve it in favour of `02-GAMEPLAY.md`: after
 this decision that entry names a quantity with no referent.
 
-## Flagged to the developer
-
-If the offer ladder wants a luck-shaped SKU, the one quantity still random is **how early in an
-area a Find surfaces** — legal, because it cannot change *which* Finds a player gets, so completion
-stays unbuyable. **My recommendation is not to build it**: revenue is a stated non-goal.
-
 ## Acceptance criteria
 
-1. A saved player record contains at most 24 collection entries, every one a boolean, and no field
-   named in `discovery.record.forbiddenFields`.
-2. Clear every area at every depth for one player: no Find name is placed on a patch twice, and
-   `foundCount` reaches 24 without the repeat branch ever being entered.
-3. `collection.relicsPerArea × collection.areasPerDepth` equals the length of each depth's set,
+1. A saved record contains exactly one boolean per name in `collection` and no field named in
+   `discovery.record.forbiddenFields`.
+2. `collection.relicsPerArea × collection.areasPerDepth` equals the length of each depth's set,
    checked at merge; a manifest where it does not is rejected.
-4. Force a layout to place an already-found name: the server logs a warning naming the Find and the
-   patch index, the reveal channel does not fire, and the client shows and plays nothing.
+3. Clear every area at every depth for one player: no name is placed on a patch twice, and
+   `foundCount` reaches `sum(collection.sets[].relics.length)` without the repeat branch entering.
+4. Clear 60 of 140 patches, find 3 of 6, rejoin: every one of the 3 outstanding Finds sits on a
+   patch `state.cleared` does not mark, and on the same patch index it sat on before the rejoin.
+5. Force a layout to assign a name outside its area's slice: the server logs a warning naming the
+   Find and the patch index, the reveal channel does not fire, and the client shows nothing.
 
 ## Not decided here
 
 How many areas exist at each depth, how many Finds each buries, which Finds are in which set, and
-their names (`collection`, content-structure work — currently Meta & Content). The per-depth
-discovery rates and whether burial is spatially spread (content-structure work, then Balance &
-Tuning for the figures). When a reveal fires relative to the clear
-(`gameplay/core-loop/03-reveal-placement`: on contact, per patch). What a reveal looks and sounds
-like (Art — VFX; Audio — Stingers). The Luau type of the record and how it reaches a DataStore
-(persistence work). Whether a Find carries a rarity (`03-rarity-ladders`, same domain — it does not).
+their names (`collection`, content-structure work). Per-depth discovery rates and whether burial is
+spatially uniform or spread (content-structure work, then Balance & Tuning). When a reveal fires
+relative to the clear (`gameplay/core-loop/03-reveal-placement`: on contact, per patch). What a
+reveal looks and sounds like (Art — VFX; Audio — Stingers). The Luau type of the record and how it
+reaches a DataStore (persistence work). Whether the guaranteed first patch survives
+`mechanics/02`'s keep-clear disc (onboarding and area-layout work; I depend on it, I do not decide
+it). Whether a Find carries a rarity (`03-rarity-ladders`, same domain — it does not).
