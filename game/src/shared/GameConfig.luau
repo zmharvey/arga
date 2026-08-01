@@ -178,147 +178,127 @@ GameConfig.Depths = {
 		areaCount = 8,
 		sizingRule = "footprint(k) = floorToChunk( min(LAP_TARGET * tau(k), LAP_CEILING * tauTol(k)) / ROUTE_SLACK ), tau(k) = 2*(baseClearRadius + radiusLevel*perLevel)*(baseWalkSpeed + speedLevel*perLevel) at arrival",
 		footprintCeilingStuds2 = 73216,
-		unlockRule = "the area before it in this list is complete; nothing else conditions any area or any depth",
+		unlockRule = "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
+		relicSliceAssignment = "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
+		purchaserFloorRule = "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+		valueOnlyPurchaserThreshold = 7,
 		areas = {
 			{
 				ordinal = 1,
 				depth = 1,
 				setId = "terrace",
-				relicSlice = {
-					1,
-					3,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "East Terrace",
 				footprintStuds2 = 14400,
 				chunkCount = 4,
 				patchCount = 140,
 				minSpacing = 6,
 				unlock = "none",
+				maxRadiusProduct = nil,
 			},
 			{
 				ordinal = 2,
 				depth = 1,
 				setId = "terrace",
-				relicSlice = {
-					4,
-					6,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "West Terrace",
 				footprintStuds2 = 25200,
 				chunkCount = 7,
 				patchCount = 245,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 1.27,
 			},
 			{
 				ordinal = 3,
 				depth = 2,
 				setId = "cistern",
-				relicSlice = {
-					1,
-					3,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "East Cistern",
 				footprintStuds2 = 39600,
 				chunkCount = 11,
 				patchCount = 407,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 1.44,
 			},
 			{
 				ordinal = 4,
 				depth = 2,
 				setId = "cistern",
-				relicSlice = {
-					4,
-					6,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "West Cistern",
 				footprintStuds2 = 50400,
 				chunkCount = 14,
 				patchCount = 518,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 1.84,
 			},
 			{
 				ordinal = 5,
 				depth = 3,
 				setId = "vault",
-				relicSlice = {
-					1,
-					3,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "East Vault",
 				footprintStuds2 = 57600,
 				chunkCount = 16,
 				patchCount = 624,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 2.1,
 			},
 			{
 				ordinal = 6,
 				depth = 3,
 				setId = "vault",
-				relicSlice = {
-					4,
-					6,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "West Vault",
 				footprintStuds2 = 57600,
 				chunkCount = 16,
 				patchCount = 624,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 2.1,
 			},
 			{
 				ordinal = 7,
 				depth = 4,
 				setId = "spire",
-				relicSlice = {
-					1,
-					3,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "East Spire",
 				footprintStuds2 = 57600,
 				chunkCount = 16,
 				patchCount = 640,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 2.1,
 			},
 			{
 				ordinal = 8,
 				depth = 4,
 				setId = "spire",
-				relicSlice = {
-					4,
-					6,
-				},
+				relicSliceIndex = "seeded(layoutSeed, depth)",
 				label = "West Spire",
 				footprintStuds2 = 57600,
 				chunkCount = 16,
 				patchCount = 640,
 				minSpacing = 6,
 				unlock = "previousAreaComplete",
+				maxRadiusProduct = 2.1,
 			},
 		},
-		requestedRevisionToCollection = {
-			relicsPerArea = 3,
-			areasPerDepth = 2,
-			sheet = "cid/gameplay/meta/02-the-collection.md",
-			reason = "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names",
-		},
-		invariants = {
-			"areas[0].footprintStuds2 == area.size ^ 2 and areas[0].patchCount == area.patchCount and areas[0].minSpacing == area.minSpacing",
-			"count of areas at each depth == collection.areasPerDepth; this key does not carry that number",
-			"collection.relicsPerArea * collection.areasPerDepth == the size of every set",
-			"every relicSlice spans exactly collection.relicsPerArea names and the slices at one depth partition that set with no overlap and no gap",
-			"footprintStuds2 is a whole multiple of layout.chunk.footprintStuds2 and equals chunkCount times it",
-			"patchCount == chunkCount * layout.patchesPerChunkByDepth[depth]",
-			"patchCount / footprintStuds2 is non-decreasing in ordinal and strictly increases at every depth step",
-			"minSpacing > movement.baseClearRadius",
-			"footprintStuds2 <= footprintCeilingStuds2 for every row",
-			"lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
-			"patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
+		requestedRevisions = {
+			{
+				sheet = "cid/gameplay/meta/02-the-collection.md",
+				change = "relicsPerArea 6 -> 3, areasPerDepth 1 -> 2",
+				reason = "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names",
+			},
+			{
+				sheet = "cid/theme/setting/04-permanence-and-passage.md",
+				change = "strike W5; keep W1-W4 and W6",
+				reason = "the inward opening is passable only when the part is finished; this sheet and meta/06 take the strike that sheet itself names",
+			},
 		},
 	}
 
@@ -464,15 +444,6 @@ GameConfig.Economy = {
 			ladderLengthBand = "that requirement is a FLOOR and core-loop/01's 90-second purchase-gap ceiling is a CEILING on the same curve. Where they conflict, the resolution is more levels at smaller steps, never a shorter ladder: a ladder that ends before the collection does leaves the only sink dead mid-game.",
 			unownedConsequence = "what the game is once the ladder and the collection are both finished belongs to content-structure work; this key states only that no currency sink appears there",
 		},
-		forbidden = {
-			"a second currency under any name, including a token, a mark, a point or a fragment",
-			"a Robux-to-currency exchange rate, bundle or starter pack",
-			"an offline, welcome-back, daily, streak or code grant",
-			"a currency price on anything that is not an upgrade level",
-			"a currency cost charged to enter, re-enter or leave an area",
-			"a client-authored or client-trusted award of any size",
-			"a payout that varies by anything other than tier and the value modifier",
-		},
 	}
 
 -- From gameplay/meta/07-after-the-last-find.md.
@@ -480,7 +451,7 @@ GameConfig.Endgame = {
 		terminalCondition = "the player's found count reaches the total number of names in collection",
 		reachedAt = {
 			areaOrdinal = 8,
-			event = "the reveal on the last patch of West Spire that carries a Find",
+			event = "the reveal on the last patch of the eighth bay that carries a Find",
 		},
 		gameEnds = false,
 		collectionEnds = true,
@@ -505,8 +476,10 @@ GameConfig.Endgame = {
 			chunkCount = 16,
 			patchCount = 640,
 			minSpacing = 6,
-			relicSlice = {},
+			relicSliceIndex = "none",
+			buriesFinds = 0,
 			unlock = "previousAreaComplete",
+			bayLengthStuds = 480,
 			drawsFrom = "the depth-4 chunk family, under layout's R1 to R4",
 		},
 		predicateScopeChange = {
@@ -532,28 +505,6 @@ GameConfig.Endgame = {
 		persistence = {
 			postTerminalAreasStoredAs = "one integer count, never one boolean per area",
 			reason = "an unlimited run of identical unnumbered bays must not turn world state into unbounded save data",
-		},
-		forbidden = {
-			"rebirth",
-			"prestige",
-			"offlineAccrual",
-			"dailyReward",
-			"seasonPass",
-			"seasonalEvent",
-			"leaderboard",
-			"trading",
-			"redeemCode",
-			"secondCollection",
-			"completionPercent",
-			"badgeLadder",
-			"secondCurrency",
-		},
-		invariants = {
-			"survivingPayoffKinds and extinctPayoffKinds partition core-loop/02's five kinds with no overlap",
-			"postTerminalArea.relicSlice is empty and no post-terminal area buries any name",
-			"postTerminalArea's footprint, chunkCount and patchCount equal depths.areas[7]'s",
-			"no entry in forbidden appears as an identifier anywhere in game/src",
-			"nothing in this key names a reward, a grant, a threshold or a recurrence",
 		},
 	}
 
@@ -988,32 +939,27 @@ GameConfig.Layout = {
 		composition = "an area of N chunks is an ordered run of N variants drawn without replacement from its depth family's 16, seeded by (layoutSeed, areaOrdinal) and by nothing else",
 		anchorSource = "authored per chunk; until authoring exists, generated once from hash(layoutSeed, chunkId) and frozen, which is the same data by a cheaper route",
 		findPlacement = {
-			rule = "split the chunk run into collection.relicsPerArea contiguous groups of as-equal-as-possible length; bury exactly one find in each; group g carries depths.areas[k].relicSlice[0] + g - 1",
+			rule = "split the area's patch run into collection.relicsPerArea contiguous groups and bury exactly one find in each; group g carries the g-th name of the area's resolved slice, per depths.relicSliceAssignment",
+			groupCutBy = {
+				areaOrdinal1 = "patch ordinal in spawn-distance order, at firstSession.placement.secondFindOrdinalMin and secondFindOrdinalMax",
+				allOtherAreas = "chunk, into as-equal-as-possible contiguous runs",
+			},
 			withinGroup = "one patch index drawn from the seed over that group's indices",
 			onboardingOverride = {
 				areaOrdinal = 1,
 				group = 1,
-				patch = "nearest the plot origin",
+				patch = "nearest the plot spawn point",
+				appliesExactlyOnce = true,
 			},
 			mayReadPatchTier = false,
 			mayReadPlayerState = false,
 		},
-		spawnAdjacency = {
-			minStuds = "movement.baseClearRadius",
-			maxStuds = "movement.baseClearRadius + minSpacing",
-		},
+		spawnAdjacencyOwnedBy = "onboarding, via firstSession.placement.spawnToNearestPatchMaxStuds and firstSession.armDistanceStuds; this key states no interval of its own",
 		repetitionRules = {
 			"R1",
 			"R2",
 			"R3",
 			"R4",
-		},
-		invariants = {
-			"depths.areas[k].chunkCount * chunk.footprintStuds2 == depths.areas[k].footprintStuds2",
-			"depths.areas[k].chunkCount * families[depth].patchesPerChunk == depths.areas[k].patchCount",
-			"chunksPerFamily * orientations >= max chunkCount over all areas",
-			"patchesPerChunk is strictly increasing in depth",
-			"no two anchors in one chunk are closer than depths.areas[k].minSpacing",
 		},
 	}
 
@@ -1133,19 +1079,6 @@ GameConfig.Modifiers = {
 		factorFloor = 1,
 		clampApplication = "once, after every source has been applied; never per source",
 		singleDefinition = "effective(axis) has exactly one implementation and every consumer calls it",
-		forbidden = {
-			"a factor below 1, in any source",
-			"an additive bonus expressed as a percentage or a flat amount",
-			"an axis id that is not an upgrades[].id",
-			"a source that targets an axis outside the three",
-			"a source that grants currency, a Find, an area, a cosmetic or a second modifier",
-			"a modifier that expires, decays, resets, is timed or is spent",
-			"a purchase that raises an axis past its ceiling rule",
-			"a set bonus written into save data",
-			"a purchase written into save data",
-			"the value multiplier applied both at the faucet formula and inside the award function",
-			"a clamp applied between two sources",
-		},
 	}
 
 -- From gameplay/meta/06-plot-arrangement.md.
@@ -1154,7 +1087,9 @@ GameConfig.Plots = {
 		laneAxis = "+Z",
 		laneWidthStuds = 120,
 		pitchStuds = 122,
-		pitchRule = "laneWidthStuds + the inter-plot boundary's thickness, which traversal owns; pitchStuds must never exceed social.maxCoPresenceSeparationStuds, so that thickness is capped at 8",
+		assumedBoundaryThicknessStuds = 2,
+		maxBoundaryThicknessStuds = 8,
+		pitchRule = "laneWidthStuds + the inter-plot boundary's thickness, which traversal owns; pitchStuds must never exceed social.maxCoPresenceSeparationStuds.value, which caps that thickness at 8",
 		slotOrigin = "(area.originXZ[0] + (slot - 1) * pitchStuds, 0, area.originXZ[1])",
 		slotClaiming = "lowestFreeIndex",
 		slotsAreContiguousWhileOccupied = true,
@@ -1163,6 +1098,11 @@ GameConfig.Plots = {
 				0,
 				0,
 				8,
+			},
+			inwardOffsetStatus = "playtest unknown",
+			inwardOffsetTestRange = {
+				4,
+				16,
 			},
 			lookVector = {
 				slot1 = {
@@ -1178,6 +1118,14 @@ GameConfig.Plots = {
 			},
 			neverFacesLaneAxis = true,
 			atPlotCentre = false,
+		},
+		coPresence = {
+			scope = "spawnMomentOnly",
+			longitudinalBudgetStuds = 38.7,
+			derivation = "sqrt(S.value^2 - pitchStuds^2)",
+			satisfiesSocial02CriterionOne = true,
+			satisfiesSocial02CriterionTwoBeyondStuds = false,
+			unclosedRequirementOwnedBy = "gameplay/social/02",
 		},
 		bayLengthRule = "depths.areas[k].footprintStuds2 / laneWidthStuds",
 		bays = {
@@ -1237,6 +1185,9 @@ GameConfig.Plots = {
 			outwardOpeningOfBay1 = "the works' edge, per theme/setting/04",
 			studsBetweenParts = 0,
 			alwaysOpen = true,
+			barrierInOpening = false,
+			gatedUntilPreviousBayComplete = true,
+			gateMechanism = "the ground beyond does not exist yet; the built lane's inward edge is bounded by the same plot boundary that bounds its two long sides, and no barrier is ever placed in an opening",
 		},
 		liveGeometry = {
 			patchInstancesExistIn = "the live bay only",
@@ -1245,81 +1196,56 @@ GameConfig.Plots = {
 			bayBuiltAt = "the instant the previous bay's last patch clears",
 			torndownBeyond = "bays more than two outward of the live one are destroyed and rebuilt bare on re-entry",
 		},
-		invariants = {
-			"pitchStuds <= social.maxCoPresenceSeparationStuds",
-			"the realised distance between the spawns of two consecutive occupied slots equals pitchStuds at every bay ordinal",
-			"bays[k].lengthStuds * laneWidthStuds == depths.areas[k].footprintStuds2",
-			"bays[k].zEnd == bays[k+1].zStart",
-			"bays[0].lengthStuds == laneWidthStuds == area.size",
-			"the spawn's plot-local Z is not the midpoint of bays[0].zStart and the last bay's zEnd",
-			"the spawn's LookVector is parallel to rowAxis and never to laneAxis",
+		requestedRevisions = {
+			{
+				sheet = "cid/gameplay/mechanics/06-traversal-affordances.md",
+				change = "traversal.walkableMarginStuds 12 -> 0",
+				reason = "that sheet offers the 12 studs back if the arrangement cannot otherwise be made to work; at 12 the pitch is 144 and breaches S",
+			},
+			{
+				sheet = "cid/theme/setting/04-permanence-and-passage.md",
+				change = "strike W5; keep W1-W4 and W6",
+				reason = "passage is conditioned on the previous bay being complete; the opening itself is unchanged",
+			},
 		},
 	}
 
 -- From gameplay/monetization/01-the-offer-ladder.md.
 GameConfig.Products = {
-		storeExists = true,
+		storeExists = false,
+		purchaseSurface = "the Roblox experience page. The game draws no store, no shop screen, no offer row and no purchase control of any kind (coordinator ruling R-4).",
+		itemCount = 1,
 		kindsUsed = {
 			"gamePass",
 		},
 		devProductCount = 0,
 		axesSold = {
-			"value",
 			"radius",
 		},
 		axesNotSold = {
+			"value",
 			"speed",
 		},
-		rungs = {
+		rungVocabulary = {
 			"impulse",
 			"mid",
 			"premium",
 		},
-		ownershipCheck = "UserOwnsGamePassAsync(userId, gamePassId)",
+		rungsUsed = {
+			"premium",
+		},
+		ownershipCheck = "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted",
 		prompt = {
-			method = "PromptGamePassPurchase",
-			calledOnlyFrom = "explicit player activation of the store control",
-			clientCallAllowed = "unverified — the MarketplaceService page as fetched does not state the security context",
+			method = nil,
+			promptGamePassPurchaseCalls = 0,
+			reason = "R-4 removed the in-game store. There is no verb, pressable or screen that could trigger a prompt, and none is reserved. If a purchase surface is ever built, this field is what must be revised first.",
+		},
+		externalPrerequisite = {
+			what = "products.items[].gamePassId must be filled with the id of a pass created on the Roblox creator site and priced to match priceRobux",
+			owner = "the developer, or whoever holds the Roblox creator account",
+			blocking = "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification.",
 		},
 		items = {
-			{
-				id = "yield",
-				label = "Yield",
-				kind = "gamePass",
-				gamePassId = nil,
-				axis = "value",
-				factor = 1.5,
-				priceRobux = 49,
-				priceBand = "impulse 25-75",
-				priceTestRange = {
-					25,
-					99,
-				},
-				rung = "impulse",
-				repeatable = false,
-				stacksWithSelf = false,
-				persisted = false,
-				deliverable = "multiplicative factor on the value axis; no other effect",
-			},
-			{
-				id = "measure",
-				label = "Measure",
-				kind = "gamePass",
-				gamePassId = nil,
-				axis = "value",
-				factor = 2,
-				priceRobux = 199,
-				priceBand = "mid 99-249",
-				priceTestRange = {
-					99,
-					299,
-				},
-				rung = "mid",
-				repeatable = false,
-				stacksWithSelf = false,
-				persisted = false,
-				deliverable = "multiplicative factor on the value axis; no other effect",
-			},
 			{
 				id = "span",
 				label = "Span",
@@ -1327,6 +1253,11 @@ GameConfig.Products = {
 				gamePassId = nil,
 				axis = "radius",
 				factor = 1.75,
+				factorTestRange = {
+					1.4,
+					1.95,
+				},
+				factorStatus = "playtest unknown — whether 1.75 reads as an oversized tool is a feel question; the upper bound 1.95 is the hard lap-floor limit at area ordinal 2, not a taste figure",
 				priceRobux = 499,
 				priceBand = "premium 249-499",
 				priceTestRange = {
@@ -1341,144 +1272,50 @@ GameConfig.Products = {
 			},
 		},
 		combinedFactorCap = {
-			value = 3,
+			value = 1,
 			radius = 1.75,
 			speed = 1,
 		},
-		forbidden = {
-			{
-				id = "F1",
-				rule = "No paid area, Find or set, and no paid access to any of them.",
-				closedBy = "03-META.md (brief)",
-				check = "no products[] entry grants a collection entry, an area id or a set; axis is always one of value|radius|speed",
-			},
-			{
-				id = "F2",
-				rule = "No sale of currency at any rate, in any bundle, ever.",
-				closedBy = "gameplay/systems/04",
-				check = "no products[] field names Shards or an amount; priceRobux exists and no priceShards field does; zero code paths credit currency from a purchase",
-			},
-			{
-				id = "F3",
-				rule = "No gacha, loot box, crate, roll, spin, pull, egg or randomised purchase outcome.",
-				closedBy = "gameplay/systems/03 + gameplay/systems/05 + platform paid-random-items rules",
-				check = "every products[] entry has a deterministic factor; zero odds tables anywhere; zero PolicyService:GetPolicyInfoForPlayerAsync calls",
-			},
-			{
-				id = "F4",
-				rule = "No luck multiplier, discovery-rate multiplier or find-better-Finds product.",
-				closedBy = "gameplay/systems/05 (luckShaped: false), gameplay/systems/03 (no per-Find rank)",
-				check = "no products[].axis equals luck; the substring 'luck' appears in zero player-facing strings",
-			},
-			{
-				id = "F5",
-				rule = "No developer products, and nothing repeatable.",
-				closedBy = "gameplay/systems/06 (one instance per product id) + platform guidance",
-				check = "every products[].kind is gamePass and every repeatable is false; zero PromptProductPurchase calls; zero ProcessReceipt callbacks",
-			},
-			{
-				id = "F6",
-				rule = "No timed boost, and no modifier that expires, decays, resets, is consumed or is spent.",
-				closedBy = "gameplay/systems/06",
-				check = "no products[] field named duration, expires, seconds, uses, charges or cooldown; no purchase-derived modifier carries a timestamp",
-			},
-			{
-				id = "F7",
-				rule = "No cosmetics: no skin, trail, aura, particle, hat, accessory, follower, pet, mount, emote, title or nameplate.",
-				closedBy = "03-META.md (declined, needs a display system first) + theme/identity/04 + theme/identity/02",
-				check = "no product changes any instance parented to the character other than the tool head's width",
-			},
-			{
-				id = "F8",
-				rule = "No premium tool that is the only way to have a tool.",
-				closedBy = "gameplay/mechanics/04 T12 (premiumVariantMayBeOnlyTool: false)",
-				check = "a player owning zero products spawns with a tool welded to the right hand",
-			},
-			{
-				id = "F9",
-				rule = "One axis and one factor per product. No product grants a second modifier, currency, a Find, an area or a cosmetic.",
-				closedBy = "gameplay/systems/06",
-				check = "every products[] entry has exactly one axis field and one factor field and no grants array",
-			},
-			{
-				id = "F10",
-				rule = "No timer, countdown, expiry, 'limited', 'new', 'ends in' or 'today only' on any offer.",
-				closedBy = "theme/tone/04 D9-D10 + platform monetization guidance",
-				check = "zero store strings match /limited|hurry|today only|ends in|last chance|expires/i; no store element updates on a clock",
-			},
-			{
-				id = "F11",
-				rule = "No manufactured scarcity or urgency: no stock count, no 'only N left', no 'N players own this', no waitlist, no queue.",
-				closedBy = "platform monetization guidance (false sense of urgency, artificial scarcity)",
-				check = "no store string contains a number sourced from anything but the player's own state",
-			},
-			{
-				id = "F12",
-				rule = "No discount, no strikethrough price, no sale price, no bundle price, no first-purchase bonus.",
-				closedBy = "theme/tone/04 D9 + platform monetization guidance",
-				check = "exactly one price per product; products[] has no priceWas, discount, bundle or bonus field",
-			},
-			{
-				id = "F13",
-				rule = "No unprompted purchase prompt. PromptGamePassPurchase is called only from an explicit player activation of a store control.",
-				closedBy = "theme/tone/04 D10",
-				check = "zero PromptGamePassPurchase calls in any join, spawn, respawn, tick, timer, completion or reveal path",
-			},
-			{
-				id = "F14",
-				rule = "No offer may interrupt a beat: nothing store-related opens, animates or changes within 2 s of a Find reveal, a set completion or an area completion.",
-				closedBy = "theme/tone/03 beat map B1-B3 + gameplay/mechanics/05",
-				check = "the store surface has no code path reachable from the reveal or completion channels",
-			},
-			{
-				id = "F15",
-				rule = "No code entry field, and no like, favourite, follow, group-join, rate-us or share prompt.",
-				closedBy = "03-META.md priority 3 (codes) + theme/tone/04 D10",
-				check = "zero TextBox instances in the store surface; zero strings match /code|group|favou?rite|follow|rate us|share/i",
-			},
-			{
-				id = "F16",
-				rule = "No verb behind a paywall. move, look, jump, buy and openIndex all work with zero products owned.",
-				closedBy = "gameplay/mechanics/02",
-				check = "all five verbs function in a session with zero passes owned",
-			},
-			{
-				id = "F17",
-				rule = "No purchase may shorten, skip, auto-complete or bypass clearing work: no instant-clear, no auto-clear, no area skip, no completion grant.",
-				closedBy = "03-META.md (never content access) + theme/fantasy/03 C3",
-				check = "no product clears a patch, completes an area, or grants a Find; 24/24 is reachable owning zero products",
-			},
-			{
-				id = "F18",
-				rule = "No subscription, no recurring charge, and no benefit gated on Roblox Premium membership.",
-				closedBy = "gameplay/systems/06 (nothing timed or expiring) + 03-META.md (never content access)",
-				check = "zero reads of Player.MembershipType or MembershipType.Premium anywhere in the build",
-			},
-			{
-				id = "F19",
-				rule = "No product is named, shown, priced or referred to anywhere outside the store surface.",
-				closedBy = "theme/tone/04 D10 (no unprompted purchase surface)",
-				check = "no products[].label appears in any string rendered outside the store screen",
-			},
-			{
-				id = "F20",
-				rule = "No purchase-derived state is written to persistence. Ownership is read live every join.",
-				closedBy = "gameplay/systems/06 (recomputed from live ownership, never persisted)",
-				check = "the save payload contains no pass id, no product id and no purchase-sourced factor",
-			},
-		},
 		headroom = {
-			rule = "for every axis A and every depth N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
-			marginFraction = 0.9,
-			ladderMax = "upgrades[A].base + upgrades[A].maxLevel * upgrades[A].perLevel",
-			ceilings = {
-				value = nil,
-				radius = "min over depths of (area.size(N) / 2)",
-				speed = "movement.baseClearRadius / serverTickSeconds",
+			canonical = "H1 below is the canonical form of the axis-ceiling inequality. setBonus.invariants[4] states the same bound without the 0.9 margin; H1 subsumes it and a schema author should write H1 only.",
+			H1_axisCeiling = {
+				rule = "for every axis A and every area ordinal N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
+				marginFraction = 0.9,
+				ladderMax = "for the entry of upgrades[] whose id equals A: base + maxLevel * perLevel",
+				ceilings = {
+					value = nil,
+					radius = "plots.laneWidthStuds / 2",
+					speed = "movement.baseClearRadius / runtime.serverTickSeconds",
+				},
+				atShippedValues = "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25",
+			},
+			H2_lapFloor = {
+				rule = "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
+				tau = "2 * (arrivalRadius(N) * prod(productFactors on radius)) * (arrivalSpeed(N) * prod(productFactors on speed))",
+				joint = "the bound below is on prod(productFactors on radius) * prod(productFactors on speed) as ONE quantity, not per axis. A radius product and a speed product each passing their own check can still break the lap together.",
+				floorSeconds = 75,
+				ceilingSeconds = 200,
+				ceilingAtRisk = false,
+				ceilingNote = "a product factor is >= 1, so it can only shorten a lap. H2 is one-sided.",
+				bindingOrdinal = 2,
+				maxThroughputProductFactorByOrdinal = {
+					["1"] = 2.18,
+					["2"] = 1.99,
+					["3"] = 2.14,
+					["4"] = 2.17,
+					["5"] = 2.1,
+					["6"] = 2.1,
+					["7"] = 2.1,
+					["8"] = 2.1,
+				},
+				spentByCurrentProducts = 1.75,
+				remaining = 1.14,
+				computedAtCombinedValueFactor = 1,
+				valueFactorWarning = "every bound above FALLS as combinedFactorCap.value rises, because a value product advances the greedy purchase order and raises arrival levels. At a combined value factor of 3.0 the ordinal-2 bound is 1.27, verified in wave 3. Adding any product on the value axis requires re-running the greedy purchase order against upgrades[] and re-deriving this whole table; these bounds are not valid at any other value factor.",
 			},
 			onFailure = "reduceFactor",
+			reduceWhich = "the factor on the axis the brief does not name as open. The brief names one open item in this domain, the premium SKU, and its shape is a radius item; so radius is reduced last.",
 			sizedLast = true,
-			pacingFloorSeconds = 75,
 			clampMayAbsorbAPurchase = false,
 			lossNotice = "none",
 		},
@@ -1519,16 +1356,6 @@ GameConfig.Rarity = {
 		findPlacementWeighting = "blind to tier: the probability a patch carries a Find is independent of its tierIndex. Whether that choice is spatially uniform or spread is content-structure work's, not this key's.",
 		depthRarityChannel = "tiers[].weight, shifted toward the rare end per depth",
 		depthRarityBlocker = "tiers has no depth dimension; adding one is a revision to 01-overgrowth-tiers, not a change made here",
-		forbidden = {
-			"a rarity, grade, tier, star, quality or condition field on a Find",
-			"a rarity colour, frame, glow, border, sparkle or badge on a collection slot",
-			"a rarer patch hiding a Find more often than a common patch does",
-			"a rarer patch hiding a rarer Find",
-			"a fifth overgrowth tier added to signal depth",
-			"a per-depth recolour of the four tiers that changes their silhouettes",
-			"a reveal cue that varies by which set the Find belongs to",
-			"any rarity read a player must learn in addition to the four silhouettes",
-		},
 	}
 
 -- From gameplay/mechanics/05-response-contract.md.
@@ -1679,34 +1506,53 @@ GameConfig.SetBonus = {
 		explainedInFiction = false,
 		grantedAt = "the clear of the last patch of the last area at that set's depth",
 		axisMayRepeat = true,
+		factorStatus = "playtest unknown",
+		factorTestRange = {
+			1.1,
+			1.35,
+		},
 		rows = {
 			{
 				setId = "terrace",
 				depth = 1,
 				axis = "value",
+				factor = 1.2,
 			},
 			{
 				setId = "cistern",
 				depth = 2,
 				axis = "radius",
+				factor = 1.2,
 			},
 			{
 				setId = "vault",
 				depth = 3,
 				axis = "speed",
+				factor = 1.2,
 			},
 			{
 				setId = "spire",
 				depth = 4,
 				axis = "radius",
+				factor = 1.2,
 			},
 		},
-		invariants = {
-			"every rows[].setId is a collection.sets[].id",
-			"every collection.sets[].id appears in exactly one row",
-			"every rows[].axis is an upgrades[].id",
-			"no rows[] entry carries a factor, a magnitude, a percentage or a duration",
-			"the product of all factors granted on one axis must stay under that axis's systems/06 ceiling with every product applied",
+		axisHeadroom = {
+			radius = {
+				availableToSetsAtShippedPass = 2.158,
+				spentAtStartingFactors = 1.44,
+				derivation = "0.9 * systems06Ceiling(radius) / upgradeLadderMax(radius) / productFactor(radius)",
+			},
+			speed = {
+				availableToSets = 1.611,
+				spentAtStartingFactors = 1.2,
+				derivation = "0.9 * (movement.baseClearRadius / runtime.clearTickRate) / upgradeLadderMax(speed)",
+			},
+			value = {
+				availableToSets = nil,
+				spentAtStartingFactors = 1.2,
+				derivation = "no ceiling exists on this axis",
+			},
 		},
 	}
 
@@ -1790,72 +1636,8 @@ GameConfig.Social = {
 		friendSurfacing = {
 			readsSocialGraph = false,
 			friendJoinedNotice = false,
-			forbiddenApis = {
-				"Player:IsFriendsWith",
-				"Players:GetFriendsAsync",
-				"SocialService:CanSendGameInviteAsync",
-				"SocialService:PromptGameInvite",
-			},
 		},
 		mechanicalInteraction = "none",
-		forbidden = {
-			{
-				id = "X1",
-				forbids = "a leaderstats Folder under any Player, or any Value inside one",
-			},
-			{
-				id = "X2",
-				forbids = "Team instances, and any write to Player.Team or Player.TeamColor",
-			},
-			{
-				id = "X3",
-				forbids = "any server-held value that more than one player's action increments",
-			},
-			{
-				id = "X4",
-				forbids = "any path by which one player's action changes another player's currency",
-			},
-			{
-				id = "X5",
-				forbids = "any path by which one player's action adds an entry to another player's found set",
-			},
-			{
-				id = "X6",
-				forbids = "a BillboardGui, SurfaceGui, overhead label, plot sign or DisplayName mutation carrying another player's currency, upgrade level, cleared count or collection count",
-			},
-			{
-				id = "X7",
-				forbids = "any replicated payload containing a player identifier other than the recipient's",
-			},
-			{
-				id = "X8",
-				forbids = "OrderedDataStore, and any global, weekly or all-time ranking",
-			},
-			{
-				id = "X9",
-				forbids = "any remote handler accepting a string that is later rendered to a different client",
-			},
-			{
-				id = "X10",
-				forbids = "any cue, visual or audible, caused by one player's input and perceptible to another beyond their character in motion and their own patches clearing, instance and cue",
-			},
-			{
-				id = "X11",
-				forbids = "join or leave notices, toasts, sounds or strings naming another player",
-			},
-			{
-				id = "X12",
-				forbids = "ProximityPrompt or ClickDetector parented into a character model",
-			},
-			{
-				id = "X13",
-				forbids = "writes to another character's Humanoid.Health or TakeDamage, and any force or velocity applied to a character that is not the actor's",
-			},
-			{
-				id = "X14",
-				forbids = "Camera.CameraSubject set to a Humanoid that is not the local player's",
-			},
-		},
 	}
 
 -- From gameplay/mechanics/04-tool-as-object.md.
@@ -1952,6 +1734,49 @@ GameConfig.Traversal = {
 		hazards = 0,
 		fallPenalties = 0,
 		lockouts = 0,
+	}
+
+-- From theme/vocabulary/02-banned-words.md.
+GameConfig.Vocabulary = {
+		maxLabelChars = 14,
+		register = "Plain concrete nouns, one word where possible. No ornament, no invented compounds, no incremental-genre vocabulary.",
+		casing = "title",
+		maxSentenceWords = 12,
+		allowedPattern = "^[A-Za-z0-9 ,.'%-]+$",
+		bannedWords = {
+			{
+				word = "relic",
+				reason = "occupied by Scrap Incremental and Faith Incremental for a rolled multiplier item, which is the wrong mental model for a discovered set collectible",
+			},
+			{
+				word = "relics",
+				reason = "plural of a banned word",
+			},
+			{
+				word = "tier",
+				reason = "Scrap Incremental's named progression system; fine as an internal field, not as a player-facing label",
+			},
+			{
+				word = "artifact",
+				reason = "a shipping Roblox title collecting 70+ artifacts",
+			},
+			{
+				word = "antique",
+				reason = "reStore's signature noun for the same restoration-plus-collection fantasy",
+			},
+			{
+				word = "rebirth",
+				reason = "cut from this design; the word would promise a system that does not exist",
+			},
+			{
+				word = "loot",
+				reason = "imports the item-fantasy framing this design explicitly avoids",
+			},
+			{
+				word = "treasure",
+				reason = "same, and it contradicts the mason-and-clerk register of the collection",
+			},
+		},
 	}
 
 function GameConfig.upgradeCost(upgrade: { costBase: number, costGrowth: number }, level: number): number

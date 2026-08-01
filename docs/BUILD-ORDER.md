@@ -850,68 +850,40 @@ state looks like, what each object is made of, and what happens in what order.
 
 ```json
 {
-  "storeExists": true,
+  "storeExists": false,
+  "purchaseSurface": "the Roblox experience page. The game draws no store, no shop screen, no offer row and no purchase control of any kind (coordinator ruling R-4).",
+  "itemCount": 1,
   "kindsUsed": [
     "gamePass"
   ],
   "devProductCount": 0,
   "axesSold": [
-    "value",
     "radius"
   ],
   "axesNotSold": [
+    "value",
     "speed"
   ],
-  "rungs": [
+  "rungVocabulary": [
     "impulse",
     "mid",
     "premium"
   ],
-  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId)",
+  "rungsUsed": [
+    "premium"
+  ],
+  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted",
   "prompt": {
-    "method": "PromptGamePassPurchase",
-    "calledOnlyFrom": "explicit player activation of the store control",
-    "clientCallAllowed": "unverified — the MarketplaceService page as fetched does not state the security context"
+    "method": null,
+    "promptGamePassPurchaseCalls": 0,
+    "reason": "R-4 removed the in-game store. There is no verb, pressable or screen that could trigger a prompt, and none is reserved. If a purchase surface is ever built, this field is what must be revised first."
+  },
+  "externalPrerequisite": {
+    "what": "products.items[].gamePassId must be filled with the id of a pass created on the Roblox creator site and priced to match priceRobux",
+    "owner": "the developer, or whoever holds the Roblox creator account",
+    "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification."
   },
   "items": [
-    {
-      "id": "yield",
-      "label": "Yield",
-      "kind": "gamePass",
-      "gamePassId": null,
-      "axis": "value",
-      "factor": 1.5,
-      "priceRobux": 49,
-      "priceBand": "impulse 25-75",
-      "priceTestRange": [
-        25,
-        99
-      ],
-      "rung": "impulse",
-      "repeatable": false,
-      "stacksWithSelf": false,
-      "persisted": false,
-      "deliverable": "multiplicative factor on the value axis; no other effect"
-    },
-    {
-      "id": "measure",
-      "label": "Measure",
-      "kind": "gamePass",
-      "gamePassId": null,
-      "axis": "value",
-      "factor": 2,
-      "priceRobux": 199,
-      "priceBand": "mid 99-249",
-      "priceTestRange": [
-        99,
-        299
-      ],
-      "rung": "mid",
-      "repeatable": false,
-      "stacksWithSelf": false,
-      "persisted": false,
-      "deliverable": "multiplicative factor on the value axis; no other effect"
-    },
     {
       "id": "span",
       "label": "Span",
@@ -919,6 +891,11 @@ state looks like, what each object is made of, and what happens in what order.
       "gamePassId": null,
       "axis": "radius",
       "factor": 1.75,
+      "factorTestRange": [
+        1.4,
+        1.95
+      ],
+      "factorStatus": "playtest unknown — whether 1.75 reads as an oversized tool is a feel question; the upper bound 1.95 is the hard lap-floor limit at area ordinal 2, not a taste figure",
       "priceRobux": 499,
       "priceBand": "premium 249-499",
       "priceTestRange": [
@@ -933,7 +910,7 @@ state looks like, what each object is made of, and what happens in what order.
     }
   ],
   "combinedFactorCap": {
-    "value": 3,
+    "value": 1,
     "radius": 1.75,
     "speed": 1
   },
@@ -994,15 +971,15 @@ state looks like, what each object is made of, and what happens in what order.
     },
     {
       "id": "F10",
-      "rule": "No timer, countdown, expiry, 'limited', 'new', 'ends in' or 'today only' on any offer.",
+      "rule": "No timer, countdown, expiry, 'limited', 'new', 'ends in' or 'today only' attached to any offer, anywhere in the game.",
       "closedBy": "theme/tone/04 D9-D10 + platform monetization guidance",
-      "check": "zero store strings match /limited|hurry|today only|ends in|last chance|expires/i; no store element updates on a clock"
+      "check": "zero player-facing strings match /limited|hurry|today only|ends in|last chance|expires/i; no element updates on a clock"
     },
     {
       "id": "F11",
       "rule": "No manufactured scarcity or urgency: no stock count, no 'only N left', no 'N players own this', no waitlist, no queue.",
       "closedBy": "platform monetization guidance (false sense of urgency, artificial scarcity)",
-      "check": "no store string contains a number sourced from anything but the player's own state"
+      "check": "no player-facing string contains a number sourced from anything but the player's own state"
     },
     {
       "id": "F12",
@@ -1012,21 +989,21 @@ state looks like, what each object is made of, and what happens in what order.
     },
     {
       "id": "F13",
-      "rule": "No unprompted purchase prompt. PromptGamePassPurchase is called only from an explicit player activation of a store control.",
-      "closedBy": "theme/tone/04 D10",
-      "check": "zero PromptGamePassPurchase calls in any join, spawn, respawn, tick, timer, completion or reveal path"
+      "rule": "No purchase prompt of any kind. Under R-4 there is no in-game store, so PromptGamePassPurchase is never called.",
+      "closedBy": "theme/tone/04 D10 + coordinator ruling R-4 + gameplay/mechanics/02 (input closed at five verbs)",
+      "check": "zero PromptGamePassPurchase calls anywhere in the build, in any path"
     },
     {
       "id": "F14",
-      "rule": "No offer may interrupt a beat: nothing store-related opens, animates or changes within 2 s of a Find reveal, a set completion or an area completion.",
+      "rule": "No offer may interrupt a beat: nothing purchase-related opens, animates or changes within 2 s of a Find reveal, a set completion or an area completion.",
       "closedBy": "theme/tone/03 beat map B1-B3 + gameplay/mechanics/05",
-      "check": "the store surface has no code path reachable from the reveal or completion channels"
+      "check": "no purchase-related instance or string exists at all, so no code path can reach the reveal or completion channels"
     },
     {
       "id": "F15",
-      "rule": "No code entry field, and no like, favourite, follow, group-join, rate-us or share prompt.",
+      "rule": "No code entry field, and no like, favourite, follow, group-join, rate-us or share prompt, anywhere in the game.",
       "closedBy": "03-META.md priority 3 (codes) + theme/tone/04 D10",
-      "check": "zero TextBox instances in the store surface; zero strings match /code|group|favou?rite|follow|rate us|share/i"
+      "check": "zero TextBox instances in any screen; zero strings match /code|group|favou?rite|follow|rate us|share/i"
     },
     {
       "id": "F16",
@@ -1048,9 +1025,9 @@ state looks like, what each object is made of, and what happens in what order.
     },
     {
       "id": "F19",
-      "rule": "No product is named, shown, priced or referred to anywhere outside the store surface.",
-      "closedBy": "theme/tone/04 D10 (no unprompted purchase surface)",
-      "check": "no products[].label appears in any string rendered outside the store screen"
+      "rule": "No product is named, shown, priced or referred to anywhere inside the game. R-4 leaves no surface that may mention one.",
+      "closedBy": "theme/tone/04 D10 + coordinator ruling R-4",
+      "check": "no products[].label and no priceRobux value appears in any string rendered by the game"
     },
     {
       "id": "F20",
@@ -1060,17 +1037,45 @@ state looks like, what each object is made of, and what happens in what order.
     }
   ],
   "headroom": {
-    "rule": "for every axis A and every depth N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
-    "marginFraction": 0.9,
-    "ladderMax": "upgrades[A].base + upgrades[A].maxLevel * upgrades[A].perLevel",
-    "ceilings": {
-      "value": null,
-      "radius": "min over depths of (area.size(N) / 2)",
-      "speed": "movement.baseClearRadius / serverTickSeconds"
+    "canonical": "H1 below is the canonical form of the axis-ceiling inequality. setBonus.invariants[4] states the same bound without the 0.9 margin; H1 subsumes it and a schema author should write H1 only.",
+    "H1_axisCeiling": {
+      "rule": "for every axis A and every area ordinal N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
+      "marginFraction": 0.9,
+      "ladderMax": "for the entry of upgrades[] whose id equals A: base + maxLevel * perLevel",
+      "ceilings": {
+        "value": null,
+        "radius": "plots.laneWidthStuds / 2",
+        "speed": "movement.baseClearRadius / runtime.serverTickSeconds"
+      },
+      "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25"
+    },
+    "H2_lapFloor": {
+      "rule": "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
+      "tau": "2 * (arrivalRadius(N) * prod(productFactors on radius)) * (arrivalSpeed(N) * prod(productFactors on speed))",
+      "joint": "the bound below is on prod(productFactors on radius) * prod(productFactors on speed) as ONE quantity, not per axis. A radius product and a speed product each passing their own check can still break the lap together.",
+      "floorSeconds": 75,
+      "ceilingSeconds": 200,
+      "ceilingAtRisk": false,
+      "ceilingNote": "a product factor is >= 1, so it can only shorten a lap. H2 is one-sided.",
+      "bindingOrdinal": 2,
+      "maxThroughputProductFactorByOrdinal": {
+        "1": 2.18,
+        "2": 1.99,
+        "3": 2.14,
+        "4": 2.17,
+        "5": 2.1,
+        "6": 2.1,
+        "7": 2.1,
+        "8": 2.1
+      },
+      "spentByCurrentProducts": 1.75,
+      "remaining": 1.14,
+      "computedAtCombinedValueFactor": 1,
+      "valueFactorWarning": "every bound above FALLS as combinedFactorCap.value rises, because a value product advances the greedy purchase order and raises arrival levels. At a combined value factor of 3.0 the ordinal-2 bound is 1.27, verified in wave 3. Adding any product on the value axis requires re-running the greedy purchase order against upgrades[] and re-deriving this whole table; these bounds are not valid at any other value factor."
     },
     "onFailure": "reduceFactor",
+    "reduceWhich": "the factor on the axis the brief does not name as open. The brief names one open item in this domain, the premium SKU, and its shape is a radius item; so radius is reduced last.",
     "sizedLast": true,
-    "pacingFloorSeconds": 75,
     "clampMayAbsorbAPurchase": false,
     "lossNotice": "none"
   }
@@ -1240,20 +1245,22 @@ state looks like, what each object is made of, and what happens in what order.
   "composition": "an area of N chunks is an ordered run of N variants drawn without replacement from its depth family's 16, seeded by (layoutSeed, areaOrdinal) and by nothing else",
   "anchorSource": "authored per chunk; until authoring exists, generated once from hash(layoutSeed, chunkId) and frozen, which is the same data by a cheaper route",
   "findPlacement": {
-    "rule": "split the chunk run into collection.relicsPerArea contiguous groups of as-equal-as-possible length; bury exactly one find in each; group g carries depths.areas[k].relicSlice[0] + g - 1",
+    "rule": "split the area's patch run into collection.relicsPerArea contiguous groups and bury exactly one find in each; group g carries the g-th name of the area's resolved slice, per depths.relicSliceAssignment",
+    "groupCutBy": {
+      "areaOrdinal1": "patch ordinal in spawn-distance order, at firstSession.placement.secondFindOrdinalMin and secondFindOrdinalMax",
+      "allOtherAreas": "chunk, into as-equal-as-possible contiguous runs"
+    },
     "withinGroup": "one patch index drawn from the seed over that group's indices",
     "onboardingOverride": {
       "areaOrdinal": 1,
       "group": 1,
-      "patch": "nearest the plot origin"
+      "patch": "nearest the plot spawn point",
+      "appliesExactlyOnce": true
     },
     "mayReadPatchTier": false,
     "mayReadPlayerState": false
   },
-  "spawnAdjacency": {
-    "minStuds": "movement.baseClearRadius",
-    "maxStuds": "movement.baseClearRadius + minSpacing"
-  },
+  "spawnAdjacencyOwnedBy": "onboarding, via firstSession.placement.spawnToNearestPatchMaxStuds and firstSession.armDistanceStuds; this key states no interval of its own",
   "repetitionRules": [
     "R1",
     "R2",
@@ -1265,7 +1272,8 @@ state looks like, what each object is made of, and what happens in what order.
     "depths.areas[k].chunkCount * families[depth].patchesPerChunk == depths.areas[k].patchCount",
     "chunksPerFamily * orientations >= max chunkCount over all areas",
     "patchesPerChunk is strictly increasing in depth",
-    "no two anchors in one chunk are closer than depths.areas[k].minSpacing"
+    "no two anchors in one chunk are closer than depths.areas[k].minSpacing",
+    "the nearest patch to the spawn satisfies firstSession.placement.spawnToNearestPatchMaxStuds, which this key does not restate"
   ]
 }
 ```
@@ -1278,147 +1286,141 @@ state looks like, what each object is made of, and what happens in what order.
   "areaCount": 8,
   "sizingRule": "footprint(k) = floorToChunk( min(LAP_TARGET * tau(k), LAP_CEILING * tauTol(k)) / ROUTE_SLACK ), tau(k) = 2*(baseClearRadius + radiusLevel*perLevel)*(baseWalkSpeed + speedLevel*perLevel) at arrival",
   "footprintCeilingStuds2": 73216,
-  "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth",
+  "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
+  "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
+  "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+  "valueOnlyPurchaserThreshold": 7,
   "areas": [
     {
       "ordinal": 1,
       "depth": 1,
       "setId": "terrace",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Terrace",
       "footprintStuds2": 14400,
       "chunkCount": 4,
       "patchCount": 140,
       "minSpacing": 6,
-      "unlock": "none"
+      "unlock": "none",
+      "maxRadiusProduct": null
     },
     {
       "ordinal": 2,
       "depth": 1,
       "setId": "terrace",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Terrace",
       "footprintStuds2": 25200,
       "chunkCount": 7,
       "patchCount": 245,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.27
     },
     {
       "ordinal": 3,
       "depth": 2,
       "setId": "cistern",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Cistern",
       "footprintStuds2": 39600,
       "chunkCount": 11,
       "patchCount": 407,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.44
     },
     {
       "ordinal": 4,
       "depth": 2,
       "setId": "cistern",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Cistern",
       "footprintStuds2": 50400,
       "chunkCount": 14,
       "patchCount": 518,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.84
     },
     {
       "ordinal": 5,
       "depth": 3,
       "setId": "vault",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Vault",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 624,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 6,
       "depth": 3,
       "setId": "vault",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Vault",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 624,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 7,
       "depth": 4,
       "setId": "spire",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Spire",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 8,
       "depth": 4,
       "setId": "spire",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Spire",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     }
   ],
-  "requestedRevisionToCollection": {
-    "relicsPerArea": 3,
-    "areasPerDepth": 2,
-    "sheet": "cid/gameplay/meta/02-the-collection.md",
-    "reason": "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names"
-  },
+  "requestedRevisions": [
+    {
+      "sheet": "cid/gameplay/meta/02-the-collection.md",
+      "change": "relicsPerArea 6 -> 3, areasPerDepth 1 -> 2",
+      "reason": "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names"
+    },
+    {
+      "sheet": "cid/theme/setting/04-permanence-and-passage.md",
+      "change": "strike W5; keep W1-W4 and W6",
+      "reason": "the inward opening is passable only when the part is finished; this sheet and meta/06 take the strike that sheet itself names"
+    }
+  ],
   "invariants": [
     "areas[0].footprintStuds2 == area.size ^ 2 and areas[0].patchCount == area.patchCount and areas[0].minSpacing == area.minSpacing",
     "count of areas at each depth == collection.areasPerDepth; this key does not carry that number",
     "collection.relicsPerArea * collection.areasPerDepth == the size of every set",
-    "every relicSlice spans exactly collection.relicsPerArea names and the slices at one depth partition that set with no overlap and no gap",
+    "the resolved slices of one depth's areas partition that set with no overlap and no gap",
     "footprintStuds2 is a whole multiple of layout.chunk.footprintStuds2 and equals chunkCount times it",
     "patchCount == chunkCount * layout.patchesPerChunkByDepth[depth]",
     "patchCount / footprintStuds2 is non-decreasing in ordinal and strictly increases at every depth step",
     "minSpacing > movement.baseClearRadius",
     "footprintStuds2 <= footprintCeilingStuds2 for every row",
     "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
-    "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)"
+    "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
+    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
   ]
 }
 ```
@@ -1825,7 +1827,7 @@ state looks like, what each object is made of, and what happens in what order.
   "terminalCondition": "the player's found count reaches the total number of names in collection",
   "reachedAt": {
     "areaOrdinal": 8,
-    "event": "the reveal on the last patch of West Spire that carries a Find"
+    "event": "the reveal on the last patch of the eighth bay that carries a Find"
   },
   "gameEnds": false,
   "collectionEnds": true,
@@ -1850,8 +1852,10 @@ state looks like, what each object is made of, and what happens in what order.
     "chunkCount": 16,
     "patchCount": 640,
     "minSpacing": 6,
-    "relicSlice": [],
+    "relicSliceIndex": "none",
+    "buriesFinds": 0,
     "unlock": "previousAreaComplete",
+    "bayLengthStuds": 480,
     "drawsFrom": "the depth-4 chunk family, under layout's R1 to R4"
   },
   "predicateScopeChange": {
@@ -1895,7 +1899,7 @@ state looks like, what each object is made of, and what happens in what order.
   ],
   "invariants": [
     "survivingPayoffKinds and extinctPayoffKinds partition core-loop/02's five kinds with no overlap",
-    "postTerminalArea.relicSlice is empty and no post-terminal area buries any name",
+    "postTerminalArea.relicSliceIndex is none and buriesFinds is 0",
     "postTerminalArea's footprint, chunkCount and patchCount equal depths.areas[7]'s",
     "no entry in forbidden appears as an identifier anywhere in game/src",
     "nothing in this key names a reward, a grant, a threshold or a recurrence"
@@ -2401,34 +2405,60 @@ state looks like, what each object is made of, and what happens in what order.
   "explainedInFiction": false,
   "grantedAt": "the clear of the last patch of the last area at that set's depth",
   "axisMayRepeat": true,
+  "factorStatus": "playtest unknown",
+  "factorTestRange": [
+    1.1,
+    1.35
+  ],
   "rows": [
     {
       "setId": "terrace",
       "depth": 1,
-      "axis": "value"
+      "axis": "value",
+      "factor": 1.2
     },
     {
       "setId": "cistern",
       "depth": 2,
-      "axis": "radius"
+      "axis": "radius",
+      "factor": 1.2
     },
     {
       "setId": "vault",
       "depth": 3,
-      "axis": "speed"
+      "axis": "speed",
+      "factor": 1.2
     },
     {
       "setId": "spire",
       "depth": 4,
-      "axis": "radius"
+      "axis": "radius",
+      "factor": 1.2
     }
   ],
+  "axisHeadroom": {
+    "radius": {
+      "availableToSetsAtShippedPass": 2.158,
+      "spentAtStartingFactors": 1.44,
+      "derivation": "0.9 * systems06Ceiling(radius) / upgradeLadderMax(radius) / productFactor(radius)"
+    },
+    "speed": {
+      "availableToSets": 1.611,
+      "spentAtStartingFactors": 1.2,
+      "derivation": "0.9 * (movement.baseClearRadius / runtime.clearTickRate) / upgradeLadderMax(speed)"
+    },
+    "value": {
+      "availableToSets": null,
+      "spentAtStartingFactors": 1.2,
+      "derivation": "no ceiling exists on this axis"
+    }
+  },
   "invariants": [
     "every rows[].setId is a collection.sets[].id",
     "every collection.sets[].id appears in exactly one row",
     "every rows[].axis is an upgrades[].id",
-    "no rows[] entry carries a factor, a magnitude, a percentage or a duration",
-    "the product of all factors granted on one axis must stay under that axis's systems/06 ceiling with every product applied"
+    "every rows[].factor is at least 1.0 and inside factorTestRange",
+    "for each axis, the product of its set factors times every product factor on that axis is at most 0.9 times that axis's systems/06 ceiling"
   ]
 }
 ```
@@ -2437,68 +2467,40 @@ state looks like, what each object is made of, and what happens in what order.
 
 ```json
 {
-  "storeExists": true,
+  "storeExists": false,
+  "purchaseSurface": "the Roblox experience page. The game draws no store, no shop screen, no offer row and no purchase control of any kind (coordinator ruling R-4).",
+  "itemCount": 1,
   "kindsUsed": [
     "gamePass"
   ],
   "devProductCount": 0,
   "axesSold": [
-    "value",
     "radius"
   ],
   "axesNotSold": [
+    "value",
     "speed"
   ],
-  "rungs": [
+  "rungVocabulary": [
     "impulse",
     "mid",
     "premium"
   ],
-  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId)",
+  "rungsUsed": [
+    "premium"
+  ],
+  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted",
   "prompt": {
-    "method": "PromptGamePassPurchase",
-    "calledOnlyFrom": "explicit player activation of the store control",
-    "clientCallAllowed": "unverified — the MarketplaceService page as fetched does not state the security context"
+    "method": null,
+    "promptGamePassPurchaseCalls": 0,
+    "reason": "R-4 removed the in-game store. There is no verb, pressable or screen that could trigger a prompt, and none is reserved. If a purchase surface is ever built, this field is what must be revised first."
+  },
+  "externalPrerequisite": {
+    "what": "products.items[].gamePassId must be filled with the id of a pass created on the Roblox creator site and priced to match priceRobux",
+    "owner": "the developer, or whoever holds the Roblox creator account",
+    "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification."
   },
   "items": [
-    {
-      "id": "yield",
-      "label": "Yield",
-      "kind": "gamePass",
-      "gamePassId": null,
-      "axis": "value",
-      "factor": 1.5,
-      "priceRobux": 49,
-      "priceBand": "impulse 25-75",
-      "priceTestRange": [
-        25,
-        99
-      ],
-      "rung": "impulse",
-      "repeatable": false,
-      "stacksWithSelf": false,
-      "persisted": false,
-      "deliverable": "multiplicative factor on the value axis; no other effect"
-    },
-    {
-      "id": "measure",
-      "label": "Measure",
-      "kind": "gamePass",
-      "gamePassId": null,
-      "axis": "value",
-      "factor": 2,
-      "priceRobux": 199,
-      "priceBand": "mid 99-249",
-      "priceTestRange": [
-        99,
-        299
-      ],
-      "rung": "mid",
-      "repeatable": false,
-      "stacksWithSelf": false,
-      "persisted": false,
-      "deliverable": "multiplicative factor on the value axis; no other effect"
-    },
     {
       "id": "span",
       "label": "Span",
@@ -2506,6 +2508,11 @@ state looks like, what each object is made of, and what happens in what order.
       "gamePassId": null,
       "axis": "radius",
       "factor": 1.75,
+      "factorTestRange": [
+        1.4,
+        1.95
+      ],
+      "factorStatus": "playtest unknown — whether 1.75 reads as an oversized tool is a feel question; the upper bound 1.95 is the hard lap-floor limit at area ordinal 2, not a taste figure",
       "priceRobux": 499,
       "priceBand": "premium 249-499",
       "priceTestRange": [
@@ -2520,7 +2527,7 @@ state looks like, what each object is made of, and what happens in what order.
     }
   ],
   "combinedFactorCap": {
-    "value": 3,
+    "value": 1,
     "radius": 1.75,
     "speed": 1
   },
@@ -2581,15 +2588,15 @@ state looks like, what each object is made of, and what happens in what order.
     },
     {
       "id": "F10",
-      "rule": "No timer, countdown, expiry, 'limited', 'new', 'ends in' or 'today only' on any offer.",
+      "rule": "No timer, countdown, expiry, 'limited', 'new', 'ends in' or 'today only' attached to any offer, anywhere in the game.",
       "closedBy": "theme/tone/04 D9-D10 + platform monetization guidance",
-      "check": "zero store strings match /limited|hurry|today only|ends in|last chance|expires/i; no store element updates on a clock"
+      "check": "zero player-facing strings match /limited|hurry|today only|ends in|last chance|expires/i; no element updates on a clock"
     },
     {
       "id": "F11",
       "rule": "No manufactured scarcity or urgency: no stock count, no 'only N left', no 'N players own this', no waitlist, no queue.",
       "closedBy": "platform monetization guidance (false sense of urgency, artificial scarcity)",
-      "check": "no store string contains a number sourced from anything but the player's own state"
+      "check": "no player-facing string contains a number sourced from anything but the player's own state"
     },
     {
       "id": "F12",
@@ -2599,21 +2606,21 @@ state looks like, what each object is made of, and what happens in what order.
     },
     {
       "id": "F13",
-      "rule": "No unprompted purchase prompt. PromptGamePassPurchase is called only from an explicit player activation of a store control.",
-      "closedBy": "theme/tone/04 D10",
-      "check": "zero PromptGamePassPurchase calls in any join, spawn, respawn, tick, timer, completion or reveal path"
+      "rule": "No purchase prompt of any kind. Under R-4 there is no in-game store, so PromptGamePassPurchase is never called.",
+      "closedBy": "theme/tone/04 D10 + coordinator ruling R-4 + gameplay/mechanics/02 (input closed at five verbs)",
+      "check": "zero PromptGamePassPurchase calls anywhere in the build, in any path"
     },
     {
       "id": "F14",
-      "rule": "No offer may interrupt a beat: nothing store-related opens, animates or changes within 2 s of a Find reveal, a set completion or an area completion.",
+      "rule": "No offer may interrupt a beat: nothing purchase-related opens, animates or changes within 2 s of a Find reveal, a set completion or an area completion.",
       "closedBy": "theme/tone/03 beat map B1-B3 + gameplay/mechanics/05",
-      "check": "the store surface has no code path reachable from the reveal or completion channels"
+      "check": "no purchase-related instance or string exists at all, so no code path can reach the reveal or completion channels"
     },
     {
       "id": "F15",
-      "rule": "No code entry field, and no like, favourite, follow, group-join, rate-us or share prompt.",
+      "rule": "No code entry field, and no like, favourite, follow, group-join, rate-us or share prompt, anywhere in the game.",
       "closedBy": "03-META.md priority 3 (codes) + theme/tone/04 D10",
-      "check": "zero TextBox instances in the store surface; zero strings match /code|group|favou?rite|follow|rate us|share/i"
+      "check": "zero TextBox instances in any screen; zero strings match /code|group|favou?rite|follow|rate us|share/i"
     },
     {
       "id": "F16",
@@ -2635,9 +2642,9 @@ state looks like, what each object is made of, and what happens in what order.
     },
     {
       "id": "F19",
-      "rule": "No product is named, shown, priced or referred to anywhere outside the store surface.",
-      "closedBy": "theme/tone/04 D10 (no unprompted purchase surface)",
-      "check": "no products[].label appears in any string rendered outside the store screen"
+      "rule": "No product is named, shown, priced or referred to anywhere inside the game. R-4 leaves no surface that may mention one.",
+      "closedBy": "theme/tone/04 D10 + coordinator ruling R-4",
+      "check": "no products[].label and no priceRobux value appears in any string rendered by the game"
     },
     {
       "id": "F20",
@@ -2647,17 +2654,45 @@ state looks like, what each object is made of, and what happens in what order.
     }
   ],
   "headroom": {
-    "rule": "for every axis A and every depth N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
-    "marginFraction": 0.9,
-    "ladderMax": "upgrades[A].base + upgrades[A].maxLevel * upgrades[A].perLevel",
-    "ceilings": {
-      "value": null,
-      "radius": "min over depths of (area.size(N) / 2)",
-      "speed": "movement.baseClearRadius / serverTickSeconds"
+    "canonical": "H1 below is the canonical form of the axis-ceiling inequality. setBonus.invariants[4] states the same bound without the 0.9 margin; H1 subsumes it and a schema author should write H1 only.",
+    "H1_axisCeiling": {
+      "rule": "for every axis A and every area ordinal N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
+      "marginFraction": 0.9,
+      "ladderMax": "for the entry of upgrades[] whose id equals A: base + maxLevel * perLevel",
+      "ceilings": {
+        "value": null,
+        "radius": "plots.laneWidthStuds / 2",
+        "speed": "movement.baseClearRadius / runtime.serverTickSeconds"
+      },
+      "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25"
+    },
+    "H2_lapFloor": {
+      "rule": "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
+      "tau": "2 * (arrivalRadius(N) * prod(productFactors on radius)) * (arrivalSpeed(N) * prod(productFactors on speed))",
+      "joint": "the bound below is on prod(productFactors on radius) * prod(productFactors on speed) as ONE quantity, not per axis. A radius product and a speed product each passing their own check can still break the lap together.",
+      "floorSeconds": 75,
+      "ceilingSeconds": 200,
+      "ceilingAtRisk": false,
+      "ceilingNote": "a product factor is >= 1, so it can only shorten a lap. H2 is one-sided.",
+      "bindingOrdinal": 2,
+      "maxThroughputProductFactorByOrdinal": {
+        "1": 2.18,
+        "2": 1.99,
+        "3": 2.14,
+        "4": 2.17,
+        "5": 2.1,
+        "6": 2.1,
+        "7": 2.1,
+        "8": 2.1
+      },
+      "spentByCurrentProducts": 1.75,
+      "remaining": 1.14,
+      "computedAtCombinedValueFactor": 1,
+      "valueFactorWarning": "every bound above FALLS as combinedFactorCap.value rises, because a value product advances the greedy purchase order and raises arrival levels. At a combined value factor of 3.0 the ordinal-2 bound is 1.27, verified in wave 3. Adding any product on the value axis requires re-running the greedy purchase order against upgrades[] and re-deriving this whole table; these bounds are not valid at any other value factor."
     },
     "onFailure": "reduceFactor",
+    "reduceWhich": "the factor on the axis the brief does not name as open. The brief names one open item in this domain, the premium SKU, and its shape is a radius item; so radius is reduced last.",
     "sizedLast": true,
-    "pacingFloorSeconds": 75,
     "clampMayAbsorbAPurchase": false,
     "lossNotice": "none"
   }
@@ -2786,147 +2821,141 @@ state looks like, what each object is made of, and what happens in what order.
   "areaCount": 8,
   "sizingRule": "footprint(k) = floorToChunk( min(LAP_TARGET * tau(k), LAP_CEILING * tauTol(k)) / ROUTE_SLACK ), tau(k) = 2*(baseClearRadius + radiusLevel*perLevel)*(baseWalkSpeed + speedLevel*perLevel) at arrival",
   "footprintCeilingStuds2": 73216,
-  "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth",
+  "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
+  "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
+  "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+  "valueOnlyPurchaserThreshold": 7,
   "areas": [
     {
       "ordinal": 1,
       "depth": 1,
       "setId": "terrace",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Terrace",
       "footprintStuds2": 14400,
       "chunkCount": 4,
       "patchCount": 140,
       "minSpacing": 6,
-      "unlock": "none"
+      "unlock": "none",
+      "maxRadiusProduct": null
     },
     {
       "ordinal": 2,
       "depth": 1,
       "setId": "terrace",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Terrace",
       "footprintStuds2": 25200,
       "chunkCount": 7,
       "patchCount": 245,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.27
     },
     {
       "ordinal": 3,
       "depth": 2,
       "setId": "cistern",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Cistern",
       "footprintStuds2": 39600,
       "chunkCount": 11,
       "patchCount": 407,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.44
     },
     {
       "ordinal": 4,
       "depth": 2,
       "setId": "cistern",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Cistern",
       "footprintStuds2": 50400,
       "chunkCount": 14,
       "patchCount": 518,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.84
     },
     {
       "ordinal": 5,
       "depth": 3,
       "setId": "vault",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Vault",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 624,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 6,
       "depth": 3,
       "setId": "vault",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Vault",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 624,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 7,
       "depth": 4,
       "setId": "spire",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Spire",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 8,
       "depth": 4,
       "setId": "spire",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Spire",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     }
   ],
-  "requestedRevisionToCollection": {
-    "relicsPerArea": 3,
-    "areasPerDepth": 2,
-    "sheet": "cid/gameplay/meta/02-the-collection.md",
-    "reason": "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names"
-  },
+  "requestedRevisions": [
+    {
+      "sheet": "cid/gameplay/meta/02-the-collection.md",
+      "change": "relicsPerArea 6 -> 3, areasPerDepth 1 -> 2",
+      "reason": "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names"
+    },
+    {
+      "sheet": "cid/theme/setting/04-permanence-and-passage.md",
+      "change": "strike W5; keep W1-W4 and W6",
+      "reason": "the inward opening is passable only when the part is finished; this sheet and meta/06 take the strike that sheet itself names"
+    }
+  ],
   "invariants": [
     "areas[0].footprintStuds2 == area.size ^ 2 and areas[0].patchCount == area.patchCount and areas[0].minSpacing == area.minSpacing",
     "count of areas at each depth == collection.areasPerDepth; this key does not carry that number",
     "collection.relicsPerArea * collection.areasPerDepth == the size of every set",
-    "every relicSlice spans exactly collection.relicsPerArea names and the slices at one depth partition that set with no overlap and no gap",
+    "the resolved slices of one depth's areas partition that set with no overlap and no gap",
     "footprintStuds2 is a whole multiple of layout.chunk.footprintStuds2 and equals chunkCount times it",
     "patchCount == chunkCount * layout.patchesPerChunkByDepth[depth]",
     "patchCount / footprintStuds2 is non-decreasing in ordinal and strictly increases at every depth step",
     "minSpacing > movement.baseClearRadius",
     "footprintStuds2 <= footprintCeilingStuds2 for every row",
     "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
-    "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)"
+    "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
+    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
   ]
 }
 ```
@@ -7066,7 +7095,7 @@ state looks like, what each object is made of, and what happens in what order.
   "terminalCondition": "the player's found count reaches the total number of names in collection",
   "reachedAt": {
     "areaOrdinal": 8,
-    "event": "the reveal on the last patch of West Spire that carries a Find"
+    "event": "the reveal on the last patch of the eighth bay that carries a Find"
   },
   "gameEnds": false,
   "collectionEnds": true,
@@ -7091,8 +7120,10 @@ state looks like, what each object is made of, and what happens in what order.
     "chunkCount": 16,
     "patchCount": 640,
     "minSpacing": 6,
-    "relicSlice": [],
+    "relicSliceIndex": "none",
+    "buriesFinds": 0,
     "unlock": "previousAreaComplete",
+    "bayLengthStuds": 480,
     "drawsFrom": "the depth-4 chunk family, under layout's R1 to R4"
   },
   "predicateScopeChange": {
@@ -7136,7 +7167,7 @@ state looks like, what each object is made of, and what happens in what order.
   ],
   "invariants": [
     "survivingPayoffKinds and extinctPayoffKinds partition core-loop/02's five kinds with no overlap",
-    "postTerminalArea.relicSlice is empty and no post-terminal area buries any name",
+    "postTerminalArea.relicSliceIndex is none and buriesFinds is 0",
     "postTerminalArea's footprint, chunkCount and patchCount equal depths.areas[7]'s",
     "no entry in forbidden appears as an identifier anywhere in game/src",
     "nothing in this key names a reward, a grant, a threshold or a recurrence"
@@ -7584,7 +7615,9 @@ state looks like, what each object is made of, and what happens in what order.
   "laneAxis": "+Z",
   "laneWidthStuds": 120,
   "pitchStuds": 122,
-  "pitchRule": "laneWidthStuds + the inter-plot boundary's thickness, which traversal owns; pitchStuds must never exceed social.maxCoPresenceSeparationStuds, so that thickness is capped at 8",
+  "assumedBoundaryThicknessStuds": 2,
+  "maxBoundaryThicknessStuds": 8,
+  "pitchRule": "laneWidthStuds + the inter-plot boundary's thickness, which traversal owns; pitchStuds must never exceed social.maxCoPresenceSeparationStuds.value, which caps that thickness at 8",
   "slotOrigin": "(area.originXZ[0] + (slot - 1) * pitchStuds, 0, area.originXZ[1])",
   "slotClaiming": "lowestFreeIndex",
   "slotsAreContiguousWhileOccupied": true,
@@ -7593,6 +7626,11 @@ state looks like, what each object is made of, and what happens in what order.
       0,
       0,
       8
+    ],
+    "inwardOffsetStatus": "playtest unknown",
+    "inwardOffsetTestRange": [
+      4,
+      16
     ],
     "lookVector": {
       "slot1": [
@@ -7608,6 +7646,14 @@ state looks like, what each object is made of, and what happens in what order.
     },
     "neverFacesLaneAxis": true,
     "atPlotCentre": false
+  },
+  "coPresence": {
+    "scope": "spawnMomentOnly",
+    "longitudinalBudgetStuds": 38.7,
+    "derivation": "sqrt(S.value^2 - pitchStuds^2)",
+    "satisfiesSocial02CriterionOne": true,
+    "satisfiesSocial02CriterionTwoBeyondStuds": false,
+    "unclosedRequirementOwnedBy": "gameplay/social/02"
   },
   "bayLengthRule": "depths.areas[k].footprintStuds2 / laneWidthStuds",
   "bays": [
@@ -7666,7 +7712,10 @@ state looks like, what each object is made of, and what happens in what order.
     "sharedWithNeighbour": true,
     "outwardOpeningOfBay1": "the works' edge, per theme/setting/04",
     "studsBetweenParts": 0,
-    "alwaysOpen": true
+    "alwaysOpen": true,
+    "barrierInOpening": false,
+    "gatedUntilPreviousBayComplete": true,
+    "gateMechanism": "the ground beyond does not exist yet; the built lane's inward edge is bounded by the same plot boundary that bounds its two long sides, and no barrier is ever placed in an opening"
   },
   "liveGeometry": {
     "patchInstancesExistIn": "the live bay only",
@@ -7675,14 +7724,28 @@ state looks like, what each object is made of, and what happens in what order.
     "bayBuiltAt": "the instant the previous bay's last patch clears",
     "torndownBeyond": "bays more than two outward of the live one are destroyed and rebuilt bare on re-entry"
   },
+  "requestedRevisions": [
+    {
+      "sheet": "cid/gameplay/mechanics/06-traversal-affordances.md",
+      "change": "traversal.walkableMarginStuds 12 -> 0",
+      "reason": "that sheet offers the 12 studs back if the arrangement cannot otherwise be made to work; at 12 the pitch is 144 and breaches S"
+    },
+    {
+      "sheet": "cid/theme/setting/04-permanence-and-passage.md",
+      "change": "strike W5; keep W1-W4 and W6",
+      "reason": "passage is conditioned on the previous bay being complete; the opening itself is unchanged"
+    }
+  ],
   "invariants": [
-    "pitchStuds <= social.maxCoPresenceSeparationStuds",
+    "pitchStuds <= social.maxCoPresenceSeparationStuds.value",
+    "pitchStuds == laneWidthStuds + the realised inter-plot boundary thickness",
     "the realised distance between the spawns of two consecutive occupied slots equals pitchStuds at every bay ordinal",
     "bays[k].lengthStuds * laneWidthStuds == depths.areas[k].footprintStuds2",
     "bays[k].zEnd == bays[k+1].zStart",
     "bays[0].lengthStuds == laneWidthStuds == area.size",
     "the spawn's plot-local Z is not the midpoint of bays[0].zStart and the last bay's zEnd",
-    "the spawn's LookVector is parallel to rowAxis and never to laneAxis"
+    "the spawn's LookVector is parallel to rowAxis and never to laneAxis",
+    "no instance with CanCollide true is ever placed inside an opening"
   ]
 }
 ```
@@ -7753,7 +7816,7 @@ state looks like, what each object is made of, and what happens in what order.
   "terminalCondition": "the player's found count reaches the total number of names in collection",
   "reachedAt": {
     "areaOrdinal": 8,
-    "event": "the reveal on the last patch of West Spire that carries a Find"
+    "event": "the reveal on the last patch of the eighth bay that carries a Find"
   },
   "gameEnds": false,
   "collectionEnds": true,
@@ -7778,8 +7841,10 @@ state looks like, what each object is made of, and what happens in what order.
     "chunkCount": 16,
     "patchCount": 640,
     "minSpacing": 6,
-    "relicSlice": [],
+    "relicSliceIndex": "none",
+    "buriesFinds": 0,
     "unlock": "previousAreaComplete",
+    "bayLengthStuds": 480,
     "drawsFrom": "the depth-4 chunk family, under layout's R1 to R4"
   },
   "predicateScopeChange": {
@@ -7823,7 +7888,7 @@ state looks like, what each object is made of, and what happens in what order.
   ],
   "invariants": [
     "survivingPayoffKinds and extinctPayoffKinds partition core-loop/02's five kinds with no overlap",
-    "postTerminalArea.relicSlice is empty and no post-terminal area buries any name",
+    "postTerminalArea.relicSliceIndex is none and buriesFinds is 0",
     "postTerminalArea's footprint, chunkCount and patchCount equal depths.areas[7]'s",
     "no entry in forbidden appears as an identifier anywhere in game/src",
     "nothing in this key names a reward, a grant, a threshold or a recurrence"
@@ -8946,147 +9011,141 @@ state looks like, what each object is made of, and what happens in what order.
   "areaCount": 8,
   "sizingRule": "footprint(k) = floorToChunk( min(LAP_TARGET * tau(k), LAP_CEILING * tauTol(k)) / ROUTE_SLACK ), tau(k) = 2*(baseClearRadius + radiusLevel*perLevel)*(baseWalkSpeed + speedLevel*perLevel) at arrival",
   "footprintCeilingStuds2": 73216,
-  "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth",
+  "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
+  "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
+  "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+  "valueOnlyPurchaserThreshold": 7,
   "areas": [
     {
       "ordinal": 1,
       "depth": 1,
       "setId": "terrace",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Terrace",
       "footprintStuds2": 14400,
       "chunkCount": 4,
       "patchCount": 140,
       "minSpacing": 6,
-      "unlock": "none"
+      "unlock": "none",
+      "maxRadiusProduct": null
     },
     {
       "ordinal": 2,
       "depth": 1,
       "setId": "terrace",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Terrace",
       "footprintStuds2": 25200,
       "chunkCount": 7,
       "patchCount": 245,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.27
     },
     {
       "ordinal": 3,
       "depth": 2,
       "setId": "cistern",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Cistern",
       "footprintStuds2": 39600,
       "chunkCount": 11,
       "patchCount": 407,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.44
     },
     {
       "ordinal": 4,
       "depth": 2,
       "setId": "cistern",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Cistern",
       "footprintStuds2": 50400,
       "chunkCount": 14,
       "patchCount": 518,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 1.84
     },
     {
       "ordinal": 5,
       "depth": 3,
       "setId": "vault",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Vault",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 624,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 6,
       "depth": 3,
       "setId": "vault",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Vault",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 624,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 7,
       "depth": 4,
       "setId": "spire",
-      "relicSlice": [
-        1,
-        3
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "East Spire",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     },
     {
       "ordinal": 8,
       "depth": 4,
       "setId": "spire",
-      "relicSlice": [
-        4,
-        6
-      ],
+      "relicSliceIndex": "seeded(layoutSeed, depth)",
       "label": "West Spire",
       "footprintStuds2": 57600,
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "unlock": "previousAreaComplete"
+      "unlock": "previousAreaComplete",
+      "maxRadiusProduct": 2.1
     }
   ],
-  "requestedRevisionToCollection": {
-    "relicsPerArea": 3,
-    "areasPerDepth": 2,
-    "sheet": "cid/gameplay/meta/02-the-collection.md",
-    "reason": "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names"
-  },
+  "requestedRevisions": [
+    {
+      "sheet": "cid/gameplay/meta/02-the-collection.md",
+      "change": "relicsPerArea 6 -> 3, areasPerDepth 1 -> 2",
+      "reason": "areas at one depth partition that depth's set (gameplay/systems/05); 3 x 2 = 6 is the pair theme/fantasy/02 criterion 1 names"
+    },
+    {
+      "sheet": "cid/theme/setting/04-permanence-and-passage.md",
+      "change": "strike W5; keep W1-W4 and W6",
+      "reason": "the inward opening is passable only when the part is finished; this sheet and meta/06 take the strike that sheet itself names"
+    }
+  ],
   "invariants": [
     "areas[0].footprintStuds2 == area.size ^ 2 and areas[0].patchCount == area.patchCount and areas[0].minSpacing == area.minSpacing",
     "count of areas at each depth == collection.areasPerDepth; this key does not carry that number",
     "collection.relicsPerArea * collection.areasPerDepth == the size of every set",
-    "every relicSlice spans exactly collection.relicsPerArea names and the slices at one depth partition that set with no overlap and no gap",
+    "the resolved slices of one depth's areas partition that set with no overlap and no gap",
     "footprintStuds2 is a whole multiple of layout.chunk.footprintStuds2 and equals chunkCount times it",
     "patchCount == chunkCount * layout.patchesPerChunkByDepth[depth]",
     "patchCount / footprintStuds2 is non-decreasing in ordinal and strictly increases at every depth step",
     "minSpacing > movement.baseClearRadius",
     "footprintStuds2 <= footprintCeilingStuds2 for every row",
     "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
-    "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)"
+    "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
+    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
   ]
 }
 ```
@@ -9098,7 +9157,7 @@ state looks like, what each object is made of, and what happens in what order.
   "terminalCondition": "the player's found count reaches the total number of names in collection",
   "reachedAt": {
     "areaOrdinal": 8,
-    "event": "the reveal on the last patch of West Spire that carries a Find"
+    "event": "the reveal on the last patch of the eighth bay that carries a Find"
   },
   "gameEnds": false,
   "collectionEnds": true,
@@ -9123,8 +9182,10 @@ state looks like, what each object is made of, and what happens in what order.
     "chunkCount": 16,
     "patchCount": 640,
     "minSpacing": 6,
-    "relicSlice": [],
+    "relicSliceIndex": "none",
+    "buriesFinds": 0,
     "unlock": "previousAreaComplete",
+    "bayLengthStuds": 480,
     "drawsFrom": "the depth-4 chunk family, under layout's R1 to R4"
   },
   "predicateScopeChange": {
@@ -9168,7 +9229,7 @@ state looks like, what each object is made of, and what happens in what order.
   ],
   "invariants": [
     "survivingPayoffKinds and extinctPayoffKinds partition core-loop/02's five kinds with no overlap",
-    "postTerminalArea.relicSlice is empty and no post-terminal area buries any name",
+    "postTerminalArea.relicSliceIndex is none and buriesFinds is 0",
     "postTerminalArea's footprint, chunkCount and patchCount equal depths.areas[7]'s",
     "no entry in forbidden appears as an identifier anywhere in game/src",
     "nothing in this key names a reward, a grant, a threshold or a recurrence"

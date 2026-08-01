@@ -24,12 +24,14 @@ arrival τ decomposes exactly into ladder levels (176 = 2·5.5·16; 337.92 = 2·
 digit for digit and so does its 1.27 bound.** `[research: cid/gameplay/meta/04-the-depth-ladder.md]`
 
 **The structural fact my first draft missed: the products share one budget and spend it on the same
-quantity.** A radius factor multiplies τ directly. A value factor multiplies τ *indirectly*, by
-advancing the greedy purchase order so the player arrives at each area holding higher levels — at a
-combined value factor of 3.0, area-2 arrival moves from radius L3 / speed L2 to L5 / L5, which is
-τ 337.92 → 528. Both push the same lap toward the same floor. That is why the row-2 bound on a
-radius factor is **1.99 with no value pass owned and 1.27 with both**, and why `H4` ("reduce
-`products[].factor`") had to be told *which* factor.
+quantity.** τ is `2 · radius · speed`, so a factor on either throughput axis multiplies it
+identically, and the lap-floor bound is on **`Π productFactors(radius) × Π productFactors(speed)` as
+one quantity** — not per axis. A value factor multiplies τ *indirectly*, by advancing the greedy
+purchase order so the player arrives at each area holding higher levels: at a combined value factor
+of 3.0, area-2 arrival moves from radius L3 / speed L2 to L5 / L5, τ 337.92 → 528. All three push
+the same lap toward the same floor. That is why the ordinal-2 bound is **1.99 with no value pass
+owned and 1.27 with both**, and why `H4` ("reduce `products[].factor`") had to be told *which*
+factor.
 
 **The budget goes to the item the brief named.** `03-META.md` and `OPEN.md §6` both record exactly
 one open item here — *"the high-price SKU has no obvious home"* / *"The premium SKU has no home"*
@@ -83,7 +85,7 @@ the sweep width rather than an object, because a product reading as a thing you 
 paid-Find reading the whole fence exists to prevent. `[cid: decided]` — **`label` is the one field
 Vocabulary may overwrite without a revision against this sheet.**
 
-| area ordinal | arrival radius | arrival speed | arrival τ | footprint | max radius factor at the 75 s floor | lap at ×1.75 |
+| area ordinal | arrival radius | arrival speed | arrival τ | footprint | max `Π productFactors(radius) × Π productFactors(speed)` at the 75 s floor | lap at ×1.75 |
 |---|---|---|---|---|---|---|
 | 1 | 5.5 (L0) | 16.0 (L0) | 176.00 | 14,400 | 2.18 | 93.5 s |
 | 2 | 8.8 (L3) | 19.2 (L2) | 337.92 | 25,200 | **1.99 — binding** | **85.2 s** |
@@ -169,17 +171,20 @@ Vocabulary may overwrite without a revision against this sheet.**
           "radius": "plots.laneWidthStuds / 2",
           "speed": "movement.baseClearRadius / runtime.serverTickSeconds"
         },
-        "atShippedValues": "radius: 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54"
+        "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25"
       },
       "H2_lapFloor": {
         "rule": "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
         "tau": "2 * (arrivalRadius(N) * prod(productFactors on radius)) * (arrivalSpeed(N) * prod(productFactors on speed))",
+        "joint": "the bound below is on prod(productFactors on radius) * prod(productFactors on speed) as ONE quantity, not per axis. A radius product and a speed product each passing their own check can still break the lap together.",
         "floorSeconds": 75,
         "ceilingSeconds": 200,
         "ceilingAtRisk": false,
         "ceilingNote": "a product factor is >= 1, so it can only shorten a lap. H2 is one-sided.",
         "bindingOrdinal": 2,
-        "maxRadiusFactorByOrdinal": { "1": 2.18, "2": 1.99, "3": 2.14, "4": 2.17, "5": 2.10, "6": 2.10, "7": 2.10, "8": 2.10 },
+        "maxThroughputProductFactorByOrdinal": { "1": 2.18, "2": 1.99, "3": 2.14, "4": 2.17, "5": 2.10, "6": 2.10, "7": 2.10, "8": 2.10 },
+        "spentByCurrentProducts": 1.75,
+        "remaining": 1.14,
         "computedAtCombinedValueFactor": 1.0,
         "valueFactorWarning": "every bound above FALLS as combinedFactorCap.value rises, because a value product advances the greedy purchase order and raises arrival levels. At a combined value factor of 3.0 the ordinal-2 bound is 1.27, verified in wave 3. Adding any product on the value axis requires re-running the greedy purchase order against upgrades[] and re-deriving this whole table; these bounds are not valid at any other value factor."
       },
@@ -197,14 +202,14 @@ Vocabulary may overwrite without a revision against this sheet.**
 
 | subject | what this forces or forbids |
 |---|---|
-| Area-sizing and depth-ladder work (`meta/04`) | RR-4's fix lands here, not there. `Π productFactors(value)` is now **1**, so `meta/04`'s value-exposure analysis (the mis-stated 3.94×, really ≈7×) becomes vacuous rather than wrong, and the single live bound is `Π productFactors(radius) ≤ 1.99 at ordinal 2`, which 1.75 satisfies. **Your eight footprints do not move.** Re-derive the table above if you change any footprint or any arrival level. |
+| Area-sizing and depth-ladder work (`meta/04`) | RR-4's fix lands here, not there. `Π productFactors(value)` is now **1**, so `meta/04`'s value-exposure analysis (the mis-stated 3.94×, really ≈7×) becomes vacuous rather than wrong, and the single live bound is **`Π productFactors(radius) × Π productFactors(speed) ≤ 1.99 at ordinal 2`**, which 1.75 satisfies. **Your eight footprints do not move.** Re-derive the table above if you change any footprint or any arrival level. |
 | Store-surface work (UI/UX) | **You have no store to draw.** R-4 removes the screen, the rows, the prices and the purchase control entirely; four pressables and five verbs stand exactly as `mechanics/02` fixed them. This is a deletion of scope, not a deferral. |
 | Store-page and marketing work (wave 7) | **You inherit the honest cost of R-4: a player who owns no pass has no way to learn from inside the game that a pass exists.** The experience page is the only surface on which `Span` is discoverable, so the store description and the pass listing are load-bearing rather than decorative. Named here so wave 7 inherits it instead of rediscovering it. |
 | Held-tool work (owner of `tool`) | Head width must resolve from **effective radius**, not Reach level, or `Span` is a 499-Robux product with no visible expression. I state the requirement and change no value of yours; a refusal is legitimate and revises this sheet. |
 | Onboarding and layout work (`onboarding/02`, `meta/05`) | **A purchaser's effective clear radius at spawn is 9.625 studs, not 5.5.** `firstSession.placement.spawnToNearestPatchMaxStuds` and `layout.spawnAdjacency` are both derived from `movement.baseClearRadius` unmultiplied, and a player who bought `Span` before their first session sweeps a disc 1.75× wider on their first tick. Whether the arming gate and the first-Find guarantee survive that is yours; I state it rather than assume it. |
 | Contract-and-seam work (owner of `bridge/schema.mjs`) | `products` supplies `H1` and `H2` as evaluable expressions. `ceilings.radius` now reads `plots.laneWidthStuds / 2` (RR-11) — numerically 60, identical to the old `area.size / 2`, and defined at every ordinal, where `area.size` was not. `ladderMax` is a lookup by `upgrades[].id == A`. `headroom.canonical` says to write `H1` and not `setBonus.invariants[4]`. `products.items[].label` is still a player-facing string with no path in `playerFacingStrings()`. |
 | Balance & Tuning | One factor and one price. `factorTestRange` is [1.40, 1.95] and the upper bound is the hard lap-floor limit, not a taste figure — above it, `H2` fails at ordinal 2. `priceRobux` may move anywhere inside 349–999 with no revision. |
-| Set-bonus work (`meta/03`) | Unchanged and still fits: `Span` at 1.75 leaves 2.16× for radius set factors and your two at ×1.2 spend 1.44. |
+| Set-bonus work (`meta/03`) | Unchanged and still fits: `Span` at 1.75 leaves 2.16× for radius set factors and your two at ×1.2 spend 1.44. A third radius factor at ×1.2 still fits; a fourth does not. |
 
 ## Acceptance criteria
 

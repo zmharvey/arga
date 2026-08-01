@@ -8,9 +8,19 @@
 	module may WaitForChild, FindFirstChild or search for a remote, and an undeclared name
 	is an error here rather than a warning and a nil somewhere else.
 
-	Exactly five channels, and no more. There is deliberately no clearing channel and no
+	Exactly seven channels, and no more. There is deliberately no clearing channel and no
 	currency channel: the server observes clearing on its own tick, so there is nothing a
-	client could claim.
+	client could claim, and no client message carries a cost, an amount or a balance.
+
+	THE CLIENT SURFACE IS CLOSED AND IT IS CHECKED, not promised. Exactly two channels run
+	client -> server, and they are `GameConfig.Input.clientOriginatedRemotes` verbatim:
+	RequestState and BuyUpgrade. The two lists are compared against each other, in both
+	directions, below — so adding an eighth channel that a client can fire, or dropping one
+	the input contract names, fails loudly at load rather than quietly at review.
+
+	`RequestState` is fired by no player input; it is the pull client-main makes once, after
+	its updaters are live, because the join-time push may have arrived before the HUD
+	existed. Removing it leaves the HUD blank until something changes.
 
 	It also states, once, what a snapshot carries. Both sides build and read the payload
 	from `snapshotShape()` instead of repeating field-name literals, so adding a field is
@@ -24,10 +34,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local GameConfig = require(script.Parent.GameConfig)
+
 -- [architect: arbitrary] The runtime Folder the remote Instances live in, directly under
--- ReplicatedStorage. Deliberately NOT under tree.sharedRoot: that Folder is Rojo-managed
--- and these Instances are made at runtime. Written here once so that no other module ever
--- spells it.
+-- ReplicatedStorage — tree.remotesRoot is "ReplicatedStorage.Remotes". Deliberately NOT
+-- under tree.sharedRoot: that Folder is Rojo-managed and these Instances are made at
+-- runtime. Written here once so that no other module ever spells it.
 local REMOTES_FOLDER_NAME = "Remotes"
 
 local Protocol = {}
@@ -37,76 +49,192 @@ export type ChannelDef = {
 	direction: "client -> server" | "server -> client",
 	payload: string,
 	firedBy: string,
+	handledBy: string,
 }
 
--- The five channels, keyed by name. NAMES AND CLASSES, NOT INSTANCES — `channel(name)`
--- returns the Instance. `firedBy` is the one module that originates the message; who
--- handles it, and why the channel exists at all, are in the comment above each entry.
+-- The seven channels, keyed by name. NAMES AND CLASSES, NOT INSTANCES — `channel(name)`
+-- returns the Instance. `firedBy` is the one module that originates the message and
+-- `handledBy` is the one that receives it; every channel has both, deliberately, because a
+-- channel with a producer and no consumer is the defect this table exists to make visible.
+-- Why each channel exists at all is in the comment above its entry.
 local REMOTES: { [string]: ChannelDef } = {
 	-- Handled by server-main, which sets OnServerInvoke at boot. client-main may not
-	-- assume the join-time push arrived, so it pulls once after its updater is live.
+	-- assume the join-time push arrived, so it pulls once after its updaters are live.
+	-- Client-originated but NOT player-driven: input.clientRemotesFiredByPlayerInput is
+	-- exactly [BuyUpgrade], and this one is fired by client-main's boot, not by a press.
 	RequestState = {
 		class = "RemoteFunction",
 		direction = "client -> server",
 		payload = "no arguments; returns one snapshot",
 		firedBy = "client-main",
+		handledBy = "server-main, which sets OnServerInvoke at boot",
 	},
 
-	-- Handled by client-main, which passes it to the updater hud-binding.bind returned.
+	-- Handled by client-main, which fans it out to every updater bound at client boot.
 	-- TWO ORIGINATORS, deliberately and safely: it carries a whole snapshot rather than a
-	-- delta, so a duplicate is idempotent and an extra push is harmless.
+	-- delta, so a duplicate is idempotent and an extra push is harmless. currency,
+	-- clearedCount, found and areasFinished only ever change inside the tick, so without
+	-- clearing firing it the readouts sit frozen until the next purchase.
 	StateChanged = {
 		class = "RemoteEvent",
 		direction = "server -> client",
 		payload = "one snapshot, exactly the fields snapshotShape() names",
 		firedBy = "server-main on join, on spawn and after a successful purchase; clearing once per tick in which anything changed",
+		handledBy = "client-main, which fans it out to every updater",
 	},
 
-	-- Handled by server-main, wiring.onPurchase. The only client-originated message in the
-	-- game, and it carries an id and nothing else: the server prices it.
+	-- Handled by server-main, wiring.onPurchase. One of the two client-originated messages
+	-- and the ONLY one a player's input produces. It carries an id and nothing else: the
+	-- server prices it, and economy.authority is why no cost, amount or balance is on it.
 	BuyUpgrade = {
 		class = "RemoteEvent",
 		direction = "client -> server",
 		payload = "one upgrade id string and nothing else",
 		firedBy = "input",
+		handledBy = "server-main, wiring.onPurchase",
 	},
 
-	-- Handled by client-main's onReveal handler, which is connected and empty. The HUD does
-	-- not need it; the found count arrives on StateChanged.
+	-- Handled by beats, as response.beats[findReveal]: rank 1, 300 ms acknowledgment
+	-- budget, channels atPatch and audio, notice FORBIDDEN, queued, 2.5 s dwell. Up to
+	-- collection.relicsPerArea (3) times per area per player, and never for a post-terminal
+	-- area. The HUD does not need it; the found map arrives on StateChanged.
 	FindRevealed = {
 		class = "RemoteEvent",
 		direction = "server -> client",
-		payload = "one find name string, from Patch.relic",
+		payload = "one Find name string, from Patch.find",
 		firedBy = "clearing",
+		handledBy = "beats, as response.beats[findReveal]",
 	},
 
-	-- Handled by client-main's onRestored handler, connected and empty for the same reason.
-	-- Fired exactly once per player per area, on the latch transition only; a rejoining
-	-- finished player learns it from the snapshot's areaComplete field and nothing else.
+	-- Handled by beats, as response.beats[setComplete]: rank 2, 400 ms budget, channels
+	-- notice and audio, queued. Exactly once per player per set, on the sixth Find of that
+	-- set. A SEPARATE CHANNEL FROM FindRevealed and not a prefixed string on it:
+	-- response.channelExclusivity puts findReveal on atPatch and setComplete on notice, so
+	-- one packet cannot carry both without the receiver having to re-derive which it was.
+	SetCompleted = {
+		class = "RemoteEvent",
+		direction = "server -> client",
+		payload = "one collection.sets[].id string",
+		firedBy = "clearing",
+		handledBy = "beats, as response.beats[setComplete]",
+	},
+
+	-- Handled by beats, as response.beats[areaComplete]: rank 3, 400 ms budget, channels
+	-- notice and audio, atPatch FORBIDDEN, queued. Fired exactly once per player per area,
+	-- on the latch transition only — a post-terminal area fires it too, since
+	-- endgame.survivingPayoffKinds includes areaCompletion.
 	AreaRestored = {
 		class = "RemoteEvent",
 		direction = "server -> client",
-		payload = "the area label string",
+		payload = "the area label string from layout.areaSpec(ordinal).label",
 		firedBy = "clearing",
+		handledBy = "beats, as response.beats[areaComplete]",
+	},
+
+	-- Handled by beats, as response.beats[upgradePurchased]: rank 4, 200 ms budget,
+	-- channels readout and audio, queued, effectAppliedBeforeAcknowledgment true.
+	--
+	-- FIRED ONLY ON A SUCCESSFUL PURCHASE, and that is the whole reason it exists.
+	-- input.verbs[buy].onPreconditionFail is silentNoOp and
+	-- input.pressable.rejectionCueOnFailedPrecondition is 'none', so a failed buy produces
+	-- no packet at all — which means a client diffing snapshots cannot tell an accepted
+	-- purchase from an ignored one inside a 200 ms budget. This is the acknowledgment that
+	-- makes that budget measurable.
+	UpgradeApplied = {
+		class = "RemoteEvent",
+		direction = "server -> client",
+		payload = "one upgrade id string and the new held level",
+		firedBy = "server-main",
+		handledBy = "beats, as response.beats[upgradePurchased]",
 	},
 }
 
 -- Frozen so that "protocol owns the names" is enforced rather than merely documented: a
--- module cannot add a sixth channel, or retype an existing one, from the outside.
+-- module cannot add an eighth channel, or retype an existing one, from the outside.
 for _, def in pairs(REMOTES) do
 	table.freeze(def)
 end
 Protocol.REMOTES = table.freeze(REMOTES)
 
--- The fields a snapshot carries, in order. A snapshot is NOT a PlayerState: patches,
--- cleared and player never cross the wire — the first two are hundreds of entries the HUD
--- has no use for, and the third is not serialisable.
+--[[
+	THE CLOSED-SURFACE CHECK, in both directions.
+
+	The set of channels declared `client -> server` here must equal
+	`GameConfig.Input.clientOriginatedRemotes` exactly. Comparing them at load is what turns
+	"the client surface is closed" into a property of the merge rather than a promise in a
+	comment: a channel added here that the input contract does not name, or a name the input
+	contract carries that this table has dropped, stops the place from booting.
+
+	Pure table work over seven entries: it reads no Instance, creates none and cannot yield,
+	so it does not break tree's "no work at require time" rule, which is about side effects
+	and yields rather than about arithmetic.
+]]
+local function assertClientSurfaceMatchesConfig()
+	local declared: { [string]: boolean } = {}
+	for name, def in pairs(REMOTES) do
+		if def.direction == "client -> server" then
+			declared[name] = true
+		end
+	end
+
+	-- Cast because GameConfig is reached by an instance require, which the analyser cannot
+	-- follow; the cast states the shape this module relies on rather than leaving every use
+	-- of `name` below as `unknown`.
+	local clientOriginated = GameConfig.Input.clientOriginatedRemotes :: { string }
+
+	for _, name in ipairs(clientOriginated) do
+		if declared[name] == nil then
+			error(
+				string.format(
+					"Protocol: GameConfig.Input.clientOriginatedRemotes names %s, but no channel declares direction 'client -> server' under that name",
+					tostring(name)
+				)
+			)
+		end
+		declared[name] = nil
+	end
+
+	for name in pairs(declared) do
+		error(
+			string.format(
+				"Protocol: channel %s is declared 'client -> server' but is not in GameConfig.Input.clientOriginatedRemotes; the client surface is closed",
+				name
+			)
+		)
+	end
+end
+
+assertClientSurfaceMatchesConfig()
+
+--[[
+	The fields a snapshot carries, in order.
+
+	A SNAPSHOT IS NOT A PlayerState. patches, cleared, spawnPivot, owned, armState and
+	player never cross the wire: the first two are hundreds of entries the HUD has no use
+	for, owned would put a purchase on the wire for no reader, armState is a server-side
+	gate, and player is not serialisable. Nothing here names another player (social X7) and
+	nothing here is a player-authored string (X9).
+
+	SIX OF THESE ARE READ STRAIGHT OFF THE STATE AND TWO ARE DERIVED. A producer that loops
+	this list and copies `state[field]` gets `nil` for the last two, because no such field
+	exists on PlayerState:
+
+	    areaPatchCount  = layout.areaSpec(state.areasFinished + 1).patchCount
+	    areaLabel       = layout.areaSpec(state.areasFinished + 1).label
+
+	They are on the wire so the client can draw a progress readout without holding depths
+	and endgame itself, which is the only way the number stays right once an area's size
+	changes or the ladder runs past its authored end.
+]]
 local SNAPSHOT_FIELDS: { string } = table.freeze({
-	"currency",
-	"upgrades",
-	"clearedCount",
-	"found",
-	"areaComplete",
+	"currency", -- number, straight off the state
+	"upgrades", -- map<upgradeId, integer>, straight off the state
+	"rowsRevealed", -- map<upgradeId, boolean>, straight off the state
+	"found", -- map<findName, boolean>, straight off the state
+	"areasFinished", -- integer, straight off the state
+	"clearedCount", -- integer, straight off the state — the live area only
+	"areaPatchCount", -- DERIVED: layout.areaSpec(areasFinished + 1).patchCount
+	"areaLabel", -- DERIVED: layout.areaSpec(areasFinished + 1).label
 })
 
 --[[
@@ -122,7 +250,7 @@ end
 	from REMOTES.
 
 	SERVER ONLY, called exactly once, by server-main at boot before any player can join
-	(wiring.boot step 2). Idempotent: a second call finds all five channels already there,
+	(wiring.boot step 3). Idempotent: a second call finds all seven channels already there,
 	creates nothing, and returns the same Folder. Connects no handler — server-main connects
 	BuyUpgrade and RequestState itself.
 

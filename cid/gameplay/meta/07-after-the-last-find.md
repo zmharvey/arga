@@ -82,7 +82,6 @@ of the thirteen excluded ones is added or reserved for.
 ```manifest
 {
   "provides": "endgame",
-  "status": "proposed",
   "value": {
     "terminalCondition": "the player's found count reaches the total number of names in collection",
     "reachedAt": { "areaOrdinal": 8, "event": "the reveal on the last patch of the eighth bay that carries a Find" },

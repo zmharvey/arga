@@ -320,9 +320,21 @@ ${r.maxPlayers === undefined ? '' : `GameConfig.MaxPlayers = ${num(r.maxPlayers)
   // reaches the build without anyone remembering to add it here. A key that validates but
   // never reaches the build is a key nothing downstream can check — which is exactly how
   // `areasPerDepth` sat unemitted until a sheet needed it.
+  // `vocabulary` is deliberately NOT in this set, though it was.
+  //
+  // Every other name here is claimed by a hand-written block above that actually emits it.
+  // `vocabulary` was claimed and then emitted by nothing, so `GameConfig.Vocabulary` did not
+  // exist — the same "validates, is named in an interface, and reaches nothing" failure the
+  // `layoutSeed` comment describes, one key over.
+  //
+  // It was not free. The `pressables` builder needed `maxLabelChars` to size a button's text,
+  // found no config field, and wrote `14` as a literal in a client module; the `config`
+  // builder then found the cause. Two modules hard-coding two different truncations is
+  // exactly what a contract key exists to prevent, and re-emitting could not have fixed
+  // either one.
   const HAND_WRITTEN = new Set([
     'tiers', 'upgrades', 'movement', 'currency', 'patch', 'area', 'collection',
-    'onboarding', 'runtime', 'vocabulary',
+    'onboarding', 'runtime',
   ]);
   // Technical keys that are a SPECIFICATION rather than tuned values, and that already have
   // their own emitted artifact. Dumping them here put 2,700 lines of module plan, interface
