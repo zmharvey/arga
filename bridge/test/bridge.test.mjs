@@ -32,7 +32,7 @@ const GOOD = {
   ],
   movement: { baseWalkSpeed: 16, baseClearRadius: 5.5 },
   patch: { footprint: 3, collides: false, material: 'Grass' },
-  area: { id: 'east-terrace', label: 'EAST TERRACE', originXZ: [0, 0], size: 120, patchCount: 140, minSpacing: 6 },
+  area: { id: 'east-terrace', label: 'East Terrace', originXZ: [0, 0], size: 120, patchCount: 140, minSpacing: 6 },
   collection: {
     className: 'Find',
     classPlural: 'Finds',
@@ -45,6 +45,9 @@ const GOOD = {
   vocabulary: {
     maxLabelChars: 14,
     register: 'Plain concrete nouns.',
+    casing: 'title',
+    maxSentenceWords: 12,
+    allowedPattern: "^[A-Za-z0-9 ,.'%-]+$",
     bannedWords: [{ word: 'relic', reason: 'occupied by two games in this family for a rolled multiplier' }],
   },
 };
@@ -359,3 +362,67 @@ const APPLIED = () => {
   m.modules[1].applies = ['value'];
   return m;
 };
+
+/* ------------------------ tone's output, made checkable instead of prose */
+
+// `vocabulary.register` is a sentence, and always will be — it is what a human writer reads.
+// These three fields are the checkable half of the same decision, and they exist because the
+// prose half could not be enforced.
+//
+// Tone spent four sheets on a register. One ruling from it, Title Case, had to be carried
+// into two other domains by hand; before that, three separate sheets each spent ~150k tokens
+// rediscovering that `area.label` was "East Terrace" while `sets[].label` was "Terrace".
+// `cid:verify` warned about it and left the choice to a human, because picking one crossed a
+// category boundary. A contract field settles it once and the merger enforces it for free.
+
+test('a label that is not Title Case is rejected when casing says title', () => {
+  const m = clone();
+  m.area.label = 'EAST TERRACE';
+  const p = validateManifest(m).problems.find((x) => x.includes('Title Case'));
+  assert.ok(p, 'the exact defect three sheets rediscovered must now be caught');
+  assert.match(p, /area\.label/);
+});
+
+test('every player-facing string must be typeable in the declared character set', () => {
+  for (const [what, mutate] of [
+    ['a curly apostrophe', (m) => { m.upgrades[0].blurb = 'it’s worth it'; }],
+    ['an emoji', (m) => { m.currency.name = 'Shard✨'; }],
+  ]) {
+    const m = clone();
+    mutate(m);
+    assert.ok(
+      validateManifest(m).problems.some((x) => x.includes('allowedPattern')),
+      `${what} must be caught`,
+    );
+  }
+});
+
+test('prose has a word ceiling even though it is exempt from the label limit', () => {
+  const m = clone();
+  m.upgrades[0].blurb = 'one two three four five six seven eight nine ten eleven twelve thirteen';
+  const p = validateManifest(m).problems.find((x) => x.includes('word limit'));
+  assert.ok(p, 'a run-on blurb must be caught');
+  assert.match(p, /13-word/);
+});
+
+test('a label at the ceiling and in the right case passes', () => {
+  // The guard against a rule that only ever says no.
+  const m = clone();
+  m.area.label = 'East Terrace';
+  m.currency.name = 'Shard';
+  assert.deepEqual(validateManifest(m).problems, []);
+});
+
+test('an unparseable allowedPattern is caught rather than silently skipped', () => {
+  const m = clone();
+  m.vocabulary.allowedPattern = '^[unclosed';
+  assert.ok(validateManifest(m).problems.some((x) => x.includes('not a valid regular expression')));
+});
+
+test('the shipped manifest satisfies its own copy rules', async () => {
+  const { mergeSheets: merge } = await import('../merge.mjs');
+  const { manifest } = await merge('cid');
+  const copy = validateManifest(manifest).problems
+    .filter((p) => /Title Case|allowedPattern|word limit|upper case/.test(p));
+  assert.deepEqual(copy, []);
+});

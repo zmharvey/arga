@@ -145,30 +145,19 @@ for (const f of files.filter(scoped)) {
   }
 }
 
-/* ------------------------------- 5. one casing convention, not two */
+/* --- 5. one casing convention --- retired, and this is the shape of a good retirement */
 
-// What three sheets actually found. `area.label` is "EAST TERRACE" and
-// `upgrades[].label` are "VALUE"/"REACH"/"PACE", while every other player-facing label is
-// Title Case: "Terrace", "Cistern", "Shard", "Moss". Same-string comparison misses it
-// because these are different words — the defect is that the game shouts in some places
-// and not others.
+// This used to warn that labels used two conventions and leave the choice to a human,
+// because picking one crossed a category boundary: Tone's register versus values owned by
+// gameplay/meta and gameplay/balance.
 //
-// A warning, not a failure: which convention wins is a judgement that crosses a category
-// boundary (Tone's register versus values owned by gameplay/meta and gameplay/balance),
-// and it should be ruled on rather than auto-corrected.
-{
-  const { manifest } = await mergeSheets(ROOT);
-  const labels = playerFacingStrings(manifest)
-    .filter(({ path }) => !/\.(blurb|flavour)$/.test(path))
-    .filter(({ value }) => /^[A-Za-z][A-Za-z ]*$/.test(value));
-  const shouted = labels.filter(({ value }) => value === value.toUpperCase() && value.length > 1);
-  const titled = labels.filter(({ value }) => value !== value.toUpperCase());
-  if (shouted.length && titled.length) {
-    warns.push(`player-facing labels use two casing conventions: ${shouted.length} all-caps `
-      + `(${shouted.slice(0, 4).map((s) => `"${s.value}"`).join(', ')}) and ${titled.length} title-case `
-      + `(${titled.slice(0, 4).map((s) => `"${s.value}"`).join(', ')}). Pick one — Tone's register forbids runs of capitals.`);
-  }
-}
+// It is gone because `vocabulary.casing` now states the convention and the merger enforces
+// it on every player-facing string. A warning that needs a human ruling is a worse version
+// of a contract field that settles it — the ruling happens once, in the domain that owns
+// the decision, instead of every time somebody reads the warning.
+//
+// Tone's other checkable output moved the same way: `maxSentenceWords` and `allowedPattern`
+// were prose in a register sheet that nothing could check.
 
 /* ------------------------- 6. a cited URL must be in the research pack */
 
@@ -240,6 +229,52 @@ const PROSE_BUDGET = 100;
     warns.push(`${long.length} sheet(s) over the ${PROSE_BUDGET}-line prose budget by ${excess} lines total. `
       + `Worst: ${long.slice(0, 3).map((l) => `${l.rel} (${l.n})`).join(', ')}. `
       + 'Tables and manifest blocks are exempt — cut the argument, never a check.');
+  }
+}
+
+/* --------------------- 8. a domain that owns no contract key should not run */
+
+// The simplification rule, measured before it was written: 23 of 35 sheets and 6,297 of
+// 8,051 lines came from domains that own no contract key. 78% of CID produced output no
+// build step could read.
+//
+// This is the repo's own rule — every declared thing has a consumer — turned back on the
+// stage that produces the declarations. A domain that cannot state its output as a contract
+// value is writing prose, and prose has to be re-interpreted by whoever reads it next, which
+// is the failure the whole pipeline exists to remove.
+//
+// It warns rather than fails, because the existing wave-1 sheets are a record worth keeping
+// and deleting them retroactively buys nothing. What it stops is the *next* wave: waves 2-7
+// were going to add 41 more domains under the old rule.
+{
+  const owners = new Set(Object.values(SCHEMA).map((s) => s.owner));
+  const withSheets = new Map();
+  for (const f of leaves.filter(scoped)) {
+    const domain = relative(ROOT, dirname(f));
+    withSheets.set(domain, (withSheets.get(domain) ?? 0) + 1);
+  }
+
+  const orphans = [...withSheets].filter(([d]) => !owners.has(d));
+  if (orphans.length) {
+    let lines = 0;
+    for (const [d] of orphans) {
+      for (const f of leaves.filter((x) => relative(ROOT, dirname(x)) === d)) {
+        lines += (await readFile(f, 'utf8')).split('\n').length;
+      }
+    }
+    const sheets = orphans.reduce((n, [, c]) => n + c, 0);
+    warns.push(`${orphans.length} domain(s) own no contract key: `
+      + `${orphans.map(([d, c]) => `${d} (${c})`).join(', ')}. `
+      + `That is ${sheets} sheets and ${lines} lines the build cannot read. `
+      + 'A domain that cannot state its output as a contract value produces prose. Either '
+      + 'give it a key, fold it into a domain that has one, or do not run it.');
+  }
+
+  // The other direction: a key nobody is writing sheets for.
+  for (const owner of owners) {
+    if (!withSheets.has(owner)) {
+      notes.push(`${owner} owns a contract key but has no sheets yet`);
+    }
   }
 }
 

@@ -129,8 +129,13 @@ exactly how a design pipeline silently stops mattering.
 **2. The prohibitions are not advice.** A *Must not* entry is there because the design
 breaks without it, usually for a reason recorded in a spec sheet you cannot see.
 
-**You are being measured on rule 1, not on finishing.** A module with four honest stops is
-a better result than a module with none and four quiet guesses. Report every one.
+**Report every stop.** A module with four honest stops is a better result than one with none
+and four quiet guesses.
+
+But sort them. A gap that would change what a player experiences goes at the top; a choice
+that only affects this file goes in the second list and stays short. Four trials counted
+stops without that split and learned little from the total, because "nobody named this
+variable" and "nothing computes this upgrade" were the same number.
 
 ---
 

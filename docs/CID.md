@@ -4,6 +4,47 @@
 the domains owning build-contract keys. `npm run cid:verify` passes. The rest of this file
 is the original design brief; the run order below is what actually works.
 
+## The rule that decides whether a domain runs
+
+**A domain runs only if it owns at least one key in the build contract.** Check with
+`npm run bridge -- --contract`. `npm run cid:verify` warns for every domain that breaks it.
+
+This is the repo's own rule turned back on CID. Everything else here is checked for having a
+consumer — an upgrade nothing applies is rejected, a state field nothing constructs is
+rejected, a module nothing depends on is rejected. CID was the one stage exempt, and measured
+after wave 1:
+
+> **23 of 35 sheets and 6,297 of 8,051 lines came from domains that own no contract key.**
+> 78% of the output could not be read by any build step.
+
+| | sheets | lines |
+|---|---|---|
+| domains that own a key | 12 | 1,789 |
+| domains that own nothing | **23** | **6,297** |
+
+Those sheets are not bad writing; several are the best documents in the repo. But a decision
+that cannot be stated as a contract value reaches the build only as prose, and prose has to be
+re-interpreted by whoever reads it next. Exactly two rulings from those 23 sheets ever reached
+the build, and a human carried both across by hand after noticing them.
+
+**Three options when a domain has something real to say and no key to say it in:**
+
+1. **Get it a key**, if the output is checkable. Tone's register was four sheets of prose; its
+   checkable half is now `vocabulary.casing`, `.maxSentenceWords` and `.allowedPattern`, and
+   the merger enforces all three on every player-facing string. `cid:verify` used to *warn*
+   that labels shouted in some places and not others and leave the ruling to a human. It is a
+   hard failure now, and the check that warned is deleted.
+2. **Fold it into a domain that has one.** Naming is not a decision separate from the thing
+   named, and neither is most tone.
+3. **Do not run it.** A category that can only produce prose is advisory. Label it that way
+   rather than funding it like a department.
+
+The 23 sheets stay on disk as a record. Deleting them retroactively buys nothing; the rule is
+for the next wave, which was going to add 41 more domains under the old one.
+
+**Seven domains may run today:** `art/objects`, `gameplay/balance`, `gameplay/mechanics`,
+`gameplay/meta`, `gameplay/onboarding`, `gameplay/systems`, `theme/vocabulary`.
+
 ## How to run a wave
 
 ```bash

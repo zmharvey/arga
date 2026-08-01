@@ -274,3 +274,21 @@ test('a domain owning nothing gets an empty list, not an error', async () => {
   assert.deepEqual(mine, []);
   assert.ok(others.length >= 9, 'every key belongs to somebody else');
 });
+
+/* ------------------------------ a domain that owns no contract key */
+
+test('every contract owner is a real domain path', async () => {
+  // The simplification rule's other half. `cid:verify` warns for a domain with sheets and no
+  // key; this catches the reverse typo, where a key names an owner that could never exist.
+  const { SCHEMA } = await import('../schema.mjs');
+  for (const [key, spec] of Object.entries(SCHEMA)) {
+    assert.match(spec.owner, /^[a-z-]+\/[a-z-]+$/, `${key}'s owner should be category/domain`);
+  }
+});
+
+test('contractSlice tells a keyless domain plainly that it owns nothing', async () => {
+  // What a domain lead now acts on: no key means assign nothing, rather than write prose.
+  const { mine, others } = contractSlice('theme/lore');
+  assert.deepEqual(mine, []);
+  assert.ok(others.length >= 9);
+});

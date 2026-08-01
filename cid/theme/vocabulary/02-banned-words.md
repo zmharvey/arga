@@ -49,6 +49,9 @@ incremental-genre vocabulary is off-limits even when it is not banned outright.
   "value": {
     "maxLabelChars": 14,
     "register": "Plain concrete nouns, one word where possible. No ornament, no invented compounds, no incremental-genre vocabulary.",
+    "casing": "title",
+    "maxSentenceWords": 12,
+    "allowedPattern": "^[A-Za-z0-9 ,.'%-]+$",
     "bannedWords": [
       { "word": "relic",    "reason": "occupied by Scrap Incremental and Faith Incremental for a rolled multiplier item, which is the wrong mental model for a discovered set collectible" },
       { "word": "relics",   "reason": "plural of a banned word" },

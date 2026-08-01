@@ -159,9 +159,16 @@ something they had to make up on the spot because no sheet supplied it — patch
 weights, cost curves, tick rates, and the six relic names, which was squarely a writer's job.
 The list is empirical, not theoretical.
 
-If your pack says you own no keys, that is a correct result and not a gap. Your output is a
-*bound* on values other domains supply. **Do not add a manifest block to make a sheet look
-load-bearing.** It will fail the merge.
+If your pack says you own no keys, **something upstream is wrong and you should say so rather
+than write around it.** A domain with no key produces prose, and prose reaches the build only
+by being re-interpreted, which is the failure this pipeline exists to remove.
+
+Measured after wave 1: 23 of 35 sheets came from domains owning no key — 78% of the output,
+which no build step could read. Your lead is now required to check `npm run bridge --
+contract` and assign nothing if it owns nothing. If you were dispatched anyway, write what you
+were asked and open your report with the fact that the domain has no contract path.
+
+**Never add a manifest block to make a sheet look load-bearing.** It will fail the merge.
 
 If a decision overrules a `[brief: soft]` item, add `## Pushing back` stating what you overruled
 and why. If you decided something the brief was silent on, add `## Flagged to the developer`

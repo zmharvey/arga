@@ -128,6 +128,19 @@ Every claim you write carries one tag:
 hardening into apparent fact. Never upgrade a `[cid: decided]` to a brief tag because an
 adjacent item was settled.
 
+## First: do you own a contract key at all?
+
+**Run `npm run bridge -- --contract`. If your domain owns no key, stop and say so. Assign
+nothing.**
+
+After wave 1, 23 of 35 sheets came from domains that own no key — 78% of CID's output, which
+no build step could read. The rule now is the same one the rest of the pipeline already
+enforces on upgrades, state fields and modules: every declared thing has a consumer.
+
+If your subject has something real and checkable to say and no key to say it in, that is a
+finding worth reporting upward — a contract key may be missing. It is not licence to write
+prose and hope. Report it and assign nothing.
+
 ## How many sheets — anchor this to the build contract, not to a preference
 
 **Run this first, before you enumerate anything:**
@@ -143,8 +156,14 @@ key is something a builder had to invent on the spot because no sheet supplied i
 
 1. **One sheet per contract key you own.** If `--contract` says your domain owns `tiers`,
    that is one sheet, and it must carry the `manifest` block supplying it.
-2. **Plus one sheet per genuine non-value decision** — a tonal rule, a prohibition, a piece
-   of fiction, a naming pattern. These have no manifest block, and that is correct.
+2. **Plus, sparingly, a sheet for a decision that constrains a key you own** — a prohibition
+   or a rule that shapes the value rather than being it. These carry no manifest block.
+
+   This used to read "one sheet per genuine non-value decision — a tonal rule, a piece of
+   fiction," with no tether at all, and it is how 78% of wave 1 came to be prose no build
+   step could read. A non-value sheet is now justified only by a key **you** own. If it
+   constrains somebody else's key, it belongs in their domain, not yours.
+
 3. **Nothing else.** Do not split to reach a number and do not split to look thorough.
 
 **If you own no contract keys, say so in your index.** That is a real and useful finding —

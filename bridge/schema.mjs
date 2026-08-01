@@ -135,6 +135,18 @@ export const SCHEMA = {
       bannedWords: 'array',
       maxLabelChars: 'integer>0',
       register: 'string',
+      // `register` is prose and always will be — it is the thing a human writer reads. These
+      // three are the checkable half of the same decision, and they exist because the prose
+      // version could not be enforced.
+      //
+      // Tone spent four sheets deciding a register. One ruling from it, Title Case, had to be
+      // carried into two other domains by hand, and before that three separate sheets each
+      // spent ~150k tokens rediscovering that `area.label` was "EAST TERRACE" while
+      // `collection.sets[].label` was "Terrace". A prose register cannot catch that. A casing
+      // enum can, on every string, for free.
+      casing: 'enum:title,sentence,upper',
+      maxSentenceWords: 'integer>0',
+      allowedPattern: 'string',
     },
     check(v) {
       const problems = [];
@@ -142,6 +154,11 @@ export const SCHEMA = {
         if (typeof b !== 'object' || !b.word || !b.reason) {
           problems.push(`vocabulary.bannedWords entries need a word and a reason; got ${JSON.stringify(b)}`);
         }
+      }
+      try {
+        new RegExp(v.allowedPattern);
+      } catch (err) {
+        problems.push(`vocabulary.allowedPattern is not a valid regular expression — ${err.message}`);
       }
       return problems;
     },
@@ -446,8 +463,43 @@ function crossCuttingProblems(manifest) {
       }
     }
     // Prose is exempt from the label limit; furniture is not.
-    if (!PROSE_PATHS.some((re) => re.test(path)) && value.length > vocab.maxLabelChars) {
+    const isProse = PROSE_PATHS.some((re) => re.test(path));
+    if (!isProse && value.length > vocab.maxLabelChars) {
       problems.push(`${path} is ${value.length} characters, over the ${vocab.maxLabelChars}-character label limit`);
+    }
+
+    // The casing ruling, enforced rather than remembered. `cid:verify` used to *warn* that
+    // labels used two conventions and leave the choice to a human, because picking one
+    // crossed a category boundary. A domain owns it now, so it is a hard check.
+    if (!isProse && vocab.casing && /[A-Za-z]/.test(value)) {
+      const words = value.split(/\s+/).filter(Boolean);
+      const titled = words.every((w) => !/^[A-Z]{2,}$/.test(w));
+      if (vocab.casing === 'title' && !titled) {
+        problems.push(`${path} = ${JSON.stringify(value)} is not Title Case, and vocabulary.casing is "title"`);
+      }
+      if (vocab.casing === 'upper' && value !== value.toUpperCase()) {
+        problems.push(`${path} = ${JSON.stringify(value)} is not upper case, and vocabulary.casing is "upper"`);
+      }
+    }
+
+    // Every player-facing string, prose included, must be typeable in the game's character
+    // set. Tone's register named this and nothing could check it.
+    if (vocab.allowedPattern) {
+      let re;
+      try { re = new RegExp(vocab.allowedPattern); } catch { re = null; }
+      if (re && !re.test(value)) {
+        problems.push(`${path} = ${JSON.stringify(value)} contains characters outside vocabulary.allowedPattern`);
+      }
+    }
+
+    // A prose field still has a length rule; it is a word count rather than a character one.
+    if (isProse && vocab.maxSentenceWords) {
+      for (const sentence of value.split(/(?<=[.!?])\s+/)) {
+        const n = sentence.split(/\s+/).filter(Boolean).length;
+        if (n > vocab.maxSentenceWords) {
+          problems.push(`${path} has a ${n}-word sentence, over the ${vocab.maxSentenceWords}-word limit: ${JSON.stringify(sentence.slice(0, 60))}`);
+        }
+      }
     }
   }
   return problems;

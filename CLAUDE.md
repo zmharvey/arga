@@ -7,23 +7,26 @@ end to end at once.
 ## Stages
 
 ```
-idea → [0: concept] → spec sheets → [CID] → [bridge] → BUILD-ORDER.md → [BUILD: DOES NOT EXIST] → game
-                                                                         ui-forge handles screens only
+idea → [0: concept] → [CID] → 9 creative keys ┐
+                                              ├→ [architect] → 7 technical keys → BUILD-ORDER.md → [build] → game
+                              ui-forge ───────┘   screens only
 ```
 
 | stage | where | state |
 |---|---|---|
 | **0 — concept** | `.claude/skills/game-concept/`, `concept/` | working; four runs recorded |
-| **CID** — Creative Idea Department | `.claude/agents/cid-*`, `cid/` | wave 1 of 7; 14 domains, 37 sheets. See `docs/CID.md` |
-| **bridge** — the seam | `bridge/` | working; 11/11 contract keys, emits config + build order |
-| **build** | — | **does not exist.** Nothing consumes `docs/BUILD-ORDER.md` |
+| **CID** — what the game is | `.claude/agents/cid-*`, `cid/` | wave 1; **9 creative keys**, 7 domains eligible |
+| **bridge** — the creative seam | `bridge/` | working; validates the 9, enforces the copy rules |
+| **architect** — how it gets built | `.claude/agents/build-architect.md`, `architect/` | working; **7 technical keys**, one graph traversal |
+| **build** | `.claude/agents/game-builder.md`, `bridge/build-pack.mjs` | working; **11 modules built, 2,732 lines** |
 | **ui-forge** — screens only | `ui-forge/` | working; one pattern. Deliberately outside the build order |
-| **game** | `game/` | playable; **hand-written**, as the control that produced the contract |
+| **game** | `game/` | pipeline-built and Rojo-buildable. Hand-written control kept at `docs/hand-written-control/` |
 
-**The pipeline has six agents and none of them build.** Four CID roles plus two verifiers.
-`BUILD-ORDER.md` is addressed to *"whoever builds these"* and is currently addressed to nobody:
-11 modules, dependency-ordered, every value resolved, each with acceptance criteria. Writing the
-agents that consume it is the next stage, not more design waves.
+**Two contracts, sixteen keys, and that is the whole interface.** CID answers what the game
+is; the architect answers how it gets built; a builder reads one brief composed from both and
+should never open either. The split exists because two build trials measured what actually
+stopped a builder and **roughly 15 of 21 stops were not creative questions** — require paths,
+collection shapes, who writes a Humanoid property.
 
 `docs/workflow.html` is this diagram as a page, in plain language, for showing people.
 
@@ -109,18 +112,36 @@ because a writer holding all of a domain's sheets cannot collide with itself.
 **Run `cid:verify` before dispatching any verifier agent.** Three wave-1 sheets each spent
 ~150k tokens rediscovering one string comparison the script finds in milliseconds.
 
+## A domain runs only if it owns a contract key
+
+The rule that keeps CID honest, and the one that was missing. Everything in this repo is
+checked for having a consumer; CID was exempt, and 78% of wave 1 (23 of 35 sheets, 6,297 of
+8,051 lines) came from domains owning no key — output no build step could read.
+
+If a domain's output is checkable, it gets a key: tone's register became `vocabulary.casing`,
+`.maxSentenceWords` and `.allowedPattern`, enforced by the merger on every player-facing
+string. If it is not checkable, it is advisory and should not be funded like a department.
+`npm run cid:verify` warns for every domain that breaks the rule. Seven domains qualify today.
+
+**The corollary for reviewing this pipeline:** a warning that needs a human ruling is a worse
+version of a contract field that settles it. When you find one, move the decision into the
+contract and delete the warning.
+
 ## Known gaps
 
-1. **CID wave 1 only.** 37 sheets, 14 domains. Waves 2-7 unstarted. Five categories (UI/UX,
-   Audio, Analytics, Live Ops, Discovery & Marketing) own no contract key, so as things stand
-   they would produce prose with no path into a build. See `docs/CID.md`.
-2. **No bridge from spec sheets to `game-context.json`.** `deriveGameContext` expects a
-   structured object; the skill writes markdown. Nothing reads the sheets. The
-   `fantasy-ornate` vibe key in `04-PRESENTATION.md` has to be carried across by hand.
-3. **`ui-forge` has exactly one pattern** (`modal-grid` — a centred dismissible panel with a
-   grid of items). Stage 0 routinely asks for screens outside that shape: persistent HUDs,
-   settings lists, maps, text inputs. This is now the pipeline's narrowest point.
-4. **`forge` has never been run on a stage-0-derived context.** Untested end to end.
+1. **The built game has never been run.** It compiles, type-checks and builds with Rojo; the
+   first playtest stopped at "the HUD shows no shard count and 1/2/3 do nothing", diagnosed
+   as far as: Rojo tree correct, `UIBuilder.build` fine, `HudBinding.bind` fine, requires
+   resolve. Needs the Studio Output window to go further.
+2. **Four known runtime defects, unfixed on purpose** so a playtest can rank them: death is
+   permanent (`CharacterAutoLoads = false`, one `LoadCharacter`, no `onDeath`); slot 3 walks
+   off a 400-stud baseplate; part rotation is unspecified so a Cylinder tier may render on its
+   side, and shape is the colour-blind rarity channel; no touch or gamepad purchase path.
+3. **Six CID domains own no contract key** and are frozen by the rule above. Their 23 sheets
+   stay as a record.
+4. **`ui-forge` has exactly one pattern** and is undeclared as a dependency, which is why
+   `client-main` is the one module that does not type-check.
+5. **`forge` has never been run on a stage-0-derived context.** Untested end to end.
 
 ## Two spec runs are committed as the design record
 
