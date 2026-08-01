@@ -20,7 +20,12 @@ idea → [0: concept] → [CID] → 9 creative keys ┐
 | **architect** — how it gets built | `.claude/agents/build-architect.md`, `architect/` | working; **7 technical keys**, one graph traversal |
 | **build** | `.claude/agents/game-builder.md`, `bridge/build-pack.mjs` | working; **11 modules built, 2,732 lines** |
 | **ui-forge** — screens only | `ui-forge/` | working; one pattern. Deliberately outside the build order |
-| **game** | `game/` | pipeline-built and Rojo-buildable. Hand-written control kept at `docs/hand-written-control/` |
+| **game** | `game/` | **pipeline-built and playable.** Clearing pays, the HUD updates, purchases apply. Hand-written control kept at `docs/hand-written-control/` |
+
+**The loop closes.** Ten agents wrote eleven modules from two contracts; none read another's
+code or the hand-written control; the result runs. Clearing awards, the snapshot crosses the
+wire, the HUD updates, a keypress buys an upgrade and it takes effect. That is the claim four
+build trials could not settle by counting stops, because nothing ran.
 
 **Two contracts, sixteen keys, and that is the whole interface.** CID answers what the game
 is; the architect answers how it gets built; a builder reads one brief composed from both and
@@ -129,11 +134,7 @@ contract and delete the warning.
 
 ## Known gaps
 
-1. **The built game has never been run.** It compiles, type-checks and builds with Rojo; the
-   first playtest stopped at "the HUD shows no shard count and 1/2/3 do nothing", diagnosed
-   as far as: Rojo tree correct, `UIBuilder.build` fine, `HudBinding.bind` fine, requires
-   resolve. Needs the Studio Output window to go further.
-2. **Four known runtime defects, unfixed on purpose** so a playtest can rank them: death is
+1. **Four known runtime defects, unfixed on purpose** so a playtest can rank them: death is
    permanent (`CharacterAutoLoads = false`, one `LoadCharacter`, no `onDeath`); slot 3 walks
    off a 400-stud baseplate; part rotation is unspecified so a Cylinder tier may render on its
    side, and shape is the colour-blind rarity channel; no touch or gamepad purchase path.
