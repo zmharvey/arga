@@ -58,7 +58,9 @@ async function sheetDir(blocks) {
   const dir = await mkdtemp(join(tmpdir(), 'bridge-'));
   for (const [name, payload] of Object.entries(blocks)) {
     const file = join(dir, `${name}.md`);
-    await mkdir(join(dir), { recursive: true });
+    // The parent, not the root. Ownership checks join on a sheet's domain path, so a
+    // fixture has to be able to sit at `gameplay/systems/09-x.md` rather than flat.
+    await mkdir(join(file, '..'), { recursive: true });
     const body = payload === null
       ? '# prose only\n\nNo manifest block here.\n'
       : `# a sheet\n\n## Decision\nsomething\n\n\`\`\`manifest\n${payload}\n\`\`\`\n`;
@@ -156,7 +158,7 @@ test('proposing a key the contract already has is an error naming its owner', as
   });
   const { problems, proposals } = await mergeSheets(dir);
   assert.equal(proposals.length, 0);
-  const err = problems.find((p) => p.includes('already has it'));
+  const err = problems.find((p) => p.includes('Two domains cannot claim one key'));
   assert.ok(err, `expected a rejection, got: ${problems.join(' | ')}`);
   assert.match(err, /gameplay\/systems/);
   await rm(dir, { recursive: true, force: true });
@@ -508,4 +510,34 @@ test('the shipped cid/ tree merges with no problems at all', async () => {
   const { problems, missing } = await merge('cid');
   assert.deepEqual(problems, [], 'cid/ must merge clean — run `npm run bridge` to see it');
   assert.deepEqual(missing, [], 'every contract key must have an owning sheet');
+});
+
+test('a stale "proposed" on a key the sheet itself owns is tolerated, not an error', async () => {
+  // Promotion happens in schema.mjs, after the sheets that earned it are written. Erroring
+  // on the leftover status meant every promotion had to be followed by rewriting exactly
+  // those sheets, and any agent still holding pre-promotion context re-broke the merge on
+  // its next write. That happened three times in one afternoon during wave 3.
+  const dir = await sheetDir({
+    'gameplay/systems/09-x': JSON.stringify({
+      provides: 'currency', status: 'proposed', value: { name: 'Shard', plural: 'Shards', icon: 'shard' },
+    }),
+  });
+  const { problems, manifest, staleStatus } = await mergeSheets(dir);
+  assert.deepEqual(problems.filter((p) => p.includes('09-x')), []);
+  assert.equal(manifest.currency?.name, 'Shard', 'the value is authoritative; the status is a leftover');
+  assert.ok(staleStatus.some((s) => s.includes('currency')), 'but it is reported, not silent');
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('a stale "proposed" from a domain that does NOT own the key stays a hard error', async () => {
+  // The distinction that makes the tolerance safe. Two domains claiming one key is exactly
+  // what this seam refuses, and relaxing it for the owner must not relax it for everyone.
+  const dir = await sheetDir({
+    'theme/tone/09-x': JSON.stringify({ provides: 'currency', status: 'proposed', value: {} }),
+  });
+  const { problems } = await mergeSheets(dir);
+  const err = problems.find((p) => p.includes('Two domains cannot claim one key'));
+  assert.ok(err, `expected an ownership error, got: ${problems.join(' | ')}`);
+  assert.match(err, /gameplay\/systems/);
+  await rm(dir, { recursive: true, force: true });
 });

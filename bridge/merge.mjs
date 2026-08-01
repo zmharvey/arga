@@ -39,7 +39,7 @@
  */
 
 import { readdir, readFile } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { join, relative, dirname } from 'node:path';
 import { SCHEMA, validateManifest } from './schema.mjs';
 
 const BLOCK = /```manifest\s*\n([\s\S]*?)\n```/g;
@@ -70,6 +70,8 @@ export async function mergeSheets(root, schema = SCHEMA) {
   const provenance = {};
   /** @type {{key: string, sheet: string, value: any}[]} keys a domain wants that the contract lacks */
   const proposals = [];
+  /** @type {string[]} sheets whose `status: proposed` outlived the promotion of their own key */
+  const staleStatus = [];
   const problems = [];
   let contributing = 0;
 
@@ -98,9 +100,26 @@ export async function mergeSheets(root, schema = SCHEMA) {
         problems.push(`${rel}: provides "${key}", which is not in the build contract. Known keys: ${Object.keys(schema).join(', ')}. If this is a genuinely new key, mark the block "status": "proposed".`);
         continue;
       }
+      // A lingering `status: proposed` on a key the contract now has means one of two very
+      // different things, and treating them alike caused real churn.
+      //
+      // If the sheet's own domain OWNS the key, this is stale metadata: the sheet proposed it,
+      // the proposal was accepted, and the sheet has not been rewritten since. The value is
+      // authoritative and the status is a leftover. Erroring there means every promotion has
+      // to be followed by a rewrite of the very sheets that earned it, and any agent still
+      // holding pre-promotion context re-breaks the merge on its next write. That happened
+      // three times in one afternoon.
+      //
+      // If a DIFFERENT domain proposes it, that is a genuine ownership conflict and stays a
+      // hard error -- two domains claiming one key is what this seam exists to refuse.
       if (key in schema && proposed) {
-        problems.push(`${rel}: proposes "${key}", but the contract already has it (owner: ${schema[key].owner}). Drop the "status" and supply it, or provide a different key.`);
-        continue;
+        const owner = schema[key].owner;
+        const sheetDomain = dirname(rel);
+        if (sheetDomain !== owner) {
+          problems.push(`${rel}: proposes "${key}", which the contract already has and ${owner} owns. Two domains cannot claim one key.`);
+          continue;
+        }
+        staleStatus.push(`${rel} still marks "${key}" proposed; it was promoted and this sheet owns it`);
       }
       if (!('value' in block)) {
         problems.push(`${rel}: manifest block for "${key}" has no "value"`);
@@ -110,7 +129,7 @@ export async function mergeSheets(root, schema = SCHEMA) {
       // A proposal is a finding, not a contribution. It is reported by name and never
       // merged: there is no shape to validate it against, so anything downstream reading
       // it would be reading an unchecked value — the exact thing this seam exists to stop.
-      if (proposed) {
+      if (proposed && !(key in schema)) {
         const already = proposals.find((p) => p.key === key);
         if (already) {
           problems.push(`${rel}: proposes "${key}", already proposed by ${already.sheet}. One key, one owning sheet — that rule holds for proposals too.`);
@@ -151,6 +170,7 @@ export async function mergeSheets(root, schema = SCHEMA) {
     missing,
     provenance,
     proposals: proposals.sort((a, b) => a.key.localeCompare(b.key)),
+    staleStatus,
     sheetsRead: files.length,
     sheetsContributing: contributing,
   };

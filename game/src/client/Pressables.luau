@@ -41,7 +41,7 @@ local Shared = ReplicatedStorage:WaitForChild("UIForge")
 local GameConfig = require(Shared.GameConfig)
 -- ui-forge's design tokens. NOT a declared dependency of this module (the brief lists only
 -- `config`), taken anyway because the repo rule is that arbitrary appearance values enter
--- through tokens and never as literals in a module. See Pressables.report.md.
+-- through tokens and never as literals in a module. Reported as an undeclared dependency.
 local Theme = require(Shared.Theme)
 
 local Pressables = {}
@@ -108,7 +108,7 @@ local MAX_LABEL_CHARS = 14
 --[[
 	UNSPECIFIED VALUES. Every literal in this block is a gap in the contract rather than a
 	design decision, gathered here so that supplying the real ones is an edit to one block.
-	See Pressables.report.md.
+	Each is named in this module's build report.
 ]]
 
 -- [STOP: no value in the contract] The floor for a touch target. minTouchTargetRule is
