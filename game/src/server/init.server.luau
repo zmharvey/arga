@@ -2,197 +2,273 @@
 --[[
 	server-main — the server entry point.
 
-	This Script IS ServerScriptService.Game; the other server modules are its children.
-	Roblox is its only caller: nothing requires it, it exposes nothing, and a require
-	would run this whole boot sequence a second time — a second remotes folder, a second
-	clear tick.
+	WIRING AND NOTHING ELSE. Every rule in this game lives in one of the nine modules
+	below; this file decides only what runs, for whom, and in what order. If a line here
+	starts to look like a rule, it belongs in a module — the one exception is the WalkSpeed
+	write, which is wiring by definition because response.humanoidWritesAllowed is exactly
+	["WalkSpeed"] and THIS IS THE ONLY HUMANOID PROPERTY WRITE IN THE GAME.
 
-	IT WIRES, IT DOES NOT DECIDE. Every rule in the game lives in one of the five modules
-	below. What is left here is the order things happen in, the live collection of player
-	states, and the two Instance writes nobody else is allowed to make:
+	THE PHASES, in the order wiring names them:
 
-	  * Humanoid.WalkSpeed = Progression.walkSpeed(state), on spawn and after any
-	    successful purchase. progression computes and never writes, so this line is the
-	    only place the Pace upgrade reaches the engine. Without it, Pace is purchasable
-	    and does nothing.
-	  * character:PivotTo(the spawn CFrame plots.spawn returned), on every CharacterAdded
-	    — including the one a death causes.
+	  boot      world.configure, CharacterAutoLoads off, the remotes, the live collection,
+	            the clear tick, the save loop, and the three input bindings.
+	  onJoin    load, resolve entitlements, catch up the upgrade rows, publish, build the
+	            lane, push a snapshot, connect CharacterAdded, load the character. In that
+	            order: the two yielding calls come before the publish point, because
+	            clearing.tick may not see a half-loaded state.
+	  onSpawn   collision group, the death connection, the pivot, WalkSpeed, the tool, a
+	            snapshot.
+	  onDeath   wait, re-test, load a second character. THIS IS THE ONLY PLACE IN THE GAME
+	            THAT LOADS ONE: CharacterAutoLoads is false, so without this phase a player
+	            who used the Roblox menu's Reset Character stayed dead for the session.
+	  onPurchase  tryBuy, then — on success only, unconditionally, whichever upgrade it
+	            was — WalkSpeed, the tool head, UpgradeApplied, StateChanged.
+	  onSave    every runtime.saveIntervalSeconds, every live state.
+	  onLeave   lift out of the collection FIRST, save, destroy the lane, drop the pose.
+	  onShutdown  nothing in Studio; every live state otherwise.
 
-	THE OTHER THING THAT ONLY HAPPENS HERE IS RESPAWNING. Players.CharacterAutoLoads is
-	false, which makes the engine's own Players.RespawnTime dead and hands the whole
-	respawn to this file. onDeath below is the only second LoadCharacter in the game; the
-	first playtest found nobody had been handed it, and a player who died stayed dead for
-	the rest of the session.
+	FOUR THINGS HERE ARE STRUCTURAL AND EACH ONE WAS A DEFECT SOMEWHERE:
 
-	Every remote is reached through Protocol.channel(name). No remote Instance is created,
-	named or searched for here.
+	  1. THE RESPAWN POSE FOLLOWS THE LIVE BAY. `plots.spawn` returns the join pose;
+	     `plots.advance` returns a new one every time an area finishes, and it is called
+	     from inside clearing's tick, which discards the return value. So the pose is
+	     re-derived here on every spawn from `state.spawnPivot` — the same Attachment
+	     position `plots` writes on both paths — keeping the rotation of the pose plots
+	     handed over at join, which is a function of the slot alone and so never changes
+	     while the player is connected. Without this a player who dies after finishing an
+	     area respawns in a bare finished bay up to 2,992 studs outward of the live one,
+	     with nothing to clear and no way back.
 
-	No `return`: an entry point is not a module. See the note at the foot of the file.
+	  2. WALKSPEED COMES FROM `Modifiers.effective(state, "speed")` AND FROM NOWHERE ELSE.
+	     There is no `progression.walkSpeed`: the modifiers refactor removed it, and this
+	     line is the only place the Pace upgrade — and any set or purchase factor on the
+	     speed axis — reaches the engine.
+
+	  3. `world.configure()` IS FIRST AND DOES NOT YIELD, so that
+	     `Players.CharacterAutoLoads = false` lands on the same frame. A player joining
+	     between the two would auto-load a character into a place with no collision group
+	     and be in the wrong group for that character's whole life.
+
+	  4. UpgradeApplied IS FIRED BEFORE StateChanged, and only on success.
+	     response.beats[upgradePurchased].effectAppliedBeforeAcknowledgment is true and the
+	     200 ms budget is measured from that packet; a failed buy sends neither, because
+	     input.verbs[buy].onPreconditionFail is silentNoOp.
+
+	Every remote is reached through `Protocol.channel(name)`; nothing here searches the
+	tree for one, and no remote is created here. Every cadence comes from GameConfig.
 ]]
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
--- wiring.boot STEP 1, and it is here rather than down in the boot block at the foot of the
--- file because the line below this one yields. WaitForChild and the four requires are the
--- first yield of the server's life, and a player admitted inside it would auto-load a
--- character at the world origin before their plot exists — which is the exact race this
--- step is here to remove. The remaining five steps are together at the foot of the file.
-Players.CharacterAutoLoads = false
-
 local Shared = ReplicatedStorage:WaitForChild("UIForge")
-local GameConfig = require(Shared.GameConfig)
+
+local GameConfig = require(Shared.GameConfig) :: any
+local Layout = require(Shared.Layout)
+local Modifiers = require(Shared.Modifiers)
 local Protocol = require(Shared.Protocol)
+local Types = require(Shared.Types)
 
-local Persistence = require(script.Persistence)
-local Progression = require(script.Progression)
-local Plots = require(script.Plots)
 local Clearing = require(script.Clearing)
+local Entitlements = require(script.Entitlements)
+local Persistence = require(script.Persistence)
+local Plots = require(script.Plots)
+local Progression = require(script.Progression)
+local Tool = require(script.Tool)
+local World = require(script.World)
 
-local LOG_PREFIX = "[server-main]"
+-- The generated shapes, not copies of them. Types.luau owns PlayerState and States.
+type PlayerState = Types.PlayerState
+type States = Types.States
 
--- NOT IN GameConfig. How far above the plot's spawn Attachment a character is placed, in
--- studs. wiring.onSpawn states it as "raised 3 studs on Y" and representation's
--- spawn-anchor note repeats it, but the emitter produces no key for it, so re-emitting
--- the config cannot change it. Named here rather than spelled inline at the pivot, and
--- reported as a config gap in init.server.report.md.
-local SPAWN_PIVOT_Y = 3
+-- Exactly the blocks of GameConfig this file reads, so a strict checker has a shape
+-- across a require it cannot resolve. The same device Clearing and Modifiers use.
+type ConfigShape = {
+	SaveIntervalSeconds: number,
+	RespawnDelaySeconds: number,
+}
 
--- Keys of Protocol.REMOTES. Protocol exposes no symbolic constant for a channel name —
--- REMOTES is keyed by the names themselves — so a name has to be written once somewhere.
--- Written once here, at the top, rather than at each call site; Protocol.channel errors on
--- a name it does not declare, so a typo is loud at boot rather than a nil later.
-local STATE_CHANGED = "StateChanged"
-local BUY_UPGRADE = "BuyUpgrade"
-local REQUEST_STATE = "RequestState"
+local Config: ConfigShape = GameConfig
+
+-- The channels this file originates or handles, as keys of Protocol.REMOTES. That table
+-- exposes no symbolic constant for a name and Protocol.channel errors on a name it does
+-- not declare, so a typo here is loud at the first call rather than a nil somewhere else.
+local CHANNEL_STATE_CHANGED = "StateChanged"
+local CHANNEL_UPGRADE_APPLIED = "UpgradeApplied"
+local CHANNEL_BUY_UPGRADE = "BuyUpgrade"
+local CHANNEL_REQUEST_STATE = "RequestState"
+
+-- The one axis this file reads. modifiers.axisIdsJoinUpgrades: an axis id is an
+-- upgrades[].id verbatim, and "Pace is a label and never an id".
+local SPEED_AXIS = "speed"
+
+-- Engine names, not tuned values: the two children of a character this phase waits for.
+local HUMANOID_NAME = "Humanoid"
+local ROOT_PART_NAME = "HumanoidRootPart"
+
+-- The two DERIVED snapshot fields. Six of the eight names Protocol.snapshotShape() gives
+-- are read straight off the state; these two are layout.areaSpec(areasFinished + 1)'s and
+-- are spelled here because a loop that copies state[field] emits nil for exactly these.
+local FIELD_AREA_PATCH_COUNT = "areaPatchCount"
+local FIELD_AREA_LABEL = "areaLabel"
+
+-- wiring.onSpawn step 5: "PivotTo the spawn CFrame plots returned for this player, raised
+-- 3 studs on Y". The 3 is stated in the wiring and in no GameConfig key, so it is named
+-- once here rather than written into the PivotTo call. Reported.
+local SPAWN_LIFT_STUDS = 3
 
 --[[
-	One patch record and one player's whole state, from 03-state-shape.md.
+	THE LIVE COLLECTION — stateShape.collection.
 
-	Restated here rather than imported: persistence owns the canonical PlayerState but no
-	module in the build order exports a type this file can name without the require
-	resolving, and clearing restates it for the same reason. `player` is optional exactly
-	as persistence declares it — defaultState leaves it unset and onJoin is the only writer.
+	One PlayerState per connected player, keyed by UserId as an integer, owned by this
+	file. Created once at boot and NEVER REPLACED, only mutated: clearing holds this exact
+	table by reference from clearing.start onwards. A lookup miss means the player is not
+	in this server or has not finished joining, and it is a return, not an error.
 ]]
-type Patch = {
-	position: Vector3,
-	tierIndex: number,
-	relic: string?,
-	cleared: boolean,
-	instance: BasePart?,
-}
+local states: States = {}
 
-type PlayerState = {
-	currency: number,
-	upgrades: { [string]: number },
-	patches: { Patch },
-	cleared: { [number]: boolean },
-	clearedCount: number,
-	found: { [string]: boolean },
-	areaComplete: boolean,
-	player: Player?,
-}
+--[[
+	The pose each connected player's character is put at, keyed by UserId.
 
--- wiring.boot step 3: THE live collection, one entry per connected player, keyed by
--- UserId. Created once and NEVER REPLACED, only mutated — clearing.start is handed this
--- exact table at boot and holds it by reference for the life of the server. Declared at
--- file scope because every handler below closes over it.
---
--- A player is in here from the instant persistence.load returns and state.player is set
--- (onJoin step 3, the publish point) until the instant onLeave lifts them out, and that
--- window is exactly the window in which clearing.tick may see them. A lookup miss is a
--- return, never an error: it means that player is not in this server or has not finished
--- joining.
-local states: { [number]: PlayerState } = {}
+	Seeded from plots.spawn's return at join and re-derived from state.spawnPivot on every
+	spawn, which is what carries a finished area's new bay into the respawn — see note 1 in
+	the header. Dropped in onLeave, so this table is exactly as large as `states`.
+]]
+local spawnPoses: { [number]: CFrame } = {}
 
--- The spawn CFrame plots.spawn returned for each connected player, keyed by UserId. Held
--- here rather than on PlayerState because it is neither persisted nor part of a snapshot,
--- and because plots recovers the slot from its own registry. Dropped in onLeave step 4.
-local spawnPoints: { [number]: CFrame } = {}
+-- One CharacterAdded connection per connected player, disconnected on leave. The Player
+-- Instance is destroyed on leave and would take the connection with it; holding them is
+-- what makes that explicit rather than incidental.
+local characterConnections: { [number]: RBXScriptConnection } = {}
 
--- UserIds whose join is in flight. persistence.load yields, so without this a second
--- PlayerAdded for the same UserId — or the GetPlayers sweep at the foot of this file
--- racing the connection made one line above it — could run two joins for one player and
--- build two plots. Cleared on every exit path out of the join.
+-- Guards the join path against running twice for one player: the boot catch-up below and
+-- Players.PlayerAdded can both name the same player in the frame the server starts.
 local joining: { [number]: boolean } = {}
 
-local function describe(player: Player): string
-	return string.format("%s (%d)", player.Name, player.UserId)
-end
-
 --[[
-	A snapshot of a state: exactly the fields Protocol.snapshotShape() names, read off the
-	state by name rather than by a field-name literal written here, so adding a field is an
-	edit to Protocol and to nothing else. patches, cleared and player never cross the wire.
+	A snapshot of a state: exactly the fields Protocol.snapshotShape() names, in the order
+	it names them, read off the state by name rather than by a field-name literal here.
+
+	SIX ARE COPIED AND TWO ARE DERIVED. patches, cleared, spawnPivot, owned, armState and
+	player never cross the wire.
+
+	This is the second implementation of this function in the build — clearing has the
+	other, private to itself. Nothing exposes one, and the derivation has to agree on both
+	sides or the progress readout changes meaning depending on which push it came from.
+	Reported.
 ]]
-local function snapshotOf(state: PlayerState): { [string]: any }
+local function buildSnapshot(state: PlayerState): { [string]: any }
+	local spec = Layout.areaSpec(state.areasFinished + 1)
 	local snapshot: { [string]: any } = {}
-	-- Annotated because the analyzer cannot resolve an instance require and so types the
-	-- whole of Protocol as `any`; the contract says this returns { string }.
+
+	-- Annotated because the require above is an instance path the analyser cannot follow,
+	-- so the returned list would otherwise be `unknown` and every index below with it.
 	local fields: { string } = Protocol.snapshotShape()
+
 	for _, field in ipairs(fields) do
-		snapshot[field] = (state :: any)[field]
+		if field == FIELD_AREA_PATCH_COUNT then
+			snapshot[field] = spec.patchCount
+		elseif field == FIELD_AREA_LABEL then
+			snapshot[field] = spec.label
+		else
+			snapshot[field] = (state :: any)[field]
+		end
 	end
+
 	return snapshot
 end
 
--- One StateChanged push. Fired from three places in this file — on join, on spawn and
--- after a successful purchase — and by clearing on any tick that changed something. Two
--- originators is safe because the payload is a whole snapshot, so a duplicate is
--- idempotent.
+-- One push on StateChanged. Whole-snapshot and therefore idempotent, which is what makes
+-- two originators on this channel safe and why an extra push is never worth avoiding.
 local function pushSnapshot(player: Player, state: PlayerState)
-	Protocol.channel(STATE_CHANGED):FireClient(player, snapshotOf(state))
+	Protocol.channel(CHANNEL_STATE_CHANGED):FireClient(player, buildSnapshot(state))
 end
 
--- The player's live Humanoid, or nil if there is no character up: between a join and the
--- first CharacterAdded, and again for the respawn gap after a death. Does not yield, so a
--- purchase is never held up waiting for a corpse to be replaced.
-local function humanoidOf(player: Player): Humanoid?
+--[[
+	The pose this player's next character is put at, in world space.
+
+	`plots.spawn` returned one at join and `plots.advance` returns a new one every time an
+	area finishes — but advance is called from inside clearing's tick and its return value
+	has no receiver, so the pose cannot arrive here by being handed over. It is rebuilt
+	instead from state.spawnPivot, which BOTH plots functions write with the same
+	Attachment's world position, keeping the rotation of the pose held for this player.
+
+	That rotation is plots.spawn.lookVector, a function of the lane slot alone: the slot is
+	claimed at join and held for the whole connected session, so the rebuilt pose is exactly
+	the CFrame advance returned. When nothing has moved, it is exactly the join pose.
+]]
+local function respawnPose(player: Player, state: PlayerState): CFrame?
+	local held = spawnPoses[player.UserId]
+	local pivot = state.spawnPivot
+
+	if held == nil then
+		-- No lane was ever built for this player. Nothing to pivot to; the caller warns.
+		return nil
+	end
+	if pivot == nil then
+		-- plots clears the pivot in despawn, and writes it before any character loads, so
+		-- this is the lane being torn down underneath a spawn rather than a case with a
+		-- behaviour. The join pose is the best available answer and is still on this lane.
+		return held
+	end
+
+	local pose = CFrame.new(pivot) * held.Rotation
+	spawnPoses[player.UserId] = pose
+	return pose
+end
+
+--[[
+	THE ONE HUMANOID PROPERTY WRITE IN THE GAME.
+
+	modifiers computes and never writes; this is the only place the speed axis reaches the
+	engine. Called on every spawn and after EVERY successful purchase, unconditionally,
+	whichever upgrade was bought — gating it on upgradeId == "speed" is one line shorter
+	and one refactor away from re-opening the defect trial 1 found.
+
+	A missing character or Humanoid is a return: a purchase can land during the respawn
+	delay, when the state is live and the character is not, and the spawn that follows
+	writes the same value from the same source.
+]]
+local function applyWalkSpeed(player: Player, state: PlayerState)
 	local character = player.Character
 	if character == nil then
-		return nil
+		return
 	end
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if humanoid == nil or not humanoid:IsA("Humanoid") then
-		return nil
+	local humanoid = character:FindFirstChildOfClass(HUMANOID_NAME) :: Humanoid?
+	if humanoid == nil then
+		return
 	end
-	return humanoid
+	humanoid.WalkSpeed = Modifiers.effective(state, SPEED_AXIS)
 end
 
 --[[
-	THE ONE LINE THAT MAKES THE PACE UPGRADE REAL.
+	wiring.onDeath. The only thing in the game that loads a second character.
 
-	progression.walkSpeed computes a number and writes nothing; this is the only place in
-	the game the value reaches the engine. Called on every spawn — which includes every
-	respawn after a death — and after every successful purchase, unconditionally, whichever
-	axis was bought. Gating it on upgradeId == "speed" is one line shorter and one refactor
-	away from re-opening the defect the first build trial found.
+	traversal.death.possibleByDesign is false and damageSources is 0, so the only route
+	here is the Roblox menu's Reset Character — which is available to every player in every
+	session, which is why "a player who dies stays dead" was a shipped defect and not an
+	unreachable one.
+
+	NOTHING IS TORN DOWN DURING THE WAIT: the state stays in the live collection so the
+	save loop still writes it, the lane stays built, and clearing.tick keeps visiting the
+	state and takes the character-or-root skip it already has.
+
+	The arming gate resets by itself — clearing.tick sees a character it has not armed for
+	and rewrites state.armState — so nothing here touches it.
 ]]
-local function applyWalkSpeed(humanoid: Humanoid, state: PlayerState)
-	humanoid.WalkSpeed = Progression.walkSpeed(state)
-end
+local function onDeath(character: Model)
+	local player = Players:GetPlayerFromCharacter(character)
+	if player == nil then
+		-- The player left before their Humanoid's Died reached this line. Nothing to
+		-- respawn, and nothing to warn about.
+		return
+	end
 
---[[
-	wiring.onDeath. The only second LoadCharacter in the game.
-
-	Nothing is torn down during the wait: the state stays in the live collection so the
-	periodic save still writes it, the plot stays built, and clearing.tick keeps visiting
-	the state and takes the character-or-HumanoidRootPart skip it already has. No death
-	test is added to the tick, deliberately — a corpse does not move, and everything inside
-	its clear radius was cleared while it was alive.
-
-	Nothing else re-runs: no plot is rebuilt, no slot re-claimed, no state re-loaded and no
-	currency touched. plots.spawn and persistence.load belong to onJoin and are not
-	reachable from here, which is why death costs a player nothing but the delay.
-]]
-local function onDeath(player: Player)
-	task.wait(GameConfig.RespawnDelaySeconds)
+	task.wait(Config.RespawnDelaySeconds)
 
 	-- AFTER the wait, both tests, in this order. If either fails the player left during
-	-- the delay and this phase does NOTHING — no LoadCharacter, no warn, no error. onLeave
-	-- has already saved and despawned them, and LoadCharacter on a departed player is the
-	-- one way this handler can throw.
+	-- the delay and this phase does nothing at all: no LoadCharacter, no warn, no error.
 	if states[player.UserId] == nil then
 		return
 	end
@@ -200,273 +276,237 @@ local function onDeath(player: Player)
 		return
 	end
 
-	-- The CharacterAdded connection from onJoin step 6 is still live, so onSpawn runs
-	-- again in full: pivot, WalkSpeed, a Died connection on the new Humanoid, a snapshot.
+	-- The CharacterAdded connection from onJoin is still live, so onSpawn runs again in
+	-- full. Nothing else re-runs: no lane rebuilt, no slot re-claimed, no state re-loaded,
+	-- no ownership re-resolved, no currency touched.
 	player:LoadCharacter()
 end
 
 --[[
-	wiring.onSpawn. Runs on every CharacterAdded, which is the one onJoin loads and every
-	one onDeath loads after it.
+	wiring.onSpawn. Runs for the character onJoin loads and for every character onDeath
+	loads after it, and needs no waits and no retries beyond the character's own parts:
+	the state exists and the lane exists before CharacterAdded is ever connected.
 ]]
 local function onSpawn(player: Player, character: Model)
-	-- 1. If the state is absent the player left mid-spawn: return, do nothing, do not error.
 	local state = states[player.UserId]
 	if state == nil then
+		-- The player left mid-spawn. Return, do nothing, do not error.
 		return
 	end
 
-	-- 2. "Humanoid" and "HumanoidRootPart" are engine names, not tuned values, so they are
-	-- literals rather than config. Both waits yield, so the state is re-tested below before
-	-- anything is written.
-	local humanoidInstance = character:WaitForChild("Humanoid")
-	character:WaitForChild("HumanoidRootPart")
+	-- No timeout on either wait: the wiring names neither, and a number invented here
+	-- would be a tuning value nobody stated. A character that never gets a Humanoid is
+	-- destroyed with its player, and this thread dies with it.
+	local humanoidChild = character:WaitForChild(HUMANOID_NAME)
+	character:WaitForChild(ROOT_PART_NAME)
+	local humanoid = humanoidChild :: Humanoid
 
-	if states[player.UserId] ~= state then
-		return
-	end
-	if not humanoidInstance:IsA("Humanoid") then
-		warn(string.format("%s %s spawned with a non-Humanoid named Humanoid", LOG_PREFIX, describe(player)))
-		return
-	end
-	local humanoid = humanoidInstance
+	-- Before the pivot, so two characters never overlap while still colliding.
+	World.onCharacter(character)
 
-	-- 3. Connected BEFORE the pivot, so a character that somehow dies during the same frame
-	-- it spawned still respawns. Once for THIS character: a Humanoid dies at most once and
-	-- every new character brings a new one, so this leaks nothing and needs no disconnect.
-	humanoid.Died:Once(function()
-		onDeath(player)
+	-- Connected for THIS character, BEFORE the pivot, so a character that somehow dies in
+	-- the frame it spawned still respawns. A Humanoid dies at most once and every new
+	-- character brings a new one, so this leaks nothing and needs no disconnect.
+	humanoid.Died:Connect(function()
+		onDeath(character)
 	end)
 
-	-- 4. The plot origin, raised on Y. This is where onboarding's guaranteed first Find is
-	-- kept: the player arrives standing in the patch that hides the first Find of set one.
-	local spawnCFrame = spawnPoints[player.UserId]
-	if spawnCFrame ~= nil then
-		character:PivotTo(spawnCFrame + Vector3.new(0, SPAWN_PIVOT_Y, 0))
+	local pose = respawnPose(player, state)
+	if pose ~= nil then
+		character:PivotTo(pose + Vector3.new(0, SPAWN_LIFT_STUDS, 0))
 	else
-		-- The state exists but the plot's spawn point does not, which onJoin's ordering
-		-- makes unreachable. Loud rather than a character silently left wherever Roblox
-		-- dropped it, which is off the row of plots entirely.
-		warn(string.format("%s no spawn point held for %s; character left unmoved", LOG_PREFIX, describe(player)))
+		warn(
+			`server-main: no spawn pose is held for {player.Name} ({player.UserId}); the character `
+				.. `was left where the engine put it`
+		)
 	end
 
-	-- 5. THE WRITE. See applyWalkSpeed.
-	applyWalkSpeed(humanoid, state)
+	-- The one Humanoid property write in the game.
+	applyWalkSpeed(player, state)
 
-	-- 6. A refresh, not a boot: the HUD is not rebuilt on a respawn. It runs after a death
-	-- respawn too, because the client's ScreenGui survived and one idempotent snapshot is
-	-- cheaper than reasoning about whether it needed one.
+	-- tool.grantedAt is "spawn", so this runs on every character including the one onDeath
+	-- loads. equip calls refresh itself, so the head width is right on the first frame.
+	Tool.equip(player, state)
+
+	-- A refresh, not a boot: the client's ScreenGui survives a respawn, and one idempotent
+	-- snapshot is cheaper than reasoning about whether it needed one.
 	pushSnapshot(player, state)
 end
 
 --[[
-	wiring.onJoin, steps 1-7, in order. Wrapped by joinPlayer below.
+	wiring.onJoin. Two yielding calls, then the publish point, then the lane, then the
+	character — last, so onSpawn needs no waits of its own.
+
+	THE PUBLISH POINT IS STEP 5 AND NOT EARLIER: clearing.tick reading a state whose owned
+	map is still empty pays the unpurchased multiplier for as long as the web call takes.
 ]]
-local function runJoin(player: Player)
-	-- 1. Yields. Nothing else may run for this player until it returns, and in particular
-	-- the state may not enter the collection, or clearing.tick can see it half-loaded.
+local function onJoin(player: Player)
+	if joining[player.UserId] then
+		return
+	end
+	joining[player.UserId] = true
+
+	-- (1) Yields. Never throws, never returns nil: a DataStore failure warns inside
+	-- persistence and returns defaultState(), so the player is playable on a fresh session
+	-- rather than stuck at a loading screen that does not exist.
 	local state: PlayerState = Persistence.load(player)
 
-	-- NOT IN wiring: load yields for as long as a DataStore call takes, so the player may
-	-- already be gone. Publishing them now would leave a state nothing ever removes — saved
-	-- every 45s forever, holding a plot slot that is never released. Aborting here is safe
-	-- precisely because nothing has been published or built yet, and it is the same test
-	-- onDeath makes after its own wait.
+	-- (2) Yields. Resolves state.owned before the state is visible to the tick.
+	Entitlements.refresh(player, state)
+
+	-- Both yields are behind us, so this is the first moment the player can have left
+	-- since PlayerRemoving fired. Publishing a state for a player who is gone would leave
+	-- an entry and a lane nothing ever removes: onLeave has already run and found nothing.
+	-- The wiring does not name this test; it is the mirror of the one onDeath step 3 does.
 	if player.Parent ~= Players then
+		joining[player.UserId] = nil
 		return
 	end
 
-	-- 2. The only write to this field, ever.
+	-- (3) Catch up any row whose level-1 cost the loaded balance already meets. Idempotent
+	-- and never lowers one.
+	Progression.revealRows(state)
+
+	-- (4) The only write to this field, ever.
 	state.player = player
 
-	-- 3. THE PUBLISH POINT. The player becomes visible to clearing.tick at this instant and
-	-- not before, which is why it is after step 1.
+	-- (5) THE PUBLISH POINT. The player becomes visible to clearing.tick at this instant.
 	states[player.UserId] = state
+	joining[player.UserId] = nil
 
-	-- 4. Claims a slot and builds the plot, its barriers, its spawn Attachment and one
-	-- Instance per uncleared patch — none at all if areaComplete is true. Returns the spawn
-	-- CFrame, which is kept until the player leaves.
-	spawnPoints[player.UserId] = Plots.spawn(player, state)
+	-- (6) Claim a slot and build the lane for live area state.areasFinished + 1. Writes
+	-- state.patches and state.spawnPivot; the CFrame is this player's pose until they
+	-- leave, re-derived against the live bay on every spawn.
+	spawnPoses[player.UserId] = Plots.spawn(player, state)
 
-	-- 5. May arrive before the client's HUD exists, which is why client-main also pulls one.
+	-- (7) May arrive before the client's HUD exists, which is why client-main also pulls.
 	pushSnapshot(player, state)
 
-	-- 6. Safe to connect now: the state exists and the plot exists. This connection is what
-	-- onDeath relies on, so it is made once per player and never disconnected.
-	player.CharacterAdded:Connect(function(character: Model)
+	-- (8) Safe to connect now: the state exists and the lane exists.
+	characterConnections[player.UserId] = player.CharacterAdded:Connect(function(character: Model)
 		onSpawn(player, character)
 	end)
 
-	-- 7. Last. Everything onSpawn needs is now in place, so onSpawn needs no waits and no
-	-- retries. Guarded because plots.spawn's contract does not say whether it yields; if it
-	-- did and the player left inside it, onLeave has already run and LoadCharacter on a
-	-- departed player throws.
-	if states[player.UserId] == nil then
-		spawnPoints[player.UserId] = nil
-		return
-	end
-	player:LoadCharacter()
-end
-
-local function joinPlayer(player: Player)
-	local userId = player.UserId
-	if joining[userId] or states[userId] ~= nil then
-		return
-	end
-	joining[userId] = true
-
-	-- pcall so that one player's failed join cannot take the PlayerAdded handler with it.
-	-- A join that throws after the publish point leaves a state with no plot; nothing
-	-- recovers it, but the warning names the player and the next rejoin is clean.
-	local ok, err = pcall(runJoin, player)
-
-	joining[userId] = nil
-
-	if not ok then
-		warn(string.format("%s join failed for %s: %s", LOG_PREFIX, describe(player), tostring(err)))
+	-- (9) Last. A player who left between the publish point and here is gone from Players
+	-- and LoadCharacter would error on them.
+	if player.Parent == Players then
+		player:LoadCharacter()
 	end
 end
 
 --[[
-	wiring.onLeave. The order is the point: out of the collection, then save, then tear the
-	plot down.
+	wiring.onLeave. The collection entry goes FIRST, so no tick can touch a state that is
+	being saved and torn down.
+
+	Nothing about a departure is perceptible to any remaining player: no notice, no sound
+	and no string naming anyone.
 ]]
 local function onLeave(player: Player)
 	local userId = player.UserId
+	joining[userId] = nil
 
-	-- 1. Lift the state out FIRST, so no tick can touch a state that is being saved and
-	-- torn down. No entry means the player never finished joining.
+	local connection = characterConnections[userId]
+	if connection ~= nil then
+		connection:Disconnect()
+		characterConnections[userId] = nil
+	end
+
 	local state = states[userId]
-	states[userId] = nil
 	if state == nil then
+		-- The player never finished joining. There is no lane and nothing to save.
+		spawnPoses[userId] = nil
 		return
 	end
+	states[userId] = nil
 
-	-- 2. Save, and wait for it. Before teardown. persistence.save pcalls its own write and
-	-- warns on a failure, so its boolean is not re-reported here; the pcall is for a throw
-	-- it cannot catch itself, which must not stop the plot being destroyed.
-	local ok, err = pcall(Persistence.save, player, state)
-	if not ok then
-		warn(string.format("%s save failed on leave for %s: %s", LOG_PREFIX, describe(player), tostring(err)))
-	end
+	-- Save, and wait for it. Before teardown.
+	Persistence.save(player, state)
 
-	-- 3. Destroys the plot slab, which takes its patches, its barriers and its spawn
-	-- Attachment with it, and releases the slot so the next player reuses it.
+	-- Destroys the slab, which takes its patches, its four boundary parts and its spawn
+	-- Attachment with it, and releases the slot for the next player.
 	Plots.despawn(state)
 
-	-- 4. Nothing else references the state; it is garbage.
-	spawnPoints[userId] = nil
+	-- Nothing else references the state; it is garbage.
+	spawnPoses[userId] = nil
 end
 
 --[[
-	wiring.onPurchase. The only client-originated message in the game.
+	wiring.onPurchase. The server prices it; the client sent only an id.
+
+	economy.authority: no client message carries a cost, an amount or a balance, and this
+	handler enforces that by accepting nothing else.
 ]]
 local function onPurchase(player: Player, upgradeId: any)
-	-- 1. Reject any payload that is not a string, and drop the message if the player has no
-	-- state. Any further arguments the client sent are ignored by this signature: the
-	-- channel carries one id and nothing else.
-	if type(upgradeId) ~= "string" then
-		return
-	end
 	local state = states[player.UserId]
 	if state == nil then
+		-- Not in this server, or not finished joining. Drop the message.
+		return
+	end
+	if type(upgradeId) ~= "string" then
+		-- Anything that is not one string is not a message this game has. Dropped
+		-- silently: a warn here is a log a client can fill on demand.
 		return
 	end
 
-	-- 2. Validate and apply, or change nothing and return false. The server prices it; the
-	-- client sent only an id.
+	-- (2) Validate and apply, or change nothing and return false. On false the phase ENDS
+	-- HERE: nothing is sent, nothing is played, nothing is shown.
 	if not Progression.tryBuy(state, upgradeId) then
 		return
 	end
 
-	-- 3. On success only, and unconditionally — whichever axis was bought. A player with no
-	-- Humanoid right now is mid-respawn, and onSpawn writes it again from the same function
-	-- the moment the new character is up.
-	local humanoid = humanoidOf(player)
-	if humanoid ~= nil then
-		applyWalkSpeed(humanoid, state)
-	end
+	-- (3) and (4). Both unconditional, whichever upgrade was bought: a gate on upgradeId
+	-- re-opens the trial-1 defect on one and makes a 499-Robux Span purchase invisible on
+	-- the other.
+	applyWalkSpeed(player, state)
+	Tool.refresh(player, state)
 
-	-- 4. On success only. On failure send nothing: the server is the only writer, so the
-	-- client's HUD is already correct.
+	-- (5) In this order. The effect has already landed by the time the cue is told about
+	-- it, and the 200 ms acknowledgment budget is measured from this packet. tryBuy returns
+	-- a bare boolean, so the new level is read back off the state it just wrote.
+	local newLevel = state.upgrades[upgradeId]
+	Protocol.channel(CHANNEL_UPGRADE_APPLIED):FireClient(player, upgradeId, newLevel)
 	pushSnapshot(player, state)
 end
 
 --[[
-	RequestState. client-main may not assume the join-time push arrived, so it pulls once
-	after its updater is live.
+	wiring.onSave. Every runtime.saveIntervalSeconds, for every state in the collection.
 
-	Returns nil for a player with no state — one who has not finished joining. A lookup miss
-	is a return, not an error, and it is self-correcting: client-main connects its
-	StateChanged handler BEFORE it invokes this, so the join-time push reaches the same
-	updater as soon as load returns.
-]]
-local function onRequestState(player: Player): { [string]: any }?
-	local state = states[player.UserId]
-	if state == nil then
-		return nil
-	end
-	return snapshotOf(state)
-end
-
--- A detached list of what is in the collection right now. Taken before any save, because
--- persistence.save yields and joins and leaves mutate the collection in that window;
--- walking a table with pairs while it is being added to is undefined.
-type Entry = { userId: number, state: PlayerState, player: Player }
-
-local function connectedEntries(): { Entry }
-	local entries: { Entry } = {}
-	for userId, state in pairs(states) do
-		local player = state.player
-		if player ~= nil then
-			table.insert(entries, { userId = userId, state = state, player = player })
-		end
-	end
-	return entries
-end
-
--- One save, skipped if the player left while an earlier save in the same pass was yielding.
--- Re-tested against the collection by identity, not just by key, so a rejoin inside the
--- same pass cannot have the departed session's state written over it.
-local function saveEntry(entry: Entry, reason: string)
-	if states[entry.userId] ~= entry.state then
-		return
-	end
-	local ok, err = pcall(Persistence.save, entry.player, entry.state)
-	if not ok then
-		warn(string.format("%s %s save failed for %s: %s", LOG_PREFIX, reason, describe(entry.player), tostring(err)))
-	end
-end
-
---[[
-	wiring.onSave. Every GameConfig.SaveIntervalSeconds, for every state in the collection.
-	A failure warns and the loop continues; the next pass retries by existing.
-
-	Waits first, so the first pass lands after the rest of boot rather than during it.
-	Sequential rather than one thread per player: the pass is not urgent, and a burst of
-	concurrent SetAsync calls is how a busy server meets the DataStore request budget.
+	The collection is copied into an array before the pass because persistence.save yields:
+	a join landing mid-pass would add a key to a table being traversed with pairs, which is
+	undefined. A failure warns inside persistence and the loop continues; the next pass
+	retries by existing.
 ]]
 local function startSaveLoop()
 	task.spawn(function()
 		while true do
-			task.wait(GameConfig.SaveIntervalSeconds)
-			for _, entry in ipairs(connectedEntries()) do
-				saveEntry(entry, "periodic")
+			task.wait(Config.SaveIntervalSeconds)
+
+			local due: { PlayerState } = {}
+			for _, state in pairs(states) do
+				table.insert(due, state)
+			end
+
+			for _, state in ipairs(due) do
+				local player = state.player
+				if player ~= nil and states[player.UserId] == state then
+					local ok, err = pcall(Persistence.save, player, state)
+					if not ok then
+						warn(`server-main: the periodic save of {player.UserId} failed: {err}`)
+					end
+				end
 			end
 		end
 	end)
 end
 
 --[[
-	wiring.onShutdown. A Studio stop must not write test data to the live store under
-	GameConfig.DataStoreName, so it returns immediately; otherwise every state still in the
-	collection is saved and waited for.
+	wiring.onShutdown. A Studio stop writes nothing: runtime.dataStoreName is the live
+	store and test data in it is indistinguishable from a player's.
 
-	One thread per player and a pending count, rather than one after another: BindToClose
-	has a fixed budget for the whole server, and a full house of sequential yielding writes
-	is how the last player in the loop loses their session. No timeout of our own — the
-	engine's own limit on BindToClose is the only one, and inventing a second number here
-	would be inventing a value.
+	Otherwise every state still in the collection is saved and all of them are waited for.
+	Saved in parallel rather than in a sequential loop: BindToClose has a bounded budget
+	and sixteen sequential DataStore writes can exceed it, which would lose the last of
+	them rather than the last second of one.
 ]]
 local function onShutdown()
 	if RunService:IsStudio() then
@@ -474,12 +514,18 @@ local function onShutdown()
 	end
 
 	local pending = 0
-	for _, entry in ipairs(connectedEntries()) do
-		pending += 1
-		task.spawn(function()
-			saveEntry(entry, "shutdown")
-			pending -= 1
-		end)
+	for _, state in pairs(states) do
+		local player = state.player
+		if player ~= nil then
+			pending += 1
+			task.spawn(function()
+				local ok, err = pcall(Persistence.save, player, state)
+				if not ok then
+					warn(`server-main: the shutdown save of {player.UserId} failed: {err}`)
+				end
+				pending -= 1
+			end)
+		end
 	end
 
 	while pending > 0 do
@@ -487,50 +533,70 @@ local function onShutdown()
 	end
 end
 
--- wiring.boot, in order.
+-- ==========================================================================
+-- BOOT. Seven steps, in this order, none of which yields.
+-- ==========================================================================
 
--- 1. Players.CharacterAutoLoads = false is at the head of the file, above the requires:
--- see the note there. It removes the race between a character spawning and
--- persistence.load returning, and it also makes the engine's own Players.RespawnTime dead,
--- which is why onDeath exists at all.
+-- (1) FIRST, before anything else. Collision group, chat off, the player-cap assertion.
+-- It does not yield, which is what lets step 2 land on the same frame.
+World.configure()
 
--- 2. protocol creates the Folder and one Instance per channel, so the folder name and the
--- class per channel live in the module that owns the names. Before any player can join, so
--- a client that boots instantly finds them.
+-- (2) Removes the race between a character spawning and the two yielding calls in onJoin
+-- returning. The engine's Players.RespawnTime dies with it, which is why onDeath exists.
+Players.CharacterAutoLoads = false
+
+-- (3) The remotes Folder and one Instance per channel, class taken from Protocol.REMOTES.
+-- protocol does this, not this file, so the folder name and the class per channel live in
+-- the module that owns the names. Done before any player can join.
 Protocol.createRemotes()
 
--- 3. The live collection is created at file scope above, before any of the handlers that
--- close over it and before step 4 hands it to clearing.
+-- (4) The live collection is the `states` table above, created at require time because a
+-- local cannot be declared here and used by the handlers above it. Never replaced.
 
--- 4. clearing installs its own GameConfig.ClearTickRate loop. Ticking an empty collection
--- before the first join is normal.
+-- (5) Hand clearing the collection by reference and let it install its own
+-- runtime.clearTickRate loop. Ticking an empty collection before the first join is normal.
 Clearing.start(states)
 
--- 5.
+-- (6) The periodic save loop.
 startSaveLoop()
 
--- 6. Every remote in this file is reached through Protocol.channel and named in no literal
--- anywhere else.
+-- (7) The three bindings. The two client-originated channels are
+-- input.clientOriginatedRemotes in full; there is no third handler to write because there
+-- is no third client-originated channel.
 game:BindToClose(onShutdown)
-Protocol.channel(BUY_UPGRADE).OnServerEvent:Connect(onPurchase)
-Protocol.channel(REQUEST_STATE).OnServerInvoke = onRequestState
 
--- wiring.boot does not say where the two Players signals are connected. Last, after every
--- step above, so the first join cannot land on a half-built boot.
-Players.PlayerAdded:Connect(joinPlayer)
-Players.PlayerRemoving:Connect(onLeave)
+Protocol.channel(CHANNEL_BUY_UPGRADE).OnServerEvent:Connect(onPurchase)
 
--- Anyone already here. wiring asserts that step 2 happens "before any player can join", so
--- on paper this list is empty; it is swept anyway because with CharacterAutoLoads false a
--- player who slipped in ahead of this Script would otherwise never get a character at all,
--- and would sit in the sky for the session. joinPlayer's `joining` guard is what makes the
--- sweep safe alongside the connection made two lines above it.
-for _, player in ipairs(Players:GetPlayers()) do
-	task.spawn(joinPlayer, player)
+--[[
+	Set at boot, before any client can invoke it.
+
+	A PLAYER WHOSE STATE IS NOT YET PUBLISHED GETS nil, NOT AN ERROR. Nothing states which,
+	and the two are not symmetric: an error inside OnServerInvoke propagates to the client's
+	InvokeServer, which aborts client-main's boot at step 7 and leaves every updater bound
+	to a channel it never finishes connecting — a HUD dead for the session. A nil is one
+	no-op call of an updater that is already required to be idempotent, and the join push
+	(onJoin step 7) and the spawn push (onSpawn step 8) both come after the publish point,
+	so the HUD is filled a moment later either way. The race is normal, not exceptional:
+	client-main's boot can outrun a yielding persistence.load, so this must not warn.
+]]
+Protocol.channel(CHANNEL_REQUEST_STATE).OnServerInvoke = function(player: Player): any
+	local state = states[player.UserId]
+	if state == nil then
+		return nil
+	end
+	return buildSnapshot(state)
 end
 
--- No `return` statement, deliberately. The brief's generic instruction says a module
--- returns a table, but this module's own contract says it exposes nothing and that no
--- module may require it — entryPoint true, exposes empty. Roblox refuses to require a
--- Script in any case, so a returned table would be unreachable decoration that reads as an
--- invitation. Recorded in init.server.report.md.
+-- Players who were already in the server when this script started. PlayerAdded does not
+-- fire for them, and boot yields nowhere, so in practice this is empty — but a first
+-- player who missed the connection would have no state, no lane and no character at all.
+Players.PlayerAdded:Connect(onJoin)
+for _, player in ipairs(Players:GetPlayers()) do
+	task.spawn(onJoin, player)
+end
+
+Players.PlayerRemoving:Connect(onLeave)
+
+-- An entry point exposes nothing: tree's rule that every module returns one table meets
+-- "no module may require this one", and an empty table is the reading that satisfies both.
+return {}

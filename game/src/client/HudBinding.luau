@@ -72,6 +72,7 @@ export type Updater = (Snapshot?) -> ()
 type UpgradeDef = {
 	id: string,
 	label: string,
+	blurb: string,
 	costBase: number,
 	costGrowth: number,
 	maxLevel: number,
@@ -135,8 +136,17 @@ local FIELDS_READ: { string } = {
 	PLAYER-FACING TEXT. Every literal here is punctuation or a single word, and every one of
 	them is taken from the text the emitted screen already ships in the node it is written
 	into: "Lv 0  -  25" in a ReadoutValue, "0 / 24" in the collection readout, and
-	"EAST TERRACE - 0% CLEAR" in the BarLabel. They match GameConfig.Vocabulary.allowedPattern,
-	which is why the separators are hyphens and not a middot or an em dash.
+	"EAST TERRACE - 0% CLEAR" in the BarLabel. The separators are hyphens and not a middot or
+	an em dash because GameConfig.Vocabulary.allowedPattern admits neither.
+
+	ONE EXCEPTION, AND IT IS A REPORTED GAP RATHER THAN A CHOICE. allowedPattern is
+	"^[A-Za-z0-9 ,.'%-/]+$", in which `%-` is an escaped hyphen and the per-cent sign is not a
+	member of the class at all, so "% CLEAR" does not match it. Three other statements ask for
+	exactly that character: firstSession.withheld[areaProgress].joinValue is "0%", the
+	interface note for this module fixes the BarLabel as "<label> <percent>% CLEAR", and the
+	emitted screen ships "EAST TERRACE - 0% CLEAR" in the node. A character class that omits
+	one character is the likelier defect than three specifications that agree, so the readout
+	keeps its per-cent sign and the pattern is named in the build report.
 ]]
 local UPGRADE_LEVEL_PREFIX = "Lv "
 local UPGRADE_SEPARATOR = "  -  "
@@ -400,8 +410,12 @@ end
 
 	Only strings this module does not control are checked: the area labels arrive on the wire
 	and are the one piece of player-facing text here that no test in this repo can see by
-	reading the source. Both rules are the contract's, and neither is restated. WARNS and does
-	not truncate: a silently shortened label is a label nobody notices is wrong.
+	reading the source. The COMPOSED readout lines are deliberately not checked - every one of
+	them is longer than maxLabelChars by construction, and the progress line carries the
+	per-cent sign the pattern omits, so checking them would warn once per snapshot about two
+	things a build report is the right place for. Both rules are the contract's, and neither is
+	restated. WARNS and does not truncate: a silently shortened label is a label nobody notices
+	is wrong.
 ]]
 local function checkVocabulary(line: string, source: string)
 	local vocabulary = GameConfig.Vocabulary

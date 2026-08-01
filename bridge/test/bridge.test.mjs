@@ -586,3 +586,46 @@ test('every player-facing literal in the UI obeys the vocabulary key', async () 
   }
   assert.deepEqual(violations, []);
 });
+
+test('vocabulary.allowedPattern means the same thing in Lua as in JavaScript', async () => {
+  // Two engines enforce this pattern and they do not agree by default. The merger validates
+  // with `new RegExp`; every Luau module checks with `string.match`.
+  //
+  // Written `[A-Za-z0-9 ,.'%-/]`, JavaScript reads `%-/` as a RANGE from `%` (37) to `/` (47)
+  // and silently admits `%&'()*+,-./`; Lua reads `%-` as an escaped hyphen and admits no `%`
+  // at all. So "0% CLEAR" passed on this side and failed at runtime -- while
+  // firstSession.withheld[areaProgress].joinValue is "0%", the HUD interface fixes the bar
+  // label as `<label> ... <percent>% CLEAR`, and the emitted screen ships exactly that.
+  //
+  // A JS-only test cannot catch this: the JS side was always the permissive one. So this
+  // asserts the two properties that make the pattern portable, rather than re-testing RegExp
+  // against itself.
+  const { mergeSheets: merge } = await import('../merge.mjs');
+  const { manifest } = await merge('cid');
+  const p = manifest.vocabulary.allowedPattern;
+
+  // 1. No unescaped `%` followed by anything that would form a JS range. `%%` is the portable
+  //    spelling: an escaped percent to Lua, a harmless repeat to JS.
+  // Remove the valid pairs first; a `%` left over is a bare one. Matching `%(?!%)` directly
+  // flags the SECOND character of a legitimate `%%`, which is the same class of off-by-one
+  // the pattern itself fell into.
+  assert.equal(p.replace(/%%/g, '').includes('%'), false,
+    `allowedPattern has a bare "%" in ${p} — Lua reads it as an escape, JS does not. Write %%.`);
+
+  // 2. A hyphen must be last inside the class, where both engines read it as a literal.
+  const cls = p.match(/\[(.*)\]/)?.[1] ?? '';
+  if (cls.includes('-')) {
+    assert.ok(cls.endsWith('-'),
+      `a "-" inside ${p} must sit last in the class or one engine reads it as a range`);
+  }
+
+  // 3. The characters three separate specs actually require must pass.
+  const re = new RegExp(p);
+  for (const s of ['0% CLEAR', '0 / 24', 'Lv 3  -  102', 'Finds']) {
+    assert.ok(re.test(s), `${JSON.stringify(s)} is required by a spec and fails allowedPattern`);
+  }
+  // And the two untypeable characters that were actually found in shipped strings must not.
+  for (const s of ['A — B', 'A · B']) {
+    assert.equal(re.test(s), false, `${JSON.stringify(s)} is untypeable and must fail`);
+  }
+});
