@@ -113,6 +113,36 @@ const RESERVED = new Set([
 /** `discovery` -> `Discovery`, so emitted names match the hand-written blocks' convention. */
 const pascal = (key) => key.charAt(0).toUpperCase() + key.slice(1);
 
+/**
+ * Fields that document what a builder must NOT do, dropped before emitting.
+ *
+ * This file's own header states the rule: the emitter carries values, never prose. A list of
+ * API names nobody may call is prose in an array — no runtime path reads it, and it is
+ * addressed to the person writing the module, not to the module.
+ *
+ * Emitting it did active harm. `social/03` gives its exclusions checkable observables of the
+ * form "no `leaderstats` anywhere under `game/src`", and the emitted config quoted
+ * `leaderstats`, `OrderedDataStore` and `Player:IsFriendsWith` as data — so the grep matched
+ * the generated file and the criterion could not pass however correct the build was. The
+ * `world` builder hit it and had to choose between editing a generated file and quietly
+ * narrowing the check. Both are wrong, which is the sign the emitter was.
+ *
+ * Named explicitly rather than matched by heuristic: three recurring field names, so a reader
+ * can see exactly what is dropped and a fourth has to be added deliberately. Worth 4% of the
+ * config's bytes; the point is the checks, not the size.
+ */
+const DOCUMENTATION_ONLY = new Set(['forbidden', 'forbiddenApis', 'invariants']);
+
+function stripDocumentation(value) {
+  if (Array.isArray(value)) return value.map(stripDocumentation);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([k]) => !DOCUMENTATION_ONLY.has(k))
+      .map(([k, v]) => [k, stripDocumentation(v)]),
+  );
+}
+
 function tiersBlock(tiers, source) {
   const rows = tiers.map((t) =>
     `\t{ name = ${str(t.name)}, shape = ${str(t.shape)}, rgb = { ${t.rgb.join(', ')} }, `
@@ -325,7 +355,7 @@ ${r.maxPlayers === undefined ? '' : `GameConfig.MaxPlayers = ${num(r.maxPlayers)
     for (const key of derived) {
       parts.push(`
 -- From ${src(key)}.
-GameConfig.${pascal(key)} = ${luau(manifest[key])}
+GameConfig.${pascal(key)} = ${luau(stripDocumentation(manifest[key]))}
 `);
     }
   }

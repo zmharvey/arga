@@ -9,7 +9,7 @@ lane keeps going inward with more Spire bays, each identical to area 8 and **bur
 without limit and without a count. **Two of `core-loop/02`'s five payoff kinds survive, the
 currency tick and area completion**, and `core-loop/01`'s 90-second above-tick rule **stops
 applying at the moment the twenty-fourth Find is revealed.** No new system appears, and none
-of the nine excluded ones is added or reserved for.
+of the thirteen excluded ones is added or reserved for.
 
 ## Why
 
@@ -72,17 +72,20 @@ of the nine excluded ones is added or reserved for.
 | `core-loop/04` `24/24 outlasts one floor session` | **stops applying** | nothing is left to complete |
 | `core-loop/05` density under the tick ceiling | applies unchanged | 640 against 655 |
 | `core-loop/05` arrival below the throughput cap | **stops applying** | the cap was reached in area 4 |
-| sheet `04` `relicSlice` partitions the set | **stops applying** | post-terminal slices are empty |
-| sheet `05` R5, R6, R7 (find placement) | **stop applying** | there are no finds to place |
+| sheet `04` slice assignment partitions the set | **stops applying** | post-terminal bays hold no slice |
+| sheet `04` `maxRadiusProduct` per row | applies unchanged | at 2.10, the loosest row in the game |
+| sheet `05` R5 to R8 (find placement) | **stop applying** | there are no finds to place |
 | sheet `05` R1 to R4 (chunk repetition) | apply unchanged | repetition is still seen |
+| sheet `06` pitch, spawn and openings | apply unchanged | the lane does not change shape |
 | "Cleared is permanent" | applies unchanged | `[brief: binding]` ← `[you chose: R2 Q1]` |
 
 ```manifest
 {
   "provides": "endgame",
+  "status": "proposed",
   "value": {
     "terminalCondition": "the player's found count reaches the total number of names in collection",
-    "reachedAt": { "areaOrdinal": 8, "event": "the reveal on the last patch of West Spire that carries a Find" },
+    "reachedAt": { "areaOrdinal": 8, "event": "the reveal on the last patch of the eighth bay that carries a Find" },
     "gameEnds": false,
     "collectionEnds": true,
     "endScreen": false,
@@ -99,8 +102,10 @@ of the nine excluded ones is added or reserved for.
       "chunkCount": 16,
       "patchCount": 640,
       "minSpacing": 6,
-      "relicSlice": [],
+      "relicSliceIndex": "none",
+      "buriesFinds": 0,
       "unlock": "previousAreaComplete",
+      "bayLengthStuds": 480,
       "drawsFrom": "the depth-4 chunk family, under layout's R1 to R4"
     },
     "predicateScopeChange": {
@@ -116,7 +121,7 @@ of the nine excluded ones is added or reserved for.
     "forbidden": ["rebirth", "prestige", "offlineAccrual", "dailyReward", "seasonPass", "seasonalEvent", "leaderboard", "trading", "redeemCode", "secondCollection", "completionPercent", "badgeLadder", "secondCurrency"],
     "invariants": [
       "survivingPayoffKinds and extinctPayoffKinds partition core-loop/02's five kinds with no overlap",
-      "postTerminalArea.relicSlice is empty and no post-terminal area buries any name",
+      "postTerminalArea.relicSliceIndex is none and buriesFinds is 0",
       "postTerminalArea's footprint, chunkCount and patchCount equal depths.areas[7]'s",
       "no entry in forbidden appears as an identifier anywhere in game/src",
       "nothing in this key names a reward, a grant, a threshold or a recurrence"
@@ -132,8 +137,8 @@ of the nine excluded ones is added or reserved for.
   three-second assertion and the lap band stay unconditional. That is two lines in
   `game/test/config.spec.luau` and it converts a permanent known failure into a scoped rule.
 - **Persistence work** must not grow a boolean per post-terminal area. One integer, and the
-  bay currently occupied, which `theme/setting/04` already added. This closes the half of
-  `OPEN.md §2`'s unbounded-world-state risk that an endless run would otherwise reopen.
+  bay currently occupied. This closes the half of `OPEN.md §2`'s unbounded-world-state risk
+  that an endless run would otherwise reopen.
 - **UI and readout work inherits a substitution, not a new screen.** `systems/04` requires
   currency stay visible and uncapped; `theme/fantasy/02` requires that "a meaningless rising
   number may not be the figure on screen at S4." **Both hold at once only if the headline
@@ -150,10 +155,28 @@ of the nine excluded ones is added or reserved for.
   `05-OUTWARD.md` means by "new content can be added as new authored chunks without touching
   existing systems."
 - **Plot-arrangement work (sheet `06`)** extends its bay table by 480 studs per post-terminal
-  bay under the same teardown rule, and its `[research owed:]` on part precision far from the
-  origin is the one thing that bounds how long the run can physically go.
+  bay under the same teardown rule. Its `[research owed:]` on part precision far from the
+  origin is the one thing that bounds the run: at 480 studs a bay, **bay 42 crosses 20,000
+  studs** and the lane must rebase from there. Tech and Performance inherits that.
 - **Live Ops and Monetization** get an explicit no. There is nothing here to schedule, sell
   or refresh, and the thirteen names in `forbidden` are the list to diff a proposal against.
+
+## Flagged to the developer
+
+Two calls this sheet made where the brief simply stops, both worth a ruling.
+
+1. **The game permanently stops enforcing its own cadence rule at 24/24.** After the last
+   Find, 157 seconds pass between above-tick payoffs against a 90-second ceiling, forever.
+   `core-loop/01` offered this as one of its two acceptable answers, but it is still a rule
+   the game abandons rather than meets, and every instrument that would close it is cut or
+   priority 3. **Recommendation: accept it.** The alternative is reintroducing something from
+   priority 3, which is a scope decision and not mine.
+2. **The place continues and the collection does not, which means the last hour of play has
+   no new object in it.** More Spire bays is what the fiction permits and it is genuinely
+   unlimited, but it is also the same lap repeating. The one change that would give it new
+   content is sheet `04`'s `## Flagged` item, a larger collection, and the two should be ruled
+   on together: at 4 sets of 12 the terminal state arrives at minute 42 instead of minute 21
+   and this sheet governs proportionally less of the game.
 
 ## Acceptance criteria
 
@@ -164,8 +187,8 @@ of the nine excluded ones is added or reserved for.
    `found < totalFinds` and the 3-second per-clear assertion with no guard, and the file exits
    `PASS`.
 3. Every area generated past ordinal 8 reports `footprintStuds2` 57,600, `chunkCount` 16,
-   `patchCount` 640, an empty `relicSlice`, and the label `Spire` containing no digit, ordinal
-   or qualifier.
+   `patchCount` 640, a `relicSliceIndex` of `none`, and the label `Spire` containing no digit,
+   ordinal or qualifier.
 4. `endgame.forbidden` holds 13 names, and a case-insensitive search of `game/src` for each of
    them returns zero identifiers.
 
@@ -174,10 +197,11 @@ of the nine excluded ones is added or reserved for.
 How many areas exist before the terminal state, and their sizes (sheet `04`, this domain,
 which holds `depths`). What a bay's interior is made of and which chunks a post-terminal bay
 draws from (sheet `05`, which holds `layout`). Where the bays sit and how far the run may
-physically extend (sheet `06`, which holds `plots`). What a completed set granted (sheet
-`03`). Whether income is capped, hidden or converted: it is none of those and that is
-`gameplay/systems/04`'s ruling, not mine. What the finished-parts figure looks like, where it
-sits and whether currency stays beside it (UI/UX; `theme/fantasy/02` fixed its form and I
-state only that both requirements must hold together). What the area-completion cue sounds
-like at its ten-thousandth firing (Audio). Whether the game should have more collection at
-all, which is sheet `04`'s `## Flagged to the developer` and the developer's call.
+physically extend before rebasing (sheet `06`, which holds `plots`, and Tech and Performance).
+What a completed set granted and at what factor (sheet `03`, then Balance). Whether income is
+capped, hidden or converted: it is none of those and that is `gameplay/systems/04`'s ruling.
+What the finished-parts figure looks like, where it sits and whether currency stays beside it
+(UI/UX; `theme/fantasy/02` fixed its form and I state only that both requirements must hold
+together). What the area-completion cue sounds like at its ten-thousandth firing (Audio).
+Whether the game should have more collection at all, which is sheet `04`'s
+`## Flagged to the developer` and the developer's call.
