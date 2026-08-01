@@ -541,3 +541,48 @@ test('a stale "proposed" from a domain that does NOT own the key stays a hard er
   assert.match(err, /gameplay\/systems/);
   await rm(dir, { recursive: true, force: true });
 });
+
+test('every player-facing literal in the UI obeys the vocabulary key', async () => {
+  // `playerFacingStrings` walks the *manifest*, so the ban list and the character-set rule
+  // were enforced on values CID declared and on nothing else. The strings a player actually
+  // reads on the HUD live in a ui-forge brief and in client modules, and none of them was
+  // ever checked.
+  //
+  // What that let through, all three found at once by the `pressables` builder's own
+  // vocabulary check and then by hand:
+  //   - "RELICS" on the collection readout. `relic` and `relics` are banned words, renamed to
+  //     Find/Finds precisely because the noun was occupied inside this game's genre family.
+  //   - "EAST TERRACE — 0% CLEAR" and "Lv 0  ·  25", using an em dash and a middot, neither
+  //     typeable in the declared character set.
+  // The rule existed, was correct, and was enforced nowhere the player could see.
+  const { readFile } = await import('node:fs/promises');
+  const { mergeSheets: merge } = await import('../merge.mjs');
+  const { manifest } = await merge('cid');
+  const vocab = manifest.vocabulary;
+  const pattern = new RegExp(vocab.allowedPattern);
+
+  const FILES = [
+    'game/src/shared/Screens/hud.luau',
+    'game/src/client/HudBinding.luau',
+    'game/src/client/Pressables.luau',
+  ];
+
+  const violations = [];
+  for (const file of FILES) {
+    let body;
+    try { body = await readFile(file, 'utf8'); } catch { continue; } // not yet built
+    for (const m of body.matchAll(/(?:text|Text)\s*=\s*"([^"\\]+)"/g)) {
+      const value = m[1];
+      if (!pattern.test(value)) {
+        violations.push(`${file}: ${JSON.stringify(value)} is outside vocabulary.allowedPattern`);
+      }
+      for (const { word } of vocab.bannedWords) {
+        const re = new RegExp(`\\b${String(word).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        if (re.test(value)) {
+          violations.push(`${file}: ${JSON.stringify(value)} uses the banned word "${word}"`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(violations, []);
+});

@@ -51,7 +51,7 @@ incremental-genre vocabulary is off-limits even when it is not banned outright.
     "register": "Plain concrete nouns, one word where possible. No ornament, no invented compounds, no incremental-genre vocabulary.",
     "casing": "title",
     "maxSentenceWords": 12,
-    "allowedPattern": "^[A-Za-z0-9 ,.'%-]+$",
+    "allowedPattern": "^[A-Za-z0-9 ,.'%-/]+$",
     "bannedWords": [
       { "word": "relic",    "reason": "occupied by Scrap Incremental and Faith Incremental for a rolled multiplier item, which is the wrong mental model for a discovered set collectible" },
       { "word": "relics",   "reason": "plural of a banned word" },
@@ -75,6 +75,12 @@ incremental-genre vocabulary is off-limits even when it is not banned outright.
   `upgrades[].label`, `currency.name` / `.plural`, and every relic name.
 - **`upgrades[].blurb` is exempt from the character limit** but not from the ban list. It is
   the only free-prose field a player ever sees.
+- **`/` was added to `allowedPattern` on 2026-08-01.** The rule's purpose is that every
+  player-facing string be *typeable in the game's character set*, and a solidus is typeable on
+  every keyboard this game's audience owns. Excluding it made the collection readout `0 / 24`
+  illegal, which is the canonical use and the one string the whole collection is counted in.
+  This is a defect in the pattern, not in the string. `—` and `·` were correctly rejected by
+  the same rule and both were replaced with `-`. `[cid: decided]`
 
 ## Acceptance criteria
 

@@ -79,7 +79,7 @@ local BAR_TWEEN_STYLE = Enum.EasingStyle.Quad
 local BAR_TWEEN_DIRECTION = Enum.EasingDirection.Out
 
 -- [STOP: no value in the contract] The text half of the affordability signal. The interface
--- fixes the readout as "Lv <n>  ·  <cost>", which carries no affordability at all, while
+-- fixes the readout as "Lv <n>  -  <cost>", which carries no affordability at all, while
 -- "Must not" forbids colour alone and criterion 2 requires it be readable with colour
 -- removed. Those cannot both hold, so a suffix was invented. The words are arbitrary.
 local AFFORDABLE_SUFFIX = "  BUY"
@@ -92,7 +92,7 @@ local MAX_LEVEL_TEXT = "MAX"
 
 -- Separators, taken verbatim from the interface note's format strings: two spaces, U+00B7,
 -- two spaces for the upgrade readout; spaced U+2014 for the progress label.
-local UPGRADE_SEPARATOR = "  ·  "
+local UPGRADE_SEPARATOR = "  -  "
 local BAR_LABEL_SEPARATOR = " — "
 
 local WARN_PREFIX = "[HudBinding]"
