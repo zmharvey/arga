@@ -5,7 +5,7 @@
 ## Decision
 
 The server observes clearing on a **0.12 s tick**, saves every **45 s**, respawns a dead
-character **3 s** after it dies, stores under **`ArgaRuin_v2`**, composes every area from the
+character **3 s** after it dies, stores under **`ArgaRuin_v3`**, composes every area from the
 fixed seed **20260801**, and runs a **16-player** place.
 
 Three of those are new. The store name is bumped because waves 2 and 3 changed the save shape.
@@ -76,7 +76,7 @@ here because `social` decided a band and `Players.MaxPlayers` cannot be written 
     "clearTickRate": 0.12,
     "saveIntervalSeconds": 45,
     "respawnDelaySeconds": 3,
-    "dataStoreName": "ArgaRuin_v2",
+    "dataStoreName": "ArgaRuin_v3",
     "layoutSeed": 20260801,
     "maxPlayers": 16,
     "placeConfiguration": {
@@ -87,11 +87,19 @@ here because `social` decided a band and `Players.MaxPlayers` cannot be written 
         "ownedBy": "whoever publishes the place",
         "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
       },
-      "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+      "avatarRigType": {
+        "value": "R15",
+        "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+        "ownedBy": "whoever publishes the place",
+        "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+        "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+      },
+      "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
     },
     "storeVersionHistory": {
       "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-      "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+      "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+      "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
     }
   }
 }
@@ -106,7 +114,7 @@ A builder may now assume:
   A second source of randomness is a save-corrupting defect, not a style choice.
 - That the tick rate is read by `clearing` alone, and that `modifiers` reads it only to compute
   the speed ceiling.
-- That the DataStore key is `ArgaRuin_v2` and there is no migration path to write.
+- That the DataStore key is `ArgaRuin_v3` and there is no migration path to write, because nothing has shipped and no v2 key exists in production. Were one to exist, the migration would not be a shape translation — it would be discarding `cleared` entirely, since the indices are unrecoverable.
 
 A builder may **not** assume:
 

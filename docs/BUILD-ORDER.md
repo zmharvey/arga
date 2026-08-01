@@ -710,7 +710,7 @@ state looks like, what each object is made of, and what happens in what order.
     "subject": "tool",
     "kind": "model",
     "rationale": "tool.instanceClass is Model, tool.isRobloxToolInstance is false and tool.entersBackpack is false — it is a held object welded to the hand, not a Roblox Tool. Two Parts: a handle and a head whose width is the one appearance channel. Assembled at runtime from primitives, exactly like a patch, so it needs no upload and blocks nothing.",
-    "class": "Model containing two Parts and one WeldConstraint",
+    "class": "Model containing two Parts and TWO WeldConstraints",
     "properties": {
       "Name": "\"Tool\"",
       "PrimaryPart": "the handle",
@@ -723,11 +723,11 @@ state looks like, what each object is made of, and what happens in what order.
       "every part CanTouch": "false — tool.canTouch, and tool.clearsOnContact is false: clearing is a server proximity test in clearing.tick and the tool is appearance",
       "every part CanQuery": "false — tool.canQuery",
       "every part CastShadow": "false",
-      "weld": "one WeldConstraint from the handle to the character's RightHand — tool.attachment"
+      "weld": "TWO WeldConstraints, and one is not enough: HandWeld joins the handle to the character's RightHand (tool.attachment), and HeadWeld joins the head to the handle. This row said ONE WeldConstraint until the tool builder pointed out that every part is Anchored=false and Massless=true, so under the one-weld reading the head is joined to nothing and falls off on the frame it spawns, on every character, every session. The head-to-handle offset is derived rather than chosen: handleSize.Z/2 + headDepth/2, the two stated sizes flush."
     },
     "createdBy": "tool",
     "destroyedBy": "tool, with the character that holds it",
-    "asset": "none — assembled at runtime from two Parts and a WeldConstraint. THIS ROW IS THE ONE PLACE THE SCHEMA'S ASSET RULE MISFIRES: it demands an asset for any model, on the sound ground that a mesh or model usually implies something somebody has to upload, and a Model built from primitives implies nothing. Saying so here is deliberate; naming a fake rbxassetid would not be, and `grep -rn \"rbxassetid\" game/src` still returns nothing. Flagged under Not decided here.",
+    "asset": "none — assembled at runtime from two Parts and two WeldConstraints. THIS ROW IS THE ONE PLACE THE SCHEMA'S ASSET RULE MISFIRES: it demands an asset for any model, on the sound ground that a mesh or model usually implies something somebody has to upload, and a Model built from primitives implies nothing. Saying so here is deliberate; naming a fake rbxassetid would not be, and `grep -rn \"rbxassetid\" game/src` still returns nothing. Flagged under Not decided here.",
     "note": "tool.count is 1, tool.grantedAt is 'spawn', and tool.held is true, so every living character has exactly one and a character that dies takes it with it. tool.writesHumanoidProperties is FALSE — the only Humanoid write in this game is server-main's WalkSpeed, per response.humanoidWritesAllowed. tool.animates is false and tool.particleEmitters is 0, so there is no AnimationTrack and no emitter anywhere in it. tool.changesWithAxes is exactly ['radius'] and unaffectedByAxes exactly ['value', 'speed']: the head widens and nothing else about it ever changes. tool.premiumVariantAllowed is true and premiumVariantMayBeOnlyTool is false, which products.F8 restates as 'a player owning zero products spawns with a tool welded to the right hand' — that is this row's first acceptance criterion and there is no variant in this build."
   },
   {
@@ -1435,7 +1435,7 @@ state looks like, what each object is made of, and what happens in what order.
     "replacement": "without",
     "areasPartitionTheSet": true,
     "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
-    "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
+    "invariantHoldsToday": "3 * 2 == 6. It USED to read 6 * 1 == 6 with the note that the rule changed no shipped behaviour -- true until ruling R-2 took relicsPerArea to 3 and areasPerDepth to 2. The no-op safety argument has expired: the draw is load-bearing now and must be tested rather than assumed, which is exactly why this sheet was written before it was needed.",
     "placementIsPlayerIndependent": true,
     "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
     "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
@@ -2117,7 +2117,7 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "respawnDelaySeconds": 3,
-  "dataStoreName": "ArgaRuin_v2",
+  "dataStoreName": "ArgaRuin_v3",
   "layoutSeed": 20260801,
   "maxPlayers": 16,
   "placeConfiguration": {
@@ -2128,11 +2128,19 @@ state looks like, what each object is made of, and what happens in what order.
       "ownedBy": "whoever publishes the place",
       "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
     },
-    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+    "avatarRigType": {
+      "value": "R15",
+      "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+      "ownedBy": "whoever publishes the place",
+      "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+      "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+    },
+    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
   },
   "storeVersionHistory": {
     "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-    "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+    "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+    "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
   }
 }
 ```
@@ -2970,7 +2978,7 @@ state looks like, what each object is made of, and what happens in what order.
     "replacement": "without",
     "areasPartitionTheSet": true,
     "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
-    "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
+    "invariantHoldsToday": "3 * 2 == 6. It USED to read 6 * 1 == 6 with the note that the rule changed no shipped behaviour -- true until ruling R-2 took relicsPerArea to 3 and areasPerDepth to 2. The no-op safety argument has expired: the draw is load-bearing now and must be tested rather than assumed, which is exactly why this sheet was written before it was needed.",
     "placementIsPlayerIndependent": true,
     "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
     "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
@@ -3060,7 +3068,7 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "respawnDelaySeconds": 3,
-  "dataStoreName": "ArgaRuin_v2",
+  "dataStoreName": "ArgaRuin_v3",
   "layoutSeed": 20260801,
   "maxPlayers": 16,
   "placeConfiguration": {
@@ -3071,11 +3079,19 @@ state looks like, what each object is made of, and what happens in what order.
       "ownedBy": "whoever publishes the place",
       "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
     },
-    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+    "avatarRigType": {
+      "value": "R15",
+      "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+      "ownedBy": "whoever publishes the place",
+      "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+      "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+    },
+    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
   },
   "storeVersionHistory": {
     "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-    "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+    "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+    "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
   }
 }
 ```
@@ -3156,7 +3172,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "number — the axis's effective value: a multiplier for value, studs for radius, studs per second for speed",
-    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets and setBonus.invariants forbids a row carrying a magnitude, so an absent factor is 1.0 and modifiers warns once at boot naming the four sets, WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
+    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets AND, since the wave-3 revision, carries the factor as data (1.20 on every row, playtest range 1.10-1.35). An absent factor is still read as 1.0 with one warning naming the offending set ids, but that is now the DEFECT path rather than the normal one. This sentence previously ended 'WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING', which was true when written and went stale the moment Meta supplied the factors; the modifiers builder reported the note and the config disagreeing, and following the note would have shipped a game where collecting all 24 Finds changes no number; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
   },
   {
     "module": "modifiers",
@@ -5097,7 +5113,7 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "respawnDelaySeconds": 3,
-  "dataStoreName": "ArgaRuin_v2",
+  "dataStoreName": "ArgaRuin_v3",
   "layoutSeed": 20260801,
   "maxPlayers": 16,
   "placeConfiguration": {
@@ -5108,11 +5124,19 @@ state looks like, what each object is made of, and what happens in what order.
       "ownedBy": "whoever publishes the place",
       "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
     },
-    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+    "avatarRigType": {
+      "value": "R15",
+      "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+      "ownedBy": "whoever publishes the place",
+      "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+      "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+    },
+    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
   },
   "storeVersionHistory": {
     "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-    "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+    "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+    "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
   }
 }
 ```
@@ -6311,7 +6335,7 @@ state looks like, what each object is made of, and what happens in what order.
     "replacement": "without",
     "areasPartitionTheSet": true,
     "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
-    "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
+    "invariantHoldsToday": "3 * 2 == 6. It USED to read 6 * 1 == 6 with the note that the rule changed no shipped behaviour -- true until ruling R-2 took relicsPerArea to 3 and areasPerDepth to 2. The no-op safety argument has expired: the draw is load-bearing now and must be tested rather than assumed, which is exactly why this sheet was written before it was needed.",
     "placementIsPlayerIndependent": true,
     "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
     "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
@@ -6991,7 +7015,7 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "respawnDelaySeconds": 3,
-  "dataStoreName": "ArgaRuin_v2",
+  "dataStoreName": "ArgaRuin_v3",
   "layoutSeed": 20260801,
   "maxPlayers": 16,
   "placeConfiguration": {
@@ -7002,11 +7026,19 @@ state looks like, what each object is made of, and what happens in what order.
       "ownedBy": "whoever publishes the place",
       "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
     },
-    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+    "avatarRigType": {
+      "value": "R15",
+      "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+      "ownedBy": "whoever publishes the place",
+      "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+      "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+    },
+    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
   },
   "storeVersionHistory": {
     "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-    "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+    "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+    "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
   }
 }
 ```
@@ -7021,7 +7053,7 @@ state looks like, what each object is made of, and what happens in what order.
     "replacement": "without",
     "areasPartitionTheSet": true,
     "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
-    "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
+    "invariantHoldsToday": "3 * 2 == 6. It USED to read 6 * 1 == 6 with the note that the rule changed no shipped behaviour -- true until ruling R-2 took relicsPerArea to 3 and areasPerDepth to 2. The no-op safety argument has expired: the draw is load-bearing now and must be tested rather than assumed, which is exactly why this sheet was written before it was needed.",
     "placementIsPlayerIndependent": true,
     "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
     "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
@@ -8309,7 +8341,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "number — the axis's effective value: a multiplier for value, studs for radius, studs per second for speed",
-    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets and setBonus.invariants forbids a row carrying a magnitude, so an absent factor is 1.0 and modifiers warns once at boot naming the four sets, WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
+    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets AND, since the wave-3 revision, carries the factor as data (1.20 on every row, playtest range 1.10-1.35). An absent factor is still read as 1.0 with one warning naming the offending set ids, but that is now the DEFECT path rather than the normal one. This sentence previously ended 'WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING', which was true when written and went stale the moment Meta supplied the factors; the modifiers builder reported the note and the config disagreeing, and following the note would have shipped a game where collecting all 24 Finds changes no number; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
   },
   {
     "module": "modifiers",
@@ -8411,7 +8443,7 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "respawnDelaySeconds": 3,
-  "dataStoreName": "ArgaRuin_v2",
+  "dataStoreName": "ArgaRuin_v3",
   "layoutSeed": 20260801,
   "maxPlayers": 16,
   "placeConfiguration": {
@@ -8422,11 +8454,19 @@ state looks like, what each object is made of, and what happens in what order.
       "ownedBy": "whoever publishes the place",
       "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
     },
-    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+    "avatarRigType": {
+      "value": "R15",
+      "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+      "ownedBy": "whoever publishes the place",
+      "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+      "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+    },
+    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
   },
   "storeVersionHistory": {
     "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-    "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+    "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+    "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
   }
 }
 ```
@@ -8523,7 +8563,7 @@ state looks like, what each object is made of, and what happens in what order.
     "replacement": "without",
     "areasPartitionTheSet": true,
     "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
-    "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
+    "invariantHoldsToday": "3 * 2 == 6. It USED to read 6 * 1 == 6 with the note that the rule changed no shipped behaviour -- true until ruling R-2 took relicsPerArea to 3 and areasPerDepth to 2. The no-op safety argument has expired: the draw is load-bearing now and must be tested rather than assumed, which is exactly why this sheet was written before it was needed.",
     "placementIsPlayerIndependent": true,
     "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
     "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
@@ -9467,7 +9507,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "number — the axis's effective value: a multiplier for value, studs for radius, studs per second for speed",
-    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets and setBonus.invariants forbids a row carrying a magnitude, so an absent factor is 1.0 and modifiers warns once at boot naming the four sets, WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
+    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets AND, since the wave-3 revision, carries the factor as data (1.20 on every row, playtest range 1.10-1.35). An absent factor is still read as 1.0 with one warning naming the offending set ids, but that is now the DEFECT path rather than the normal one. This sentence previously ended 'WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING', which was true when written and went stale the moment Meta supplied the factors; the modifiers builder reported the note and the config disagreeing, and following the note would have shipped a game where collecting all 24 Finds changes no number; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
   },
   {
     "module": "modifiers",
@@ -10242,7 +10282,7 @@ state looks like, what each object is made of, and what happens in what order.
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
   "respawnDelaySeconds": 3,
-  "dataStoreName": "ArgaRuin_v2",
+  "dataStoreName": "ArgaRuin_v3",
   "layoutSeed": 20260801,
   "maxPlayers": 16,
   "placeConfiguration": {
@@ -10253,11 +10293,19 @@ state looks like, what each object is made of, and what happens in what order.
       "ownedBy": "whoever publishes the place",
       "assertedBy": "world.configure(), which READS Players.MaxPlayers at boot and warns naming this key when it is outside the band"
     },
-    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers is the only one that is not, and it is the only entry in this block."
+    "avatarRigType": {
+      "value": "R15",
+      "setVia": "place configuration — Avatar > Rig Type. Not scriptable and not emittable.",
+      "ownedBy": "whoever publishes the place",
+      "whyItMatters": "representation.tool welds to the character's RightHand, and RightHand EXISTS ONLY ON R15 — R6 has `Right Arm`. On an R6 place the tool module warns and builds nothing, so the player holds no tool and its acceptance criterion fails, with no error anywhere else. Found by the tool builder, which correctly refused to invent a fallback limb name.",
+      "assertedBy": "tool.equip(), which warns naming this key when the expected limb is absent rather than silently building nothing"
+    },
+    "nothingElseIsPlaceConfiguration": "every other decision in social — collision groups, chat, plot access, the forbidden APIs — is executed by world.configure() at runtime. maxPlayers and avatarRigType are the two that cannot be, and they are the only entries in this block. Two further items are ALSO place configuration and are NOT yet listed with owners: TextChatService.ChatVersion (if it were LegacyChatService every chat write in world.configure() is inert while configure() reports success) and voice chat (enabled per experience in the Creator Dashboard, unreadable server-side, and social.chat.voice is false). Both were reported by the world builder; neither has a reliable read, so neither is asserted."
   },
   "storeVersionHistory": {
     "ArgaRuin_v1": "wave-1 shape: areaComplete boolean, single-area cleared set, no rowsRevealed. No reader is written; nothing shipped to players.",
-    "ArgaRuin_v2": "current. areasFinished integer, live-area cleared set, rowsRevealed."
+    "ArgaRuin_v2": "areasFinished integer, live-area cleared set, rowsRevealed. Superseded and NOT loadable: its cleared indices name patches that no longer exist.",
+    "ArgaRuin_v3": "current. Same SHAPE as v2 — the bump is not about shape at all. layout was rewritten from a single fixed area to chunk composition, and state.cleared is keyed by patch ARRAY INDEX, which is the durable identity. Every index now names a different patch, so a v2 save loaded under v3 rules would show a partly re-standing area and a collection whose finds sit under cleared ground. Found by the layout builder, which noticed its own rewrite invalidated a key nothing in its brief owned. A version bump is the migration: v2 keys are simply not read, and no player has a v2 save because nothing has shipped."
   }
 }
 ```
@@ -10585,7 +10633,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "number — the axis's effective value: a multiplier for value, studs for radius, studs per second for speed",
-    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets and setBonus.invariants forbids a row carrying a magnitude, so an absent factor is 1.0 and modifiers warns once at boot naming the four sets, WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
+    "note": "THE ONE IMPLEMENTATION — modifiers.singleDefinition. modifiers.composition writes it out: clamp(upgradeEffect(axis, heldLevel) * PROD(setFactors(axis)) * PROD(purchaseFactors(axis)), ceilingRule). FOUR STEPS, IN modifiers.resolutionOrder AND IN NO OTHER ORDER: (1) config.upgradeEffect(def, state.upgrades[axis] or 0) — this ALREADY CONTAINS upgrades[axis].base and modifiers.baseIsNotAppliedTwice forbids multiplying it in again; (2) multiply by every set factor on this axis, for every set in collection.sets whose six names are all true in state.found, in collection declaration order — setBonus.rows says WHICH axis each set targets AND, since the wave-3 revision, carries the factor as data (1.20 on every row, playtest range 1.10-1.35). An absent factor is still read as 1.0 with one warning naming the offending set ids, but that is now the DEFECT path rather than the normal one. This sentence previously ended 'WHICH MEANS A COMPLETED SET CURRENTLY CHANGES NOTHING', which was true when written and went stale the moment Meta supplied the factors; the modifiers builder reported the note and the config disagreeing, and following the note would have shipped a game where collecting all 24 Finds changes no number; (3) multiply by products.items[].factor for every item whose axis matches and whose id is true in state.owned, in offer-ladder order — every gamePassId is null today so this step is currently empty too; (4) clamp ONCE against ceiling(axis, state.areasFinished + 1), never between two sources — modifiers.clampApplication. Derives set completion from state.found on EVERY CALL and caches nothing: modifiers.sources[set-completion].storage is 'derived from discovery.record at every read; never latched, never persisted', which is why there is no setsComplete field to go stale. Never yields. Never writes. Called by clearing (radius and value, every tick), by server-main (speed, on spawn and after a purchase) and by tool (radius, on spawn and after a purchase), and by no client module."
   },
   {
     "module": "modifiers",

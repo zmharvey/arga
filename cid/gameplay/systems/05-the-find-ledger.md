@@ -69,7 +69,7 @@ re-places nothing. The record is **one boolean per name in `collection`, and not
       "replacement": "without",
       "areasPartitionTheSet": true,
       "invariant": "collection.relicsPerArea * collection.areasPerDepth == collection.sets[depth].relics.length",
-      "invariantHoldsToday": "6 * 1 == 6; this rule changes no shipped behaviour at current values",
+      "invariantHoldsToday": "3 * 2 == 6. It USED to read 6 * 1 == 6 with the note that the rule changed no shipped behaviour -- true until ruling R-2 took relicsPerArea to 3 and areasPerDepth to 2. The no-op safety argument has expired: the draw is load-bearing now and must be tested rather than assumed, which is exactly why this sheet was written before it was needed.",
       "placementIsPlayerIndependent": true,
       "placementRule": "the layout seed alone picks which patch indices carry a Find; the area's slice fills those slots in order. Neither the player's found set nor cleared set is an input to placement.",
       "placementDomain": "uncleared patches only — derived, not filtered: clearing a patch reveals its Find, so an unfound Find's slot is never a cleared patch",
