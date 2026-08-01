@@ -65,11 +65,11 @@ return-hook and re-entry work.
 | # | surface | at join | lifted by | latch source |
 |---|---|---|---|---|
 | 1 | collection count (the numerator) | **present**, showing `0` | — | — |
-| 2 | the `/ 24` denominator | **suppressed** | beat `firstReveal` | the collection map is non-empty; no new save field |
+| 2 | the `/ 24` denominator | **suppressed** | beat `firstReveal` | at least one entry in the collection map is TRUE; no new save field |
 | 3 | currency readout | **present**, showing `0` | — | — |
 | 4 | upgrade row, **each independently** | **suppressed** | that row's balance-reaches-level-1-cost | one persisted boolean per row, three total |
 | 5 | area progress bar | **present**, showing 0% | — | — |
-| 6 | collection panel | **suppressed** | beat `firstReveal` | the collection map is non-empty; no new save field |
+| 6 | collection panel | **suppressed** | beat `firstReveal` | at least one entry in the collection map is TRUE; no new save field |
 
 | id | may not stand in for a suppressed surface, or accompany a lift | check |
 |---|---|---|
@@ -94,11 +94,11 @@ folds the amendment below into it, because one key admits exactly one owning she
   "amends": "firstSession",
   "withheld": [
     { "surface": "collectionCount", "presentAtJoin": true, "liftedBy": null, "latched": false, "joinValue": "0" },
-    { "surface": "collectionDenominator", "presentAtJoin": false, "liftedBy": "beat:firstReveal", "latched": true, "latchSource": "the collection map is non-empty", "newSaveFields": 0 },
+    { "surface": "collectionDenominator", "presentAtJoin": false, "liftedBy": "beat:firstReveal", "latched": true, "latchSource": "at least one entry in the collection map is TRUE, counted over the names in collection.sets", "newSaveFields": 0 },
     { "surface": "currencyReadout", "presentAtJoin": true, "liftedBy": null, "latched": false, "joinValue": "0" },
     { "surface": "upgradeRow", "perRow": true, "presentAtJoin": false, "liftedBy": "balance has reached upgrades[i] level-1 cost", "latched": true, "latchSource": "one persisted boolean per row", "newSaveFields": 3 },
     { "surface": "areaProgress", "presentAtJoin": true, "liftedBy": null, "latched": false, "joinValue": "0%" },
-    { "surface": "collectionPanel", "presentAtJoin": false, "liftedBy": "beat:firstReveal", "latched": true, "latchSource": "the collection map is non-empty", "newSaveFields": 0 }
+    { "surface": "collectionPanel", "presentAtJoin": false, "liftedBy": "beat:firstReveal", "latched": true, "latchSource": "at least one entry in the collection map is TRUE, counted over the names in collection.sets", "newSaveFields": 0 }
   ],
   "suppressionForbidden": ["padlockOrLockGlyph", "greyedOrDimmedRow", "questionMarkPlaceholder", "unknownDenominatorForm", "explanatoryTooltip", "liftAnimation", "liftSound", "newBadgeOrDot", "reSuppression", "unrevealedFindsInCount", "percentFormOfCollectionCount", "reflowOnLift"]
 }
@@ -155,3 +155,15 @@ when (`03`). The verb that spends, and whether an upgrade row is itself the cont
 gameplay/mechanics, unsettled). Every cost value the row lifts read (Balance & Tuning). The save
 format for the three booleans (persistence work). The second-session open (return-hook work).
 Whether any of this is measured (Analytics — Funnels).
+
+> **Corrected 2026-08-01.** `latchSource` read *"the collection map is non-empty"* on both
+> surfaces. `wiring.onJoin` step 1 has `persistence.load` fill missing `found` keys with
+> `false`, so a brand-new save arrives on the wire with all 24 keys **present** — the map is
+> never empty and `next(found) ~= nil` is true at join. Taken literally the withholding does
+> nothing: the panel and the `/ 24` denominator both lift for a player who has found nothing,
+> which is precisely the state these two rows exist to prevent.
+>
+> Found **independently by two builders in the same wave** — `index-screen`, which owns the
+> panel, and `persistence`, which owns the fill that breaks it. Neither could see the other's
+> module. Two agents reaching the same defect from opposite sides is the strongest signal this
+> pipeline produces, and it is why the correction is a count rather than a presence test.

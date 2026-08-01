@@ -145,7 +145,7 @@ state looks like, what each object is made of, and what happens in what order.
       "type": "map<patchIndex,boolean>",
       "writtenBy": "clearing",
       "persisted": true,
-      "note": "THE LIVE AREA ONLY. Keyed by the 1-based index into layout.build(areasFinished + 1)'s canonical order. Bounded by that area's patchCount, at most 640. Emptied — not collapsed, EMPTIED — as part of incrementing areasFinished, so a finished area contributes nothing to it and the payload never grows with progress. Every area below the live one is entirely cleared by implication of areasFinished; every area above it does not exist yet. persistence.load is still the exact inverse of what save writes: it drops any index at or above the live area's patchCount, with a warning, because the live area changed size."
+      "note": "THE LIVE AREA ONLY. Keyed by the 1-based index into layout.build(areasFinished + 1)'s canonical order. Bounded by that area's patchCount, at most 640. Emptied — not collapsed, EMPTIED — as part of incrementing areasFinished, so a finished area contributes nothing to it and the payload never grows with progress. Every area below the live one is entirely cleared by implication of areasFinished; every area above it does not exist yet. persistence.load is still the exact inverse of what save writes: it drops any index outside 1..patchCount inclusive (the keys are 1-BASED, so 'at or above patchCount' -- what this said until the persistence builder checked it against the index convention three lines above -- dropped the live area's highest-index patch on every load, re-standing it and paying for it again on every rejoin), with a warning, because the live area changed size."
     },
     {
       "name": "clearedCount",
@@ -277,7 +277,7 @@ state looks like, what each object is made of, and what happens in what order.
       "module": "persistence",
       "fn": "load(player)",
       "calledBy": "server-main",
-      "does": "Load the player's saved state, or defaultState() on a DataStore failure, and RECONCILE it before returning: clamp areasFinished at 0, drop any cleared index at or above layout.areaSpec(areasFinished + 1).patchCount with a warning, derive clearedCount from the cleared set rather than trusting the stored number, and fill missing rowsRevealed and found keys with false. YIELDS. Nothing else may run for this player until it returns."
+      "does": "Load the player's saved state, or defaultState() on a DataStore failure, and RECONCILE it before returning: clamp areasFinished at 0, drop any cleared index outside 1..layout.areaSpec(areasFinished + 1).patchCount inclusive with a warning -- the keys are 1-based, so an 'at or above' test drops a valid patch and re-pays it on every rejoin, derive clearedCount from the cleared set rather than trusting the stored number, and fill missing rowsRevealed and found keys with false. YIELDS. Nothing else may run for this player until it returns."
     },
     {
       "order": 2,
@@ -7605,7 +7605,7 @@ state looks like, what each object is made of, and what happens in what order.
 2. a player who has finished six areas has NO per-area structure in their payload: one integer reading 6
 3. a DataStore outage leaves the player playable rather than erroring
 4. a payload whose clearedCount disagrees with its cleared set loads with the derived value and one warning
-5. a payload whose cleared holds an index at or above the live area's patchCount loads with that index dropped and one warning — the live area changed size, and a stale index would clear a patch that is not there
+5. a payload whose cleared holds an index outside 1..patchCount inclusive loads with that index dropped and one warning (1-based keys: 'at or above patchCount' would drop the valid highest index and re-pay it every rejoin) — the live area changed size, and a stale index would clear a patch that is not there
 6. `grep -rn 'areaComplete' game/src` returns nothing
 
 ---
@@ -9697,7 +9697,7 @@ state looks like, what each object is made of, and what happens in what order.
 - binding Enum.KeyCode.One, Two or Three as the only way to buy. THE SHIPPED FILE DOES EXACTLY THAT AND IS SUPERSEDED: input.gameBoundInputClasses is ['pressable'], and a keyboard-only purchase path leaves a mobile-heavy audience unable to spend
 - binding move, look or jump. input.verbs[move|look|jump].boundByGame is false for all three; those are platform controls and this module never touches them
 - sending anything except an upgrade id. The server owns cost and level — economy.authority, and input.verbs[buy].adjudicatedBy is 'server'
-- sending a message on a failed precondition. input.verbs[buy].precondition is 'balance >= cost && level < maxLevel' and onPreconditionFail is silentNoOp — the client may PREDICT the precondition to grey nothing, but the server decides and the client sends nothing when it knows it would fail
+- gating a press on a precondition the client evaluated. input.verbs[buy].precondition is 'balance >= cost && level < maxLevel' and onPreconditionFail is silentNoOp, and BOTH ARE THE SERVER'S. The client FIRES UNCONDITIONALLY. This rule previously ended '...and the client sends nothing when it knows it would fail', which contradicted this same sheet's interfaces note for input.connect, wiring.onClientBoot step 4, and pressables' own header, all of which describe an unconditional fire. The input builder reported that the two readings produce two differently shaped modules -- a gating client has to cache the snapshot and wrap the updater rather than pass it through. The unconditional reading wins on a fact neither reading stated: the client's snapshot is at least one tick stale, so a client-side gate silently drops purchases the server would have accepted, and the player sees a dead button with no cue, which is the one failure onPreconditionFail's silence cannot be distinguished from
 - firing any channel that is not in input.clientOriginatedRemotes
 - accepting a table of remote Instances from its caller, or resolving one by name. It asks protocol.channel("BuyUpgrade")
 

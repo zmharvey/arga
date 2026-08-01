@@ -244,7 +244,7 @@ functions used to own alone.
         "a player who has finished six areas has NO per-area structure in their payload: one integer reading 6",
         "a DataStore outage leaves the player playable rather than erroring",
         "a payload whose clearedCount disagrees with its cleared set loads with the derived value and one warning",
-        "a payload whose cleared holds an index at or above the live area's patchCount loads with that index dropped and one warning — the live area changed size, and a stale index would clear a patch that is not there",
+        "a payload whose cleared holds an index outside 1..patchCount inclusive loads with that index dropped and one warning (1-based keys: 'at or above patchCount' would drop the valid highest index and re-pay it every rejoin) — the live area changed size, and a stale index would clear a patch that is not there",
         "`grep -rn 'areaComplete' game/src` returns nothing"
       ]
     },

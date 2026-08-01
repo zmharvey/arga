@@ -1742,7 +1742,7 @@ GameConfig.Vocabulary = {
 		register = "Plain concrete nouns, one word where possible. No ornament, no invented compounds, no incremental-genre vocabulary.",
 		casing = "title",
 		maxSentenceWords = 12,
-		allowedPattern = "^[A-Za-z0-9 ,.'%-/]+$",
+		allowedPattern = "^[A-Za-z0-9 ,.'%%/-]+$",
 		bannedWords = {
 			{
 				word = "relic",
