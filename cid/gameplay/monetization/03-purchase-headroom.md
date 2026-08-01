@@ -6,101 +6,85 @@ verification RR-4 / RR-9 / RR-11, and the `[cid: decided]` invariant
 ## Decision
 
 **Two inequalities bound a purchase, not one. `H1` caps the axis: `ladderMax × Π setFactors ×
-Π productFactors ≤ 0.9 × ceiling`. `H2` caps the lap: `2 × footprint(N) / τ(N) ≥ 75 s` at every
-area ordinal, with τ computed for a player owning every product — and `H2` is joint across `radius`
-and `speed`, not per-axis. `H2` is the binding one and my first draft did not carry it as data.**
-Purchases are still sized last and reduced first; the ceiling budget never rises. When a purchase
-stops applying, **the player is shown nothing.**
+Π productFactors ≤ 0.9 × ceiling`. `H2` caps the lap: `2 × footprint(N) / τ(N) ≥ 75 s` at every area
+ordinal, τ computed for a player owning every product, and *joint across `radius` and `speed`*
+rather than per-axis. `H2` is the binding one and my first draft did not carry it as data.**
+Purchases are sized last and reduced first; the ceiling budget never rises. When a purchase stops
+applying, **the player is shown nothing.**
 
 ## Why
 
 **This sheet carries no manifest block.** Its constraints are the value of `products.headroom`,
-supplied inside sheet `01`'s proposed `products` key. One key per subject.
+supplied inside sheet `01`'s `products` key. One key per subject.
 
 **What I got wrong, stated first.** The first draft named the lap floor in prose ("43 s with `Span`
-as well") and then routed the fix to area sizing. Wave-3 verification RR-4 showed area sizing cannot
-take it — area 2's footprint is already at its under-buy cap, and raising it to the 34,650 the floor
-would need puts the one-level-behind lap at 255.7 s, past `core-loop/04`'s 200 s ceiling. **There is
-no footprint that satisfies both.** Under my own `H4` the fix was always mine, and the draft failed
-to carry the lap floor as an evaluable term, so nothing could check it. That is the defect this
-revision closes: `H2` is now data, with a per-ordinal table and an explicit statement of what
-invalidates it.
+as well") and routed the fix to area sizing. RR-4 showed area sizing cannot take it: area 2's
+footprint is already at its under-buy cap, and raising it to the 34,650 the floor would need puts the
+one-level-behind lap at 255.7 s, past `core-loop/04`'s 200 s ceiling. **No footprint satisfies
+both.** Under my own `H4` the fix was always mine, and the draft failed to carry the lap floor as an
+evaluable term, so nothing could check it. `H2` is now data, with a per-ordinal table and an explicit
+statement of what invalidates it.
 
-**The two bounds are not the same bound, and `H1` is not the tight one.** `H1` is a physical clamp
-from `gameplay/systems/06`: exceed it and the clamp silently absorbs what a player paid for. `H2` is
-a pacing floor from `core-loop/04`: satisfy `H1` comfortably and still hand a purchaser a 54-second
-lap. At shipped values, after `meta/03`'s set factors, radius has **1.50× of `H1` residue** and the
-throughput axes together have **1.14× of `H2` residue**. `H2` binds. A sheet that checked only `H1`
-would have passed the ladder that broke `meta/04`.
+**`H1` is not the tight bound, and the two differ in kind.** `H1` is a physical clamp from
+`gameplay/systems/06`: exceed it and the clamp silently absorbs what a player paid for. `H2` is a
+pacing floor from `core-loop/04`: satisfy `H1` comfortably and still hand a purchaser a 54-second
+lap. At shipped values radius has **1.50× of `H1` residue** after `meta/03`'s set factors and `Span`,
+while the throughput axes together have **1.14× of `H2` residue**. `H2` binds by a factor of three,
+and a sheet checking only `H1` would have passed the ladder that broke `meta/04`.
 
-**`H2` is joint across `radius` and `speed`, and that is the correction that matters most here.**
-τ is `2 · radius · speed`, so a product factor on either axis multiplies it identically. The
-per-ordinal bound is therefore on `Π productFactors(radius) × Π productFactors(speed)` as one
-quantity — 1.99 at ordinal 2, the binding row. `Span` at 1.75 spends it down to **1.14×**, and that
-is the whole budget any further throughput product would have to fit inside, on either axis. My
-first draft's per-axis framing would have let a radius pass and a speed pass each pass their own
-check and break the lap together.
+**`H2` is joint, and that is the correction that matters most.** τ is `2 · radius · speed`, so a
+product factor on either axis multiplies it identically and the bound is on `Π productFactors(radius)
+× Π productFactors(speed)` as one quantity — 1.99 at ordinal 2, the binding row. A value factor
+reaches the same quantity indirectly, by advancing the greedy purchase order so the player arrives
+holding higher levels: at a combined value factor of 3.0, area-2 arrival moves from radius L3 / speed
+L2 to L5 / L5, τ 337.92 → 528, and the ordinal-2 bound falls from **1.99 to 1.27** (verified wave 3).
+**The three axes are not three budgets**, and my draft's per-axis framing would have let a radius
+pass and a speed pass each clear their own check and break the lap together. `[cid: decided]`,
+flagged below.
 
-**How a value factor reaches τ, which is why the bound is not per-axis in the other direction
-either.** A value factor multiplies τ *indirectly*: more income advances the greedy purchase order,
-so the player arrives at each area holding higher ladder levels. At a combined value factor of 3.0
-the area-2 arrival moves from radius L3 / speed L2 to L5 / L5, τ 337.92 → 528, and the ordinal-2
-bound falls from **1.99 to 1.27** (verified wave 3). The three axes are not three budgets.
-`headroom.H2_lapFloor.valueFactorWarning` states this in the key so the next sheet adding a
-multiplier cannot miss it. `[cid: decided]`, flagged below.
+**`H2` is one-sided, which is worth a field.** Every product factor is ≥ 1 and every factor shortens
+a lap, so a purchase can breach the 75 s floor and can never approach the 200 s ceiling.
+`ceilingAtRisk: false` says so, and stops a checker testing both directions on a product.
 
-**`H2` is one-sided and that is worth carrying as a field.** Every product factor is ≥ 1 and every
-factor shortens a lap, so a purchase can breach the 75 s floor and can never approach the 200 s
-ceiling. Checking both directions on a product is wasted work; `ceilingAtRisk: false` says so.
+**Why `speed` is not sold, corrected against `meta/03`'s actual allocation.** `meta/03` puts one set
+factor at ×1.2 on speed, not the four my draft argued from, so `H1` leaves 41.25 / 30.7 = **1.34× of
+speed room** — my first reason was a hypothetical that did not happen. The real reason is `H2`:
+`Span` already spent the joint throughput budget from 1.99 down to **1.14×**, and a ×1.14 pass is not
+worth charging for. The hypothetical survives as a warning about the axis rather than a product: four
+sets at ×1.2 on speed would be 25.6 × 2.07 = 53.0 against 41.25 and would clamp the set bonuses with
+no purchase involved. `value` is unsold for a third reason: its factor buys arrival levels, and `H2`
+is what pays for them.
 
-**What the axis ceilings say at shipped values, against `meta/03`'s actual allocation.** `value` has
-no ceiling — `gameplay/systems/06` clamps radius and speed and names no third, and
-`gameplay/systems/04` fixes that income at max ladder is "neither capped nor hidden". `radius`:
-`meta/03` puts two set factors at ×1.2 (Cistern, Spire) and `Span` takes 1.75, so 14.3 × 1.44 × 1.75
-= 36.0 against 54 — **1.50× of `H1` left.** `speed`: `meta/03` puts one factor at ×1.2 (Vault), so
-25.6 × 1.2 = 30.7 against 41.25 — **1.34× of `H1` left.**
+**RR-11, the dangling reference.** `ceilings.radius` read `area.size(N) / 2`. `area` is one object
+with one `size`, for ordinal 1 only, and `depths` deliberately carries no dimension, so `area.size(N)`
+for N > 1 resolved to nothing and no schema author could write the check. It now reads
+**`plots.laneWidthStuds / 2`** — identical at 60 and defined at every ordinal. `ladderMax` is a lookup
+by `upgrades[].id == A` rather than `upgrades[A]`, which was never a valid index into an array. **One
+thing changed with the field:** `systems/06` justified this ceiling as "one position clears the whole
+area", written when an area was a square. It now bounds a **lane's width**, not an area's extent, and
+along the lane there is no ceiling at all. The bound is still correct; its reason is narrower.
 
-**So why is `speed` not sold, given it has 1.34× of `H1` room?** Because `H2` is joint and `Span`
-already spent the throughput budget: after 1.75 of the ordinal-2 bound of 1.99, **1.14× is all that
-remains for any further product on either throughput axis**, and a ×1.14 pass is not something to
-charge for. That is a stronger and narrower reason than my first draft gave, which argued from a
-hypothetical four-set speed allocation `meta/03` did not make. The hypothetical still matters as a
-warning about the axis rather than about a product: **four sets at ×1.2 on speed would be 25.6 ×
-2.07 = 53.0 against 41.25 and would clamp the set bonuses with no purchase involved.** `meta/03`
-allocated one, so it holds today.
+**The failure rule, with the gap RR-4 exposed now closed.** Reduce a factor: always first — and
+**which** factor is now `H9`, because `H4` alone did not say, which is how wave 3 shipped three
+passes that broke a lap floor. `H9` gives way on the axis the brief does not name as open; the brief
+names the premium SKU, whose shape is a radius item, so radius is reduced last. Drop the axis: when
+its residue is not worth charging for, as with `speed`. **Raise the ceiling budget: never on this
+domain's request** — a sheet that grew an axis ceiling so its own pass would fit would be buying its
+product with someone else's design.
 
-**RR-11, the dangling reference.** `ceilings.radius` read `area.size(N) / 2`. `area` is a single
-object carrying one `size`, for ordinal 1 only, and `depths` deliberately carries no dimension, so
-`area.size(N)` for N > 1 resolved to nothing and no schema author could write the check. It now
-reads **`plots.laneWidthStuds / 2`** — numerically identical at 60 and defined at every ordinal.
-`ladderMax` is a lookup by `upgrades[].id == A` rather than `upgrades[A]`, which was never a valid
-index into an array. **One thing changed with the field and should not pass unremarked:**
-`systems/06` justified the radius ceiling as "one position clears the whole area", written when an
-area was a square. It now bounds a **lane's width**, not an area's extent, and along the lane there
-is no ceiling at all. The bound is still correct and its reason is now narrower than its author
-wrote it.
-
-**The failure rule, all three branches, with the gap RR-4 exposed now closed.** Reduce a factor:
-always first — and **which** factor is now stated as `H9`, because `H4` alone did not say, which is
-how wave 3 shipped three passes that broke a lap floor. Drop the axis: when its residue is not worth
-charging for, as with `speed`. **Raise the ceiling budget: never on this domain's request.** A
-monetization sheet that grew an axis ceiling so a pass would fit would be buying its own product
-with someone else's design.
-
-**What the player is shown when a purchase stops applying: nothing, in either case.** The
-clamp-absorbed case is ruled impossible by `H1` plus `H7`, so there is nothing to show. The refund
-case — `gameplay/systems/06` recomputes from live ownership at every join rather than latching, so a
-revoked pass silently lowers an axis — gets **no notice, no toast, no modal, no re-prompt.** Under
-R-4 there is not even a store row to change state. `theme/fantasy/03` `C3` fixes that nothing here is
-ever taken back, and nothing is: every Shard earned stays, every Find stays, every cleared patch
-stays cleared. A *rate* returns to its unpurchased value, which is the one thing here that was never
-a possession. `[cid: decided]`, flagged below.
+**What the player is shown when a purchase stops applying: nothing, either way.** The clamp-absorbed
+case is ruled impossible by `H1` plus `H7`. The refund case — `gameplay/systems/06` recomputes from
+live ownership at every join rather than latching, so a revoked pass silently lowers an axis — gets
+**no notice, no toast, no modal, no re-prompt**, and under R-4 there is not even a store row to
+change state. `theme/fantasy/03` `C3` fixes that nothing here is ever taken back, and nothing is:
+every Shard, every Find and every cleared patch stays. A *rate* returns to its unpurchased value,
+which is the one thing here that was never a possession. `[cid: decided]`, flagged below.
 
 | axis | ladderMax | ceiling | 0.9 × ceiling | set factors (`meta/03`) | product factor | `H1` residue | sold |
 |---|---|---|---|---|---|---|---|
-| `value` | — | none (`gameplay/systems/04`) | — | 1 × ×1.2 (Terrace) | none | unbounded | no — reaches τ through arrival levels, and `H2` is what pays for them |
+| `value` | — | none (`gameplay/systems/04`) | — | 1 × ×1.2 (Terrace) | none | unbounded | no — it reaches τ through arrival levels, and `H2` is what pays for them |
 | `radius` | 5.5 + 8×1.1 = 14.3 | `plots.laneWidthStuds / 2` = 60 | 54 | 2 × ×1.2 = 1.44 (Cistern, Spire) | 1.75 | 1.50× | **yes** |
-| `speed` | 16 + 6×1.6 = 25.6 | `movement.baseClearRadius / serverTickSeconds` = 5.5 / 0.12 = 45.83 `[research: game/src/shared/GameConfig.luau]` | 41.25 | 1 × ×1.2 (Vault) | none | 1.34× | no — `H2`'s joint residue after `Span` is 1.14×, which is not worth charging for |
+| `speed` | 16 + 6×1.6 = 25.6 | `movement.baseClearRadius / serverTickSeconds` = 5.5 / 0.12 = 45.83 `[research: game/src/shared/GameConfig.luau]` | 41.25 | 1 × ×1.2 (Vault) | none | 1.34× | no — `H2`'s joint residue after `Span` is 1.14×, not worth charging for |
 
 | ordinal | arrival τ | footprint | max `Π productFactors(radius) × Π productFactors(speed)` at the 75 s floor | lap at 1.75 |
 |---|---|---|---|---|
@@ -130,11 +114,11 @@ a possession. `[cid: decided]`, flagged below.
 | subject | what this forces or forbids |
 |---|---|
 | Area-sizing and depth-ladder work (`meta/04`) | `H2` is the evaluable form of the bound RR-4 asked you to state, and it lives in `products` rather than `depths`, so you assert no product exposure at all. Your eight footprints are inputs to it and do not move. If any footprint or arrival level changes, the per-ordinal table must be re-derived and `Span`'s factor re-checked against it. |
-| Set-bonus work (`meta/03`, with Balance for magnitudes) | Your allocation fits both bounds: radius 14.3 × 1.44 × 1.75 = 36.0 ≤ 54, speed 25.6 × 1.2 = 30.7 ≤ 41.25. **Two live warnings.** Adding a third radius set factor at ×1.2 gives 43.2 ≤ 54 and still fits; a fourth does not. Moving any set factor onto `speed` such that they multiply above 1.61 clamps the set bonuses with no purchase involved. `H1` is canonical over `setBonus.invariants[4]` — same inequality, two strictnesses, write one. |
+| Set-bonus work (`meta/03`, with Balance for magnitudes) | Your allocation fits both bounds: radius `14.3 × 1.44 × 1.75 = 36.0 ≤ 54`, speed `25.6 × 1.2 = 30.7 ≤ 41.25`. **Two live warnings.** A third radius set factor at ×1.2 gives 43.2 and still fits; a fourth does not. Moving set factors onto `speed` such that they multiply above 1.61 clamps the set bonuses with no purchase involved. `H1` is canonical over `setBonus.invariants[4]` — same inequality, two strictnesses, write one. |
 | Balance & Tuning | `H1` and `H2` are predicates over values you own and this sheet sets none of them. Moving `upgrades[].maxLevel`, `perLevel` or `base` moves both `ladderMax` and every arrival level, so it moves both bounds at once. You now inherit five sheets' constraints on one curve; `H6` names you so nobody reads this as a request to raise a cap. |
-| Architecture (owner of the tick rate) | The speed ceiling is `movement.baseClearRadius / serverTickSeconds`, shipped literal `GameConfig.ClearTickRate = 0.12`. Halving it doubles the speed `H1` budget — but not the `H2` budget, which is where speed actually died, so it would not by itself reopen selling `speed`. |
+| Architecture (owner of the tick rate) | The speed ceiling is `movement.baseClearRadius / serverTickSeconds`, shipped literal `GameConfig.ClearTickRate = 0.12`. Halving it doubles speed's `H1` budget but not its `H2` budget, which is where speed actually died — so it would not by itself reopen selling `speed`. |
 | Plot-arrangement work (`meta/06`, owner of `plots`) | `plots.laneWidthStuds` is now read by `products.headroom.H1` as the radius ceiling. Lowering it lowers a purchase's ceiling; at a 120-stud lane the ceiling is 60 and `Span` plus two set factors use 36.0. Stated because the field acquired a consumer it did not have. |
-| Contract-and-seam work (owner of `bridge/schema.mjs`) | `H1` and `H2` are two arithmetic checks over the merged manifest and are the only things standing between a paid product and either a silent clamp or a 54-second lap. Both now reference fields that exist at every ordinal (RR-11). Until `products` is shaped, both are acceptance criteria a human runs. |
+| Contract-and-seam work (owner of `bridge/schema.mjs`) | `H1` and `H2` are two arithmetic checks over the merged manifest and the only things standing between a paid product and either a silent clamp or a 54-second lap. Both now reference fields that exist at every ordinal (RR-11). |
 | Store-surface and feedback-UI work | `H8` forbids a surface you might otherwise assume is owed, and under R-4 there is no store row either. No expiry notice, no "reactivate" affordance, no state anywhere. |
 
 ## Acceptance criteria
@@ -153,18 +137,19 @@ a possession. `[cid: decided]`, flagged below.
 
 | item | position |
 |---|---|
-| **The 0.9 margin on `H1`** | `[cid: decided]`, `[playtest unknown]`, starting value 0.9, test range 0.80–0.95. Every input to `H1` is owned elsewhere and none is final; ten percent means a later change of up to a tenth in any one input does not silently start clamping something a player bought. It is a reservation, not a safety factor, and it costs `Span` nothing today. |
-| **`H8`: nothing is shown when a purchase stops applying** | `[cid: decided]`. The brief is silent and so is every merged sheet. The alternative is a notice saying a pass is gone, which `theme/tone/04` `D12` and `theme/fantasy/03` `C3` both argue against, and which under R-4 has no surface to appear on. If you want a player told, it needs a surface that does not exist and a ruling that contests `C3`. |
-| **`H9`: radius is reduced last** | `[cid: decided]`. `H4` said "reduce a factor" and did not say which, which is how wave 3 shipped three passes that broke a lap floor. The tie-break is the brief's own open item, and it is what removed the two value passes rather than shrinking `Span` to 1.27. If you would rather the tie-break ran the other way, sheet `01`'s `## Flagged` carries the mirror ladder as a one-field flip. |
+| **The 0.9 margin on `H1`** | `[cid: decided]`, `[playtest unknown]`, starting value 0.9, test range 0.80–0.95. Every input to `H1` is owned elsewhere and none is final; ten percent means a later change of up to a tenth in any one input does not silently start clamping something a player bought. A reservation, not a safety factor, and it costs `Span` nothing today. |
+| **`H2a`: the lap floor is one joint budget across `radius`, `speed` and (indirectly) `value`** | `[cid: decided]`. No sheet states this; it falls out of `τ = 2 · radius · speed` and of income advancing the purchase order. It is the single constraint deciding how many products this game can have, and it currently allows one at 1.75 or several small ones. Worth a ruling because it is counter-intuitive: adding a *cheap* pass on a different axis is not free. |
+| **`H8`: nothing is shown when a purchase stops applying** | `[cid: decided]`. The brief is silent and so is every merged sheet. The alternative is a notice saying a pass is gone, which `theme/tone/04` `D12` and `theme/fantasy/03` `C3` both argue against, and which under R-4 has no surface to appear on. Telling a player needs a surface that does not exist and a ruling that contests `C3`. |
+| **`H9`: radius is reduced last** | `[cid: decided]`. `H4` said "reduce a factor" and did not say which, which is how wave 3 shipped three passes that broke a lap floor. The tie-break is the brief's own open item, and it is what removed the two value passes rather than shrinking `Span`. Sheet `01`'s `## Flagged` carries the mirror ladder as a one-field flip if you would rather it ran the other way. |
 
 ## Not decided here
 
 Every value in `H1` and `H2`: `upgrades[].base`, `maxLevel` and `perLevel`, the set factors,
 `plots.laneWidthStuds`, `depths.areas[].footprintStuds2`, `ROUTE_SLACK`, `LAP_TARGET` and the server
-tick rate — Balance & Tuning, Meta & Content and architecture, each named in `H6`. The arrival
-levels `H2` reads — `meta/04`, which derives them; this sheet recomputed them to check the table and
-sets none. Which products exist, their factors and their prices — sheet `01`, this domain, which
-holds the key these constraints ride in. What may never be sold at all — sheet `02`, this domain.
-Whether the clamp is applied client-side as well as server-side, and the wire shape of a modifier —
+tick rate — Balance & Tuning, Meta & Content and architecture, each named in `H6`. The arrival levels
+`H2` reads — `meta/04`, which derives them; this sheet recomputed them to check the table and sets
+none. Which products exist, their factors and their prices — sheet `01`, this domain, which holds the
+key these constraints ride in. What may never be sold at all — sheet `02`, this domain. Whether the
+clamp is applied client-side as well as server-side, and the wire shape of a modifier —
 `gameplay/systems/06` for the rule, architecture for the transport. Whether `bridge/merge.mjs` grows
 the `H1` and `H2` checks or they stay manual — contract-and-seam work.

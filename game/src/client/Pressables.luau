@@ -47,20 +47,25 @@ local Theme = require(Shared.Theme)
 local Pressables = {}
 
 --[[
-	The snapshot, as Protocol.snapshotShape() declares it, PLUS `rowsRevealed`.
+	The snapshot, exactly the fields Protocol.snapshotShape() names.
 
-	`rowsRevealed` is optional here because the shipped Protocol.snapshotShape() does not
-	list it, while 03-state-shape makes it a persisted field and representation makes a
-	purchase button's Visible depend on it. That mismatch is the top entry in the report;
-	`resolveRevealed` below is the graceful degradation, not the intended behaviour.
+	`rowsRevealed` is the field a purchase button's Visible depends on, and it is the
+	server's to own: it is a persisted field of PlayerState, written only by
+	progression.revealRows, and firstSession.suppressionForbidden bans reSuppression, which
+	only a durable latch can honour. This module reads it and derives nothing.
+
+	Only `currency`, `upgrades` and `rowsRevealed` are read here; the rest are named so a
+	rename in Protocol is a type error in this file rather than a blank button.
 ]]
 export type Snapshot = {
 	currency: number,
 	upgrades: { [string]: number },
-	clearedCount: number,
+	rowsRevealed: { [string]: boolean },
 	found: { [string]: boolean },
-	areaComplete: boolean,
-	rowsRevealed: { [string]: boolean }?,
+	areasFinished: number,
+	clearedCount: number,
+	areaPatchCount: number,
+	areaLabel: string,
 }
 
 export type Updater = (Snapshot?) -> ()
@@ -99,13 +104,6 @@ local PURCHASE_NAME_FORMAT = "Pressable_BUY%d"
 local INDEX_NAME = "Pressable_INDEX"
 
 --[[
-	vocabulary.maxLabelChars. Stated in representation's `pressable` row but NOT emitted into
-	GameConfig — there is no GameConfig.Vocabulary — so it cannot be pulled from config the
-	way every other number here is. Restated rather than invented; flagged in the report.
-]]
-local MAX_LABEL_CHARS = 14
-
---[[
 	UNSPECIFIED VALUES. Every literal in this block is a gap in the contract rather than a
 	design decision, gathered here so that supplying the real ones is an edit to one block.
 	Each is named in this module's build report.
@@ -133,11 +131,13 @@ local UNAFFORDABLE_SUFFIX = " Need"
 -- returns a number at maxLevel, but printing it advertises a purchase the server refuses.
 local MAX_LEVEL_TEXT = "Max"
 
--- [STOP: no value in the contract] How long to wait for the platform's touch controls to
--- exist before giving up and using MIN_TOUCH_TARGET_PX. The controls are created by a core
--- script that does not run in step with this module.
-local TOUCH_PROBE_SECONDS = 10
+-- [STOP: no value in the contract] How often to look for the platform's touch controls, and
+-- how long to wait before saying out loud that they have not appeared. The wait does NOT end
+-- the search: on a touch device the controls arrive with the character, the character is
+-- loaded last in wiring.onJoin behind two yielding calls, and a client that gave up would
+-- ship MIN_TOUCH_TARGET_PX to a real phone on nothing worse than a slow DataStore.
 local TOUCH_PROBE_INTERVAL_SECONDS = 0.5
+local TOUCH_PROBE_WARN_AFTER_SECONDS = 10
 
 --[[
 	Horizontal keepout for the HUD's own corner clusters.
@@ -226,29 +226,60 @@ local function purchaseText(def: UpgradeDef, level: number, currency: number): s
 end
 
 --[[
-	Warn once per upgrade, at bind, if the longest line this module can ever print exceeds
-	vocabulary.maxLabelChars. Checked here rather than in the updater so the cost is paid
-	once and a violation is reported even if the player never reaches that price.
+	Check one line this module can print against GameConfig.Vocabulary.
+
+	Both rules are the contract's: `maxLabelChars` bounds the length, `allowedPattern` bounds
+	the characters. Neither is restated here — the whole point of the key is that two modules
+	cannot end up enforcing two different truncations.
+
+	This WARNS and does not truncate. A silently shortened label is a label nobody notices is
+	wrong; a warning names the string, the rule it broke and the module that produced it.
+]]
+local function checkLabel(line: string, source: string)
+	local vocabulary = GameConfig.Vocabulary
+	local maxChars: number = vocabulary.maxLabelChars
+	if #line > maxChars then
+		warn(
+			string.format(
+				"%s %s line %q is %d characters, over vocabulary.maxLabelChars (%d)",
+				WARN_PREFIX,
+				source,
+				line,
+				#line,
+				maxChars
+			)
+		)
+	end
+	local pattern: string = vocabulary.allowedPattern
+	if string.match(line, pattern) == nil then
+		warn(
+			string.format(
+				"%s %s line %q does not match vocabulary.allowedPattern (%s)",
+				WARN_PREFIX,
+				source,
+				line,
+				pattern
+			)
+		)
+	end
+end
+
+--[[
+	Every line this module can ever print for one upgrade, checked once at bind rather than
+	per snapshot: the cost is paid once and a violation is reported even if the player never
+	reaches that price. The worst case is the last purchasable level, because that is the
+	longest number GameConfig.upgradeCost can return for this ladder.
 ]]
 local function checkLabelBudget(def: UpgradeDef)
 	local worstCost: number = GameConfig.upgradeCost(def, math.max(def.maxLevel - 1, 0))
 	local lines: { string } = {
 		def.label,
 		string.format("%d%s", worstCost, UNAFFORDABLE_SUFFIX),
+		string.format("%d%s", worstCost, AFFORDABLE_SUFFIX),
 		MAX_LEVEL_TEXT,
 	}
 	for _, line in ipairs(lines) do
-		if #line > MAX_LABEL_CHARS then
-			warn(
-				string.format(
-					"%s pressable line %q is %d characters, over vocabulary.maxLabelChars (%d)",
-					WARN_PREFIX,
-					line,
-					#line,
-					MAX_LABEL_CHARS
-				)
-			)
-		end
+		checkLabel(line, "pressable")
 	end
 end
 
@@ -401,7 +432,9 @@ function Pressables.bind(gui: ScreenGui, onActivate: OnActivate): Updater
 	indexButton.AnchorPoint = Vector2.new(0, 0)
 	-- "the collection class plural for the index button" — the noun is config's, and it has
 	-- been renamed once already by a ban list, so it is never spelled here.
-	indexButton.Text = GameConfig.FindNoun.plural
+	local indexText: string = GameConfig.FindNoun.plural
+	checkLabel(indexText, "index pressable")
+	indexButton.Text = indexText
 	-- input.verbs[openIndex].precondition is "none", and representation's Visible rule names
 	-- only the purchase buttons, so the index control is present from join.
 	indexButton.Visible = true
@@ -453,75 +486,52 @@ function Pressables.bind(gui: ScreenGui, onActivate: OnActivate): Updater
 		layoutButtons(math.max(measuredTouch, MIN_TOUCH_TARGET_PX), measuredReserved)
 	elseif UserInputService.TouchEnabled then
 		--[[
-			A touch session whose controls have not been drawn yet. Poll for them rather than
-			assume a size: this is the device class the whole module exists for, and it is the
-			one where guessing the number wrong makes the game unbuyable.
+			A touch session whose controls have not been drawn yet — which is the ORDINARY
+			case, not the exceptional one. This module binds during wiring.onClientBoot, and
+			the platform draws its controls with the character, which wiring.onJoin loads last
+			behind persistence.load and entitlements.refresh. So the first measurement almost
+			always misses and this loop is what actually sizes the buttons on a phone.
+
+			It keeps looking rather than expiring, and warns once on the way past
+			TOUCH_PROBE_WARN_AFTER_SECONDS. A deadline here would mean a slow DataStore
+			shipped a differently sized button to a real player, silently, on the one device
+			class this module exists for. It ends when the controls are found or when the
+			buttons are gone.
 		]]
 		task.spawn(function()
-			local deadline = os.clock() + TOUCH_PROBE_SECONDS
-			while os.clock() < deadline do
+			local warnAt = os.clock() + TOUCH_PROBE_WARN_AFTER_SECONDS
+			local warned = false
+			while indexButton.Parent ~= nil do
 				task.wait(TOUCH_PROBE_INTERVAL_SECONDS)
-				if indexButton.Parent == nil then
-					return
-				end
 				local touchPx, reservedPx = measurePlatformControls()
 				if touchPx and reservedPx then
 					layoutButtons(math.max(touchPx, MIN_TOUCH_TARGET_PX), reservedPx)
 					return
 				end
+				if not warned and os.clock() >= warnAt then
+					warned = true
+					warn(
+						string.format(
+							"%s touch controls have not appeared after %d s — pressables are still sized against the %d px fallback, not the platform jump button",
+							WARN_PREFIX,
+							TOUCH_PROBE_WARN_AFTER_SECONDS,
+							MIN_TOUCH_TARGET_PX
+						)
+					)
+				end
 			end
-			warn(
-				string.format(
-					"%s touch controls were not found within %d s — pressables are sized against the %d px fallback, not the platform jump button",
-					WARN_PREFIX,
-					TOUCH_PROBE_SECONDS,
-					MIN_TOUCH_TARGET_PX
-				)
-			)
 		end)
 	end
 
 	--[[
-		Row visibility.
+		Row visibility comes off the snapshot and is derived from nothing.
 
-		The intended source is snapshot.rowsRevealed, which 03-state-shape persists and
-		firstSession.withheld.upgradeRow latches. The shipped Protocol.snapshotShape() does
-		not carry it, so when it is absent this falls back to the same predicate the server's
-		progression.revealRows uses — "balance has reached upgrades[i] level-1 cost" — and
-		latches it locally, because suppressionForbidden bans reSuppression. A held level
-		above 0 also counts: a row that has been bought was obviously revealed.
-
-		The fallback is NOT equivalent. Its latch lives in this closure and dies with the
-		session, so a player who returns holding less than a revealed row's level-1 cost sees
-		that row hidden again, which is exactly the reSuppression the design bans. Reported.
+		firstSession.withheld.upgradeRow is presentAtJoin false, liftedBy "balance has reached
+		upgrades[i] level-1 cost", latched, with latchSource "one persisted boolean per row".
+		The latch has to outlive the session or a returning player under that cost sees the
+		row hidden again — the reSuppression suppressionForbidden bans — so the server owns
+		it, progression.revealRows writes it, and this module only reads it.
 	]]
-	local latched: { [string]: boolean } = {}
-	local warnedMissingField = false
-
-	local function resolveRevealed(snapshot: Snapshot, def: UpgradeDef, level: number): boolean
-		local rows = snapshot.rowsRevealed
-		if rows ~= nil then
-			return rows[def.id] == true
-		end
-		if not warnedMissingField then
-			warnedMissingField = true
-			warn(
-				string.format(
-					"%s the snapshot carries no rowsRevealed field — upgrade rows are being lifted from a client-side latch, which does not survive a rejoin",
-					WARN_PREFIX
-				)
-			)
-		end
-		if latched[def.id] then
-			return true
-		end
-		if level > 0 or snapshot.currency >= GameConfig.upgradeCost(def, 0) then
-			latched[def.id] = true
-			return true
-		end
-		return false
-	end
-
 	return function(snapshot: Snapshot?)
 		if snapshot == nil then
 			return
@@ -529,7 +539,7 @@ function Pressables.bind(gui: ScreenGui, onActivate: OnActivate): Updater
 		for _, binding in ipairs(purchases) do
 			local def = binding.def
 			local level = snapshot.upgrades[def.id] or 0
-			binding.button.Visible = resolveRevealed(snapshot, def, level)
+			binding.button.Visible = snapshot.rowsRevealed[def.id] == true
 			binding.button.Text = purchaseText(def, level, snapshot.currency)
 			-- Colour is the SECOND affordability channel; the word in the text above is the
 			-- first, because affordabilityByColourAlone is false.

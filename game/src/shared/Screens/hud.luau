@@ -210,7 +210,7 @@ return {
 				},
 				children = { {
 						class = "Frame",
-						name = "Readout_1VALUE",
+						name = "Readout_VALUE",
 						bg = "surface.overlay",
 						corner = "radius.lg",
 						padding = {
@@ -232,7 +232,7 @@ return {
 								class = "TextLabel",
 								name = "ReadoutLabel",
 								flex = "0 0 auto",
-								text = "[1] VALUE",
+								text = "VALUE",
 								type = "caption",
 								color = "content.muted",
 								align = "start",
@@ -260,7 +260,7 @@ return {
 							} },
 					}, {
 						class = "Frame",
-						name = "Readout_2REACH",
+						name = "Readout_REACH",
 						bg = "surface.overlay",
 						corner = "radius.lg",
 						padding = {
@@ -282,7 +282,7 @@ return {
 								class = "TextLabel",
 								name = "ReadoutLabel",
 								flex = "0 0 auto",
-								text = "[2] REACH",
+								text = "REACH",
 								type = "caption",
 								color = "content.muted",
 								align = "start",
@@ -310,7 +310,7 @@ return {
 							} },
 					}, {
 						class = "Frame",
-						name = "Readout_3PACE",
+						name = "Readout_PACE",
 						bg = "surface.overlay",
 						corner = "radius.lg",
 						padding = {
@@ -332,7 +332,7 @@ return {
 								class = "TextLabel",
 								name = "ReadoutLabel",
 								flex = "0 0 auto",
-								text = "[3] PACE",
+								text = "PACE",
 								type = "caption",
 								color = "content.muted",
 								align = "start",

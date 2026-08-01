@@ -14,9 +14,9 @@
     "readouts": [
       { "label": "RELICS", "value": "0 / 24", "icon": "relic", "cluster": "topLeft" },
       { "label": "SHARDS", "value": "0", "icon": "shard", "cluster": "topRight" },
-      { "label": "[1] VALUE", "value": "Lv 0  ·  25", "cluster": "bottomRight" },
-      { "label": "[2] REACH", "value": "Lv 0  ·  40", "cluster": "bottomRight" },
-      { "label": "[3] PACE", "value": "Lv 0  ·  60", "cluster": "bottomRight" }
+      { "label": "VALUE", "value": "Lv 0  ·  25", "cluster": "bottomRight" },
+      { "label": "REACH", "value": "Lv 0  ·  40", "cluster": "bottomRight" },
+      { "label": "PACE", "value": "Lv 0  ·  60", "cluster": "bottomRight" }
     ],
     "progress": { "label": "EAST TERRACE — 0% CLEAR", "value": 0, "cluster": "bottomLeft" }
   }
