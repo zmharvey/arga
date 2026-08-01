@@ -191,6 +191,12 @@ local function resolveIndexScreen(): any
 		warnIndexScreenOnce(string.format("requiring %s failed: %s", INDEX_SCREEN_MODULE_NAME, tostring(result)))
 		return nil
 	end
+	if typeof(result) ~= "table" then
+		warnIndexScreenOnce(
+			string.format("%s returned a %s, not a table", INDEX_SCREEN_MODULE_NAME, typeof(result))
+		)
+		return nil
+	end
 
 	indexScreen = result
 	return result
@@ -224,7 +230,23 @@ end
 
 	Called once, by client-main, in wiring.onClientBoot step 4.
 ]]
+local connectCount = 0
+
 function Input.connect(gui: ScreenGui): Updater
+	connectCount += 1
+	if connectCount > 1 then
+		-- Warned and NOT refused. A second call builds a second set of four buttons, which is
+		-- a caller bug; returning a dead updater instead would hide it behind a HUD that never
+		-- updates, and wiring.onClientBoot calls this exactly once.
+		warn(
+			string.format(
+				"%s connect() called %d times; every call binds another set of pressables",
+				WARN_PREFIX,
+				connectCount
+			)
+		)
+	end
+
 	checkRolesAgainstContract()
 
 	local upgrades: { UpgradeDef } = GameConfig.Upgrades
@@ -279,7 +301,9 @@ function Input.connect(gui: ScreenGui): Updater
 			return
 		end
 
-		warn(string.format("%s press reported with unhandled role %q; sending nothing", WARN_PREFIX, tostring(role)))
+		warn(
+			string.format("%s press reported with unhandled role %q; sending nothing", WARN_PREFIX, tostring(role))
+		)
 	end
 
 	if not gui then

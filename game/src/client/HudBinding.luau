@@ -1,6 +1,6 @@
 --!strict
 --[[
-	HudBinding — resolve the HUD's named nodes once, and write live state into them.
+	HudBinding - resolve the HUD's named nodes once, and write live state into them.
 
 	The HUD's STRUCTURE is not this module's business. ui-forge owns it
 	(ui-forge/briefs/hud.brief.json -> game/src/shared/Screens/hud.luau) and
@@ -15,8 +15,24 @@
 	The updater is idempotent: it is a whole-snapshot write with no accumulation, so the
 	join-time push and the RequestState pull can both land, in either order, harmlessly.
 
-	Every displayed value comes from GameConfig, including the node names of the upgrade
-	readouts, which are derived from the upgrade labels rather than spelled out here.
+	THE READOUTS ARE THIS MODULE'S; THE FOUR BUTTONS ARE Pressables'. Nothing here draws a
+	control, prices a purchase for a control, or repeats the affordability wording that
+	sits on one. The upgrade readouts show a held level and the next cost, which is exactly
+	what the emitted screen ships as their default text.
+
+	NO NODE NAME IS SPELLED HERE THAT CONFIG CAN SUPPLY. The emitted screen names a readout
+	`Readout_<LABEL UPPERCASED>` where the label is the config value the readout displays:
+	Readout_SHARDS is GameConfig.Currency.plural, Readout_FINDS is GameConfig.FindNoun.plural,
+	and Readout_VALUE / _REACH / _PACE are GameConfig.Upgrades[i].label. Deriving them means a
+	renamed noun and a re-emitted screen move together. The previous revision spelled
+	`Readout_RELICS` by hand and stopped resolving the moment the noun was renamed, which is
+	the failure this derivation removes.
+
+	THE LIVE AREA IS ON THE WIRE, NOT IN THE CONFIG. `areaPatchCount` and `areaLabel` are the
+	two derived snapshot fields; this module reads no area table at all. GameConfig.Area
+	describes area 1 only, and the ladder has eight rungs plus an unlimited post-terminal one,
+	so a constant denominator would show the wrong name and the wrong percentage from the
+	second area onward.
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -28,74 +44,154 @@ local Protocol = require(Shared.Protocol)
 
 local HudBinding = {}
 
--- The snapshot, exactly the fields Protocol.snapshotShape() names. bind() checks that list
--- against the field names read below, so a rename in Protocol warns here instead of
--- silently blanking a readout.
+--[[
+	The snapshot, exactly the eight fields Protocol.snapshotShape() names.
+
+	`areasFinished` is carried here so a rename in Protocol is a type error in this file, and
+	is deliberately not read: the two derived fields beside it already describe the live area,
+	which is the whole reason they are on the wire.
+]]
 export type Snapshot = {
 	currency: number,
 	upgrades: { [string]: number },
-	clearedCount: number,
+	rowsRevealed: { [string]: boolean },
 	found: { [string]: boolean },
-	areaComplete: boolean,
+	areasFinished: number,
+	clearedCount: number,
+	areaPatchCount: number,
+	areaLabel: string,
 }
 
 export type Updater = (Snapshot?) -> ()
+
+--[[
+	One entry of GameConfig.Upgrades. Restated as a type and not as values: the require is
+	instance-based, so nothing downstream of it is typed, and every field below is read
+	straight off the config table rather than held here.
+]]
+type UpgradeDef = {
+	id: string,
+	label: string,
+	costBase: number,
+	costGrowth: number,
+	maxLevel: number,
+	perLevel: number,
+	base: number,
+	mode: string,
+}
 
 -- Anything the emitted screen may plausibly use for a text readout. Only `.Text` is ever
 -- touched, and a node that is none of these is reported at bind time rather than assumed.
 type TextNode = TextLabel | TextButton | TextBox
 
+-- Applied to one withheld row: `true` restores every transparency the screen was emitted
+-- with, `false` drives them all to 1. See `collectFade`.
+type Fade = (shown: boolean) -> ()
+
 --[[
 	NODE PATHS, relative to the Root frame UIBuilder.build returned.
 
-	Fixed by the emitted screen, not chosen here. Note that the finds readout is called
-	Readout_RELICS even though the player-facing noun is GameConfig.FindNoun ("Find"), so
-	it cannot be derived from config the way the upgrade readouts can.
+	Fixed by the emitted screen. The cluster names and the structural children below are the
+	pattern's, not config's, so they are the only names spelled by hand.
 ]]
-local SHARDS_VALUE_PATH: { string } = { "Cluster_topRight", "Readout_SHARDS", "ReadoutValue" }
-local FINDS_VALUE_PATH: { string } = { "Cluster_topLeft", "Readout_RELICS", "ReadoutValue" }
-local UPGRADE_CLUSTER = "Cluster_bottomRight"
-local UPGRADE_VALUE_CHILD = "ReadoutValue"
-local BAR_LABEL_PATH: { string } = { "Cluster_bottomLeft", "ProgressGroup", "BarLabel" }
-local BAR_FILL_PATH: { string } = { "Cluster_bottomLeft", "ProgressGroup", "Bar", "BarFill" }
-
--- The snapshot fields this module reads. Checked against Protocol.snapshotShape() at bind.
-local FIELDS_READ: { string } = { "currency", "upgrades", "clearedCount", "found", "areaComplete" }
+local CLUSTER_TOP_LEFT = "Cluster_topLeft"
+local CLUSTER_TOP_RIGHT = "Cluster_topRight"
+local CLUSTER_BOTTOM_LEFT = "Cluster_bottomLeft"
+local CLUSTER_BOTTOM_RIGHT = "Cluster_bottomRight"
+local READOUT_NAME_FORMAT = "Readout_%s"
+local READOUT_VALUE_CHILD = "ReadoutValue"
+local PROGRESS_GROUP = "ProgressGroup"
+local BAR_LABEL = "BarLabel"
+local BAR = "Bar"
+local BAR_FILL = "BarFill"
 
 --[[
-	UNSPECIFIED VALUES — every literal below is a STOP, not a design decision.
-
-	None of these appear under the module's Values and none are in GameConfig. They are
-	gathered here, named, and flagged so that they are visible rather than buried in a call
-	site, and so that supplying the real ones is an edit to this block. See
-	HudBinding.report.md.
+	The eight fields the wire carries, mirroring the Snapshot type above, and the seven this
+	module actually reads. Both are checked against Protocol.snapshotShape() at bind, in both
+	directions, so a field that is renamed, dropped or added warns once here instead of
+	blanking a readout silently.
 ]]
--- [STOP: no value in the contract] Progress-bar animation. "tweened rather than set" fixes
--- that there is a tween and says nothing about how long it runs or how it eases. At the
--- 0.12s clear tick a duration above ~0.12s means the bar is permanently mid-flight while a
--- player is clearing, which is the whole reason the number matters.
-local BAR_TWEEN_SECONDS = 0.25
+local SNAPSHOT_FIELDS: { string } = {
+	"currency",
+	"upgrades",
+	"rowsRevealed",
+	"found",
+	"areasFinished",
+	"clearedCount",
+	"areaPatchCount",
+	"areaLabel",
+}
+local FIELDS_READ: { string } = {
+	"currency",
+	"upgrades",
+	"rowsRevealed",
+	"found",
+	"clearedCount",
+	"areaPatchCount",
+	"areaLabel",
+}
+
+--[[
+	PLAYER-FACING TEXT. Every literal here is punctuation or a single word, and every one of
+	them is taken from the text the emitted screen already ships in the node it is written
+	into: "Lv 0  -  25" in a ReadoutValue, "0 / 24" in the collection readout, and
+	"EAST TERRACE - 0% CLEAR" in the BarLabel. They match GameConfig.Vocabulary.allowedPattern,
+	which is why the separators are hyphens and not a middot or an em dash.
+]]
+local UPGRADE_LEVEL_PREFIX = "Lv "
+local UPGRADE_SEPARATOR = "  -  "
+local COLLECTION_SEPARATOR = " / "
+local BAR_LABEL_SEPARATOR = " - "
+local BAR_LABEL_SUFFIX = "% CLEAR"
+
+-- [STOP: no value in the contract] What a maxed upgrade readout shows in place of a cost.
+-- GameConfig.upgradeCost still returns a number at maxLevel, but printing it advertises a
+-- purchase progression.tryBuy refuses. The word matches the one Pressables prints on the
+-- button beside it, so the two surfaces do not use two vocabularies for one fact.
+local MAX_LEVEL_TEXT = "Max"
+
+-- The one unsequenced beat, named by GameConfig.Response.unsequencedBeats. Its readout
+-- channel is what the progress bar is, so its acknowledgment budget is what bounds the
+-- bar's travel. Not a tuned value of this module's: see `barTweenSeconds`.
+local PATCH_CLEAR_BEAT_ID = "patchClear"
+
+-- [STOP: no value in the contract] How the bar eases. The interface fixes that the fill is
+-- "tweened rather than set" and names no curve. The duration is NOT invented here, see below.
 local BAR_TWEEN_STYLE = Enum.EasingStyle.Quad
 local BAR_TWEEN_DIRECTION = Enum.EasingDirection.Out
 
--- [STOP: no value in the contract] The text half of the affordability signal. The interface
--- fixes the readout as "Lv <n>  -  <cost>", which carries no affordability at all, while
--- "Must not" forbids colour alone and criterion 2 requires it be readable with colour
--- removed. Those cannot both hold, so a suffix was invented. The words are arbitrary.
-local AFFORDABLE_SUFFIX = "  BUY"
-local UNAFFORDABLE_SUFFIX = "  NEED"
-
--- [STOP: no value in the contract] What a maxed upgrade reads as. GameConfig.upgradeCost
--- still returns a number at maxLevel, but showing it advertises a purchase the server will
--- refuse, so the cost is replaced by this word.
-local MAX_LEVEL_TEXT = "MAX"
-
--- Separators, taken verbatim from the interface note's format strings: two spaces, U+00B7,
--- two spaces for the upgrade readout; spaced U+2014 for the progress label.
-local UPGRADE_SEPARATOR = "  -  "
-local BAR_LABEL_SEPARATOR = " — "
-
 local WARN_PREFIX = "[HudBinding]"
+
+--[[
+	How long the bar takes to reach a new fraction.
+
+	No key names a tween duration. Rather than choose a number, this reads the acknowledgment
+	budget of the beat whose readout channel the bar IS: response.beats[patchClear] is
+	rank 5, channels atPatch and readout, acknowledgmentBudgetMs 80. A bar that has finished
+	moving by the budget cannot be the thing that misses it, and 0.08 s sits under
+	GameConfig.ClearTickRate (0.12), so the bar is never still in flight when the next tick
+	moves it again. Falls back to the tick rate itself if the beat table ever loses that row,
+	so no literal duration exists in this file either way.
+]]
+local function barTweenSeconds(): number
+	local response = GameConfig.Response
+	local beats = if typeof(response) == "table" then response.beats else nil
+	if typeof(beats) == "table" then
+		for _, beat in ipairs(beats) do
+			if beat.id == PATCH_CLEAR_BEAT_ID and typeof(beat.acknowledgmentBudgetMs) == "number" then
+				return beat.acknowledgmentBudgetMs / 1000
+			end
+		end
+	end
+	warn(
+		string.format(
+			"%s GameConfig.Response.beats has no %q row with an acknowledgmentBudgetMs; the progress bar falls back to GameConfig.ClearTickRate",
+			WARN_PREFIX,
+			PATCH_CLEAR_BEAT_ID
+		)
+	)
+	return GameConfig.ClearTickRate
+end
 
 --[[
 	Walk a path of child names from `from`, warning on the first segment that is missing.
@@ -111,7 +207,7 @@ local function resolvePath(from: Instance, path: { string }): Instance?
 		if child == nil then
 			warn(
 				string.format(
-					"%s HUD node %q was not found under %s — that readout will not update",
+					"%s HUD node %q was not found under %s, so that readout will not update",
 					WARN_PREFIX,
 					segment,
 					node:GetFullName()
@@ -154,7 +250,7 @@ local function resolveTextNode(from: Instance, path: { string }): TextNode?
 	end
 	warn(
 		string.format(
-			"%s HUD node %s is a %s, which carries no Text — that readout will not update",
+			"%s HUD node %s is a %s, which carries no Text, so that readout will not update",
 			WARN_PREFIX,
 			node:GetFullName(),
 			node.ClassName
@@ -174,7 +270,7 @@ local function resolveGuiObject(from: Instance, path: { string }): GuiObject?
 	end
 	warn(
 		string.format(
-			"%s HUD node %s is a %s, which has no Size — the progress bar will not move",
+			"%s HUD node %s is a %s, which has no Size, so the progress bar will not move",
 			WARN_PREFIX,
 			node:GetFullName(),
 			node.ClassName
@@ -183,7 +279,84 @@ local function resolveGuiObject(from: Instance, path: { string }): GuiObject?
 	return nil
 end
 
--- Whole finds across every set in the collection, not just this area's six.
+--[[
+	HOW A WITHHELD ROW IS WITHHELD, and why it is not `Visible = false`.
+
+	firstSession.withheld.upgradeRow is presentAtJoin false and latched, so a row must be
+	absent until the snapshot lifts it. firstSession.suppressionForbidden bans reflowOnLift in
+	the same breath, and the emitted screen puts the three rows in a vertical UIListLayout,
+	which SKIPS a non-Visible child: hiding one with Visible would slide the other two, and
+	lifting Value later would push Reach and Pace down the screen. Both rules can only hold if
+	the row keeps its slot and stops being drawn, so every transparency inside it is driven to
+	1 and restored to exactly what ui-forge emitted when it lifts.
+
+	Fully transparent is not a greyed or dimmed row: nothing of it is on screen, there is no
+	placeholder, no padlock and no outline, and the lift is one frame with no tween, so it is
+	not a lift animation either.
+]]
+local function collectFade(row: Instance): Fade
+	local writers: { (boolean) -> () } = {}
+
+	local function add(instance: Instance)
+		if instance:IsA("GuiObject") then
+			local object = instance
+			local background = object.BackgroundTransparency
+			table.insert(writers, function(shown: boolean)
+				object.BackgroundTransparency = if shown then background else 1
+			end)
+		end
+		if instance:IsA("TextLabel") then
+			local label = instance
+			local text = label.TextTransparency
+			local stroke = label.TextStrokeTransparency
+			table.insert(writers, function(shown: boolean)
+				label.TextTransparency = if shown then text else 1
+				label.TextStrokeTransparency = if shown then stroke else 1
+			end)
+		elseif instance:IsA("TextButton") then
+			local button = instance
+			local text = button.TextTransparency
+			local stroke = button.TextStrokeTransparency
+			table.insert(writers, function(shown: boolean)
+				button.TextTransparency = if shown then text else 1
+				button.TextStrokeTransparency = if shown then stroke else 1
+			end)
+		elseif instance:IsA("ImageLabel") then
+			local image = instance
+			local imageTransparency = image.ImageTransparency
+			table.insert(writers, function(shown: boolean)
+				image.ImageTransparency = if shown then imageTransparency else 1
+			end)
+		elseif instance:IsA("ImageButton") then
+			local image = instance
+			local imageTransparency = image.ImageTransparency
+			table.insert(writers, function(shown: boolean)
+				image.ImageTransparency = if shown then imageTransparency else 1
+			end)
+		elseif instance:IsA("UIStroke") then
+			-- UIBuilder turns the screen's `textStroke` block into one of these, so a row hidden
+			-- without it keeps a visible outline around invisible text.
+			local uiStroke = instance
+			local transparency = uiStroke.Transparency
+			table.insert(writers, function(shown: boolean)
+				uiStroke.Transparency = if shown then transparency else 1
+			end)
+		end
+	end
+
+	add(row)
+	for _, descendant in ipairs(row:GetDescendants()) do
+		add(descendant)
+	end
+
+	return function(shown: boolean)
+		for _, write in ipairs(writers) do
+			write(shown)
+		end
+	end
+end
+
+-- Whole Finds across every set in the collection, not just the live area's three.
 local function totalFinds(): number
 	local total = 0
 	for _, set in ipairs(GameConfig.RelicSets) do
@@ -192,8 +365,12 @@ local function totalFinds(): number
 	return total
 end
 
--- The snapshot carries a map, not a count. A key is only ever written on a reveal, but the
--- value is tested anyway so that a false could never read as found.
+--[[
+	The snapshot carries a map, not a count, and persistence.load fills every missing key with
+	false, so the map is 24 entries wide for a player who has revealed nothing. Counting KEYS
+	would put every unrevealed Find in the collection count, which suppressionForbidden bans
+	by name; only a true counts.
+]]
 local function countFound(found: { [string]: boolean }): number
 	local count = 0
 	for _, isFound in pairs(found) do
@@ -204,25 +381,102 @@ local function countFound(found: { [string]: boolean }): number
 	return count
 end
 
--- Balances are whole Shards (every award is max(1, floor(...))), and %d refuses a
+-- Balances are whole Shards (every award is max(payoutFloor, floor(...))), and %d refuses a
 -- fractional number outright, so the floor is a guard rather than a rounding policy.
 local function formatCount(value: number): string
 	return string.format("%d", math.floor(value))
 end
 
--- Warn once, at bind, if Protocol has stopped declaring a field this module reads. The
--- alternative to naming the fields here is indexing the snapshot through snapshotShape(),
--- which throws away every type on the way in.
+--[[
+	The name of the node a config label is displayed in: Readout_ plus that label uppercased,
+	which is the convention the emitted screen follows for all five readouts.
+]]
+local function readoutName(label: string): string
+	return string.format(READOUT_NAME_FORMAT, string.upper(label))
+end
+
+--[[
+	Check one player-facing string that came out of config against GameConfig.Vocabulary.
+
+	Only strings this module does not control are checked: the area labels arrive on the wire
+	and are the one piece of player-facing text here that no test in this repo can see by
+	reading the source. Both rules are the contract's, and neither is restated. WARNS and does
+	not truncate: a silently shortened label is a label nobody notices is wrong.
+]]
+local function checkVocabulary(line: string, source: string)
+	local vocabulary = GameConfig.Vocabulary
+	local maxChars: number = vocabulary.maxLabelChars
+	if #line > maxChars then
+		warn(
+			string.format(
+				"%s %s %q is %d characters, over vocabulary.maxLabelChars (%d)",
+				WARN_PREFIX,
+				source,
+				line,
+				#line,
+				maxChars
+			)
+		)
+	end
+	local pattern: string = vocabulary.allowedPattern
+	if string.match(line, pattern) == nil then
+		warn(
+			string.format(
+				"%s %s %q does not match vocabulary.allowedPattern (%s)",
+				WARN_PREFIX,
+				source,
+				line,
+				pattern
+			)
+		)
+	end
+end
+
+--[[
+	Warn once, at bind, if the wire and this module have drifted apart, in both directions.
+
+	A field this module READS that Protocol no longer declares is a readout that will show a
+	blank or a stale value. A field Protocol declares that the Snapshot type above does not
+	name is a field nobody on this side is typed against. Both were real: `areaComplete` was
+	read here for one revision after the wire had replaced it with `areasFinished`.
+]]
 local function checkSnapshotShape()
 	local declared: { [string]: boolean } = {}
 	for _, field in ipairs(Protocol.snapshotShape()) do
 		declared[field] = true
 	end
+
 	for _, field in ipairs(FIELDS_READ) do
 		if declared[field] == nil then
 			warn(
 				string.format(
-					"%s snapshot field %q is no longer declared by Protocol.snapshotShape() — the HUD reads it and will show a blank or stale value",
+					"%s snapshot field %q is no longer declared by Protocol.snapshotShape(); the HUD reads it and will show a blank or stale value",
+					WARN_PREFIX,
+					field
+				)
+			)
+		end
+	end
+
+	local mirrored: { [string]: boolean } = {}
+	for _, field in ipairs(SNAPSHOT_FIELDS) do
+		mirrored[field] = true
+		if declared[field] == nil then
+			warn(
+				string.format(
+					"%s this module's Snapshot type names %q, which Protocol.snapshotShape() no longer declares",
+					WARN_PREFIX,
+					field
+				)
+			)
+		end
+	end
+
+	for _, field in ipairs(Protocol.snapshotShape()) do
+		if mirrored[field] == nil then
+			warn(
+				string.format(
+					"%s Protocol.snapshotShape() declares %q, which this module's Snapshot type does not name",
 					WARN_PREFIX,
 					field
 				)
@@ -235,45 +489,95 @@ end
 	Resolve the HUD's named nodes and return the updater client-main feeds every snapshot.
 
 	`root` is the Root frame UIBuilder.build returned. `gui` is the ScreenGui it sits in,
-	accepted for screen-level state; nothing in the contract asks this module to set any,
-	so nothing is written to it.
+	accepted for screen-level state; nothing in the contract asks this module to set any, so
+	nothing is written to it. The four pressables inside that same ScreenGui belong to
+	Pressables and are never touched from here.
 
-	Everything expensive happens here: paths are walked once, the upgrade node name is
-	derived once per upgrade, and the updater is a closure over the results.
+	Everything expensive happens here: paths are walked once, each row's transparencies are
+	recorded once, and the updater is a closure over the results.
 ]]
 function HudBinding.bind(root: GuiObject, gui: ScreenGui): Updater
 	checkSnapshotShape()
 
-	local shardsValue = resolveTextNode(root, SHARDS_VALUE_PATH)
-	local findsValue = resolveTextNode(root, FINDS_VALUE_PATH)
-	local barLabel = resolveTextNode(root, BAR_LABEL_PATH)
-	local barFill = resolveGuiObject(root, BAR_FILL_PATH)
+	local currencyName: string = GameConfig.Currency.plural
+	local findsName: string = GameConfig.FindNoun.plural
 
-	-- One entry per upgrade, in GameConfig.Upgrades order, which is the order the emitted
-	-- screen numbers them in: Readout_<n><LABEL UPPERCASED>.
+	local shardsValue = resolveTextNode(root, { CLUSTER_TOP_RIGHT, readoutName(currencyName), READOUT_VALUE_CHILD })
+	local findsValue = resolveTextNode(root, { CLUSTER_TOP_LEFT, readoutName(findsName), READOUT_VALUE_CHILD })
+	local barLabel = resolveTextNode(root, { CLUSTER_BOTTOM_LEFT, PROGRESS_GROUP, BAR_LABEL })
+	local barFill = resolveGuiObject(root, { CLUSTER_BOTTOM_LEFT, PROGRESS_GROUP, BAR, BAR_FILL })
+
+	--[[
+		One entry per upgrade, in GameConfig.Upgrades declaration order, which is the order the
+		emitted screen stacks them in and the order Pressables binds its three buttons in. The
+		row FRAME is held as well as its value node, because withholding is a property of the
+		whole row and not of the number in it.
+	]]
 	type UpgradeBinding = {
-		def: typeof(GameConfig.Upgrades[1]),
-		node: TextNode,
+		def: UpgradeDef,
+		value: TextNode,
+		fade: Fade,
+		shown: boolean,
 	}
 	local upgradeBindings: { UpgradeBinding } = {}
-	for index, def in ipairs(GameConfig.Upgrades) do
-		local readoutName = string.format("Readout_%d%s", index, string.upper(def.label))
-		local node = resolveTextNode(root, { UPGRADE_CLUSTER, readoutName, UPGRADE_VALUE_CHILD })
-		if node then
-			table.insert(upgradeBindings, { def = def, node = node })
+	local upgrades: { UpgradeDef } = GameConfig.Upgrades
+	for _, def in ipairs(upgrades) do
+		local row = resolvePath(root, { CLUSTER_BOTTOM_RIGHT, readoutName(def.label) })
+		if row == nil then
+			continue
 		end
+		local value = resolveTextNode(row, { READOUT_VALUE_CHILD })
+		if value == nil then
+			continue
+		end
+		local fade = collectFade(row)
+		-- presentAtJoin is false, and the emitted screen ships the row drawn with placeholder
+		-- text. Hidden HERE, at bind, so no row is on screen for the round trip before the
+		-- first snapshot arrives, and none at all for a player whose snapshot never comes.
+		fade(false)
+		table.insert(upgradeBindings, { def = def, value = value, fade = fade, shown = false })
 	end
 
 	local findsTotal = totalFinds()
-	local areaLabel = string.upper(GameConfig.Area.label)
-	local patchCount = GameConfig.Area.patchCount
-	local tweenInfo = TweenInfo.new(BAR_TWEEN_SECONDS, BAR_TWEEN_STYLE, BAR_TWEEN_DIRECTION)
+	local tweenInfo = TweenInfo.new(barTweenSeconds(), BAR_TWEEN_STYLE, BAR_TWEEN_DIRECTION)
+
+	--[[
+		JOIN VALUES, written before any snapshot: firstSession.withheld gives the currency
+		readout joinValue "0" and the collection count joinValue "0" with no denominator, and
+		the screen is emitted with "0 / 24" in that second node. The area progress joinValue is
+		"0%", which is what the emitted BarLabel and the zero-width BarFill already read, and
+		the live area's NAME is not knowable until a snapshot carries it, so that one readout
+		keeps what ui-forge emitted until the first update.
+	]]
+	if shardsValue then
+		setText(shardsValue, formatCount(0))
+	end
+	if findsValue then
+		setText(findsValue, formatCount(0))
+	end
+
+	--[[
+		LATCHES. Each one is set once and never cleared: suppressionForbidden bans
+		reSuppression, so a readout that has lifted stays lifted for the rest of the session
+		even if a later snapshot would not have lifted it.
+
+		`denominatorShown` is latched on the collection count being non-zero rather than on the
+		found map being non-empty, because persistence.load fills the map with 24 false keys and
+		a non-empty test would therefore show the denominator to every player at join.
+	]]
+	local denominatorShown = false
 
 	-- Held across snapshots so a repeated snapshot does not restart an animation that is
 	-- already going to the same place, and so the previous tween is cancelled rather than
 	-- left to fight the new one.
 	local lastFraction: number? = nil
 	local activeTween: Tween? = nil
+
+	-- One warning each, not one per snapshot, for a wire value the bar cannot draw with.
+	local warnedPatchCount = false
+	local warnedAreaLabel = false
+	-- Area labels already checked against the vocabulary, so eight areas cost eight checks.
+	local checkedLabels: { [string]: boolean } = {}
 
 	return function(snapshot: Snapshot?)
 		if snapshot == nil then
@@ -285,7 +589,15 @@ function HudBinding.bind(root: GuiObject, gui: ScreenGui): Updater
 		end
 
 		if findsValue then
-			setText(findsValue, string.format("%d / %d", countFound(snapshot.found), findsTotal))
+			local count = countFound(snapshot.found)
+			if count > 0 then
+				denominatorShown = true
+			end
+			if denominatorShown then
+				setText(findsValue, string.format("%d%s%d", count, COLLECTION_SEPARATOR, findsTotal))
+			else
+				setText(findsValue, formatCount(count))
+			end
 		end
 
 		for _, binding in ipairs(upgradeBindings) do
@@ -295,26 +607,65 @@ function HudBinding.bind(root: GuiObject, gui: ScreenGui): Updater
 			if level >= def.maxLevel then
 				right = MAX_LEVEL_TEXT
 			else
-				local cost = GameConfig.upgradeCost(def, level)
-				local suffix = if snapshot.currency >= cost then AFFORDABLE_SUFFIX else UNAFFORDABLE_SUFFIX
-				right = formatCount(cost) .. suffix
+				right = formatCount(GameConfig.upgradeCost(def, level))
 			end
-			setText(binding.node, string.format("Lv %d%s%s", level, UPGRADE_SEPARATOR, right))
+			-- Written whether or not the row is drawn, so it is already correct on the frame it
+			-- lifts and the lift is one property change and nothing else.
+			setText(binding.value, string.format("%s%d%s%s", UPGRADE_LEVEL_PREFIX, level, UPGRADE_SEPARATOR, right))
+
+			if not binding.shown and snapshot.rowsRevealed[def.id] == true then
+				binding.shown = true
+				binding.fade(true)
+			end
 		end
 
-		-- patchCount is 140 and cannot be zero, but a division that can produce nan is worth
-		-- one branch; clearedCount is documented as never above patchCount and is clamped
-		-- for the same reason.
+		--[[
+			THE LIVE AREA, off the wire. areaPatchCount is layout.areaSpec(areasFinished + 1)
+			.patchCount, which is 140 in area 1, 407 in area 3 and 640 in every post-terminal
+			area, so nothing here may hold a denominator of its own.
+		]]
+		local patchCount = snapshot.areaPatchCount
 		local fraction = 0
-		if patchCount > 0 then
+		if typeof(patchCount) == "number" and patchCount > 0 then
 			fraction = math.clamp(snapshot.clearedCount / patchCount, 0, 1)
+		elseif not warnedPatchCount then
+			warnedPatchCount = true
+			warn(
+				string.format(
+					"%s snapshot.areaPatchCount is %s; the progress readout will sit at 0%% until the server sends a positive count",
+					WARN_PREFIX,
+					tostring(patchCount)
+				)
+			)
 		end
 
 		if barLabel then
-			setText(
-				barLabel,
-				string.format("%s%s%d%% CLEAR", areaLabel, BAR_LABEL_SEPARATOR, math.floor(fraction * 100))
-			)
+			local label = snapshot.areaLabel
+			if typeof(label) == "string" and label ~= "" then
+				if not checkedLabels[label] then
+					checkedLabels[label] = true
+					checkVocabulary(label, "area label")
+				end
+				setText(
+					barLabel,
+					string.format(
+						"%s%s%d%s",
+						string.upper(label),
+						BAR_LABEL_SEPARATOR,
+						math.floor(fraction * 100),
+						BAR_LABEL_SUFFIX
+					)
+				)
+			elseif not warnedAreaLabel then
+				warnedAreaLabel = true
+				warn(
+					string.format(
+						"%s snapshot.areaLabel is %s; the progress readout keeps the name the screen was emitted with",
+						WARN_PREFIX,
+						tostring(label)
+					)
+				)
+			end
 		end
 
 		if barFill and fraction ~= lastFraction then
