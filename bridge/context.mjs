@@ -152,12 +152,36 @@ export async function sheetDigest(root) {
       boundary = `(hands off through a ${tableRows}-row table — read \`${relative(root, file)}\` for it)`;
     }
 
+    // `## Consequences for other work` — the section a sheet writes *for other domains*, and
+    // the one this digest existed to deliver without anyone reading the sheet. It was not
+    // carried at all.
+    //
+    // That omission is the root cause of three of wave 2's worst findings, not a nicety.
+    // `core-loop/01` ruled "buying must be reachable from anywhere in the area with no travel.
+    // A vendor…" in its Consequences; the wave-2 Mechanics writer then made purchase a
+    // walk-to pad, and the verifier's note was "neither sheet cites the other". It could not
+    // have: the digest showed it the Decision and the boundary, and the ruling was in neither.
+    // `docs/CID-wave-1.md` says this section "is what cross-category verification diffs
+    // against" — so verification was diffing against something no writer was ever shown.
+    //
+    // Capped at 2000 and *pointed* rather than silently cut. Measured: p50 1508, p90 5769,
+    // 125KB uncapped across 47 sheets, which does not fit and would only stop fitting harder
+    // as waves land. So when a row is truncated it names its own file, and section 4 tells
+    // the writer to open that one file if the row borders its subject. One targeted read is
+    // affordable; the 26 sibling reads this digest replaced were not.
+    const consequenceSection = section(body, 'Consequences for other work');
+    let consequences = oneLine(consequenceSection, 2000);
+    if (consequences.endsWith('…')) {
+      consequences += ` **[cut — read \`${relative(root, file)}\` §Consequences if this borders your subject]**`;
+    }
+
     rows.push({
       path: relative(root, file).replace(/\.md$/, ''),
       domain: relative(root, dirname(file)),
       title: (body.match(/^#\s+\d+\s*[—-]\s*(.+)$/m) ?? [, basename(file, '.md')])[1].trim(),
       decision: oneLine(section(body, 'Decision'), 400) || '(no ## Decision)',
       provides,
+      consequences,
       notDecidedHere: boundary,
       lines: body.split('\n').length,
     });
@@ -178,13 +202,14 @@ const cell = (s) => String(s).replace(/\|/g, '/');
 export function renderDigest(rows) {
   if (!rows.length) return '_No sheets written yet._\n';
   const out = [
-    '| sheet | decided | provides | explicitly not its business |',
-    '|---|---|---|---|',
+    '| sheet | decided | provides | what it forces on others | explicitly not its business |',
+    '|---|---|---|---|---|',
   ];
   for (const r of rows) {
     const provides = r.provides.length ? r.provides.map((p) => `\`${p}\``).join(', ') : '—';
     out.push(
-      `| \`${r.path}\` | ${cell(r.decision)} | ${provides} | ${cell(r.notDecidedHere) || '—'} |`,
+      `| \`${r.path}\` | ${cell(r.decision)} | ${provides} `
+      + `| ${cell(r.consequences) || '—'} | ${cell(r.notDecidedHere) || '—'} |`,
     );
   }
   return `${out.join('\n')}\n`;

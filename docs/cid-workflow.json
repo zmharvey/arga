@@ -909,7 +909,7 @@
     ],
     "writes_to": "/cid/gameplay/_verified.md",
     "description": "Verifies all specs in the category fit together with no gaps, duplicates, or contradictions; sends conflicts back to the owning subagent for revision, then releases.",
-    "checks": "every currency has at least one faucet and one sink · every reward granted anywhere has a source system · every mechanic maps to a verb the brief's control scheme actually supports · no system requires an input the brief's control scheme does not have · **every economy, pacing or progression number appears in Balance & Tuning and nowhere else** — a domain may state a requirement on a number it does not set · nothing specced falls outside the brief's priority ordering · the loop closes: the last step feeds the first",
+    "checks": "every currency has at least one faucet and one sink · every reward granted anywhere has a source system · every mechanic maps to a verb the brief's control scheme actually supports · no system requires an input the brief's control scheme does not have · **no sheet contradicts a ruling in an approved sheet of an earlier stage** without a `## Pushing back` section naming that sheet and its ruling · **a value that IS the shape of a key the domain owns** belongs in that key's manifest, marked `[playtest unknown]` with a test range; **a tuning coefficient** goes to Balance & Tuning as a stated requirement and is set nowhere else. The Balance-side half is evaluated at stage 4 · no sheet reserves space for, stubs, describes or specifies a priority-2 or priority-3 item — **naming one in order to forbid it is compliant** · the loop closes: the last step feeds the first",
     "model": "opus",
     "on_fail": [
      "revision request"
@@ -3355,7 +3355,7 @@
    "name": "Build Capability Registry",
    "typeName": "Source",
    "values": {
-    "description": "**What the build stage can actually produce today.** A machine-readable list of available patterns and parameters, mirroring `ui-forge`'s pattern registry and its `validateBrief` gate.\n\nEvery verification pass checks its category's specs against this. A spec naming a capability not listed does not silently fail three stages later: it fails here, and either the spec changes or the capability becomes an explicit build-stage request.\n\n*Known current limit: `ui-forge` produces only centred dismissible panels holding a grid of items. A persistent HUD is not yet buildable.*",
+    "description": "**What the build stage can actually produce today.** A machine-readable list of available patterns and parameters, mirroring `ui-forge`'s pattern registry and its `validateBrief` gate.\n\nEvery verification pass checks its category's specs against this. A spec naming a capability not listed does not silently fail three stages later: it fails here, and either the spec changes or the capability becomes an explicit build-stage request.\n\n*Known current limits, as of wave 2:* `ui-forge` exports **two** patterns — `modal-grid` (a centred dismissible panel holding a grid of items) and `hud-overlay` (a persistent HUD). The real limit is narrower than \"no HUD\": `hud-overlay` marks nothing `PRESSABLE` by default, which is a default rather than a proven incapability. Read `ui-forge/src/compose/index.mjs` for the live list — `npm run capabilities` prints it. *An earlier version of this line said a persistent HUD was not buildable; it had not been true since `hud-overlay` landed, and two wave-2 agents flagged it independently.*",
     "outputs": [
      "Build Capability Registry"
     ]

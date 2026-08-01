@@ -162,7 +162,50 @@ test('digest renders one row per sheet and escapes pipes out of the cells', asyn
   await rm(dir, { recursive: true, force: true });
   const rows = body.trim().split('\n');
   assert.equal(rows.length, 3); // header, separator, one row
-  assert.equal(rows[2].split('|').length, 6); // 4 cells => 6 pieces, so no stray pipe
+  assert.equal(rows[2].split('|').length, 7); // 5 cells => 7 pieces, so no stray pipe
+});
+
+test('the digest carries what a sheet forces on others, not only what it decided', async () => {
+  // The column that did not exist until wave 2's verification found three sheets
+  // contradicting approved earlier-stage rulings. `core-loop/01` ruled "buying must be
+  // reachable from anywhere in the area with no travel" in its Consequences; the Mechanics
+  // writer then made purchase a walk-to pad. The verifier's note was "neither sheet cites the
+  // other" — it could not have, because the digest carried the Decision and the boundary and
+  // the ruling was in neither. `docs/CID-wave-1.md` calls this section the thing
+  // cross-category verification diffs against, so verification was diffing against something
+  // no writer had ever been shown.
+  const dir = await fixture({
+    'a/b/01-x.md': `# 01 — X
+
+## Decision
+Pay on contact.
+
+## Consequences for other work
+Buying must be reachable from anywhere with no travel.
+
+## Not decided here
+The price.
+`,
+  });
+  const rows = await sheetDigest(dir);
+  const body = renderDigest(rows);
+  await rm(dir, { recursive: true, force: true });
+  assert.match(rows[0].consequences, /no travel/);
+  assert.match(body, /what it forces on others/);
+  assert.match(body, /no travel/);
+});
+
+test('a truncated consequences cell names the file to go read', async () => {
+  // Measured across the committed sheets: p50 1508 chars, p90 5769, 125KB uncapped. It does
+  // not fit and will fit less as waves land, so a cut cell points at its own sheet — one
+  // targeted read, rather than the 26 sibling reads the digest exists to prevent.
+  const long = `${'consequence '.repeat(400)}`;
+  const dir = await fixture({
+    'a/b/01-x.md': `# 01 — X\n\n## Decision\nD.\n\n## Consequences for other work\n${long}\n`,
+  });
+  const rows = await sheetDigest(dir);
+  await rm(dir, { recursive: true, force: true });
+  assert.match(rows[0].consequences, /\[cut — read `a\/b\/01-x\.md` §Consequences/);
 });
 
 test('digest is far smaller than the sheets it stands in for', async () => {

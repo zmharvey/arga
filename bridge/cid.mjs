@@ -359,6 +359,22 @@ ${others.map((k) => `- \`${k.key}\` → \`${k.owner}\``).join('\n')}
 ## 4. Already decided elsewhere — do not read the sheets themselves
 
 ${digest}
+**"What it forces on others" is the column that will get you rejected if you skip it.** It is
+each sheet's \`## Consequences for other work\` — what that sheet *requires of you*. A ruling
+there binds you exactly as a brief line does, and contradicting one without a
+\`## Pushing back\` section naming the sheet is a verification failure.
+
+This column did not exist until wave 2's verification found three sheets contradicting
+approved earlier-stage rulings they had never been shown. One of them made purchase a
+walk-to-a-pad action against \`core-loop/01\`'s "buying must be reachable from anywhere in the
+area with no travel" — the verifier's note was "neither sheet cites the other", and it could
+not have, because the digest showed it the Decision and the boundary and the ruling was in
+neither.
+
+A cell ending **[cut — read …]** is truncated. **If that sheet borders your subject, open that
+one file and read its \`## Consequences\` section.** One targeted read is affordable; reading
+26 sibling sheets is what this digest exists to prevent.
+
 The last column is the boundary. If something you need is in another sheet's "not its
 business" column, it is unowned and you should say so rather than assume someone has it.
 
