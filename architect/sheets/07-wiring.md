@@ -7,7 +7,7 @@
 **`CharacterAutoLoads` is off, and `server-main` loads the character itself as the last step of
 join.** Everything else follows from that.
 
-Nine phases, ordered. The three that answer a defect:
+Ten phases, ordered. The five that answer a defect:
 
 - **`persistence.defaultState()` is the only thing that constructs a state**, and it is named
   in `constructs` alongside the fields it initialises. Trial 2 had no opening balance and no
@@ -19,6 +19,11 @@ Nine phases, ordered. The three that answer a defect:
   character loads only after that.** So no tick and no spawn can see a half-loaded state.
 - **`protocol` creates the remotes and resolves them; nothing else touches one by name.** Trial 3
   found `clearing` required by this sheet to fire two channels it had no path to.
+- **`Humanoid.Died` is connected on every spawn, and `onDeath` loads the next character after
+  `runtime.respawnDelaySeconds`.** The first playtest found that a player who died stayed dead for
+  the whole session: `CharacterAutoLoads` is off, `onJoin` calls `LoadCharacter` exactly once, and
+  nothing was watching for the end of a life. Reset Character in the Roblox menu makes that
+  reachable in every session.
 - **A finished area spawns nothing and pays nothing, and the tick's first test is the latch.**
   Trial 3 found the collapse that empties `cleared` respawning all 140 patches on rejoin and
   paying for them again, without bound.
@@ -32,7 +37,25 @@ Nine phases, ordered. The three that answer a defect:
   `player:LoadCharacter()` as the last step of join makes the ordering a property of the code
   rather than of the network. `[architect: decided]` This is the one structural call in this
   sheet.
-- **The barrier is the insert into `states`, and it is a single line with a reason.** `clearing`
+- **Turning auto-load off is a decision about the FIRST character, and it silently became a
+  decision about every character after it.** That is the shape of the playtest's first defect:
+  a switch thrown for a good reason at boot, with no owner for the case it also governs.
+  `Players.CharacterAutoLoads = false` disables the engine's respawn entirely — `Players.RespawnTime`
+  is never consulted again — so the delay, the guard and the second `LoadCharacter` all become the
+  server's, and none of them existed. The fix keeps the reason the switch was thrown: `onDeath` runs
+  long after `persistence.load` returned, so there is still no race to handle, and it re-enters
+  `onSpawn` through the connection `onJoin` already made rather than through a second code path.
+  The rejected alternative was turning auto-load back on and guarding `onSpawn` with a wait for the
+  state, which reintroduces exactly the race this sheet removed in order to fix a case that happens
+  seconds later.
+- **Death costs nothing, and that is why the phase is four steps.** `currency`, `upgrades`,
+  `cleared` and `found` are untouched, the plot is not rebuilt, the slot is not released. The only
+  thing a death changes is where the character is standing, and `onSpawn` step 4 already puts that
+  right by pivoting to the plot's own spawn Attachment — without which a respawned player would
+  arrive at the world origin and, at any slot but the first, on somebody else's floor.
+- **The publish point is the insert into `states`, and it is a single line with a reason.**
+  (It was called "the barrier" here until `representation` gave that word to four collision parts
+  around a plot; one word, one meaning, across two sheets a builder reads together.) `clearing`
   ticks whatever is in the collection, every 0.12s, from before the first player joins. So the
   insert is what publishes a player to the rest of the server, and it goes *after* load and
   *before* anything that mutates the state. `onLeave` is the mirror: lift the state out and
@@ -109,7 +132,7 @@ Nine phases, ordered. The three that answer a defect:
     "onJoin": [
       { "order": 1, "module": "persistence", "fn": "load(player)", "calledBy": "server-main", "does": "Load the player's saved state, or defaultState() on a DataStore failure, and RECONCILE it before returning: if areaComplete is true, refill cleared with every index from 1 to area.patchCount; then set clearedCount from the cleared set rather than trusting the stored number. This is the inverse of save's collapse and it is why a finished area does not come back green. Yields. Nothing else may run for this player until it returns." },
       { "order": 2, "module": "server-main", "does": "Set state.player = player. The only write to that field, ever." },
-      { "order": 3, "module": "server-main", "does": "THE BARRIER: states[player.UserId] = state. The player becomes visible to clearing.tick at this instant and not before, which is why it is after step 1." },
+      { "order": 3, "module": "server-main", "does": "THE PUBLISH POINT: states[player.UserId] = state. The player becomes visible to clearing.tick at this instant and not before, which is why it is after step 1." },
       { "order": 4, "module": "plots", "fn": "spawn(player, state)", "calledBy": "server-main", "does": "Claim a slot, build the plot slab, its spawn Attachment and one Instance per uncleared patch — and NONE AT ALL if state.areaComplete is true, because a finished area stays walkable and stays bare — then write state.patches. The latch is checked before the cleared set and short-circuits it. Returns the spawn CFrame, which server-main keeps for this player until they leave." },
       { "order": 5, "module": "server-main", "does": "Push a snapshot: protocol.channel(\"StateChanged\"):FireClient(player, snapshot). May arrive before the client's HUD exists, which is why client-main also pulls one." },
       { "order": 6, "module": "server-main", "does": "Connect player.CharacterAdded to the onSpawn phase. Safe to connect now: the state exists and the plot exists." },
@@ -118,9 +141,16 @@ Nine phases, ordered. The three that answer a defect:
     "onSpawn": [
       { "order": 1, "module": "server-main", "does": "Look up states[player.UserId]. If absent, the player left mid-spawn: return, do nothing, do not error." },
       { "order": 2, "module": "server-main", "does": "character:WaitForChild(\"Humanoid\") and wait for the HumanoidRootPart." },
-      { "order": 3, "module": "server-main", "does": "PivotTo the spawn CFrame that plots.spawn returned for this player, raised 3 studs on Y. This is where onboarding.guaranteedFirstRelic is kept: the player arrives at the plot origin, standing in the patch that hides the first Find of set one." },
-      { "order": 4, "module": "progression", "fn": "walkSpeed(state)", "calledBy": "server-main", "applies": "speed", "does": "THE DEFECT TRIAL 1 FOUND: server-main writes humanoid.WalkSpeed = progression.walkSpeed(state). progression computes and never writes; this line is the only place the Pace upgrade reaches the engine. Without it the upgrade is purchasable and does nothing." },
-      { "order": 5, "module": "server-main", "does": "Push a snapshot on protocol.channel(\"StateChanged\"). The HUD is not rebuilt on a respawn, so this is a refresh, not a boot." }
+      { "order": 3, "module": "server-main", "does": "Connect humanoid.Died to the onDeath phase, once for THIS character. A Humanoid dies at most once and every new character brings a new Humanoid, so this leaks nothing and needs no disconnect. Connected BEFORE the pivot, so a character that somehow dies during the same frame it spawned still respawns." },
+      { "order": 4, "module": "server-main", "does": "PivotTo the spawn CFrame that plots.spawn returned for this player, raised 3 studs on Y. This is where onboarding.guaranteedFirstRelic is kept: the player arrives at the plot origin, standing in the patch that hides the first Find of set one." },
+      { "order": 5, "module": "progression", "fn": "walkSpeed(state)", "calledBy": "server-main", "applies": "speed", "does": "THE DEFECT TRIAL 1 FOUND: server-main writes humanoid.WalkSpeed = progression.walkSpeed(state). progression computes and never writes; this line is the only place the Pace upgrade reaches the engine. Without it the upgrade is purchasable and does nothing." },
+      { "order": 6, "module": "server-main", "does": "Push a snapshot on protocol.channel(\"StateChanged\"). The HUD is not rebuilt on a respawn, so this is a refresh, not a boot. It runs after a death respawn too, for the same reason: the client's ScreenGui survived, and one idempotent snapshot is cheaper than reasoning about whether it needed one." }
+    ],
+    "onDeath": [
+      { "order": 1, "module": "server-main", "does": "humanoid.Died, from the connection onSpawn step 3 made for THIS character. Recover the player from the character. THIS PHASE IS THE ONLY THING IN THE GAME THAT LOADS A SECOND CHARACTER: with CharacterAutoLoads false and one LoadCharacter in onJoin, its absence meant the first death was the last, for the rest of the session. The Roblox menu's Reset Character is always available to every player, so this was reachable in every session no matter what the terrain did." },
+      { "order": 2, "module": "server-main", "does": "Wait runtime.respawnDelaySeconds, read as GameConfig.RespawnDelaySeconds and never as a literal. Nothing is torn down during the wait: the state stays in the live collection so the 45s save loop still writes it, the plot stays built, and clearing.tick keeps visiting the state and takes the character-or-HumanoidRootPart skip it already has once LoadCharacter replaces the corpse. No death test is added to the tick, deliberately — a corpse does not move, and everything inside its clear radius was cleared while it was alive." },
+      { "order": 3, "module": "server-main", "does": "AFTER the wait, re-test two things in this order: states[player.UserId] is still present, and player.Parent is still Players. If either is false the player left during the delay, and this phase then does NOTHING — no LoadCharacter, no warn, no error. onLeave has already saved and despawned them, and LoadCharacter on a departed player is the one way this handler can throw." },
+      { "order": 4, "module": "server-main", "fn": "player:LoadCharacter()", "does": "Load the character. The CharacterAdded connection from onJoin step 6 is still live, so onSpawn runs again in full: the character is pivoted back to THIS player's own spawn Attachment rather than to wherever Roblox would drop it, Humanoid.WalkSpeed is re-written from progression.walkSpeed(state), Died is connected on the new Humanoid, and a fresh snapshot is pushed. Nothing else re-runs: no plot is rebuilt, no slot re-claimed, no state re-loaded and no currency touched. plots.spawn and persistence.load belong to onJoin and are not reachable from here, which is why death costs a player nothing but the delay." }
     ],
     "onPurchase": [
       { "order": 1, "module": "server-main", "does": "protocol.channel(\"BuyUpgrade\").OnServerEvent received with one string. Look up states[player.UserId]; if absent, drop the message. Reject any payload that is not a string." },
@@ -196,40 +226,50 @@ A builder may now assume:
 
 A builder may **not** assume:
 
-- That `CharacterAutoLoads` is on. Nothing spawns a character except `onJoin` step 7.
+- That `CharacterAutoLoads` is on. Exactly two steps in this contract spawn a character:
+  `onJoin` step 7 and `onDeath` step 4, and there may never be a third.
 - That a `Humanoid` retains a `WalkSpeed` written to a previous character. Every new character
-  is a fresh write.
+  is a fresh write, including the one that follows a death.
+- That a death is rare. It is one menu item away at all times, so `onDeath` is a normal path and
+  not an error path.
 - That `onPurchase` may push anything on a failed buy, or that a client may be told a price.
 
 ## Acceptance criteria
 
 1. In a fresh save, a player's `Humanoid.WalkSpeed` is `movement.baseWalkSpeed` (16) within one
    second of spawning; after buying Pace once it is 17.6 without respawning; after dying and
-   respawning it is still 17.6.
-2. `clearing.tick` never observes a state whose `player` field is nil, over 100 join/leave
+   respawning it is still 17.6. **Until `onDeath` existed the third clause was unreachable**, which
+   is how a criterion can pass a review and still describe something the game cannot do.
+2. **Reset Character from the Roblox menu returns the player to their own plot.** A new character
+   appears `runtime.respawnDelaySeconds` after the death, standing on the same plot's spawn
+   Attachment, with the same currency, the same upgrade levels, the same cleared patches and the
+   same slot. Doing it ten times in a row respawns ten times.
+3. Leaving during the death delay produces no error in the log: one save, one despawn, and no
+   character is loaded when the wait ends.
+4. `clearing.tick` never observes a state whose `player` field is nil, over 100 join/leave
    cycles.
-3. A player who joins with `clearedCount` at 40 sees `area.patchCount - 40` patch Instances,
+5. A player who joins with `clearedCount` at 40 sees `area.patchCount - 40` patch Instances,
    and none of the 40 they had already cleared.
-4. A brand-new player's first cleared patch fires exactly one `FindRevealed`, and the
+6. A brand-new player's first cleared patch fires exactly one `FindRevealed`, and the
    collection count reads 1 with 139 patches still standing.
-5. `AreaRestored` fires exactly once per player per area, across any number of rejoins, and
+7. `AreaRestored` fires exactly once per player per area, across any number of rejoins, and
    never on the `FindRevealed` channel.
-6. Leaving mid-session saves before the plot is destroyed: a rejoin immediately after shows the
+8. Leaving mid-session saves before the plot is destroyed: a rejoin immediately after shows the
    same currency, the same levels, and the same missing patches.
-7. Stopping a Studio session writes nothing to the DataStore.
-8. Erroring deliberately inside one iteration of `tick` leaves the loop running for every other
-   player.
-9. **The trial-3 exploit, as a test.** A player whose `areaComplete` is true rejoins to zero patch
-   Instances on a walkable plot, no `AreaRestored`, and a balance that does not move over 60
-   seconds of walking anywhere in it. `clearedCount` still reads `area.patchCount` — 140, never 280
-   — and rejoining ten more times does not change that.
-10. Clearing one patch pushes exactly one `StateChanged`, and the balance readout and the progress
+9. Stopping a Studio session writes nothing to the DataStore.
+10. Erroring deliberately inside one iteration of `tick` leaves the loop running for every
+    other player.
+11. **The trial-3 exploit, as a test.** A player whose `areaComplete` is true rejoins to zero
+    patch Instances on a walkable plot, no `AreaRestored`, and a balance that does not move over
+    60 seconds of walking anywhere in it. `clearedCount` still reads `area.patchCount` — 140,
+    never 280 — and rejoining ten more times does not change that.
+12. Clearing one patch pushes exactly one `StateChanged`, and the balance readout and the progress
     bar move within one tick of a clear with no purchase in between. Standing still for ten ticks
     pushes none.
-11. `grep -rn 'Instance.new("Remote' game/src` matches `Protocol.luau` only; no other file names a
+13. `grep -rn 'Instance.new("Remote' game/src` matches `Protocol.luau` only; no other file names a
     remote in a literal, and no file outside `Protocol.luau` calls `WaitForChild` for a remote or
     `FindFirstChild` with a recursive flag.
-12. All four server-to-client channels have a connected handler on the client after boot, and
+14. All four server-to-client channels have a connected handler on the client after boot, and
     every module with a non-empty `fires` list depends on `protocol`.
 
 ## Not decided here

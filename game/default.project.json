@@ -4,17 +4,23 @@
     "$className": "DataModel",
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
-      "UIForge": { "$path": "src/shared" }
+      "UIForge": {
+        "$path": "src/shared"
+      }
     },
     "ServerScriptService": {
       "$className": "ServerScriptService",
-      "Game": { "$path": "src/server" }
+      "Game": {
+        "$path": "src/server"
+      }
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
-        "UIBoot": { "$path": "src/client" }
+        "UIBoot": {
+          "$path": "src/client"
+        }
       }
     },
     "Workspace": {
@@ -22,10 +28,31 @@
       "Baseplate": {
         "$className": "Part",
         "$properties": {
-          "Size": [400, 4, 400],
-          "CFrame": [0, -2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+          "Size": [
+            400,
+            4,
+            400
+          ],
+          "CFrame": [
+            0,
+            -6.0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
           "Anchored": true,
-          "Color": [0.404, 0.353, 0.286],
+          "Color": [
+            0.404,
+            0.353,
+            0.286
+          ],
           "Material": "Slate",
           "TopSurface": "Smooth",
           "BottomSurface": "Smooth"
@@ -35,8 +62,16 @@
     "Lighting": {
       "$className": "Lighting",
       "$properties": {
-        "Ambient": [0.32, 0.31, 0.27],
-        "OutdoorAmbient": [0.45, 0.43, 0.38],
+        "Ambient": [
+          0.32,
+          0.31,
+          0.27
+        ],
+        "OutdoorAmbient": [
+          0.45,
+          0.43,
+          0.38
+        ],
         "Brightness": 2,
         "ClockTime": 15.5,
         "GeographicLatitude": 20

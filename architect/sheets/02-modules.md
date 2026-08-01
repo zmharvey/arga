@@ -179,21 +179,25 @@ that already exists in code rather than one that sounded right on paper.
       "id": "plots",
       "path": "game/src/server/Plots.luau",
       "side": "server",
-      "responsibility": "Build and tear down one player's plot of patch Instances, and hold the slot it occupies.",
+      "responsibility": "Build and tear down one player's plot — the slab, its four barriers, its spawn Attachment and its patch Instances — and hold the slot it occupies.",
       "reads": ["area", "patch", "tiers", "stateShape", "tree", "interfaces", "representation"],
       "exposes": ["claimSlot(): number", "releaseSlot(n)", "spawn(player, state): CFrame", "despawn(state)"],
       "dependsOn": ["config", "layout"],
       "forbids": [
         "deriving a plot's position from the live player count — a slot is claimed once and held, or plots move out from under their owners as people join and leave",
         "making a patch collide; contact clearing with movement-only input must never be blocked by the thing being cleared",
-        "creating a patch Instance for an index state.cleared marks, or for any index at all while state.areaComplete is true. This is where \"cleared is permanent\" is enforced in the world, and no caller may be trusted to remember it"
+        "creating a patch Instance for an index state.cleared marks, or for any index at all while state.areaComplete is true. This is where \"cleared is permanent\" is enforced in the world, and no caller may be trusted to remember it",
+        "building a plot without its four barriers, sizing the slab to area.size instead of the full slot pitch, or making a barrier visible or query-able. A plot missing any of that has a way out of the world in it, which is what the first playtest walked into",
+        "using one Size formula for all four tiers. A Cylinder's length is its local X and a Ball takes its smallest component, so the single formula lays the Fern down and shrinks the Bramble — and shape is the rarity channel that has to survive colour being removed"
       ],
       "criteria": [
         "a rejoining player's already-cleared patches do not respawn",
-        "a player whose areaComplete is true gets a plot slab, a spawn Attachment and ZERO patch Instances, with all area.patchCount Patch records present and marked cleared — a finished area stays walkable and stays bare",
+        "a player whose areaComplete is true gets a plot slab, its four barriers, a spawn Attachment and ZERO patch Instances, with all area.patchCount Patch records present and marked cleared — a finished area stays walkable and stays bare",
         "two players never occupy the same plot position",
         "a vacated slot is reused before a higher one is allocated",
-        "every spawned patch has CanCollide false"
+        "every spawned patch has CanCollide false",
+        "a character cannot leave the plot it spawned on: each of the four barriers stops it, jumping does not clear one, and no point on the plot reaches air",
+        "each tier's world bounding box is patch.footprint x tier.height x patch.footprint, except Bramble at tier.height cubed, and the top of every patch is exactly tier.height above the slab"
       ]
     },
     {
@@ -244,7 +248,9 @@ that already exists in code rather than one that sounded right on paper.
         "every remote in this file is reached through protocol.channel, and the remotes exist before any player can join",
         "a player who leaves has their state saved before their plot is destroyed",
         "the clear tick survives an error in one iteration without stopping",
-        "server shutdown saves every connected player outside Studio"
+        "server shutdown saves every connected player outside Studio",
+        "a player who dies gets a new character runtime.respawnDelaySeconds later, on their own plot's spawn Attachment, with their currency, levels and cleared patches unchanged — and gets another one every time they die after that",
+        "a player who leaves during the death delay produces no error and no loaded character"
       ]
     },
     {

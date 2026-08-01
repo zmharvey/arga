@@ -132,17 +132,53 @@ string. If it is not checkable, it is advisory and should not be funded like a d
 version of a contract field that settles it. When you find one, move the decision into the
 contract and delete the warning.
 
+## When the design is detailed enough — the stopping rule
+
+The pipeline's purpose is to decide more up front so builders do not infer. That purpose has
+a natural end, and without one stated the work recurses: four build trials each found
+something, the stop count plateaued at ~5 per module, and it read as failure when it was
+mostly an artifact of asking agents to be pedantic about ambiguity.
+
+**A finding counts only if it meets one of these two bars:**
+
+1. **A player would notice it.** A wrong payout, a dead upgrade, an unreachable area, an
+   unreadable label, a character that cannot respawn.
+2. **Two builders would diverge on it.** Not "unstated" — *materially* unstated, such that two
+   competent implementations behave differently. `upgradeCost(u, level)` meaning held-or-target
+   is a 60% price swing; the name of a local variable is not.
+
+Everything else is noted in a build report and **deliberately not acted on**. A variable name,
+a loop shape, an easing curve nobody has seen, an error string in a path that cannot be
+reached. Those are implementation, and implementation is the builder's job.
+
+**The design is done when:**
+
+- both gates print COMPLETE
+- the game runs
+- the known-defect list is empty
+- **a rebuild surfaces no new finding that meets either bar**
+
+That last clause is the stopping condition, and it is deliberately not "no findings." A
+rebuild will always produce findings. It should stop producing findings a player would notice.
+
+**The corollary:** do not add a contract key to close a finding that meets neither bar. The
+contract is 16 keys because 16 is what the build actually reads. Growing it to answer
+questions nobody would notice the answer to is how a specification becomes a second codebase.
+
 ## Known gaps
 
-1. **Four known runtime defects, unfixed on purpose** so a playtest can rank them: death is
-   permanent (`CharacterAutoLoads = false`, one `LoadCharacter`, no `onDeath`); slot 3 walks
-   off a 400-stud baseplate; part rotation is unspecified so a Cylinder tier may render on its
-   side, and shape is the colour-blind rarity channel; no touch or gamepad purchase path.
-3. **Six CID domains own no contract key** and are frozen by the rule above. Their 23 sheets
+1. **No touch or gamepad purchase path.** Keyboard 1/2/3 is the whole surface, and the brief
+   says the audience is mobile-heavy — so most of the target audience cannot spend currency.
+   Closing it needs a `pressable` readout in ui-forge's `hud-overlay` pattern, which is the
+   one-pattern bottleneck, not a spec gap. The largest remaining item.
+2. **Five modules still declare their own `PlayerState`.** `Types.luau` is emitted now and
+   `stateShape` owns the shape, but the modules built before it exist have not been
+   regenerated. Static only: the game runs, because instance requires resolve to `any`.
+4. **Six CID domains own no contract key** and are frozen by the rule above. Their 23 sheets
    stay as a record.
-4. **`ui-forge` has exactly one pattern** and is undeclared as a dependency, which is why
+5. **`ui-forge` has exactly one pattern** and is undeclared as a dependency, which is why
    `client-main` is the one module that does not type-check.
-5. **`forge` has never been run on a stage-0-derived context.** Untested end to end.
+6. **`forge` has never been run on a stage-0-derived context.** Untested end to end.
 
 ## Two spec runs are committed as the design record
 

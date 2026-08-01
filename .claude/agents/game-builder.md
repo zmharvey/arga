@@ -29,6 +29,12 @@ Put the first kind at the top of `## Stops`, in the order you would fix them. Pu
 kind under `## Decided without a stated value` and keep it brief. If a stop would not change
 what a player experiences, it belongs in the second list.
 
+**The bar for `## Stops`, stated exactly.** A finding belongs there only if a player would
+notice it, or if two competent builders would behave differently. Everything else goes in the
+second list and is expected to be ignored. Do not pad the first list to look thorough; a short
+`## Stops` on a spec that is genuinely complete is the correct result and the one this whole
+pipeline is trying to reach.
+
 The four findings that justified this whole stage were all the first kind: an upgrade that
 cost 1,717 shards and did nothing, a completed area that respawned and re-paid forever, a
 runtime path spelled two ways, and a player who dies staying dead. None of them needed a

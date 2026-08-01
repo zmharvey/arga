@@ -208,8 +208,14 @@ GameConfig.GuaranteedFirstRelic = ${manifest.onboarding.guaranteedFirstRelic ? '
 
   parts.push(`
 -- Server cadences. From ${src('runtime')}.
+--
+-- RespawnDelaySeconds is here rather than in a task.wait literal because
+-- Players.CharacterAutoLoads is off, which makes the engine's own Players.RespawnTime
+-- dead and hands the whole respawn to server-main. The first playtest found nobody
+-- had been handed it: a player who died stayed dead for the session.
 GameConfig.ClearTickRate = ${num(r.clearTickRate)}
 GameConfig.SaveIntervalSeconds = ${num(r.saveIntervalSeconds)}
+GameConfig.RespawnDelaySeconds = ${num(r.respawnDelaySeconds)}
 GameConfig.DataStoreName = ${str(r.dataStoreName)}
 `);
 

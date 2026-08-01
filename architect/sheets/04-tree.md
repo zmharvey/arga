@@ -133,11 +133,21 @@ A builder may **not** assume:
 
 ## Not decided here
 
-**Flagged, not decided: rename `UIForge` to `Shared`.** The full change is three lines —
-`game/default.project.json:7`, and the shared-root require in each of the two entry points —
-plus one in `game/src/client/calibrate.client.luau`. It needs an owner for the project file
-first. Routed to whoever adds a project-file step to `BUILD-ORDER.md`; not to CID, which has
-no view on this.
+**Flagged, not decided: two changes to `game/default.project.json`, both waiting on the same
+missing owner.** Nothing in the build order may edit that file, so these are collected here
+rather than assigned.
+
+1. **Rename `UIForge` to `Shared`.** Three lines: `game/default.project.json:7`, and the
+   shared-root require in each of the two entry points, plus one in
+   `game/src/client/calibrate.client.luau`.
+2. **Delete `Workspace.Baseplate`, or drop it well below `Y = 0`.** It is a 400-stud lobby
+   floor whose top face is at `Y = 0`, and `representation` puts every plot slab's top face at
+   `Y = 0` too, so the two are coincident in plan wherever they overlap — slot 1 entirely, slot
+   2 in part. It predates the plots, nothing stands on it, and now that slabs tile the row it
+   covers nothing that is not already floor.
+
+Routed to whoever adds a project-file step to `BUILD-ORDER.md`; not to CID, which has no view
+on either.
 
 What goes in `Workspace` beyond the plot (Art — Environment). Whether a second area gets a
 second shared subfolder (`gameplay/meta`, when a second area exists). The `ui-forge` emit

@@ -42,7 +42,7 @@ const CREATIVE = {
 };
 
 const TECH = {
-  runtime: { clearTickRate: 0.12, saveIntervalSeconds: 45, dataStoreName: 'ArgaRuin_v1' },
+  runtime: { clearTickRate: 0.12, saveIntervalSeconds: 45, respawnDelaySeconds: 3, dataStoreName: 'ArgaRuin_v1' },
   tree: {
     sharedRoot: 'ReplicatedStorage.Shared',
     serverRoot: 'ServerScriptService.Game',
@@ -318,7 +318,7 @@ test('every scalar contract value reaches the emitted config', () => {
   // A key that validates but is never emitted is a key nothing downstream can read, which
   // is how `areasPerDepth` hid for a whole wave.
   const luau = emitGameConfig(full(), {});
-  for (const v of ['0.12', '45', '5.5', '16', '140', '120', '6']) {
+  for (const v of ['0.12', '45', '3', '5.5', '16', '140', '120', '6']) {
     assert.ok(luau.includes(v), `expected ${v} in the emitted config`);
   }
 });
@@ -482,4 +482,79 @@ test('the shipped tree declares every path the rest of the manifest names', asyn
   const t = await mergeSheets('architect/sheets', TECH_SCHEMA);
   const paths = unconnected(c.manifest, t.manifest).filter((p) => p.includes('runtime path'));
   assert.deepEqual(paths, []);
+});
+
+/* --------------------------- the state shape, as something a module can require */
+
+test('Types.luau names both lives of the state, so neither needs a hole in it', async () => {
+  // Six of ten builders in one wave reported that no module owns `PlayerState`. Five declared
+  // their own; two disagreed on whether `player` was optional. Persistence said `Player?`
+  // because `defaultState()` runs before a player exists; Clearing said `Player` because by
+  // tick time one does. Both locally right, and together a cross-module type error that only
+  // passed because an instance require resolves to `any`.
+  //
+  // Naming the two lives separately is what removes the optionality: a state with no player
+  // is a different type, not the same type with a hole.
+  const { emitTypes } = await import('../emit-types.mjs');
+  // The architect fixture holds only persisted fields, so it cannot exercise the split.
+  // The real shape has two runtime-only fields, and `player` is the one that disagreed.
+  const src = emitTypes({
+    fields: [
+      ...tech().stateShape.fields,
+      { name: 'patches', type: 'Patch[]', writtenBy: 'plots', persisted: false },
+      { name: 'player', type: 'Player', writtenBy: 'server-main', persisted: false },
+    ],
+    types: { Patch: { position: 'Vector3' }, Player: { __roblox: 'Player' } },
+    collection: { keyedBy: 'UserId', holds: 'PlayerState' },
+  }, 'a sheet');
+  assert.match(src, /export type StoredState = \{/);
+  assert.match(src, /export type PlayerState = StoredState & \{/);
+  assert.match(src, /player: Player,/);
+  assert.doesNotMatch(src, /player: Player\?/);
+});
+
+test('contract key spellings become Luau types, not themselves', async () => {
+  // The contract names map keys for what they mean — patchIndex, upgradeId, relicName —
+  // which is right for a reader and is not a type. The first emitter shipped
+  // `{ [patchIndex]: boolean }`, which is not valid Luau.
+  const { emitTypes } = await import('../emit-types.mjs');
+  const src = emitTypes({
+    fields: [
+      { name: 'cleared', type: 'map<patchIndex,boolean>', writtenBy: 'clearing', persisted: true },
+      { name: 'upgrades', type: 'map<upgradeId,integer>', writtenBy: 'progression', persisted: true },
+      { name: 'found', type: 'map<relicName,boolean>', writtenBy: 'clearing', persisted: true },
+      { name: 'patches', type: 'Patch[]', writtenBy: 'plots', persisted: false },
+    ],
+    types: { Patch: { position: 'Vector3', cleared: 'boolean' } },
+    collection: { keyedBy: 'UserId', holds: 'PlayerState' },
+  }, 'a sheet');
+  assert.match(src, /cleared: \{ \[number\]: boolean \}/);
+  assert.match(src, /upgrades: \{ \[string\]: number \}/);
+  assert.match(src, /found: \{ \[string\]: boolean \}/);
+  assert.match(src, /patches: \{ Patch \}/);
+  assert.doesNotMatch(src, /patchIndex|upgradeId|relicName/);
+});
+
+test('the states collection is keyed the way stateShape says', async () => {
+  const { emitTypes } = await import('../emit-types.mjs');
+  const base = tech().stateShape;
+  assert.match(emitTypes({ ...base, collection: { keyedBy: 'UserId', holds: 'x' } }, 's'),
+    /export type States = \{ \[number\]: PlayerState \}/);
+  assert.match(emitTypes({ ...base, collection: { keyedBy: 'Player', holds: 'x' } }, 's'),
+    /export type States = \{ \[Player\]: PlayerState \}/);
+});
+
+test('the shipped Types.luau is valid Luau', async () => {
+  // The emitter is the only thing standing between a contract spelling and a syntax error in
+  // a file every server module requires.
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const run = promisify(execFile);
+  const { stdout, stderr } = await run('luau-analyze', ['--mode=nonstrict', 'game/src/shared/Types.luau'])
+    .catch((e) => ({ stdout: e.stdout ?? '', stderr: e.stderr ?? '' }));
+  const out = stdout + stderr;
+  assert.ok(!out.includes('SyntaxError'), `Types.luau does not parse:\n${out}`);
+  // Unknown Roblox types are expected: this analyzer has no engine definitions.
+  const nonEnv = out.split('\n').filter((l) => l.includes('TypeError') && !/Unknown type '(Vector3|BasePart|Player|Instance|CFrame)'/.test(l));
+  assert.deepEqual(nonEnv, [], 'only missing-Roblox-definitions errors are acceptable');
 });

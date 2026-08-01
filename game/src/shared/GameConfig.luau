@@ -141,8 +141,14 @@ GameConfig.FindNoun = { singular = "Find", plural = "Finds" }
 GameConfig.GuaranteedFirstRelic = true
 
 -- Server cadences. From 01-runtime.md.
+--
+-- RespawnDelaySeconds is here rather than in a task.wait literal because
+-- Players.CharacterAutoLoads is off, which makes the engine's own Players.RespawnTime
+-- dead and hands the whole respawn to server-main. The first playtest found nobody
+-- had been handed it: a player who died stayed dead for the session.
 GameConfig.ClearTickRate = 0.12
 GameConfig.SaveIntervalSeconds = 45
+GameConfig.RespawnDelaySeconds = 3
 GameConfig.DataStoreName = "ArgaRuin_v1"
 
 function GameConfig.upgradeCost(upgrade: { costBase: number, costGrowth: number }, level: number): number

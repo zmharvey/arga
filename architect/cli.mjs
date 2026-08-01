@@ -20,6 +20,7 @@ import { dirname, resolve } from 'node:path';
 import { mergeSheets } from '../bridge/merge.mjs';
 import { emitGameConfig } from '../bridge/emit-config.mjs';
 import { emitBuildOrder } from '../bridge/emit-buildorder.mjs';
+import { emitTypes } from './emit-types.mjs';
 import { TECH_SCHEMA, techContract } from './schema.mjs';
 import { validateTech } from './validate.mjs';
 
@@ -85,6 +86,15 @@ if (ok && flag('emit')) {
   await mkdir(dirname(cfgPath), { recursive: true });
   await writeFile(cfgPath, luau, 'utf8');
   console.log(`\n  emitted ${cfgPath} (${luau.split('\n').length} lines)`);
+
+  // The shape half of the same seam. Values became GameConfig.luau a while ago; the state
+  // shape stayed a description, so five builders each turned it into Luau independently and
+  // two of them disagreed.
+  const typesPath = resolve(opt('types-out', 'game/src/shared/Types.luau'));
+  const types = emitTypes(full.stateShape, provenance.stateShape ?? 'the stateShape sheet');
+  await mkdir(dirname(typesPath), { recursive: true });
+  await writeFile(typesPath, types, 'utf8');
+  console.log(`  emitted ${typesPath} (${types.split('\n').length} lines)`);
 
   const orderPath = resolve(opt('order-out', 'docs/BUILD-ORDER.md'));
   const order = emitBuildOrder(full, provenance);

@@ -216,7 +216,7 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 3,
       "module": "server-main",
-      "does": "THE BARRIER: states[player.UserId] = state. The player becomes visible to clearing.tick at this instant and not before, which is why it is after step 1."
+      "does": "THE PUBLISH POINT: states[player.UserId] = state. The player becomes visible to clearing.tick at this instant and not before, which is why it is after step 1."
     },
     {
       "order": 4,
@@ -256,10 +256,15 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "order": 3,
       "module": "server-main",
-      "does": "PivotTo the spawn CFrame that plots.spawn returned for this player, raised 3 studs on Y. This is where onboarding.guaranteedFirstRelic is kept: the player arrives at the plot origin, standing in the patch that hides the first Find of set one."
+      "does": "Connect humanoid.Died to the onDeath phase, once for THIS character. A Humanoid dies at most once and every new character brings a new Humanoid, so this leaks nothing and needs no disconnect. Connected BEFORE the pivot, so a character that somehow dies during the same frame it spawned still respawns."
     },
     {
       "order": 4,
+      "module": "server-main",
+      "does": "PivotTo the spawn CFrame that plots.spawn returned for this player, raised 3 studs on Y. This is where onboarding.guaranteedFirstRelic is kept: the player arrives at the plot origin, standing in the patch that hides the first Find of set one."
+    },
+    {
+      "order": 5,
       "module": "progression",
       "fn": "walkSpeed(state)",
       "calledBy": "server-main",
@@ -267,9 +272,32 @@ state looks like, what each object is made of, and what happens in what order.
       "does": "THE DEFECT TRIAL 1 FOUND: server-main writes humanoid.WalkSpeed = progression.walkSpeed(state). progression computes and never writes; this line is the only place the Pace upgrade reaches the engine. Without it the upgrade is purchasable and does nothing."
     },
     {
-      "order": 5,
+      "order": 6,
       "module": "server-main",
-      "does": "Push a snapshot on protocol.channel(\"StateChanged\"). The HUD is not rebuilt on a respawn, so this is a refresh, not a boot."
+      "does": "Push a snapshot on protocol.channel(\"StateChanged\"). The HUD is not rebuilt on a respawn, so this is a refresh, not a boot. It runs after a death respawn too, for the same reason: the client's ScreenGui survived, and one idempotent snapshot is cheaper than reasoning about whether it needed one."
+    }
+  ],
+  "onDeath": [
+    {
+      "order": 1,
+      "module": "server-main",
+      "does": "humanoid.Died, from the connection onSpawn step 3 made for THIS character. Recover the player from the character. THIS PHASE IS THE ONLY THING IN THE GAME THAT LOADS A SECOND CHARACTER: with CharacterAutoLoads false and one LoadCharacter in onJoin, its absence meant the first death was the last, for the rest of the session. The Roblox menu's Reset Character is always available to every player, so this was reachable in every session no matter what the terrain did."
+    },
+    {
+      "order": 2,
+      "module": "server-main",
+      "does": "Wait runtime.respawnDelaySeconds, read as GameConfig.RespawnDelaySeconds and never as a literal. Nothing is torn down during the wait: the state stays in the live collection so the 45s save loop still writes it, the plot stays built, and clearing.tick keeps visiting the state and takes the character-or-HumanoidRootPart skip it already has once LoadCharacter replaces the corpse. No death test is added to the tick, deliberately — a corpse does not move, and everything inside its clear radius was cleared while it was alive."
+    },
+    {
+      "order": 3,
+      "module": "server-main",
+      "does": "AFTER the wait, re-test two things in this order: states[player.UserId] is still present, and player.Parent is still Players. If either is false the player left during the delay, and this phase then does NOTHING — no LoadCharacter, no warn, no error. onLeave has already saved and despawned them, and LoadCharacter on a departed player is the one way this handler can throw."
+    },
+    {
+      "order": 4,
+      "module": "server-main",
+      "fn": "player:LoadCharacter()",
+      "does": "Load the character. The CharacterAdded connection from onJoin step 6 is still live, so onSpawn runs again in full: the character is pivoted back to THIS player's own spawn Attachment rather than to wherever Roblox would drop it, Humanoid.WalkSpeed is re-written from progression.walkSpeed(state), Died is connected on the new Humanoid, and a fresh snapshot is pushed. Nothing else re-runs: no plot is rebuilt, no slot re-claimed, no state re-loaded and no currency touched. plots.spawn and persistence.load belong to onJoin and are not reachable from here, which is why death costs a player nothing but the delay."
     }
   ],
   "onPurchase": [
@@ -440,30 +468,61 @@ state looks like, what each object is made of, and what happens in what order.
     "rationale": "tiers already names Enum.PartType shapes, and silhouette is the primary rarity channel on a binding accessibility constraint. Primitives satisfy it with no asset to produce, so nothing blocks the build.",
     "class": "Part for Block, Cylinder and Ball; WedgePart for Heartvine — Enum.PartType has no Wedge member, and getting this wrong silently collapses the fourth silhouette into the first",
     "properties": {
-      "Shape": "Enum.PartType[tier.shape] for Block, Cylinder and Ball; not set on a WedgePart",
-      "Size": "Vector3.new(patch.footprint, tier.height, patch.footprint) — 3 studs square, height by tier",
-      "Position": "the patch's world position, with Y at tier.height / 2 above the slab's top face so it sits on the ground rather than through it",
+      "Shape": "Enum.PartType[tier.shape] for Block, Cylinder and Ball; not set at all on a WedgePart",
+      "Size": "PER SHAPE — see geometryByShape. It is NOT Vector3.new(patch.footprint, tier.height, patch.footprint) for every tier: that formula is what lays the Cylinder on its side and throws away the Ball's footprint.",
+      "Orientation": "PER SHAPE — see geometryByShape. Vector3.new(0, 0, 90) for the Cylinder, Vector3.new(0, 0, 0) for Block, Ball and Wedge. Set after Position; rotation is about the part's own centre so the two do not interact.",
+      "Position": "the patch's world position, with Y at tier.height / 2 above the slab's top face. TRUE FOR ALL FOUR SHAPES, which is the point of the sizes below: an upright cylinder of length tier.height, a sphere of diameter tier.height and a wedge of height tier.height all have their centre at tier.height / 2 and their top at exactly tier.height.",
       "Color": "Color3.fromRGB(unpack(tier.rgb)) — the SECONDARY channel; shape carries rarity first",
       "Material": "Enum.Material[patch.material] — Grass",
       "Anchored": "true",
-      "CanCollide": "false — patch.collides is false, and it is load-bearing: contact clearing with movement-only input must never be blocked by the thing being cleared",
+      "CanCollide": "false — patch.collides is false, and it is load-bearing: contact clearing with movement-only input must never be blocked by the thing being cleared. It is also why a plot has nothing on it a character can climb or jump from.",
       "CastShadow": "false — up to 140 per plot times the player count, and shadows are the cheapest thing to give up",
       "Name": "\"Patch\" plus the 1-based layout index, so a live Instance can be traced to its state.cleared key",
       "Parent": "the plot slab"
     },
+    "geometryByShape": {
+      "Block": {
+        "class": "Part",
+        "Shape": "Enum.PartType.Block",
+        "Size": "Vector3.new(patch.footprint, tier.height, patch.footprint) — 3 x 1.6 x 3 for Moss",
+        "Orientation": "Vector3.new(0, 0, 0)",
+        "why": "A Block's local axes are its world axes. This is the only shape the old single formula got right, which is why the bug survived: 52% of every plot looked correct."
+      },
+      "Cylinder": {
+        "class": "Part",
+        "Shape": "Enum.PartType.Cylinder",
+        "Size": "Vector3.new(tier.height, patch.footprint, patch.footprint) — 2.4 x 3 x 3 for Fern. THE LENGTH GOES IN X.",
+        "Orientation": "Vector3.new(0, 0, 90)",
+        "why": "A Roblox Cylinder's axis runs along its LOCAL X: Size.X is the length between the two flat circular faces and Size.Y and Size.Z are the diameter. So an upright cylinder is length in X, footprint in Y and Z, rolled 90 degrees about Z to stand local X up along world Y. Unrotated, the Fern is a log lying on the ground and reads as a second Block."
+      },
+      "Ball": {
+        "class": "Part",
+        "Shape": "Enum.PartType.Ball",
+        "Size": "Vector3.new(tier.height, tier.height, tier.height) — 2.8 cubed for Bramble",
+        "Orientation": "Vector3.new(0, 0, 0)",
+        "why": "A Ball renders a sphere whose diameter is the SMALLEST of the three components and ignores the other two, so any non-cubic Size is a lie about what appears on screen. tier.height wins over patch.footprint: it keeps the height ladder exact and the top of the patch at tier.height like every other tier, and it errs 0.2 studs SMALL against a footprint whose only consumer is a 6-stud spacing floor."
+      },
+      "Wedge": {
+        "class": "WedgePart",
+        "Shape": "not set — a WedgePart has no Shape property, and Enum.PartType has no Wedge member. Assigning one is a runtime error at best and a silent Block at worst.",
+        "Size": "Vector3.new(patch.footprint, tier.height, patch.footprint) — 3 x 3.4 x 3 for Heartvine",
+        "Orientation": "Vector3.new(0, 0, 0)",
+        "why": "A WedgePart's own axes match a Block's; what a rotation would change is which way the slope faces, and nothing in the design cares. Fixed at zero so every Heartvine on every plot in every server is identical, rather than left unstated so that two builders pick two conventions."
+      }
+    },
     "createdBy": "plots",
     "destroyedBy": "clearing, one at a time as it clears them, and plots when the whole plot goes",
     "asset": null,
-    "note": "The count is \"up to\" deliberately. A rejoining player gets one Instance per index state.cleared does not mark, and a player whose state.areaComplete is true gets ZERO — a finished area stays walkable and stays bare, [cid: decided] theme/setting/04-permanence-and-passage.md W2. plots.spawn owns that test and is the only module that may create one of these."
+    "note": "The count is \"up to\" deliberately. A rejoining player gets one Instance per index state.cleared does not mark, and a player whose state.areaComplete is true gets ZERO — a finished area stays walkable and stays bare, [cid: decided] theme/setting/04-permanence-and-passage.md W2. plots.spawn owns that test and is the only module that may create one of these. THE MEASURABLE RULE, whatever the shape: the world bounding box is patch.footprint x tier.height x patch.footprint, except the Ball at tier.height cubed, and the highest point of every patch is exactly tier.height above the slab's top face."
   },
   {
     "subject": "plot",
     "kind": "part",
-    "rationale": "One Part is both the ground a player walks on and the container its patches parent to, so tearing a plot down is one Destroy and the floor cannot outlive its patches. A Folder plus a separate ground part is equally correct; this is the arbitrary half of the call and is stated so two builders do not make it differently.",
+    "rationale": "One Part is both the ground a player walks on and the container its patches and barriers parent to, so tearing a plot down is one Destroy and the floor cannot outlive the things standing on it. A Folder plus a separate ground part is equally correct; this is the arbitrary half of the call and is stated so two builders do not make it differently.",
     "class": "Part",
     "properties": {
-      "Size": "Vector3.new(area.size, 1, area.size) — 120 x 1 x 120",
-      "Position": "the slot origin, with the top face at Y = 0 so the slot origin doubles as the walkable plane",
+      "Size": "Vector3.new(area.size + 40, 1, area.size + 40) — 160 x 1 x 160. THE FULL SLOT PITCH, not area.size: 40 is the plot gutter that interfaces.plots.claimSlot puts between slot origins, so consecutive slabs share an edge exactly and there is no air between two plots at any index. The playable field is still area.size (120) and is fenced at that boundary by plot-barrier; the extra 20 studs on each side are the gutter's half, and they are floor rather than a hole.",
+      "Position": "the slot origin, with the top face at Y = 0 so the slot origin doubles as the walkable plane. Centre Y is therefore -0.5.",
       "Anchored": "true",
       "CanCollide": "true — this is the one thing in the plot the player stands on",
       "Material": "Enum.Material.Slate",
@@ -473,12 +532,35 @@ state looks like, what each object is made of, and what happens in what order.
     "createdBy": "plots",
     "destroyedBy": "plots, in despawn",
     "asset": null,
-    "note": "The Baseplate in game/default.project.json is NOT this. It is 400 studs square and stops short of slot 3, so it stays a lobby floor. Slot geometry is in interfaces, under plots.claimSlot."
+    "note": "Slabs TILE the row: slot n is centred at (n - 1) * 160 on X and is 160 wide, so slot 1 spans -80..80, slot 2 spans 80..240, and so on with no gap and no overlap. That, plus plot-barrier, is the whole of the playtest fix for falling out of the world. The Baseplate in game/default.project.json is NOT this: it is 400 studs square, it is a lobby floor, nothing parents to it, and tree forbids the build from editing the project file. Slot geometry is in interfaces, under plots.claimSlot."
+  },
+  {
+    "subject": "plot-barrier",
+    "kind": "part",
+    "rationale": "A collision hull with no appearance, so that leaving your own plot is impossible rather than merely unlikely. The playtest found a player could walk off the slab into the gutter and fall out of the world; the slab now tiles the row so there is no hole to fall into, and this stops a character reaching the outer rim where there still is one. It is deliberately not a wall: a wall is construction, and theme/setting/04-permanence-and-passage.md W3 obliges any wall to carry exactly two openings into somewhere, and there is no second area yet for one to lead to.",
+    "class": "Part — four of them per plot",
+    "properties": {
+      "Size": "two of Vector3.new(1, 12, area.size + 2) and two of Vector3.new(area.size + 2, 12, 1). The + 2 makes the four overlap at the corners, so there is no one-stud diagonal gap to squeeze through.",
+      "Position": "relative to the plot origin: the two long-in-Z barriers at X = +/- (area.size / 2 + 0.5), the two long-in-X barriers at Z = +/- (area.size / 2 + 0.5), all four at Y = 6. Their INNER faces sit exactly on the area boundary at +/- area.size / 2, which is 60, and the farthest patch edge is 58.5, so nothing intersects them.",
+      "Anchored": "true",
+      "CanCollide": "true — the one property that does the work",
+      "Transparency": "1",
+      "CanQuery": "false — the default camera's occlusion raycasts must pass through, or the view jams every time a player walks up to the boundary. This is the standard way an invisible wall goes wrong and it is one property to prevent.",
+      "CanTouch": "false — nothing in the game uses Touched, and a barrier is the last thing that should start",
+      "CastShadow": "false",
+      "Material": "Enum.Material.SmoothPlastic",
+      "Name": "\"Barrier\" plus one of PosX, NegX, PosZ, NegZ",
+      "Parent": "the plot slab"
+    },
+    "createdBy": "plots",
+    "destroyedBy": "plots, with the slab",
+    "asset": null,
+    "note": "12 studs tall because a default Humanoid apexes near 7.2 and nothing in upgrades raises jump — speed moves WalkSpeed only — and every patch is CanCollide false, so a plot contains nothing to climb. Built in plots.spawn alongside the slab, for every plot, including one whose owner has areaComplete true and therefore no patches at all. This is where Art's terrace wall goes when it exists: same rectangle, and W3's two openings become two gaps in this ring at the same moment they become two gaps in the wall."
   },
   {
     "subject": "spawn-anchor",
     "kind": "attachment",
-    "rationale": "The character has to arrive at the plot origin for the guaranteed first Find to be under the patch it walks into, and server-main needs that point again on every respawn. An Attachment is a CFrame with no geometry, no collision and nothing to make invisible; holding it on the plot means the location is derived once, by plots, rather than twice by two modules.",
+    "rationale": "The character has to arrive at the plot origin for the guaranteed first Find to be under the patch it walks into, and server-main needs that point again on every respawn and on every death. An Attachment is a CFrame with no geometry, no collision and nothing to make invisible; holding it on the plot means the location is derived once, by plots, rather than twice by two modules.",
     "class": "Attachment",
     "properties": {
       "Name": "\"Spawn\"",
@@ -488,7 +570,7 @@ state looks like, what each object is made of, and what happens in what order.
     "createdBy": "plots",
     "destroyedBy": "plots, with the slab",
     "asset": null,
-    "note": "plots.spawn returns this Attachment's WorldCFrame. server-main pivots the character to it plus 3 studs of Y on every CharacterAdded. There is no SpawnLocation anywhere: a static spawn point cannot land a player inside a plot that is allocated after they join."
+    "note": "plots.spawn returns this Attachment's WorldCFrame. server-main pivots the character to it plus 3 studs of Y on every CharacterAdded — which now includes the character wiring.onDeath loads, so a player who dies returns to their own plot and not to wherever Roblox would have put them. There is no SpawnLocation anywhere: a static spawn point cannot land a player inside a plot that is allocated after they join."
   },
   {
     "subject": "relic",
@@ -508,7 +590,7 @@ state looks like, what each object is made of, and what happens in what order.
     "createdBy": "client-main",
     "destroyedBy": "nothing during a session",
     "asset": null,
-    "note": "client-main creates the ScreenGui itself, ONCE, in wiring.onClientBoot step 1, and it survives every character respawn rather than being rebuilt — client-main's second criterion. Its CONTENTS are created by UIBuilder.build(Screens.hud, Theme, screenGui) from the emitted screen DATA at game/src/shared/Screens/hud.luau, which is why no module in this build authors UI structure: ui-forge owns the shape, client-main owns the one Instance it hangs from, and neither is the other. hud-binding writes text and sizes into named nodes and is forbidden from creating any Instance except a Tween. The node paths are in interfaces, under hud-binding.bind."
+    "note": "client-main creates the ScreenGui itself, ONCE, in wiring.onClientBoot step 1, and it survives every character respawn — including the one wiring.onDeath causes — rather than being rebuilt; that is client-main's second criterion. Its CONTENTS are created by UIBuilder.build(Screens.hud, Theme, screenGui) from the emitted screen DATA at game/src/shared/Screens/hud.luau, which is why no module in this build authors UI structure: ui-forge owns the shape, client-main owns the one Instance it hangs from, and neither is the other. hud-binding writes text and sizes into named nodes and is forbidden from creating any Instance except a Tween. The node paths are in interfaces, under hud-binding.bind."
   }
 ]
 ```
@@ -717,7 +799,7 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "config",
     "fn": "GameConfig",
     "params": [],
-    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, RespawnDelaySeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
     "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
   },
   {
@@ -817,6 +899,7 @@ state looks like, what each object is made of, and what happens in what order.
 {
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
+  "respawnDelaySeconds": 3,
   "dataStoreName": "ArgaRuin_v1"
 }
 ```
@@ -845,7 +928,7 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "config",
     "fn": "GameConfig",
     "params": [],
-    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, RespawnDelaySeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
     "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
   },
   {
@@ -1025,7 +1108,7 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "config",
     "fn": "GameConfig",
     "params": [],
-    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, RespawnDelaySeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
     "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
   },
   {
@@ -1307,7 +1390,7 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "config",
     "fn": "GameConfig",
     "params": [],
-    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, RespawnDelaySeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
     "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
   },
   {
@@ -1883,7 +1966,7 @@ state looks like, what each object is made of, and what happens in what order.
 
 **Write to:** `game/src/server/Plots.luau`
 
-**Owns:** Build and tear down one player's plot of patch Instances, and hold the slot it occupies.
+**Owns:** Build and tear down one player's plot — the slab, its four barriers, its spawn Attachment and its patch Instances — and hold the slot it occupies.
 
 **Depends on:** `config`, `layout`
 
@@ -1899,6 +1982,8 @@ state looks like, what each object is made of, and what happens in what order.
 - deriving a plot's position from the live player count — a slot is claimed once and held, or plots move out from under their owners as people join and leave
 - making a patch collide; contact clearing with movement-only input must never be blocked by the thing being cleared
 - creating a patch Instance for an index state.cleared marks, or for any index at all while state.areaComplete is true. This is where "cleared is permanent" is enforced in the world, and no caller may be trusted to remember it
+- building a plot without its four barriers, sizing the slab to area.size instead of the full slot pitch, or making a barrier visible or query-able. A plot missing any of that has a way out of the world in it, which is what the first playtest walked into
+- using one Size formula for all four tiers. A Cylinder's length is its local X and a Ball takes its smallest component, so the single formula lays the Fern down and shrinks the Bramble — and shape is the rarity channel that has to survive colour being removed
 
 ### Values
 
@@ -1991,7 +2076,7 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "config",
     "fn": "GameConfig",
     "params": [],
-    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, RespawnDelaySeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
     "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
   },
   {
@@ -2055,7 +2140,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "claimSlot()",
     "params": [],
     "returns": "integer — the lowest free 1-based slot index",
-    "note": "Called by plots.spawn, not by server-main. Slot n's plot origin is (area.originXZ[1] + (n - 1) * (area.size + 40), 0, area.originXZ[2]): one row along +X, 40 studs of gutter between plots, unbounded, so no player cap is implied anywhere. A slot's position is a function of its index alone and never of the live player count, which is plots's first prohibition. Exposed so slot reuse is testable without building 140 parts."
+    "note": "Called by plots.spawn, not by server-main. Slot n's plot origin is (area.originXZ[1] + (n - 1) * (area.size + 40), 0, area.originXZ[2]): one row along +X, 40 studs of gutter between the playable fields, unbounded, so no player cap is implied anywhere. THE PITCH AND THE SLAB ARE THE SAME NUMBER: representation gives the plot slab a size of area.size + 40 = 160, exactly this stride, so consecutive slabs share an edge and there is no air between two plots at any index. That is half of the playtest fix for falling out of the world — the other half is the four plot-barrier parts at +/- area.size / 2, which stop a character reaching the outer rim of the row where the floor does end. The 40 is a plot-geometry constant, not a tuned game value: it lives here and in representation, it is used by plots and by nothing else, and it is deliberately NOT in GameConfig, which carries values more than one module reads and which must load outside the engine. A builder writes it as a named local in Plots.luau and cites this note. A slot's position is a function of its index alone and never of the live player count, which is plots's first prohibition. Exposed so slot reuse is testable without building 140 parts."
   },
   {
     "module": "plots",
@@ -2085,7 +2170,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "CFrame — the plot's spawn point, the WorldCFrame of the plot's spawn Attachment",
-    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab and the spawn Attachment are built as usual, because a finished area stays walkable and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
+    "note": "Claims a slot for this player, builds the plot slab, its four barriers, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. THE BARRIERS ARE NOT OPTIONAL AND ARE NOT CONDITIONAL: four of them, on every plot, including a finished one that has no patches at all, because they are what makes leaving the plot impossible rather than unlikely. Sizes, positions and properties are fixed in representation under plot-barrier; a patch's Size and Orientation are fixed there too, per tier.shape, and are not one formula for all four tiers. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab, the four barriers and the spawn Attachment are built as usual, because a finished area stays walkable, stays fenced and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
   },
   {
     "module": "plots",
@@ -2105,10 +2190,12 @@ state looks like, what each object is made of, and what happens in what order.
 ### Done when
 
 1. a rejoining player's already-cleared patches do not respawn
-2. a player whose areaComplete is true gets a plot slab, a spawn Attachment and ZERO patch Instances, with all area.patchCount Patch records present and marked cleared — a finished area stays walkable and stays bare
+2. a player whose areaComplete is true gets a plot slab, its four barriers, a spawn Attachment and ZERO patch Instances, with all area.patchCount Patch records present and marked cleared — a finished area stays walkable and stays bare
 3. two players never occupy the same plot position
 4. a vacated slot is reused before a higher one is allocated
 5. every spawned patch has CanCollide false
+6. a character cannot leave the plot it spawned on: each of the four barriers stops it, jumping does not clear one, and no point on the plot reaches air
+7. each tier's world bounding box is patch.footprint x tier.height x patch.footprint, except Bramble at tier.height cubed, and the top of every patch is exactly tier.height above the slab
 
 ---
 
@@ -2143,6 +2230,7 @@ state looks like, what each object is made of, and what happens in what order.
 {
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
+  "respawnDelaySeconds": 3,
   "dataStoreName": "ArgaRuin_v1"
 }
 ```
@@ -2235,7 +2323,7 @@ state looks like, what each object is made of, and what happens in what order.
     "module": "config",
     "fn": "GameConfig",
     "params": [],
-    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
+    "returns": "table — the module's own returned table. Fields, in the spelling the emitter produces and the only spelling any module may use: Tiers, Upgrades, RelicSets, Currency, Patch, Area, BaseClearRadius, BaseWalkSpeed, RelicsPerArea, AreasPerDepth, FindNoun, GuaranteedFirstRelic, ClearTickRate, SaveIntervalSeconds, RespawnDelaySeconds, DataStoreName, plus the three functions below. NOT A CALLABLE: require(ReplicatedStorage.UIForge.GameConfig) IS this table, so a builder writes GameConfig.Area.patchCount and never GameConfig().Area.",
     "note": "This entry exists because `exposes` may carry only a name or a signature, so the word \"table\" in the old entry `\"GameConfig table\"` had to move somewhere a builder would still find it. The rule it demonstrates: an exposed name with parentheses is a callable and its parameters are resolved here; a bare name is data and this is where its contents are written down. Every field is GENERATED from both manifests by `npm run architect -- --emit`, so no module may hand-write a tuned value, hold a copy of one, or reach a number by any path but this table. Constructs no Roblox type — no Color3, no Vector3, no Enum, no Instance — which is what lets the module load outside the engine; a builder finding one here has found a bug in the emitter rather than a value to use."
   },
   {
@@ -2443,7 +2531,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "claimSlot()",
     "params": [],
     "returns": "integer — the lowest free 1-based slot index",
-    "note": "Called by plots.spawn, not by server-main. Slot n's plot origin is (area.originXZ[1] + (n - 1) * (area.size + 40), 0, area.originXZ[2]): one row along +X, 40 studs of gutter between plots, unbounded, so no player cap is implied anywhere. A slot's position is a function of its index alone and never of the live player count, which is plots's first prohibition. Exposed so slot reuse is testable without building 140 parts."
+    "note": "Called by plots.spawn, not by server-main. Slot n's plot origin is (area.originXZ[1] + (n - 1) * (area.size + 40), 0, area.originXZ[2]): one row along +X, 40 studs of gutter between the playable fields, unbounded, so no player cap is implied anywhere. THE PITCH AND THE SLAB ARE THE SAME NUMBER: representation gives the plot slab a size of area.size + 40 = 160, exactly this stride, so consecutive slabs share an edge and there is no air between two plots at any index. That is half of the playtest fix for falling out of the world — the other half is the four plot-barrier parts at +/- area.size / 2, which stop a character reaching the outer rim of the row where the floor does end. The 40 is a plot-geometry constant, not a tuned game value: it lives here and in representation, it is used by plots and by nothing else, and it is deliberately NOT in GameConfig, which carries values more than one module reads and which must load outside the engine. A builder writes it as a named local in Plots.luau and cites this note. A slot's position is a function of its index alone and never of the live player count, which is plots's first prohibition. Exposed so slot reuse is testable without building 140 parts."
   },
   {
     "module": "plots",
@@ -2473,7 +2561,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "CFrame — the plot's spawn point, the WorldCFrame of the plot's spawn Attachment",
-    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab and the spawn Attachment are built as usual, because a finished area stays walkable and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
+    "note": "Claims a slot for this player, builds the plot slab, its four barriers, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. THE BARRIERS ARE NOT OPTIONAL AND ARE NOT CONDITIONAL: four of them, on every plot, including a finished one that has no patches at all, because they are what makes leaving the plot impossible rather than unlikely. Sizes, positions and properties are fixed in representation under plot-barrier; a patch's Size and Orientation are fixed there too, per tier.shape, and are not one formula for all four tiers. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab, the four barriers and the spawn Attachment are built as usual, because a finished area stays walkable, stays fenced and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
   },
   {
     "module": "plots",
@@ -2700,6 +2788,7 @@ state looks like, what each object is made of, and what happens in what order.
 {
   "clearTickRate": 0.12,
   "saveIntervalSeconds": 45,
+  "respawnDelaySeconds": 3,
   "dataStoreName": "ArgaRuin_v1"
 }
 ```
@@ -2939,7 +3028,7 @@ state looks like, what each object is made of, and what happens in what order.
     "fn": "claimSlot()",
     "params": [],
     "returns": "integer — the lowest free 1-based slot index",
-    "note": "Called by plots.spawn, not by server-main. Slot n's plot origin is (area.originXZ[1] + (n - 1) * (area.size + 40), 0, area.originXZ[2]): one row along +X, 40 studs of gutter between plots, unbounded, so no player cap is implied anywhere. A slot's position is a function of its index alone and never of the live player count, which is plots's first prohibition. Exposed so slot reuse is testable without building 140 parts."
+    "note": "Called by plots.spawn, not by server-main. Slot n's plot origin is (area.originXZ[1] + (n - 1) * (area.size + 40), 0, area.originXZ[2]): one row along +X, 40 studs of gutter between the playable fields, unbounded, so no player cap is implied anywhere. THE PITCH AND THE SLAB ARE THE SAME NUMBER: representation gives the plot slab a size of area.size + 40 = 160, exactly this stride, so consecutive slabs share an edge and there is no air between two plots at any index. That is half of the playtest fix for falling out of the world — the other half is the four plot-barrier parts at +/- area.size / 2, which stop a character reaching the outer rim of the row where the floor does end. The 40 is a plot-geometry constant, not a tuned game value: it lives here and in representation, it is used by plots and by nothing else, and it is deliberately NOT in GameConfig, which carries values more than one module reads and which must load outside the engine. A builder writes it as a named local in Plots.luau and cites this note. A slot's position is a function of its index alone and never of the live player count, which is plots's first prohibition. Exposed so slot reuse is testable without building 140 parts."
   },
   {
     "module": "plots",
@@ -2969,7 +3058,7 @@ state looks like, what each object is made of, and what happens in what order.
       }
     ],
     "returns": "CFrame — the plot's spawn point, the WorldCFrame of the plot's spawn Attachment",
-    "note": "Claims a slot for this player, builds the plot part, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab and the spawn Attachment are built as usual, because a finished area stays walkable and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
+    "note": "Claims a slot for this player, builds the plot slab, its four barriers, its spawn Attachment and one Instance per patch that state.cleared does not mark, then writes state.patches. THE BARRIERS ARE NOT OPTIONAL AND ARE NOT CONDITIONAL: four of them, on every plot, including a finished one that has no patches at all, because they are what makes leaving the plot impossible rather than unlikely. Sizes, positions and properties are fixed in representation under plot-barrier; a patch's Size and Orientation are fixed there too, per tier.shape, and are not one formula for all four tiers. Converts layout's plot-local positions to WORLD by adding the slot origin, and it is the ONLY place that conversion happens. A cleared patch still gets its Patch record, with cleared true and instance nil, so indices stay aligned with layout's order. THE LATCH IS CHECKED FIRST AND SHORT-CIRCUITS THE SET: while state.areaComplete is true this builds ZERO patch Instances, and all area.patchCount records come back cleared true and instance nil. The slab, the four barriers and the spawn Attachment are built as usual, because a finished area stays walkable, stays fenced and stays bare — [cid: decided] theme/setting/04-permanence-and-passage.md W2, entering a finished part spawns 0 patches. It is a property of this function and not of its caller because plots is the only module that may create a patch Instance. Calling it twice for one player without a despawn between is a bug, not a second plot."
   },
   {
     "module": "plots",
@@ -3028,6 +3117,8 @@ state looks like, what each object is made of, and what happens in what order.
 3. a player who leaves has their state saved before their plot is destroyed
 4. the clear tick survives an error in one iteration without stopping
 5. server shutdown saves every connected player outside Studio
+6. a player who dies gets a new character runtime.respawnDelaySeconds later, on their own plot's spawn Attachment, with their currency, levels and cleared patches unchanged — and gets another one every time they die after that
+7. a player who leaves during the death delay produces no error and no loaded character
 
 ---
 
