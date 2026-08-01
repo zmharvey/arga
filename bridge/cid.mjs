@@ -242,6 +242,22 @@ if (cmd === 'pack') {
 
   const { mine, others } = contractSlice(domain);
   const digest = renderDigest((await sheetDigest(ROOT)).filter((r) => r.domain !== domain));
+
+  // Section 4 is most of the pack's bytes and grows with every wave. At wave 3 the pack
+  // reached ~45k tokens, over the 25k single-`Read` cap, and the Onboarding writer paid for
+  // six paged reads to get through it. By wave 7 the digest holds ~200 sheets.
+  //
+  // So it goes to a sibling file when it is large: one `Read` for the instructions, one for
+  // the table. Split rather than trimmed — the rows are the thing the writer needs, and
+  // cutting them is how the boundary column got broken in the first place.
+  const packOut = opt('out', null);
+  const digestInline = digest.length < 60_000 || !packOut;
+  const digestSidecar = packOut ? packOut.replace(/(\.md)?$/, '.digest.md') : null;
+  const digestRef = digestInline
+    ? digest
+    : `**This table lives in \`${digestSidecar}\` — ${digest.split('\n').length - 2} rows, `
+      + `too large to sit in this file without pushing it past a single read. Open it now; it `
+      + `is part of this pack, not an appendix.**\n`;
   const { parts, lines, excluded, excludedLines } = await briefSlice(brief);
   const exclusionNote = excluded.length
     ? `**Excluded: ${excluded.map((e) => `\`${e.name}\` (${e.lines} lines)`).join(', ')}** — a report on how
@@ -358,7 +374,7 @@ ${others.map((k) => `- \`${k.key}\` → \`${k.owner}\``).join('\n')}
 
 ## 4. Already decided elsewhere — do not read the sheets themselves
 
-${digest}
+${digestRef}
 **"What it forces on others" is the column that will get you rejected if you skip it.** It is
 each sheet's \`## Consequences for other work\` — what that sheet *requires of you*. A ruling
 there binds you exactly as a brief line does, and contradicting one without a
@@ -414,11 +430,26 @@ Long is not thorough. Short is not disciplined either, if it got short by deleti
 a builder needs.
 `;
 
-  const outPath = opt('out', null);
+  const outPath = packOut;
   if (outPath) {
     await mkdir(dirname(resolve(outPath)), { recursive: true });
     await writeFile(resolve(outPath), out, 'utf8');
-    console.error(`cid:pack — wrote ${outPath} (${out.split('\n').length} lines)`);
+    if (!digestInline) {
+      await writeFile(
+        resolve(digestSidecar),
+        `# Section 4 of the ${domain} context pack — already decided elsewhere\n\n`
+          + `Derived by \`npm run cid:pack\`. Read this **instead of** the sibling spec sheets.\n\n`
+          + `The **"what it forces on others"** column is each sheet's \`## Consequences for\n`
+          + `other work\`: what that sheet *requires of you*. A ruling there binds you exactly as\n`
+          + `a brief line does. The last column is the boundary — if something you need sits in\n`
+          + `it, that thing is unowned and you should say so rather than assume someone has it.\n\n`
+          + `A cell ending **[cut — read …]** is truncated; if that sheet borders your subject,\n`
+          + `open that one file's \`## Consequences\` section.\n\n${digest}`,
+        'utf8',
+      );
+    }
+    console.error(`cid:pack — wrote ${outPath} (${out.split('\n').length} lines)`
+      + (digestInline ? '' : ` + ${digestSidecar} (${digest.split('\n').length} lines)`));
   } else {
     process.stdout.write(out);
   }

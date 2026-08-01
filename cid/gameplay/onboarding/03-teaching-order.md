@@ -114,6 +114,9 @@ whether an area buries a whole set or a slice of one, so this row does not break
 | `C7` | that anything is saved between sessions |
 | `C8` | that there is no rebirth and no idle |
 
+**This sheet carries no manifest block by design:** `02` proposes and holds `firstSession` and
+folds the amendment below into it, because one key admits exactly one owning sheet.
+
 ```json
 {
   "amends": "firstSession",

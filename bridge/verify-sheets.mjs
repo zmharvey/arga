@@ -261,6 +261,14 @@ const PROSE_BUDGET = 100;
   for (const f of leaves.filter(scoped)) {
     const body = await readFile(f, 'utf8');
     if (body.includes('```manifest')) continue;
+    // An amendment block is data. Where a domain's key is carried by one sheet and amended by
+    // its siblings — the pattern `theme/vocabulary/02` established and `gameplay/onboarding`
+    // was assigned — the amending sheets emit a ```json block with an `"amends"` field rather
+    // than a second ```manifest block, because two sheets claiming one key is a merge error.
+    // Those sheets produced a data form and were still warned at, so a writer had to add a
+    // sentence saying it had no data form in order to silence a check about having no data
+    // form. Reported by the wave-3 Onboarding writer, which did exactly that.
+    if (/"amends"\s*:/.test(body)) continue;
     if (NO_DATA.test(body)) continue;
     silent.push(relative(ROOT, f));
   }

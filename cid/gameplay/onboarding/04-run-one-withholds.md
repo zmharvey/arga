@@ -86,6 +86,9 @@ return-hook and re-entry work.
 | `S11` | a percent form of the collection count | the area bar is the only percent in the HUD |
 | `S12` | reflow of the remaining rows when one upgrade row lifts | the cluster reserves its full three-row extent from frame one |
 
+**This sheet carries no manifest block by design:** `02` proposes and holds `firstSession` and
+folds the amendment below into it, because one key admits exactly one owning sheet.
+
 ```json
 {
   "amends": "firstSession",

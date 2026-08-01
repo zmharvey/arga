@@ -19,13 +19,12 @@ the player spawns on top of"* `[research: game/src/shared/Layout.luau:137-144]`;
 server-tick XZ test reading no client message `[research: game/src/server/Clearing.luau:161-180]`;
 the character is pivoted to that same origin on every `CharacterAdded`
 `[research: game/src/server/init.server.luau:55-60]`. At a 5.5-stud radius against 6-stud spacing,
-`B1` — *"the loudest single moment in the game in every channel"*
-`[cid: decided — theme/tone/03]` — fires on tick one with zero input.
+`B1` — *"the loudest single moment in the game"* `[cid: decided — theme/tone/03]` — fires on tick
+one with zero input.
 
-**The fix is a precondition, not a re-placement, and specifically not a clearing.** `01`'s
-placement stands. A patch-free disc at spawn was tried and **withdrawn**
-`[cid: decided — gameplay/mechanics/02]` because it contradicts *"spawns touching overgrowth"*;
-this sheet does not resurrect it. The patch stays; the **pass** waits. `[cid: decided]`
+**The fix is a precondition, not a re-placement, and not a clearing.** `01`'s placement stands; a
+patch-free disc at spawn was tried and **withdrawn** `[cid: decided — gameplay/mechanics/02]` for
+contradicting *"spawns touching overgrowth"*. The patch stays; the **pass** waits. `[cid: decided]`
 
 **Why 2.0 studs.** At the default walk speed of 16 `[cid: decided — gameplay/mechanics/01]` that
 is 0.125 s of held input, below noticing, and far above the slide a 3-stud drop can produce
@@ -43,17 +42,16 @@ client trust `[brief: soft]`, `04-PRESENTATION.md`.
 text; `[cid: decided — theme/tone/04]` `D12` removes every way of signalling "you cannot do that"
 and there is nothing they cannot do. The one channel still reaching a motionless player is a
 **co-present stranger visibly clearing ground** at ≤128 studs, without input
-`[cid: decided — gameplay/social/02]` — an existing decision, not a new instrument, delivering
-nothing on an empty server. Accepted rather than patched.
+`[cid: decided — gameplay/social/02]` — an existing decision, not a new instrument, and one that
+delivers nothing on an empty server. Accepted rather than patched.
 
 **The felt discovery rate inverts, so the second Find is bounded too.** Guaranteeing ordinal 1
 then drawing uniformly makes the observed rate 1-in-1, then roughly 1-in-28. At ordinal 2 it
 teaches abundance and takes it back; at ordinal 130 minute 1's back half holds nothing above a
 currency tick. Hence the band below. `[cid: decided]`
 
-**The reference is a model for shape, not for order.** It teaches
-cut → currency → upgrades → rarity → zones → rebirth
-`[research: https://www.rosenberryrooms.com/grass-incremental/]`
+**The reference is a model for shape, not for order.** It teaches cut → currency → upgrades →
+rarity → zones → rebirth `[research: https://www.rosenberryrooms.com/grass-incremental/]`
 `[research: https://www.ofzenandcomputing.com/grass-incremental-tips-tricks/]` — exactly the
 *economy first, finds later* alternative `02-GAMEPLAY.md` declined, and it has no discovery layer
 to teach. **Position 2 is the whole divergence and this sheet puts a Find there.**
@@ -62,12 +60,9 @@ to teach. **Position 2 is the whole divergence and this sheet puts a Find there.
 `[research owed: a timestamped capture of the first 120 seconds of Roblox place 133086043677134 —
 time to first currency and to first upgrade. Three source types returned HTTP 405; a transcript
 API or a stopwatch would settle it.]` Roblox's FTUE guidance **states no time threshold at all**
-`[research: https://create.roblox.com/docs/production/game-design/onboarding]`, and the brief's
+`[research: https://create.roblox.com/docs/production/game-design/onboarding]`; the brief's
 ten-second window, chosen without a source, is independently corroborated
 `[research: https://www.spaceport.xyz/blog/how-to-hook-players-in-the-first-2-minutes-game-retention-tips-for-roblox-devs]`.
-Row 6 sits inside minute 1 so the loop's fourth step has an event before the session's first third
-— *"seeing numbers go up before the first minute ends"* is also the genre's own expectation,
-vendor-published `[research: https://rolearn.dev/guidance/first-week-retention-optimization/]`.
 
 | # | id | bySecond | source of the second | precondition | guaranteed outcome | teaches |
 |---|---|---|---|---|---|---|
@@ -79,9 +74,9 @@ vendor-published `[research: https://rolearn.dev/guidance/first-week-retention-o
 | 6 | `firstSpendAffordable` | 60.0 from join `[playtest unknown]` 40–120 | `[cid: decided]`, **awaiting a value** | balance ≥ the cheapest upgrade's level-1 cost | the cheapest upgrade row lifts and is affordable | that clearing pays for reach — comprehension only, no control named |
 
 **No sixth beat is added to `[cid: decided — gameplay/mechanics/05]`'s five**: rows 2, 4 and 5 are
-its `B5`, row 3 is its `B1`, row 6 precedes its `B4`, row 1 fires no cue, and **no row takes
-control from the player.** Area completion, set completion and depth are absent on purpose — a
-depth-1 lap targets 165 s `[cid: decided — gameplay/core-loop/04]`, so minute 1 is ~36% of a lap.
+its `B5`, row 3 its `B1`, row 6 precedes its `B4`, row 1 fires no cue, and **no row takes control
+from the player.** Area completion, set completion and depth are out of reach: a lap is 165 s
+`[cid: decided — gameplay/core-loop/04]`, so minute 1 is ~36% of one. `03` schedules them.
 
 ```manifest
 {
@@ -155,7 +150,8 @@ depth-1 lap targets 165 s `[cid: decided — gameplay/core-loop/04]`, so minute 
   distinct tiers inside the first 20 ordinals. Both stay seed-derived, so nothing reads player
   state and the no-reachable-duplicate partition is untouched.
 - **Cost-curve work**: the cheapest upgrade's level-1 cost must exceed the yield of 10 patches and
-  fall below the yield of 60 s of clearing, at base stats.
+  fall below the yield of 60 s of clearing, at base stats — so the loop's fourth step has an event
+  inside minute 1.
 - **Instrumentation work**: two ceilings with **units and populations**, which the brief's
   measurement item states neither of. `secondsToFirstClear` is input-relative — a player who has
   not moved is not failing; `secondsToFirstReveal` stays join-relative, as promised.
