@@ -162,6 +162,28 @@ that its premise is false. Four alternatives are ranked in the sheet's
 will say which. The real resolution may instead be revising the brief's "4 sets of 6"
 `[you accepted: R4 Q4]`, which is yours and not a writer's.
 
+### 3. Meta resolved the deadlock and the fix edits a shipped sheet — `meta/04`
+
+`meta/04-the-depth-ladder` takes `relicsPerArea` **3**, overruling `core-loop/01`'s `>= 4`,
+and issues a **revision request** against `02-the-collection` rather than editing it:
+`relicsPerArea` 6 → 3, `areasPerDepth` 1 → 2. **Four depths, two areas each, eight areas.**
+
+**I have not applied it.** Two reasons it is yours and not mine:
+
+- It changes a value the shipped game reads, and doubles the area count.
+- It makes the duplicate problem **go live**. `systems/05`'s draw rule was built for exactly
+  this (`relicsPerArea × areasPerDepth == |set|`, so `3 × 2 = 6`) and is a no-op only while
+  `areasPerDepth` is 1. So the design is coherent — but the safety of "it is a no-op today"
+  ends here.
+
+**I verified it validates clean:** applying 3/2 to the merged manifest produces zero problems
+against every existing `collection` check, including the uncompletable-set check. So this is a
+decision about scope, not a technical blocker.
+
+It is probably the same conversation as the under-scoping note below, and possibly resolved by
+the same ruling — `meta/04` lists 4 sets of 12 (48 finds, 4 areas per depth) as its own live
+alternative (a).
+
 ### Related, and probably the same conversation
 
 The `must_verify` for content volume found **DIG ships two islands against a 601-item
