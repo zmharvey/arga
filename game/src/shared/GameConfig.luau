@@ -1362,12 +1362,12 @@ GameConfig.Rarity = {
 GameConfig.Response = {
 		controlEverAffected = false,
 		sequencedBeats = {
-			"upgradePurchased",
 			"findReveal",
 			"setComplete",
 			"areaComplete",
+			"upgradePurchased",
 		},
-		sequenceOrderOwner = "gameplay/core-loop/02-payoff-weights",
+		sequenceOrderOwner = "gameplay/core-loop/02-payoff-weights, which fixes reveal -> set completion -> area completion and says NOTHING about upgradePurchased. This array used to lead with upgradePurchased, contradicting beats[].rank (findReveal 1, setComplete 2, areaComplete 3, upgradePurchased 4) -- which is the owner's order with upgradePurchased appended. The array had it prepended, a position no sheet ever owned. Reordered to agree with rank; buy an upgrade while walking into a Find and the two readings produced opposite cue orders 600 ms apart. Found by the beats builder, which implemented rank because the acceptance criteria name it twice, and isolated the choice in one comparator so a reversal is a one-function change.",
 		minOnsetGapSeconds = 0.6,
 		minOnsetGapTestRangeSeconds = {
 			0.35,

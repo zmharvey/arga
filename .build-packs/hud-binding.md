@@ -736,7 +736,7 @@ state looks like, what each object is made of, and what happens in what order.
     "subject": "tool",
     "kind": "model",
     "rationale": "tool.instanceClass is Model, tool.isRobloxToolInstance is false and tool.entersBackpack is false — it is a held object welded to the hand, not a Roblox Tool. Two Parts: a handle and a head whose width is the one appearance channel. Assembled at runtime from primitives, exactly like a patch, so it needs no upload and blocks nothing.",
-    "class": "Model containing two Parts and one WeldConstraint",
+    "class": "Model containing two Parts and TWO WeldConstraints",
     "properties": {
       "Name": "\"Tool\"",
       "PrimaryPart": "the handle",
@@ -749,11 +749,11 @@ state looks like, what each object is made of, and what happens in what order.
       "every part CanTouch": "false — tool.canTouch, and tool.clearsOnContact is false: clearing is a server proximity test in clearing.tick and the tool is appearance",
       "every part CanQuery": "false — tool.canQuery",
       "every part CastShadow": "false",
-      "weld": "one WeldConstraint from the handle to the character's RightHand — tool.attachment"
+      "weld": "TWO WeldConstraints, and one is not enough: HandWeld joins the handle to the character's RightHand (tool.attachment), and HeadWeld joins the head to the handle. This row said ONE WeldConstraint until the tool builder pointed out that every part is Anchored=false and Massless=true, so under the one-weld reading the head is joined to nothing and falls off on the frame it spawns, on every character, every session. The head-to-handle offset is derived rather than chosen: handleSize.Z/2 + headDepth/2, the two stated sizes flush."
     },
     "createdBy": "tool",
     "destroyedBy": "tool, with the character that holds it",
-    "asset": "none — assembled at runtime from two Parts and a WeldConstraint. THIS ROW IS THE ONE PLACE THE SCHEMA'S ASSET RULE MISFIRES: it demands an asset for any model, on the sound ground that a mesh or model usually implies something somebody has to upload, and a Model built from primitives implies nothing. Saying so here is deliberate; naming a fake rbxassetid would not be, and `grep -rn \"rbxassetid\" game/src` still returns nothing. Flagged under Not decided here.",
+    "asset": "none — assembled at runtime from two Parts and two WeldConstraints. THIS ROW IS THE ONE PLACE THE SCHEMA'S ASSET RULE MISFIRES: it demands an asset for any model, on the sound ground that a mesh or model usually implies something somebody has to upload, and a Model built from primitives implies nothing. Saying so here is deliberate; naming a fake rbxassetid would not be, and `grep -rn \"rbxassetid\" game/src` still returns nothing. Flagged under Not decided here.",
     "note": "tool.count is 1, tool.grantedAt is 'spawn', and tool.held is true, so every living character has exactly one and a character that dies takes it with it. tool.writesHumanoidProperties is FALSE — the only Humanoid write in this game is server-main's WalkSpeed, per response.humanoidWritesAllowed. tool.animates is false and tool.particleEmitters is 0, so there is no AnimationTrack and no emitter anywhere in it. tool.changesWithAxes is exactly ['radius'] and unaffectedByAxes exactly ['value', 'speed']: the head widens and nothing else about it ever changes. tool.premiumVariantAllowed is true and premiumVariantMayBeOnlyTool is false, which products.F8 restates as 'a player owning zero products spawns with a tool welded to the right hand' — that is this row's first acceptance criterion and there is no variant in this build."
   },
   {
