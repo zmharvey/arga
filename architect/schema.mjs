@@ -43,6 +43,10 @@ export const TECH_SCHEMA = {
       sharedRoot: 'string',
       serverRoot: 'string',
       clientRoot: 'string',
+      // Declared, not incidental. The remotes folder deliberately sits outside the
+      // Rojo-managed shared root, and until it was a field the only record of it was prose
+      // in the sheet — so a path check that reads the manifest called it undeclared.
+      remotesRoot: 'string',
       requireStyle: 'enum:instance,string',
       requireExample: 'string',
     },

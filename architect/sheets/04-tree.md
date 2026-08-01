@@ -46,7 +46,8 @@ change it.**
   wait; once the Folder is present, Rojo has already populated it, so `.GameConfig` after it
   is safe and 140 `WaitForChild` calls per boot are not. One wait, at the top, assigned to a
   local. **There is exactly one other legitimate wait in the game and it is inside
-  `Protocol.luau`:** `ReplicatedStorage.Remotes` is created at runtime by
+  `Protocol.luau`:** `ReplicatedStorage.Remotes` is declared in the manifest as `remotesRoot`
+  and created at runtime by
   `protocol.createRemotes()` rather than by Rojo, so it is not in this tree and a client can boot
   before it replicates. `protocol.channel(name)` waits for it once, on its first call, and caches
   it. No other file waits for a remote, and none searches for one.
@@ -61,6 +62,7 @@ change it.**
     "sharedRoot": "ReplicatedStorage.UIForge",
     "serverRoot": "ServerScriptService.Game",
     "clientRoot": "StarterPlayer.StarterPlayerScripts.UIBoot",
+    "remotesRoot": "ReplicatedStorage.Remotes",
     "requireStyle": "instance",
     "requireExample": "local GameConfig = require(game:GetService(\"ReplicatedStorage\"):WaitForChild(\"UIForge\"):WaitForChild(\"GameConfig\"))",
     "projectFile": "game/default.project.json",

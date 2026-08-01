@@ -47,6 +47,7 @@ const TECH = {
     sharedRoot: 'ReplicatedStorage.Shared',
     serverRoot: 'ServerScriptService.Game',
     clientRoot: 'StarterPlayerScripts.Game',
+    remotesRoot: 'ReplicatedStorage.Remotes',
     requireStyle: 'instance',
     requireExample: 'local GameConfig = require(ReplicatedStorage.Shared.GameConfig)',
   },
@@ -434,4 +435,51 @@ test('the emitted brief tells a builder a module is an entry point', () => {
   // anything: that is how the third trial's builder came to invent a remote lookup.
   const order = emitBuildOrder(full(), {});
   assert.match(order, /nothing\. This is an entry point/);
+});
+
+/* ------------------------------------------- one fact, one owner, inside values */
+
+// The eighth defect, and a new subclass. Three of four builders in one wave independently
+// reported it and every one called it a total build failure:
+//
+//   tree.sharedRoot        "ReplicatedStorage.UIForge"
+//   interfaces[0].returns  "require(ReplicatedStorage.Shared.GameConfig) IS this table"
+//
+// Only one resolves. The graph could not see it, because it is not a broken connection: it
+// is the same fact written twice. The repo enforces one-key-one-sheet at the manifest level;
+// this is the same principle one level down, for facts inside values.
+
+test('a runtime path tree does not declare is rejected', () => {
+  const t = tech();
+  // The fixture's shared root is ReplicatedStorage.Shared, so this is the second spelling.
+  t.interfaces[0].returns = 'table — require(ReplicatedStorage.UIForge.GameConfig) IS this table';
+  const p = unconnected(creative(), t).find((x) => x.includes('ReplicatedStorage.UIForge'));
+  assert.ok(p, 'a second spelling of the shared root must be caught');
+  assert.match(p, /tree owns runtime paths/);
+});
+
+test('a path tree declares anywhere is legal wherever it appears', () => {
+  // `ReplicatedStorage.Remotes` is a deliberate sibling of the shared root, not a
+  // contradiction of it. The first version of this check compared prefixes and called it one,
+  // which is why the rule is ownership instead: tree declares it, so it is legal.
+  const t = tech();
+  t.interfaces[0].returns = 'Folder — ReplicatedStorage.Remotes, one Instance per channel';
+  assert.ok(!unconnected(creative(), t).some((p) => p.includes('Remotes')));
+});
+
+test('a child of a declared path is legal', () => {
+  const t = tech();
+  t.interfaces[0].returns = 'the table at ReplicatedStorage.Shared.GameConfig';
+  assert.ok(!unconnected(creative(), t).some((p) => p.includes('runtime path')));
+});
+
+test('the shipped tree declares every path the rest of the manifest names', async () => {
+  // Regression guard on the real manifests. This is the check that would have saved a whole
+  // build wave: three of four builders stopped on the same contradiction.
+  const { mergeSheets } = await import('../../bridge/merge.mjs');
+  const { SCHEMA } = await import('../../bridge/schema.mjs');
+  const c = await mergeSheets('cid', SCHEMA);
+  const t = await mergeSheets('architect/sheets', TECH_SCHEMA);
+  const paths = unconnected(c.manifest, t.manifest).filter((p) => p.includes('runtime path'));
+  assert.deepEqual(paths, []);
 });

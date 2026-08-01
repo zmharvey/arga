@@ -363,6 +363,66 @@ export function graphProblems(creative, tech) {
     }
   }
 
+  problems.push(...restatedPaths(tech));
+  return problems;
+}
+
+/**
+ * One fact, one owner — applied inside values, not just across keys.
+ *
+ * The eighth defect, and a new subclass. Three of four builders in the same wave
+ * independently reported it, and every one called it a total build failure:
+ *
+ *   tree.sharedRoot         "ReplicatedStorage.UIForge"
+ *   interfaces[0].returns   "require(ReplicatedStorage.Shared.GameConfig) IS this table"
+ *
+ * Only one resolves. Every module that requires the config had two spellings to choose from,
+ * and picking the wrong one hangs the whole game on a WaitForChild that never returns.
+ *
+ * The graph could not see it, because it is not a broken connection. It is the *same fact
+ * written twice*, which is a different failure and needs a different rule. The repo already
+ * enforces one-key-one-sheet at the manifest level; this is the same principle one level
+ * down, for facts inside values.
+ *
+ * `tree` owns runtime paths. Any runtime path stated anywhere else must agree with it.
+ */
+function restatedPaths(tech) {
+  const t = tech.tree;
+  if (!t) return [];
+
+  const SERVICE = /\b(?:ReplicatedStorage|ServerScriptService|ServerStorage|StarterPlayer|StarterGui|Workspace|Lighting)(?:\.[A-Za-z][A-Za-z0-9_]*)+/g;
+
+  // Every runtime path `tree` mentions, anywhere in it, is a declared path. The rule is
+  // ownership rather than prefix-matching: `ReplicatedStorage.Remotes` is a legitimate
+  // sibling of a shared root at `ReplicatedStorage.UIForge`, not a contradiction of it, and
+  // the first version of this check called it one. What makes a path legal is that `tree`
+  // declared it; what makes one a defect is that somebody invented it elsewhere.
+  const declared = new Set();
+  const collect = (node) => {
+    if (typeof node === 'string') for (const m of node.matchAll(SERVICE)) declared.add(m[0]);
+    else if (node && typeof node === 'object') for (const v of Object.values(node)) collect(v);
+  };
+  collect(t);
+  if (!declared.size) return [];
+
+  const problems = [];
+  const seen = new Set();
+  const walk = (node, path) => {
+    if (typeof node === 'string') {
+      for (const m of node.matchAll(SERVICE)) {
+        const found = m[0];
+        const ok = [...declared].some((d) => found === d || found.startsWith(`${d}.`) || d.startsWith(`${found}.`));
+        if (ok || seen.has(found)) continue;
+        seen.add(found);
+        problems.push(`${path} names the runtime path "${found}", which tree does not declare. `
+          + `tree owns runtime paths and knows about ${[...declared].map((d) => `"${d}"`).join(', ')}. `
+          + 'Either the path is wrong or tree is missing it, and a builder cannot tell which.');
+      }
+    } else if (node && typeof node === 'object') {
+      for (const [k, v] of Object.entries(node)) walk(v, path ? `${path}.${k}` : k);
+    }
+  };
+  for (const [k, v] of Object.entries(tech)) if (k !== 'tree') walk(v, k);
   return problems;
 }
 
