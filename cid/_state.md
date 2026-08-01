@@ -22,7 +22,7 @@ A wave advanced on a PARTIAL is a wave that will be rebuilt.
 |---|---|---|---|
 | 1 | Theme & Narrative (6) ‖ Gameplay stage 1 — Core Loop | **done** | see below |
 | 2 | Gameplay stage 2 — Systems, Mechanics, Multiplayer & Social | **closed** | round 1 FAIL (16) → round 2 PARTIAL (3) → all 19 closed; **1 escalated** |
-| 3 | Gameplay stage 3 — Meta & Content, Monetization, Onboarding | writing | 3 indexes done, 11 sheets in flight |
+| 3 | Gameplay stage 3 — Meta & Content, Monetization, Onboarding | **closed** | round 1 FAIL (14 requests) → all closed; 3 escalations resolved by ruling |
 | 4 | Gameplay stage 4 — Balance & Tuning | not started | — |
 | 5 | Tech & Data ‖ UI/UX ‖ Analytics | not started | — |
 | 6 | Art & Visuals ‖ Audio | not started | — |
@@ -277,3 +277,47 @@ Written down because they are cross-module and a builder holding one brief canno
    emitter has no representation for an explicit null, so a module cannot distinguish "no cap"
    from "key never emitted". Harmless here — both mean do not cap — and worth knowing before a
    key relies on the difference.
+
+## Wave 3 — 13 sheets, 3 domains, closed
+
+`cid:verify` PASS 0 failures · `bridge` COMPLETE **25/25** · `architect` COMPLETE 7/7 ·
+168 tests · Rojo builds · `config.spec.luau` passes.
+
+Verification returned **FAIL** with 14 revision requests. All are closed. The four that mattered:
+
+1. **Two wave-3 keys gave disjoint answers for one distance.** `meta/05` R8 required the
+   nearest patch be ≥ 5.5 studs from spawn; `firstSession.placement` required ≤ 3.5. Both were
+   solving "the reveal fires before the player gives input", in opposite directions, and
+   neither cited the other. Meta **withdrew its own rule** — onboarding's arming gate is wired
+   into `clearing` and merged, Meta's was not — and replaced it with a rule putting the second
+   find inside onboarding's ordinal band on every seed rather than 14% of them.
+2. **The radius pass broke the depth ladder and no footprint could fix it.** Owning all three
+   passes put area 2 at a 54.5 s lap against a 75 s floor; row 2 was already at its under-buy
+   cap, so resizing pushed the one-level-behind lap to 255.7 s. `meta/04`'s stated 3.94× bound
+   did not reproduce (the real value-only threshold is ≈7×) and omitted `Span` entirely.
+   Resolved by **withdrawing both value passes**; laps are now 93.5–93.0 s with 12% margin.
+3. **Two sheets reversed an approved wave-1 ruling while citing it as support.**
+   `theme/setting/04` W5 makes the inward opening passable whether or not the part is
+   finished; `meta/04`'s `unlock` and `meta/06`'s barrier were that condition. Both now carry
+   `## Pushing back` naming the sheet, and the barrier mechanism is withdrawn.
+4. **`products` had no trigger and `input` forbade one.** Resolved by ruling R-4.
+
+### Two errors Monetization found in its own prior work while re-deriving
+
+- `H2` is **joint** across `radius` and `speed`, not per-axis: `τ = 2 · radius · speed`, so a
+  factor on either multiplies it identically. The per-axis framing would have let a radius
+  pass and a speed pass each clear their own check and break the lap together.
+- Its "speed is not sold" argument rested on four set factors `meta/03` never allocated.
+
+### Still open, recorded not fixed
+
+- **Co-presence expires ~39 studs into a 3,000-stud lane.** Unfixable at any pitch — lane
+  *length* defeats it, not pitch, and squares are strictly worse. Now stated as
+  `scope: "spawnMomentOnly"`. Handed to `social/02` to re-derive.
+- **A purchaser's effective clear radius at spawn is 9.625 studs, not 5.5.** Both
+  `firstSession.placement` and the arming-gate geometry derive from `baseClearRadius`
+  *unmultiplied*, so a player who bought `Span` before their first session sweeps a 1.75×
+  wider disc on the first tick. Nobody has checked that case.
+- **`Span`'s deliverable depends on a `tool` change nobody has agreed.** `products` criterion 4
+  fails a build where head width does not move with the product; `mechanics/04` T11 says width
+  moves with Reach *level* alone.
