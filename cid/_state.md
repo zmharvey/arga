@@ -251,3 +251,29 @@ Wave 1 predates this file. Wave 2 raised **13**, the four that most want a rulin
 - **Chat is off on all three surfaces** (`social/01`), decided on the sourced platform default
   rather than on age-gating, which stayed `[unverified]`.
 - **Jump exists at the platform default and gates nothing** (`mechanics/06`).
+
+## Build-stage notes that must survive into the remaining modules
+
+Written down because they are cross-module and a builder holding one brief cannot see them.
+
+1. **`server-main` fires `UpgradeApplied`, not `progression`.** `wiring.onPurchase` step 5 and
+   `Protocol`'s channel record both say so. A dispatch prompt of mine said `progression` fired
+   it; the builder followed the contract over the instruction and reported the divergence,
+   which is the right precedence and worth stating as such. Unresolved it is either a
+   double-fire (the `upgradePurchased` cue plays twice) or silence (the 200 ms acknowledgment
+   budget has nothing to measure). Order is fixed: `UpgradeApplied` first, then `StateChanged`.
+2. **`progression` no longer exposes `clearRadius` / `valueMultiplier` / `walkSpeed`.**
+   `Clearing.luau` still calls two of them and `Modifiers.luau` did not exist when they were
+   deleted, so the tick errors inside its own pcall until both land. **The refactor is not
+   atomic within one module** and the build order states no constraint forcing `modifiers`
+   ahead of a stripped `progression`. Both must land before a playtest.
+3. **`tryBuy` returns a bare boolean**, so whoever fires `UpgradeApplied` reads
+   `state.upgrades[id]` back for the level rather than getting it from the return.
+4. **A mid-session pass purchase does not apply until rejoin.** `entitlements` resolves
+   ownership once at join and `F20` forbids persisting it; a purchase made on the experience
+   page raises nothing server-side. R-4 removed the in-game store, and `F19` forbids every
+   surface that could tell the player to rejoin. Latent while every `gamePassId` is null.
+5. **`GameConfig.Economy.balanceCap` is `nil`, which Luau drops from the table entirely.** The
+   emitter has no representation for an explicit null, so a module cannot distinguish "no cap"
+   from "key never emitted". Harmless here — both mean do not cap — and worth knowing before a
+   key relies on the difference.
