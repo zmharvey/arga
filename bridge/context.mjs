@@ -83,11 +83,28 @@ function oneLine(text, cap) {
     .replace(/```[\s\S]*?```/g, ' ')
     .split('\n')
     .filter((l) => !/^\s*\|/.test(l))
+    .filter((l) => !/^\s*[-*_\s]{3,}\s*$/.test(l)) // a `---` rule is not prose
     .join(' ')
     .replace(/\s+/g, ' ')
     .trim();
-  return flat.length <= cap ? flat : `${flat.slice(0, cap - 1).trimEnd()}…`;
+  if (flat.length <= cap) return flat;
+  // Cut at a word boundary. Slicing mid-word produced cells ending "…the collection st",
+  // which reads as a truncated thought rather than a truncated string, so a reader cannot
+  // tell whether the sheet trailed off or the digest did.
+  const cut = flat.slice(0, cap - 1);
+  const space = cut.lastIndexOf(' ');
+  return `${(space > cap * 0.6 ? cut.slice(0, space) : cut).trimEnd()}…`;
 }
+
+/**
+ * Did dropping the tables leave anything a reader can use?
+ *
+ * A "Not decided here" section that hands off entirely through a table collapses to
+ * punctuation once the table rows are dropped — one real sheet's boundary rendered as the
+ * literal string `` `. --- ``. That is worse than an omission, because it occupies the cell
+ * a writer is told to trust and looks like content.
+ */
+const isResidue = (s) => (s.match(/[A-Za-z]{3,}/g) ?? []).length < 3;
 
 /**
  * What every already-written sheet decided, and what it explicitly left alone.
@@ -114,13 +131,34 @@ export async function sheetDigest(root) {
       })
       .filter((k) => typeof k === 'string');
 
+    // The boundary gets by far the larger budget, because it is the column the pack tells a
+    // writer to actually use: what a neighbour disclaimed matters more than how it reasoned.
+    //
+    // It was 200 characters, which cut 36 of 45 cells mid-sentence — the digest was
+    // withholding precisely the thing it exists to deliver, and a wave-2 writer reported the
+    // column as unusable. Measured across the committed sheets: median boundary 621 chars,
+    // p90 1079, and the whole column uncapped is ~30KB. Against the ~9,000 lines of sibling
+    // sheets this replaces, that is not the expensive part. The cap survives only to stop one
+    // pathological sheet dominating every pack.
+    const boundarySection = section(body, 'Not decided here');
+    let boundary = oneLine(boundarySection, 1200);
+    // Row count first, residue second. Testing the residue first misses the commonest form
+    // of the bug: a section that is *purely* a table leaves the empty string, which is
+    // falsy, so the guard skipped exactly the case it was written for.
+    const tableRows = Math.max((boundarySection.match(/^\s*\|/gm) ?? []).length - 2, 0);
+    if (tableRows && isResidue(boundary)) {
+      // Everything real was in the table. Say so and point at the sheet, rather than leaving
+      // punctuation — or nothing — in the cell a writer is told to trust.
+      boundary = `(hands off through a ${tableRows}-row table — read \`${relative(root, file)}\` for it)`;
+    }
+
     rows.push({
       path: relative(root, file).replace(/\.md$/, ''),
       domain: relative(root, dirname(file)),
       title: (body.match(/^#\s+\d+\s*[—-]\s*(.+)$/m) ?? [, basename(file, '.md')])[1].trim(),
-      decision: oneLine(section(body, 'Decision'), 260) || '(no ## Decision)',
+      decision: oneLine(section(body, 'Decision'), 400) || '(no ## Decision)',
       provides,
-      notDecidedHere: oneLine(section(body, 'Not decided here'), 200),
+      notDecidedHere: boundary,
       lines: body.split('\n').length,
     });
   }

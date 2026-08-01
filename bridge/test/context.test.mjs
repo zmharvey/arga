@@ -107,6 +107,46 @@ Prose that should survive.
   assert.doesNotMatch(rows[0].notDecidedHere, /---/);
 });
 
+test('a boundary that is entirely a table says so and names the sheet', async () => {
+  // The other half of the case above. When the section hands off *only* through a table,
+  // dropping the rows leaves punctuation: one real sheet's boundary rendered as `` `. --- ``,
+  // which occupies the cell a writer is told to trust and looks like content. A wave-2
+  // writer reported the column unusable for about six rows because of it.
+  const dir = await fixture({
+    'a/b/01-x.md': `# 01 — X
+
+## Decision
+The real call.
+
+## Not decided here
+
+| # | class | owner |
+|---|---|---|
+| 1 | stone | art |
+| 2 | glass | art |
+`,
+  });
+  const rows = await sheetDigest(dir);
+  await rm(dir, { recursive: true, force: true });
+  assert.match(rows[0].notDecidedHere, /hands off through a 2-row table/);
+  assert.match(rows[0].notDecidedHere, /a\/b\/01-x\.md/, 'must name the sheet to go read');
+});
+
+test('an over-long boundary is cut at a word, not mid-word', async () => {
+  // "…the collection st" reads as a truncated thought rather than a truncated string, so a
+  // reader cannot tell whether the sheet trailed off or the digest did.
+  const long = `word${'y'} `.repeat(400).trim();
+  const dir = await fixture({
+    'a/b/01-x.md': `# 01 — X\n\n## Decision\nCall.\n\n## Not decided here\n${long}\n`,
+  });
+  const rows = await sheetDigest(dir);
+  await rm(dir, { recursive: true, force: true });
+  const cut = rows[0].notDecidedHere;
+  assert.ok(cut.endsWith('…'), 'a truncated cell must say it was truncated');
+  assert.doesNotMatch(cut, /word…$/, 'must not sever a word');
+  assert.ok(cut.length > 1000, `the boundary column carries ~1200 chars, got ${cut.length}`);
+});
+
 test('a sheet with no Decision section says so rather than going blank', async () => {
   const dir = await fixture({ 'a/b/01-x.md': '# 01 — X\n\n## Why\nnope\n' });
   const rows = await sheetDigest(dir);
