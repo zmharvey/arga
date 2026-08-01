@@ -190,8 +190,12 @@ questions nobody would notice the answer to is how a specification becomes a sec
    regenerated. Static only: the game runs, because instance requires resolve to `any`.
 4. **Six CID domains own no contract key** and are frozen by the rule above. Their 23 sheets
    stay as a record.
-5. **`ui-forge` has exactly one pattern** and is undeclared as a dependency, which is why
-   `client-main` is the one module that does not type-check.
+5. **`ui-forge` is undeclared as a build dependency**, which is why `client-main` is the one
+   module that does not type-check. It has **two** patterns, `modal-grid` and `hud-overlay`
+   (`ui-forge/src/compose/index.mjs`); an earlier version of this line said one. What
+   `hud-overlay` actually lacks is a `pressable` readout — a default, not a proven
+   incapability. Caught by the wave-2 Mechanics lead, which is the intended direction: an
+   agent reading the repo to check a claim before designing around it.
 6. **`forge` has never been run on a stage-0-derived context.** Untested end to end.
 
 ## Two spec runs are committed as the design record

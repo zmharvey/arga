@@ -114,11 +114,35 @@ if (cmd === 'leadpack') {
 
 /* ---------------------------------------------------------------- research */
 
+const APPEND_MARKER = '<!-- APPEND NEW RESEARCH BELOW THIS LINE -->';
+
 if (cmd === 'research') {
   const entries = await researchPack(ROOT);
-  const body = renderPack(entries, { generatedFrom: ROOT });
+
+  // Everything a batched research pass appended below the marker survives the rebuild.
+  //
+  // Without this, the pack's own instruction ("run `npm run cid:research` to rebuild, or have
+  // a research pass append new entries below the marker") is a trap: the rebuild derives the
+  // file from `[research: url]` tags in sheets, and an appended entry has no citation yet —
+  // it exists so a writer can *make* one. The first rebuild after a research pass would
+  // delete exactly the work that pass was dispatched to do, and the loss is silent, because
+  // the citation check only fails later, when a writer cites a URL the pack no longer has.
+  let carried = '';
+  try {
+    const prior = await readFile(PACK_PATH, 'utf8');
+    const i = prior.indexOf(APPEND_MARKER);
+    if (i >= 0) carried = prior.slice(i + APPEND_MARKER.length).trim();
+  } catch {
+    /* no pack yet */
+  }
+
+  const body = renderPack(entries, { generatedFrom: ROOT }) + (carried ? `\n${carried}\n` : '');
   await mkdir(dirname(PACK_PATH), { recursive: true });
   await writeFile(PACK_PATH, body, 'utf8');
+  if (carried) {
+    const kept = (carried.match(/^##\s+\S+$/gm) ?? []).length;
+    console.error(`  carried ${kept} appended source(s) through the rebuild`);
+  }
 
   const cites = entries.reduce((n, e) => n + e.citedBy.length, 0);
   const dupes = cites - entries.length;
@@ -159,6 +183,23 @@ if (cmd === 'pack') {
   const assignments = [...lead.matchAll(/^\|\s*(\d+)\s*\|\s*`([^`]+)`\s*\|\s*([\s\S]*?)\s*\|\s*$/gm)]
     .map((m) => ({ n: m[1], slug: m[2], mustDecide: m[3].replace(/\s+/g, ' ').trim() }));
 
+  // Sheets written outside the wave process — during a build trial, before the domain had a
+  // lead — whose manifests the shipped game reads. A lead indexes them so its new work does
+  // not collide with them, which means they appear in the assignment table like anything
+  // else. Handing them to a writer as an assignment is how a value the build depends on gets
+  // rewritten by an agent that had no idea it was live.
+  //
+  // So they are subtracted from the assignment rather than flagged in prose beside it. A
+  // writer cannot decline an instruction it never receives.
+  const adopted = new Set((opt('adopted', '') || '').split(',').map((s) => s.trim()).filter(Boolean));
+  const unknown = [...adopted].filter((n) => !assignments.some((a) => a.n === n));
+  if (unknown.length) {
+    console.error(`--adopted names ${unknown.map((n) => `"${n}"`).join(', ')}, which the index does not plan. Rows: ${assignments.map((a) => a.n).join(', ')}`);
+    process.exit(2);
+  }
+  const toWrite = assignments.filter((a) => !adopted.has(a.n));
+  const inherited = assignments.filter((a) => adopted.has(a.n));
+
   const subject = (lead.match(/\*\*Subject:\*\*([\s\S]*?)(?=\n\n|\n##)/) ?? [, ''])[1]
     .replace(/\s+/g, ' ')
     .trim();
@@ -198,17 +239,28 @@ Three rules, and they are what make this affordable:
 
 **Subject:** ${subject || '(see index)'}
 
-You write **${assignments.length} sheet(s)**, all of them, in one pass:
+You write **${toWrite.length} sheet(s)**, all of them, in one pass:
 
-${assignments.length
-      ? assignments
+${toWrite.length
+      ? toWrite
           .map((a) => `- \`${ROOT}/${domain}/${a.n}-${a.slug}.md\` — ${a.mustDecide}`)
           .join('\n')
       : '_(no assignment table found in the index — read it directly)_'}
 
 Writing them together is deliberate. These are the sheets most likely to overlap or
 contradict each other, and one writer holding all of them cannot collide with itself.
+${inherited.length
+      ? `
+### Already written, and not yours to touch
 
+${inherited.map((a) => `- \`${ROOT}/${domain}/${a.n}-${a.slug}.md\``).join('\n')}
+
+These were written before this domain had a lead, and **the shipped game reads their
+manifest values**. Read them — they are your own domain and your new sheets must not collide
+with them — but do not edit, renumber, or supersede one. If you believe one is wrong, say so
+in your report and leave the file alone. Your numbering continues past them.
+`
+      : ''}
 ---
 
 ## 2. Read these, and nothing else
@@ -227,27 +279,38 @@ ${mine.length
       ? `${mine.map((k) => `- \`${k.key}\` — ${k.doc}`).join('\n')}
 
 **A sheet of yours must carry a \`\`\`manifest block for each.** A key you own and do not
-supply is a number a build agent invents.`
+supply is a number a build agent invents.${inherited.length
+        ? ` Check the inherited sheets in section 1 first — if
+one of them already supplies a key above, it is supplied, and a second sheet claiming it is a
+hard error in the merge, not a disagreement to adjudicate.`
+        : ''}`
       : `**None yet — and that is a job, not a let-off.** The contract is ${mine.length + others.length} keys because it
-was derived from one hand-built game, and most domains have not run. Yours is one of them.
+was derived from one hand-built game, and most domains have not run. Yours is one of them.`}
 
-**Propose the key your subject needs.** Decide the thing, then write it as data:
+### Proposing a key the contract does not have
+
+This applies whether or not you own one above. **The contract is not the list of subjects
+worth deciding; it is the list of subjects some earlier build happened to need.** If your
+assignment says to propose a key, or you decide something real and find no slot for it,
+write it as data anyway:
 
 \`\`\`manifest
 { "provides": "<your key>", "status": "proposed", "value": <the decision as data> }
 \`\`\`
 
-\`status: "proposed"\` is required. It means: collected and reported by \`npm run bridge\`,
-never merged, until someone writes a shape and a check for it in \`bridge/schema.mjs\`.
-Proposing a key the contract already has is an error — supply that key properly instead,
-and the list below says who owns it.
+- \`status: "proposed"\` is **required**. It means collected and reported by \`npm run bridge\`,
+  never merged, until someone writes a shape and a check for it in \`bridge/schema.mjs\`.
+- Proposing a key the contract **already has** is an error. Supply that key properly instead;
+  the list below says who owns each one.
+- **One key per subject, not one per sheet.** If several of your sheets describe one thing,
+  one carries the block and the others name it in \`## Not decided here\`.
+- Design the value for a builder reading it tomorrow, because that is the entire point.
+  \`{"mood": "melancholy"}\` is prose in a fence. A named list with fields, quantities and
+  trigger conditions is a key.
 
-**One key per subject, not one per sheet.** If four of your sheets describe one thing, one
-of them carries the block and the other three say so in \`## Not decided here\`.
-
-A sheet with no data form is allowed, but it must say so in one line and name the key it
-would need. Prose that reaches no builder is the wave-1 defect this pipeline exists to fix:
-78% of wave 1 had no data form, and none of it reached the build.`}
+A sheet with genuinely no data form is allowed, but it must **say so in one line and name the
+key it would need**. Silence is what fails. 78% of wave 1 was prose with no data form and
+none of it reached the build; that is the defect this closes.
 
 <details><summary>The other ${others.length} keys, and who owns them</summary>
 

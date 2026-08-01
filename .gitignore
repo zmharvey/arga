@@ -5,3 +5,8 @@ ui-forge/review.html
 concept/out*/
 game/arga.rbxl
 game/*.rbxl
+
+# Writer context packs. Derived by `npm run cid:pack` from the domain index, the brief and
+# the digest; regenerated per wave and stale the moment a sheet lands. Kept on disk between
+# dispatch and completion so a wave can be resumed, never committed.
+.cid-packs/
