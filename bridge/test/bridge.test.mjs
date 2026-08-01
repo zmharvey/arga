@@ -113,6 +113,67 @@ test('a key outside the contract is rejected and the legal keys are listed', asy
   await rm(dir, { recursive: true, force: true });
 });
 
+/* -------------------------------------------------------------- proposals */
+
+// The contract is small because 41 of the graph's 55 domains have not run, not because
+// those subjects have no data form. A domain that decides something real and finds no slot
+// for it has produced a finding, and a finding must not be a crash — otherwise the only way
+// past the merger is to write prose, which is the wave-1 defect.
+
+test('a proposed key is collected and reported, not merged and not an error', async () => {
+  const dir = await sheetDir({
+    'new-thing': JSON.stringify({
+      provides: 'environment',
+      status: 'proposed',
+      value: { zones: [{ id: 'terrace', fog: 40 }] },
+    }),
+  });
+  const { problems, proposals, manifest, sheetsContributing } = await mergeSheets(dir);
+  assert.deepEqual(problems.filter((p) => p.includes('new-thing.md')), []);
+  assert.equal(proposals.length, 1);
+  assert.equal(proposals[0].key, 'environment');
+  assert.match(proposals[0].sheet, /new-thing\.md/);
+  assert.equal('environment' in manifest, false, 'a proposal must never reach the manifest');
+  assert.equal(sheetsContributing, 1);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('an unknown key without status stays a hard error, so a typo is still caught', async () => {
+  // `tier` for `tiers` must not become a proposal. The real key then goes unsupplied and the
+  // sheet reads as having done its job.
+  const dir = await sheetDir({ typo: JSON.stringify({ provides: 'tier', value: [] }) });
+  const { problems, proposals } = await mergeSheets(dir);
+  assert.equal(proposals.length, 0);
+  const err = problems.find((p) => p.includes('not in the build contract'));
+  assert.ok(err, `expected a hard error, got: ${problems.join(' | ')}`);
+  assert.match(err, /"status": "proposed"/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('proposing a key the contract already has is an error naming its owner', async () => {
+  const dir = await sheetDir({
+    dupe: JSON.stringify({ provides: 'tiers', status: 'proposed', value: [] }),
+  });
+  const { problems, proposals } = await mergeSheets(dir);
+  assert.equal(proposals.length, 0);
+  const err = problems.find((p) => p.includes('already has it'));
+  assert.ok(err, `expected a rejection, got: ${problems.join(' | ')}`);
+  assert.match(err, /gameplay\/systems/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('two sheets proposing one key is an error — one key one owner holds for proposals', async () => {
+  const block = (v) => JSON.stringify({ provides: 'sfx', status: 'proposed', value: v });
+  const dir = await sheetDir({ 'a-one': block({ cues: 1 }), 'b-two': block({ cues: 2 }) });
+  const { problems, proposals } = await mergeSheets(dir);
+  assert.equal(proposals.length, 1);
+  const err = problems.find((p) => p.includes('already proposed by'));
+  assert.ok(err, `expected a duplicate-proposal error, got: ${problems.join(' | ')}`);
+  assert.match(err, /a-one\.md/);
+  assert.match(err, /b-two\.md/);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('a malformed block is reported with its file, not swallowed', async () => {
   const dir = await sheetDir({ broken: '{ "provides": "tiers", oops }' });
   const { problems } = await mergeSheets(dir);

@@ -166,9 +166,26 @@ ${mine.length
 
 **A sheet of yours must carry a \`\`\`manifest block for each.** A key you own and do not
 supply is a number a build agent invents.`
-      : `**None.** Every key in the contract is owned by another domain, listed below. This is
-a correct result, not a gap: your output is a *bound* on values other domains supply.
-**Do not add a manifest block to make a sheet look load-bearing.** It will fail the merge.`}
+      : `**None yet — and that is a job, not a let-off.** The contract is ${mine.length + others.length} keys because it
+was derived from one hand-built game, and most domains have not run. Yours is one of them.
+
+**Propose the key your subject needs.** Decide the thing, then write it as data:
+
+\`\`\`manifest
+{ "provides": "<your key>", "status": "proposed", "value": <the decision as data> }
+\`\`\`
+
+\`status: "proposed"\` is required. It means: collected and reported by \`npm run bridge\`,
+never merged, until someone writes a shape and a check for it in \`bridge/schema.mjs\`.
+Proposing a key the contract already has is an error — supply that key properly instead,
+and the list below says who owns it.
+
+**One key per subject, not one per sheet.** If four of your sheets describe one thing, one
+of them carries the block and the other three say so in \`## Not decided here\`.
+
+A sheet with no data form is allowed, but it must say so in one line and name the key it
+would need. Prose that reaches no builder is the wave-1 defect this pipeline exists to fix:
+78% of wave 1 had no data form, and none of it reached the build.`}
 
 <details><summary>The other ${others.length} keys, and who owns them</summary>
 

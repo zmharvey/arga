@@ -146,7 +146,7 @@ Rules, all enforced mechanically by `npm run bridge`:
 
 - **One key, one sheet.** Including among your own. Two sheets claiming one key is a hard
   error, not a disagreement to adjudicate.
-- **`provides` must name a key in the contract.** Inventing a key fails.
+- **`provides` must name a key in the contract, or be marked a proposal.** See below.
 - **The value must satisfy the schema**, including cross-field invariants — rarer tiers must
   pay more, weights must sum, an area must physically hold its patch count.
 - **JSON, not YAML.** The repo has no runtime dependencies and keeps it that way.
@@ -159,16 +159,40 @@ something they had to make up on the spot because no sheet supplied it — patch
 weights, cost curves, tick rates, and the six relic names, which was squarely a writer's job.
 The list is empirical, not theoretical.
 
-If your pack says you own no keys, **something upstream is wrong and you should say so rather
-than write around it.** A domain with no key produces prose, and prose reaches the build only
-by being re-interpreted, which is the failure this pipeline exists to remove.
+## If your pack says you own no key — propose one
 
-Measured after wave 1: 23 of 35 sheets came from domains owning no key — 78% of the output,
-which no build step could read. Your lead is now required to check `npm run bridge --
-contract` and assign nothing if it owns nothing. If you were dispatched anyway, write what you
-were asked and open your report with the fact that the domain has no contract path.
+That is the normal case, not an error. The contract was derived from one hand-built game, so
+it only has keys for the subjects that game happened to need. Most domains have not run yet.
+Yours is one of them, and the contract is supposed to grow by roughly one key per domain.
 
-**Never add a manifest block to make a sheet look load-bearing.** It will fail the merge.
+Decide your subject, then write the decision as data:
+
+````markdown
+```manifest
+{ "provides": "environment", "status": "proposed", "value": { … } }
+```
+````
+
+- `status: "proposed"` is **required**. `npm run bridge` collects and reports a proposal but
+  never merges it — there is no shape to validate it against yet. Promotion is a deliberate
+  edit to `bridge/schema.mjs` by whoever owns the contract.
+- Proposing a key the contract **already has** is an error. Supply that key properly, or pick
+  a different one. Section 3 of your pack lists every existing key and its owner.
+- **One key per subject, not one per sheet.** If four of your sheets describe one thing, one
+  carries the block and the other three name it in `## Not decided here`.
+- Design the value as if a builder will read it tomorrow, because that is the point of
+  proposing it. `{"mood": "melancholy"}` is prose in a fence. A named list of beds with file
+  roles, volumes and trigger conditions is a key.
+
+A sheet with genuinely no data form is allowed — but it must **say so in one line and name the
+key it would need**. Silence is what fails.
+
+Measured after wave 1: 23 of 35 sheets had no data form — 78% of the output, which no build
+step could read. Prose reaches the build only by being re-interpreted, and interpretation is
+the failure this pipeline exists to remove.
+
+**Never add a manifest block to make a sheet look load-bearing.** A block whose value restates
+the prose is worse than none: it looks checkable and is not.
 
 If a decision overrules a `[brief: soft]` item, add `## Pushing back` stating what you overruled
 and why. If you decided something the brief was silent on, add `## Flagged to the developer`

@@ -19,6 +19,23 @@
  * JSON rather than YAML because the repo has zero runtime dependencies and that is
  * worth keeping. The prose around the block stays the human-readable half and the
  * reasoning record; nothing downstream of here reads it.
+ *
+ * PROPOSING A KEY THE CONTRACT DOES NOT HAVE YET
+ * ---------------------------------------------
+ * The contract is 16 keys because it was derived from one hand-built game, and 41 of
+ * the graph's 55 domains have not run. A domain that decides something real and finds
+ * no slot for it is the signal the contract should grow — not an error to route around
+ * by writing prose instead.
+ *
+ *     ```manifest
+ *     { "provides": "environment", "status": "proposed", "value": { ... } }
+ *     ```
+ *
+ * A proposal is collected and reported, never merged: nothing downstream reads a key
+ * that has no shape to validate against, and promoting one is a deliberate edit to
+ * `schema.mjs` by whoever owns the contract. `status` is required rather than inferred
+ * from "key not in schema", so a typo in a real key (`tier` for `tiers`) stays the hard
+ * error it should be instead of silently becoming a proposal.
  */
 
 import { readdir, readFile } from 'node:fs/promises';
@@ -44,13 +61,15 @@ async function walk(dir) {
  *   because "one key, one owning sheet" is worth enforcing on both contracts and is not
  *   worth writing twice. When a custom schema is given, validation is the caller's job:
  *   only this contract's own `validateManifest` knows the creative cross-key invariants.
- * @returns {Promise<{manifest: object, problems: string[], missing: string[], provenance: Record<string,string>, sheetsRead: number, sheetsContributing: number}>}
+ * @returns {Promise<{manifest: object, problems: string[], missing: string[], provenance: Record<string,string>, proposals: {key: string, sheet: string, value: any}[], sheetsRead: number, sheetsContributing: number}>}
  */
 export async function mergeSheets(root, schema = SCHEMA) {
   const files = await walk(root);
   const manifest = {};
   /** @type {Record<string,string>} key -> the sheet that provided it */
   const provenance = {};
+  /** @type {{key: string, sheet: string, value: any}[]} keys a domain wants that the contract lacks */
+  const proposals = [];
   const problems = [];
   let contributing = 0;
 
@@ -73,12 +92,32 @@ export async function mergeSheets(root, schema = SCHEMA) {
         problems.push(`${rel}: manifest block needs a "provides" naming the key it supplies`);
         continue;
       }
-      if (!(key in schema)) {
-        problems.push(`${rel}: provides "${key}", which is not in the build contract. Known keys: ${Object.keys(schema).join(', ')}`);
+      const proposed = block.status === 'proposed';
+
+      if (!(key in schema) && !proposed) {
+        problems.push(`${rel}: provides "${key}", which is not in the build contract. Known keys: ${Object.keys(schema).join(', ')}. If this is a genuinely new key, mark the block "status": "proposed".`);
+        continue;
+      }
+      if (key in schema && proposed) {
+        problems.push(`${rel}: proposes "${key}", but the contract already has it (owner: ${schema[key].owner}). Drop the "status" and supply it, or provide a different key.`);
         continue;
       }
       if (!('value' in block)) {
         problems.push(`${rel}: manifest block for "${key}" has no "value"`);
+        continue;
+      }
+
+      // A proposal is a finding, not a contribution. It is reported by name and never
+      // merged: there is no shape to validate it against, so anything downstream reading
+      // it would be reading an unchecked value — the exact thing this seam exists to stop.
+      if (proposed) {
+        const already = proposals.find((p) => p.key === key);
+        if (already) {
+          problems.push(`${rel}: proposes "${key}", already proposed by ${already.sheet}. One key, one owning sheet — that rule holds for proposals too.`);
+          continue;
+        }
+        proposals.push({ key, sheet: rel, value: block.value });
+        found = true;
         continue;
       }
 
@@ -111,6 +150,7 @@ export async function mergeSheets(root, schema = SCHEMA) {
     problems,
     missing,
     provenance,
+    proposals: proposals.sort((a, b) => a.key.localeCompare(b.key)),
     sheetsRead: files.length,
     sheetsContributing: contributing,
   };

@@ -264,12 +264,27 @@ const PROSE_BUDGET = 100;
 
   // A domain that decided something real and found no key for it is the signal that the
   // contract needs to grow. Surfaced as a note, because it is work for the schema owner.
+  //
+  // Split two ways, because the two halves need different things done to them: a domain that
+  // *proposed* a key has done its job and is waiting on a shape in schema.mjs; a domain that
+  // proposed nothing has produced prose no build step can read, which is the wave-1 defect.
   const owners = new Set(Object.values(SCHEMA).map((s) => s.owner));
   const domains = new Set(leaves.filter(scoped).map((f) => relative(ROOT, dirname(f))));
-  const keyless = [...domains].filter((d) => !owners.has(d));
-  if (keyless.length) {
-    notes.push(`${keyless.length} domain(s) own no contract key yet: ${keyless.join(', ')}. `
-      + 'Expected while the contract is still growing — each should name the key it needs.');
+  const { proposals } = await mergeSheets(ROOT);
+  const proposedBy = new Map(proposals.map((p) => [dirname(p.sheet), p.key]));
+  const keyless = [...domains].filter((d) => !owners.has(d)).sort();
+  const waiting = keyless.filter((d) => proposedBy.has(d));
+  const mute = keyless.filter((d) => !proposedBy.has(d));
+
+  if (waiting.length) {
+    notes.push(`${waiting.length} domain(s) propose a key the contract does not have yet: `
+      + `${waiting.map((d) => `${d} -> ${proposedBy.get(d)}`).join(', ')}. `
+      + 'Promote in bridge/schema.mjs to make one binding.');
+  }
+  if (mute.length) {
+    warns.push(`${mute.length} domain(s) own no contract key and propose none: ${mute.join(', ')}. `
+      + 'Each should either propose the key its subject needs, or state per sheet that the '
+      + 'subject has no data form. A domain that produces only prose reaches no builder.');
   }
 }
 

@@ -36,7 +36,7 @@ if (flag('contract')) {
 const root = resolve(opt('root', 'cid'));
 const outPath = resolve(opt('out', 'game/src/shared/GameConfig.luau'));
 
-const { manifest, problems, missing, provenance, sheetsRead, sheetsContributing } =
+const { manifest, problems, missing, provenance, proposals, sheetsRead, sheetsContributing } =
   await mergeSheets(root);
 
 console.log(`\nbridge — ${sheetsRead} sheet(s) read, ${sheetsContributing} carrying a manifest block\n`);
@@ -45,6 +45,15 @@ const supplied = Object.keys(provenance).sort();
 if (supplied.length) {
   console.log('  supplied:');
   for (const key of supplied) console.log(`    ${key.padEnd(12)} <- ${provenance[key]}`);
+}
+
+// Proposals do not gate the build. They are the queue of contract growth: a domain ran,
+// decided something real, and found no slot for it. Promoting one means writing a shape
+// and a check in schema.mjs, which is a deliberate act by whoever owns the contract.
+if (proposals.length) {
+  console.log(`\n  proposed — ${proposals.length} key(s) no schema slot exists for yet:`);
+  for (const p of proposals) console.log(`    ${p.key.padEnd(12)} <- ${p.sheet}`);
+  console.log('    Not merged and not emitted. Promote in bridge/schema.mjs to make one binding.');
 }
 
 if (missing.length) {
