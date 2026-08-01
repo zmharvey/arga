@@ -225,7 +225,7 @@ Three invariants a builder can check with a tape measure:
       "class": "Attachment",
       "properties": {
         "Name": "\"Spawn\"",
-        "Position": "Vector3.new(0, 0.5, plots.bays[live].zStart + 8) relative to the lane slab's own origin — the slab's top face, centred across the lane, 8 studs into the live bay. plots.spawn.plotLocal is [0, 0, 8], which is this expression at live = 1; the generalisation is what makes traversal.death.respawnAt ('areaSpawn') mean the live area rather than always the first.",
+        "Position": "Vector3.new(0, 0.5, plots.bays[live].zStart + 8) expressed in PLOT-LOCAL space, which is NOT the Attachment's own parent space: an Attachment is positioned relative to its parent's CENTRE, and the slab's centre sits at plot-local Z = zEnd/2. Taken as parent-relative, bay 1's spawn lands at plot-local Z = 68 instead of 8, Layout's nearest patch (Z = 8) is 60 studs away instead of 3.5, and both firstSession beats fail. The attachment-local value is therefore zStart + 8 - zEnd/2. Found by the plots builder; the phrase 'relative to the lane slab's own origin' was the wrong frame — the slab's top face, centred across the lane, 8 studs into the live bay. plots.spawn.plotLocal is [0, 0, 8], which is this expression at live = 1; the generalisation is what makes traversal.death.respawnAt ('areaSpawn') mean the live area rather than always the first.",
         "Parent": "the lane slab"
       },
       "createdBy": "plots",

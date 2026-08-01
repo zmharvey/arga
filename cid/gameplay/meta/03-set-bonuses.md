@@ -62,7 +62,7 @@ is the axis that repeats because it is the only one with the headroom to be gran
   "value": {
     "sourceClass": "setCompletion",
     "explainedInFiction": false,
-    "grantedAt": "the clear of the last patch of the last area at that set's depth",
+    "grantedAt": "the reveal of the sixth Find of that set -- response.beats[setComplete].cause, sixthFindOfSetRevealed, and modifiers.sources[set-completion].storage, which derives completion from state.found at every read. This USED to say 'the clear of the last patch of the last area at that set's depth', which was the same instant while areasPerDepth was 1 and stopped being so under ruling R-2: at 3 x 2 the sixth name lands mid-area and the area finishes later. Two of the three keys already agreed on the reveal; this was the odd one out, and left standing it turned a 1.2x value bonus on at the wrong moment and fired its cue at another. Found by the clearing builder, which could not tell which key was authoritative.",
     "axisMayRepeat": true,
     "factorStatus": "playtest unknown",
     "factorTestRange": [1.10, 1.35],
