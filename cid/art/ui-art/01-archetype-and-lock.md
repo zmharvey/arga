@@ -30,31 +30,38 @@ is the brief's own word: *"a **restoration / completion game**, not an increment
 `[brief: binding]` (`CONCEPT.md:25`). A wrong `genre` string in a generated file is a fact a
 later reader will believe.
 
-**A key value alone is a note.** `CLAUDE.md` binds *"prefer changes that make bad output
-impossible"* `[research: CLAUDE.md]`, and `HANDOFF.md:107` states the hole plainly: *"**no code
-currently reads these sheets**"*. So this sheet supplies three things and not one: the value,
-the artifact both sides compare, and the check that fails a build. The check is a Node test
-because `npm test` is already one of the four gates a wave must clear
-`[research: cid/_state.md]`, and because `Theme.luau` is emitted by `ui-forge` rather than by
-`bridge`, so `bridge/merge.mjs` never sees it. Parsing two string assignments out of a
-generated Luau table with a regex is cheap and total.
+**What this enforcement actually is, at three different strengths, because they are not the
+same thing.** Two routes are made **impossible**: the `cli.mjs` default (`A2`, not refusable)
+and the alias-and-genre resolution route, closed by fixing `vibe` to a literal `ARCHETYPES`
+key. One thing is **detected, not prevented**: the Node test fails a wave *after* a wrong
+emission, which is worth having and is not the same as impossibility. And one thing is **not
+enforced at all today**: every `tokenOverride` and every additive group this key holds, because
+`deriveGameContext` does not carry them (`A3`) from a `concept.json` that does not exist
+(`A4`), and both requests are refusable. **If `A3` and `A4` land, the whole key reaches
+`generateTheme` and the test compares against values that actually shaped the artifact. If both
+are refused, the archetype is enforced and every token value in sheets `02`, `03` and `06` is
+advisory.** That is the residual risk, and it is now data in `emission.enforcementToday` rather
+than a sentence in a paragraph.
 
 **Two things stand between this key and the build, and neither is mine to fix.**
 `deriveGameContext(concept)` emits `artDirection` with exactly `vibe`, `mood`, `paletteHints`
-and `referenceNote` `[research: concept/src/derive/game-context.mjs]`, so no `tokenOverrides`
-and no `tokens` this key holds can reach `generateTheme` today: **the key would merge and
-change nothing.** And `deriveGameContext` consumes a `concept.json` that does not exist
-anywhere in the repo, so the only producer of a consumable context cannot be run for this brief
-at all. Both are filed below as `A3` and `A4`, `A4` against the same `ok && --emit` gate owner
-that `hud/03` (`bridge/emit-hud-brief.mjs`) and `theme/vocabulary/03` (`bridge/emit-terms.mjs`)
-already petitioned. **Scope it as one job, not three.**
+and `referenceNote` `[research: concept/src/derive/game-context.mjs]`: **the key would merge and
+change nothing.** And `deriveGameContext` consumes a `concept.json` that does not exist anywhere
+in the repo, so the only producer of a consumable context cannot be run for this brief at all.
+`A4` is the **third** petition against the same `ok && --emit` gate owner, after `hud/03`'s
+`bridge/emit-hud-brief.mjs` and `theme/vocabulary/03`'s `bridge/emit-terms.mjs`. **Scope it as
+one job, not three.**
 
 **The archetype cannot legally be emitted until sheet `03` closes `A1`.** `fantasy-ornate`
 resolves `fontStack: 'serif-ui'`, whose `numeric.roblox` is `'MerriweatherBold'`, which is not
 a member of `Enum.Font` `[research: https://create.roblox.com/docs/reference/engine/enums/Font]`.
-`cartoon-vibrant` is latent-safe only because its stack resolves. **This is the second defect
-this wave that bites on its own fix**, and emitting the correct archetype before `A1` lands
-either kills the client or silently renders every number in `Gotham`.
+Indexing `Enum.Font` with an absent member **raises**, so `UIBuilder.luau:482`'s
+`or Enum.Font.Gotham` fallback never runs and every `numeric`-typed node throws inside
+`buildNode`, taking the client with it. The blast radius is bounded to `type.numeric`, read only
+by `ReadoutValue`; `Pressables.luau:404` indexes the same way but reads `type.body`, which
+resolves to `SourceSans` `[research: cid/art/_verified.md]`. `cartoon-vibrant` is latent-safe
+only because its stack resolves. **This is the second defect this wave that bites on its own
+fix.**
 
 ```manifest
 {
@@ -100,7 +107,24 @@ either kills the client or silently renders every number in `Gotham`.
         "failureMode": "non-zero exit; a wave may not advance on it"
       },
       "blockedBy": ["A1"],
-      "blockedByReason": "serif-ui numeric.roblox is not an Enum.Font member; emitting fantasy-ornate before A1 either throws in UIBuilder.luau:482 or renders every numeral in Gotham"
+      "blockedByReason": "serif-ui numeric.roblox is not an Enum.Font member; indexing Enum.Font with an absent member raises, so every numeric-typed node throws inside buildNode. Bounded to type.numeric, read only by ReadoutValue; Pressables.luau:404 reads type.body and is safe.",
+      "enforcementToday": {
+        "impossible": [
+          { "route": "cli.mjs defaults args.context to the Pet Ascend demo", "closedBy": "A2", "refusable": false },
+          { "route": "resolveArchetype falls through VIBE_ALIASES or GENRE_DEFAULTS", "closedBy": "resolutionRule: vibe is a literal ARCHETYPES key", "refusable": false }
+        ],
+        "detectedNotPrevented": [
+          { "what": "a wrong archetype, sourceTitle or genre in the emitted artifact", "by": "the npm test check", "timing": "after emission, before a wave may advance" }
+        ],
+        "notEnforcedAtAll": [
+          { "what": "every tokenOverride and every additive group in sheets 02, 03 and 06", "why": "deriveGameContext carries neither artDirection.tokenOverrides nor artDirection.tokens (A3), from a concept.json that does not exist (A4)", "status": "advisory until both land" }
+        ]
+      },
+      "enforcementIfA3AndA4Land": {
+        "gains": "the whole key reaches generateTheme, so the emitted artifact becomes a function of uiTheme and the npm test check compares against values that actually shaped it",
+        "stillOnlyDetection": "nothing makes a hand-edited Theme.luau impossible; what makes it harmless is that it is regenerated"
+      },
+      "residualRisk": "A3 and A4 are both refusable. If both are refused, the context stays hand-authored and unowned, the archetype is still enforced, and every token value this domain sets is a recommendation."
     },
     "uiForgeChanges": [
       { "id": "A2", "file": "ui-forge/src/cli.mjs", "at": "main(), line 121", "change": "delete the ?? 'examples/game-context.json' default; exit non-zero naming --context when it is absent", "refusable": false, "ifRefused": "any run without --context re-themes this game after Pet Ascend Simulator, which is the defect" },
@@ -114,7 +138,8 @@ either kills the client or silently renders every number in `Gotham`.
 ## Consequences for other work
 
 - **Contract-and-seam work** takes `A4` as the third request against one gate and `A3` as a
-  four-field change to one function. Until both land, this key is a decision with no wire.
+  two-field change to one function. Until both land, this key's archetype is enforced and its
+  token values are advisory, which `emission.enforcementToday` states as data.
 - **`ui-forge` pattern and CLI work** takes `A2`. It is the only change on this sheet that
   makes the defect impossible rather than detected.
 - **Build work** must not hand-edit `Theme.luau` to close this. The artifact is generated; a
@@ -125,7 +150,6 @@ either kills the client or silently renders every number in `Gotham`.
   untouched. `fantasy-ornate` paints interface surfaces only.
 - **Store-surface work (`offerSurface`)** named this key as *"the sibling instance of
   `artifactHygiene`'s root cause"*. It is the same root cause and this is the fix.
-- **Whoever regenerates `hud.brief.json`** gets no new field from this sheet.
 
 ## Acceptance criteria
 

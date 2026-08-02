@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 260 unique source(s); 164 were
+Extracted from `cid`. 270 unique source(s); 164 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -453,6 +453,13 @@ did not fetch" becomes checkable instead of trusted.
 - **`Scrap Incremental`** (third, taken for triangulation). Description: *"A relaxing magnet simulator game"* with a sunglasses glyph, then the same *"The more you rebirth and upgrade..."* sentence, with seven distinct glyphs, numbered feature brackets, *"Enjoying the game? Leave a Like and Favorite!"* and *"Join the Unequal Games group for in-game boosts!"*. ``
 - *A refinement to the brief's landscape research, from that last quote.** `research/landscape.md` attributes the shared marketing sentence to *"at least two different studios"* and lists Grass and Scrap as separate entries. Scrap Incremental's own description sends players to *"the Unequal Games group"*, which is the reference's studio, so Grass and Scrap are very likely one studio's template rather than two independent shippers. The independent same-sentence shipper is PrestigeLabs (Leaves). This does not weaken the brief's conclusion, it sharpens it: the genre's register norm is more…
 
+## https://about.roblox.com/community-standards
+
+*Cited by 3: `analytics/events/02-never-logged`, `analytics/events/_lead`, `liveops/community/_lead`*
+
+- **`N1`–`N8` are the platform's list, not mine.** The community standards enumerate email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, and visual and audio media of a user, and state that *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"* ``. The brief states no data rule (`OPEN.md §5` #6 marks Integrity `[I assumed]`), so this is discharged as sourced platform policy rather than as an asserted policy of mine.
+- The age-band data rule, discharged as platform policy `` — the enumerated PII list (email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, visual and audio media of a user) and *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"*. This is the rule `02` complies with. **Note the shape of the compliance:** `LogCustomEvent` takes a `Player`, so identity is the platform's and the game defines no identifier at all — which is…
+
 ## https://create.roblox.com/docs/cloud-services/data-stores/versioning-listing-and-caching
 
 *Cited by 3: `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`, `tech/persistence/03-store-versions-and-migration`*
@@ -545,7 +552,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 3: `art/ui-art/01-archetype-and-lock`, `art/ui-art/03-type-ramp-and-font-stack`, `art/ui-art/_lead`*
 
-- *The archetype cannot legally be emitted until sheet `03` closes `A1`.** `fantasy-ornate` resolves `fontStack: 'serif-ui'`, whose `numeric.roblox` is `'MerriweatherBold'`, which is not a member of `Enum.Font` ``. `cartoon-vibrant` is latent-safe only because its stack resolves. **This is the second defect this wave that bites on its own fix**, and emitting the correct archetype before `A1` lands either kills the client or silently renders every number in `Gotham`.
+- *The archetype cannot legally be emitted until sheet `03` closes `A1`.** `fantasy-ornate` resolves `fontStack: 'serif-ui'`, whose `numeric.roblox` is `'MerriweatherBold'`, which is not a member of `Enum.Font` ``. Indexing `Enum.Font` with an absent member **raises**, so `UIBuilder.luau:482`'s `or Enum.Font.Gotham` fallback never runs and every `numeric`-typed node throws inside `buildNode`, taking the client with it. The blast radius is bounded to `type.numeric`, read only by `ReadoutValue`; `Pressables.luau:404` indexes the same way but reads `type.body`, which resolves to `SourceSans` ``.…
 - *The blocking defect, and it is the second this wave that bites on its own fix.** `fantasy-ornate` resolves `fontStack: 'serif-ui'`, whose `numeric.roblox` is `'MerriweatherBold'` (`palettes.mjs:150`). `Merriweather`, `SourceSans`, `FredokaOne`, `Gotham` and `GothamBold` are members of `Enum.Font`; **`MerriweatherBold` is not**, and there is no bold variant ``. `UIBuilder.luau:482` does `inst.Font = (Enum.Font :: any)[t.font] or Enum.Font.Gotham`, so under the correct archetype every numeric readout either **throws**, killing `UIBuilder.build` and with it the entire client (the precedent…
 - `https://create.roblox.com/docs/reference/engine/enums/Font` — enumerates `Enum.Font`. `Merriweather` (32), `SourceSans` (3), `FredokaOne` (26), `Gotham` (17), `GothamBold` (19) are members; **`MerriweatherBold` is not.** 50 members plus `Unknown`. This is the whole basis of sheet 03's blocking defect. ``
 
@@ -752,13 +759,6 @@ did not fetch" becomes checkable instead of trusted.
 - *In wall-clock seconds the reference is unmeasured**, so no number here is sourced from it. `[research owed: a timestamped capture of the first 120 seconds of Roblox place 133086043677134 — time to first currency and to first upgrade. Three source types returned HTTP 405; a transcript API or a stopwatch would settle it.]` Roblox's FTUE guidance **states no time threshold at all** ``; the brief's ten-second window, chosen without a source, is independently corroborated ``.
 - *Teaching is visual because nothing else is left.** Roblox's FTUE guidance offers a guided arrow as an alternative to dialogue `` and both are closed here — an arrow is row `T3`, dialogue needs a speaker and no entity class exists `[cid: decided — theme/identity/04]`. Advice to show a mechanic visually and reinforce it repeatedly before assuming it landed `` meets one recurring event here — the patch clear — which is why rank 1 is the only required rank.
 - "The most decisive moment in a player's journey is the first 10 seconds" and "50% of your traffic is gone within the first two minutes", with advice to show mechanics visually rather than in text and to reinforce a new mechanic at least three times with rewards before assuming it landed. The ten-second figure independently corroborates the brief's own choice of window, which was made without a source ``
-
-## https://about.roblox.com/community-standards
-
-*Cited by 2: `analytics/events/02-never-logged`, `analytics/events/_lead`*
-
-- **`N1`–`N8` are the platform's list, not mine.** The community standards enumerate email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, and visual and audio media of a user, and state that *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"* ``. The brief states no data rule (`OPEN.md §5` #6 marks Integrity `[I assumed]`), so this is discharged as sourced platform policy rather than as an asserted policy of mine.
-- The age-band data rule, discharged as platform policy `` — the enumerated PII list (email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, visual and audio media of a user) and *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"*. This is the rule `02` complies with. **Note the shape of the compliance:** `LogCustomEvent` takes a `Player`, so identity is the platform's and the game defines no identifier at all — which is…
 
 ## https://about.roblox.com/newsroom/2026/02/moving-beyond-self-reported-age
 
@@ -1314,6 +1314,26 @@ did not fetch" becomes checkable instead of trusted.
 - *A correction to my own domain index, worth making because a builder would otherwise cite the wrong source.** WCAG SC 2.2.2 governs *"any moving, blinking or scrolling information"* that lasts more than five seconds ``. A static plate is outside its scope entirely, so 2.2.2 does not set my dwell. What it does settle is the **motion** ruling: `response` `R5`–`R6` forbid providing a pause or dismiss control, so a moving notice would breach 2.2.2 with no legal remedy available — which is why `motion.animated` is false rather than merely discouraged. The 5.0 s ceiling itself is the platform's…
 - `` — SC 2.2.2: *"any moving, blinking or scrolling information that (1) starts automatically, (2) lasts more than five seconds, and (3) is presented in parallel with other content"* needs a pause/stop/hide mechanism. `response` `R6` forbids providing one. **So a notice is static and its dwell has a five-second ceiling, derived rather than chosen** — this is 01's and 02's anchor.
 
+## https://about.roblox.com/newsroom/2025/11/roblox-requires-age-checks-limits-minor-and-adult-chat
+
+*Cited by 1: `liveops/community/_lead`*
+
+
+## https://about.roblox.com/newsroom/2026/07/how-in-game-reporting-works-on-roblox
+
+*Cited by 1: `liveops/community/_lead`*
+
+
+## https://about.roblox.com/newsroom/2026/07/major-updates-in-game-reporting-tools
+
+*Cited by 1: `liveops/community/_lead`*
+
+
+## https://about.roblox.com/reporting-and-blocking
+
+*Cited by 1: `liveops/community/_lead`*
+
+
 ## https://apis.roblox.com/search-api/omni-search?searchQuery=
 
 *Cited by 1: `theme/fantasy/_lead`*
@@ -1422,6 +1442,22 @@ did not fetch" becomes checkable instead of trusted.
 
 - 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
 
+## https://create.roblox.com/docs/production/promotion/experience-guidelines
+
+*Cited by 1: `liveops/community/_lead`*
+
+
+## https://create.roblox.com/docs/production/promotion/social-media-links
+
+*Cited by 1: `liveops/community/_lead`*
+
+
+## https://create.roblox.com/docs/production/publishing
+
+*Cited by 1: `liveops/community/_lead`*
+
+- **Whether a creator can see reports filed inside their own experience (G-C2).** `[unverified]` — three official pages describe the report flow and none mentions a creator role, which supports the weak form (*no creator report queue is documented*) and not the strong form (*none exists*). **Settling fetch:** `https://create.roblox.com/docs/production/publishing` and the Creator Hub moderation documentation rendered with its left-hand navigation; failing that, the open developer feature request *"Roblox should give developers access to the in-game reporting system"* checked for a staff…
+
 ## https://create.roblox.com/docs/projects/server-authority
 
 *Cited by 1: `tech/security/_lead`*
@@ -1450,6 +1486,11 @@ did not fetch" becomes checkable instead of trusted.
 ## https://create.roblox.com/docs/reference/engine/classes/Players
 
 *Cited by 1: `tech/deploy/_lead`*
+
+
+## https://create.roblox.com/docs/reference/engine/classes/Players#BanAsync
+
+*Cited by 1: `liveops/community/_lead`*
 
 
 ## https://create.roblox.com/docs/reference/engine/classes/Sky
@@ -1614,6 +1655,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - **The official Roblox mobile minimum specification.** `https://en.help.roblox.com/hc/en-us/articles/203625474-Roblox-Mobile-System-Requirements` returned HTTP 403 on direct fetch and the Fandom mirror returned HTTP 402. Search snapshots of the official page give iOS 14 / iPadOS 14 and iPhone 6s class, Android 8.0 with OpenGL ES 3.0; a dated secondary (`https://bloxboom.com/blog/roblox-system-requirements`, 2025-05-21) gives iOS 11 / Android 5.0 and 2 GB RAM, which **contradicts the snapshot on both OS versions**. `[unverified]`. The fetch that settles it is that help-centre article from a…
 
+## https://en.help.roblox.com/hc/en-us/articles/360000245263-Appeal-Your-Content-or-Account-Moderation
+
+*Cited by 1: `liveops/community/_lead`*
+
+- **"Only the owner of an account may send an appeal."** `[unverified]` — this reached me through a search summary and **not** through a page I fetched. `https://en.help.roblox.com/hc/en-us/articles/360000245263-Appeal-Your-Content-or-Account-Moderation` returns **HTTP 403** to this tool, as does every `en.help.roblox.com` article I attempted (three). I substituted `about.roblox.com/community-standards` for the Community Standards article successfully, and `about.roblox.com/safety` for the appeals article **unsuccessfully** — it describes reporting and blocking and says nothing about…
+
 ## https://en.wikipedia.org/wiki/Basilica_Cistern
 
 *Cited by 1: `theme/setting/02-extent`*
@@ -1728,6 +1775,11 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `liveops/events/_lead`*
 
 - 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/social-media-links.md
+
+*Cited by 1: `liveops/community/_lead`*
+
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/avatar-settings.md
 
