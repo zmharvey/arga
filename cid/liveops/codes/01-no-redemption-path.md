@@ -1,6 +1,6 @@
 # 01 — No redemption path
 
-**Domain:** liveops/codes · **Category:** Live Ops · **Wave:** 7
+**Domain:** liveops/codes · **Category:** Live Ops · **Wave:** 7 · **Revision round 1** (RR-5)
 
 ## Decision
 
@@ -180,7 +180,22 @@ per `tech/deploy/02`.
         "mechanism": "a game pass or product handed out free as a link and read back with MarketplaceService:UserOwnsGamePassAsync, which grants what a code grants with no text entry",
         "closedBy": "the rule below; products.itemCount 1, devProductCount 0, F5 (every kind is gamePass, every repeatable false), F9 (one axis, one factor, no grants array)",
         "check": "the count of distinct game pass ids referenced anywhere in the build is at most products.itemCount, and the only UserOwnsGamePassAsync call site is server/Entitlements.luau:119 on the products entitlement path",
-        "baseline": { "UserOwnsGamePassAsyncCallSites": 1, "at": "game/src/server/Entitlements.luau:119", "furtherTextualOccurrences": 7, "furtherOccurrenceKinds": ["comment", "config string"] },
+        "baseline": {
+          "UserOwnsGamePassAsyncCallSites": 1,
+          "at": "game/src/server/Entitlements.luau:119",
+          "furtherTextualOccurrences": 6,
+          "furtherOccurrenceSites": [
+            "game/src/server/Entitlements.luau:39 comment",
+            "game/src/server/Entitlements.luau:59 comment",
+            "game/src/server/Entitlements.luau:87 comment",
+            "game/src/server/Entitlements.luau:98 warn string",
+            "game/src/server/Entitlements.luau:113 warn string",
+            "game/src/shared/GameConfig.luau:1237 config string"
+          ],
+          "totalTextualOccurrencesIncludingTheCallSite": 7,
+          "correctedInRound": 1,
+          "correctedBy": "RR-5"
+        },
         "rule": "a bearer entitlement is a code whenever what entitles the player is distribution rather than purchase. A second pass id, or the existing id given away free, is a code and is forbidden here. The one purchasable SKU and its join-time ownership read are untouched.",
         "decidedBy": "cid: decided; gap C5, on which the brief, products and F15 are all silent"
       }
@@ -238,7 +253,9 @@ per `tech/deploy/02`.
 2. All four limbs pass as a critic runs them: `screens.screens[].tree[].class` contains only
    `Frame` and `TextLabel` and zero `TextBox`; `rg -n 'GetJoinData|LaunchData|TeleportData'
    game/src` returns 0; `rg -n 'IsInGroup|GetRankInGroup|GroupService' game/src` returns 0; and
-   `UserOwnsGamePassAsync` has exactly 1 call site, at `game/src/server/Entitlements.luau:119`.
+   `UserOwnsGamePassAsync` has exactly **1 call site**, at `game/src/server/Entitlements.luau:119`,
+   plus **6 further textual occurrences** that are comments, warn strings and one config string —
+   **7 in total**, all seven named in `redemptionSurfaces[L4].baseline`.
 3. `rg -c TextBox game/src` returns **9** across 3 files and this is **not** a failure: the
    published baseline in `redemptionSurfaces[L1].rawSourceGrepSites` names all nine, and none is
    an `Instance.new`.
@@ -251,6 +268,12 @@ per `tech/deploy/02`.
 |---|---|---|---|---|---|
 | `products` | `cid/gameplay/monetization/02-what-is-never-sold.md` | `forbidden[F15].closedBy` | *"03-META.md priority 3 (codes), theme/tone/04 D10"* | add the structural grounding: `input.closed` + `gameDrawnPressables: 4` under R-1, `navigation.addNodeRule`, `screens[index].tree`, and `00-CORE.md`'s binding retention non-goal | `D10`'s own reason column is *"Priority 3 excludes codes"*, so the chain grounds out in an `[I assumed]` ordering that was never interviewed. The rule survives; its stated justification does not. |
 | `products` | same | `forbidden[F15]` observable | *"Zero `TextBox` instances in any screen"* | *"zero screen-spec nodes whose `class` is `TextBox`; every `screens[].tree[].class` in `[Frame, TextLabel]`"* — and explicitly not a source grep | run as a grep of `game/src` it returns 9 hits in 3 files, none of which creates a `TextBox`: a false positive today. `UIBuilder.luau:412-418` plus the `CLASS_DEFAULTS.TextBox` row makes it a false negative the day a JSON node adds one. |
+
+## Revisions taken
+
+| # | round | field | was | is | why |
+|---|---|---|---|---|---|
+| `RR-5` | 1 | `redemptionSurfaces[L4].baseline.furtherTextualOccurrences` | `7` | `6`, with all six sites enumerated and `totalTextualOccurrencesIncludingTheCallSite: 7` beside them | 7 was the total across `Entitlements.luau:39,59,87,98,113,119` and `GameConfig.luau:1237`. The call site at `:119` is one of the seven, so *further* is 6. Accepted without argument. Criterion 2 now states both figures and the baseline names every site, so the two counts cannot be read as one again. |
 
 ## Flagged to the developer
 

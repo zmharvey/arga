@@ -70,6 +70,7 @@ ids are `value`, `radius`, `speed` — the ids `upgrades` already ships, not the
       "grantsNothingElse": "a modifier changes exactly one axis; it never grants currency, a Find, an area, a cosmetic or a second modifier"
     },
     "axisIdsJoinUpgrades": "axes[].id is upgrades[].id verbatim; Pace is a label and never an id",
+    "axisClampRule": "a consumer builds the clamp table by iterating axes[] and MUST test ceilingRule ~= \"none\" rather than testing truthiness. Under cid/tech/deploy/02 an axis with no ceiling carries the string \"none\", not a null: a null emitted as nil, Luau dropped the key, and the value axis was then indistinguishable from an axis missing from the table entirely.",
     "axes": [
       {
         "id": "value",
@@ -77,7 +78,8 @@ ids are `value`, `radius`, `speed` — the ids `upgrades` already ships, not the
         "unit": "multiplier on tiers[].value",
         "baseFrom": "upgrades[value].base, already inside upgradeEffect",
         "consumedBy": "economy.faucets[patch-clear].formula",
-        "ceilingRule": null,
+        "ceilingRule": "none",
+        "ceilingRuleAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02, and it is load-bearing: this axis is deliberately UNCLAMPED and the other two are clamped, so a builder iterating axes[] must be able to read all three rows. See axisClampRule.",
         "ceilingReason": "a currency multiplier breaks no invariant"
       },
       {
@@ -153,7 +155,8 @@ ids are `value`, `radius`, `speed` — the ids `upgrades` already ships, not the
       "a set bonus written into save data",
       "a purchase written into save data",
       "the value multiplier applied both at the faucet formula and inside the award function",
-      "a clamp applied between two sources"
+      "a clamp applied between two sources",
+      "a clamp skipped because ceilingRule was tested for truthiness rather than against \"none\""
     ]
   }
 }
@@ -178,6 +181,9 @@ ids are `value`, `radius`, `speed` — the ids `upgrades` already ships, not the
 - **Persistence work** stores held levels and the collection map, and stores no modifier.
 - **Architecture work** owns the server tick rate the `speed` ceiling reads. I state the
   inequality; the tick value is not mine.
+- **Whoever writes the clamp.** `axes[value].ceilingRule` is the string `"none"`, not a null, per
+  `cid/tech/deploy/02`. Test `ceilingRule ~= "none"`; `if rule then` is now true for all three axes
+  and would try to evaluate a rule that does not exist.
 
 ## Flagged to the developer
 

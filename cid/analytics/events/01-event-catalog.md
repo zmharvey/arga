@@ -34,21 +34,23 @@ to another domain's platform call. Event ids are **ungoverned internal identifie
 - **Device, OS and age group get no field**, because the dashboard breaks every default metric
   down by *Age Group, Platform, OS, Gender, Source, country, language* with no developer event
   `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/analytics-dashboard.md]`.
-- **`area_cleared`'s third field is `lapOrigin`, taken verbatim from `lapClock`, and my own
-  five-value composite is withdrawn.** Round 1 produced two spellings for one dimension — my
-  `lap` with `single`/`single_reset`/`spanned`/`spanned_reset`/`fallback` against `lapClock`'s
-  `lapOrigin` with `completion`/`join` — which is the `ownsSpan` collision recurring one field
-  over. **The lap reading is `lapClock`'s subject, its acceptance criterion is already written over
-  those two literals and requires any consumer to copy rather than paraphrase them**, so this sheet
-  adopts them and drops its own. The composite existed to carry two further `lapClock` exclusions
-  in one slot; what that costs is stated below rather than absorbed.
-- **What the two-value field costs, exactly, because it is not free.** `lapClock` `X2` counts
-  `resetInLap` and `X4` excludes a session whose load fell back to `defaultState`. Neither now has
-  a per-lap carrier. `resetInLap` survives **as an aggregate ratio** —
-  `count(character_reset at area k) / count(area_cleared at area k)` — which is what a per-ordinal
-  column needs and is not what a per-lap flag would give. **`X4` does not survive**: no field, and
-  no session id on the wire, so a fallback session's later laps cannot be filtered out. That is a
-  new unproducible, `U8`, not a rounding of the requirement.
+- **`area_cleared`'s third field is `lap`, five values, and it is settled by a `sharedPredicate`
+  block rather than by either sheet yielding again.** This field crossed twice. Round 2: I
+  published a five-value composite and `lapClock` published a two-value `lapOrigin`. Round 3: I
+  adopted `lapOrigin` and `lapClock` adopted my composite — **both moves correct in isolation and
+  contradictory jointly**, which is a mutual-deference inversion and not a disagreement. The five
+  values win on the merits: they preserve `X4` and per-lap `X2`, which the two-value form loses,
+  and **my own round-2 sheet had already costed that loss out as a new unproducible** — an
+  admission that the cheaper field was cheaper because it measured less. The cost is +3 distinct
+  values against roughly 6,300 of headroom, which is not a real constraint.
+- **The structural fix is `funnels/01`'s instrument, applied to a second field.** That sheet
+  invented `sharedPredicate` for `saveState` — one block naming the definer, the readers, the
+  mapping and the reopen condition, in one place — and it was never applied here. **Two keys
+  agreeing on one fact must each cite the key that owns it, never each other's field**, which is
+  the same conclusion stinger work reached from the Audio side. `telemetry` defines `lap`;
+  `lapClock` reads it; the mapping from each value to each of its exclusions is stated once, in
+  `telemetry.sharedPredicate`, and neither sheet can yield to the other again because there is
+  nothing left to yield.
 - **Where the cap forced a second event name instead of a field:** `slot_claimed` exists only
   because `session_start` already spends all three fields on `area`, `owned` and `load`.
 - **Identity is the platform's and this catalog defines none.** `LogCustomEvent(player, …)` takes
@@ -62,26 +64,19 @@ to another domain's platform call. Event ids are **ungoverned internal identifie
 - **The session id does not need `stateShape`.** `LogFunnelStepEvent` requires a `funnelSessionId`
   and nothing in `Types.luau` holds one, but the id is per-session and never persisted, so the
   telemetry module holds it in a private map keyed by `UserId` — the shape `init.server.luau`
-  already uses for `spawnPoses` `[research: game/src/server/init.server.luau]`. The half that
-  genuinely needs persistence — a **run ordinal**, which `funnels/01`'s `run1Sessions` population
-  and its `runOrdinal` field both rest on — is persistence-shape work's request, not duplicated.
+  already uses for `spawnPoses` `[research: game/src/server/init.server.luau]`. The run-1 split
+  needs no persisted field either: it is `funnels.sharedPredicate` over fields already stored.
 - **`refutes` is migrated to `kpis.refGrammar`'s one `ref` shape and the key carries
-  `refShape: 1`.** `refGrammar.gap4_oneShape.migrations` names this migration verbatim —
-  *"telemetry: refutes { sheet, field } becomes the same object"* — so the shape is taken, not
-  invented. Nine refs are `kind: manifestField` with a `path`; four cite a claim no manifest field
-  holds and are `kind: briefLine` with a `sheet` and a quoted `claim`, which is the case
-  `refGrammar` added for `economyHealth`'s prose citations and which this key needed too.
-  **All thirteen refs sit at exactly one location, `events[*].refutes`** — one path, never a deep
-  walk — and that location is declared in `refsLocation` so a per-key registry needs no discovery.
-  **I name no discriminator field:** the recognition rule is `kpis.refGrammar`'s, the verifier
-  flagged that `economyHealth.readings[].alarm[].kind` collides with the obvious `kind`-sniffing
-  answer, and a second spelling from me is the defect this migration exists to close.
+  `refShape: 1`.** `refGrammar.gap4_oneShape.migrations` names this migration verbatim, so the
+  shape is taken, not invented. Nine refs are `kind: manifestField` with a `path`; four cite a
+  claim no manifest field holds and are `kind: briefLine` with a `sheet` and a quoted `claim`.
+  **All thirteen sit at exactly one location, `events[*].refutes`**, declared in `refsLocation` so
+  a per-key registry needs no discovery. **I name no discriminator field:** the recognition rule is
+  `kpis.refGrammar`'s.
 - **`telemetry` is a build-read key, not a developer-facing one, and the value is written for a
-  builder.** `events[]` is what somebody writes the telemetry module *from* — thirteen insertion
-  points, an API call, a numeric value, three field positions and a cadence each. `budget`'s
-  sourced ceilings, `forbiddenPayload` and `unproducible` are developer-facing and read by nothing.
-  The `promotion` block carries that split, so the technical contract knows which half needs a
-  consumer and `deploy/02`'s emit gate knows which half never reaches the emitter.
+  builder.** `events[]` is what somebody writes the telemetry module *from*. `budget`'s sourced
+  ceilings, `forbiddenPayload` and `unproducible` are developer-facing and read by nothing. The
+  `promotion` block carries that split.
 - **No event in this catalog needs an eighth channel.** All thirteen sites are server-side and
   `Protocol` declares *"Exactly seven channels, and no more"*
   `[research: architect/sheets/05-interfaces.md]`.
@@ -90,12 +85,12 @@ to another domain's platform call. Event ids are **ungoverned internal identifie
 
 **Zero analytics calls exist anywhere in `game/src`** `[research: game/src]`. Every insertion point
 below is a place a call *could* go. A server module holds the per-session record (id, clock
-origins, running maxima, per-session emission caps) and is called from the thirteen sites, with no
-new remote and no client participation. **Three call sites need a change to expose a fact they
-already have:** `onJoin` discards `Persistence.load`'s second return `readable`
-`[research: game/src/server/init.server.luau]`; `tickPlayer` must retain the previous tick's XZ
-position for sheet `04`'s movement test; and `Plots` must expose an occupancy count, because
-`claimSlot` returns an index and `releaseSlot` can free any index
+origins, running maxima, per-session emission caps, the three lap flags) and is called from the
+thirteen sites, with no new remote and no client participation. **Three call sites need a change to
+expose a fact they already have:** `onJoin` discards `Persistence.load`'s second return `readable`
+`[research: game/src/server/init.server.luau]`, which `lap`'s `fallback` value needs; `tickPlayer`
+must retain the previous tick's XZ position for sheet `04`'s movement test; and `Plots` must expose
+an occupancy count, because `claimSlot` returns an index and `releaseSlot` can free any index
 `[research: game/src/server/Plots.luau]`.
 
 **The brief's own `OPEN.md §2` watch item *"instance count per area on mobile"* cannot be emitted
@@ -120,11 +115,11 @@ recorded rather than smoothed over.
 | 9 | `init.server.luau` `onPurchase`, `tryBuy` false branch | `upgrade_refused` |
 | 10 | `init.server.luau` `onPurchase`, at the `UpgradeApplied` fire | **no custom event and no funnel step.** One `LogEconomyEvent` sink; `funnels/03` rules there is no purchase funnel |
 | 11 | `Progression.revealRows` | `upgrade_row_lifted`; also funnel step 6's emitter, at the cheapest row's latch transition |
-| 12 | `onJoin` step 1, after `Persistence.load` | `session_start`; mints the session id and starts both clocks |
+| 12 | `onJoin` step 1, after `Persistence.load` | `session_start`; mints the session id, starts both clocks, and latches `loadWasFallback` |
 | 13 | `onJoin` step 2, after `Entitlements.refresh` | **folds into `session_start`** as field 2 `owned` |
 | 14 | `Plots.claimSlot`, via `onJoin` step 6 | `slot_claimed` |
 | 15 | `init.server.luau` `onSpawn` | **no custom event** (spawns = 1 + `character_reset` count), **but it is funnel step 1's emitter** |
-| 16 | `init.server.luau` `onDeath` | `character_reset` |
+| 16 | `init.server.luau` `onDeath` | `character_reset`; also sets `lapHadReset` |
 | 17 | `init.server.luau` `onLeave` | `session_end`; carries both session maxima |
 | 18 | `startSaveLoop` / `onShutdown` / `Persistence.save` | `save_written`, once per session plus every failure |
 
@@ -139,8 +134,29 @@ recorded rather than smoothed over.
     "clientEmissionPossible": false,
     "newRemoteChannelsRequired": 0,
     "callSiteModuleExists": false,
+    "sharedPredicate": {
+      "field": "telemetry.events[area_cleared].fields[3]",
+      "fieldName": "lap",
+      "definedBy": "telemetry",
+      "readBy": ["lapClock.originField", "lapClock.exclusions[X1]", "lapClock.exclusions[X2]", "lapClock.exclusions[X4]", "lapClock.aggregations.filter"],
+      "values": ["single", "single_reset", "spanned", "spanned_reset", "fallback"],
+      "mapping": {
+        "single": { "exclusions": [], "published": true, "counts": [] },
+        "single_reset": { "exclusions": ["X2"], "published": true, "counts": ["resetInLap"] },
+        "spanned": { "exclusions": ["X1"], "published": false, "counts": ["spannedLapCount"] },
+        "spanned_reset": { "exclusions": ["X1", "X2"], "published": false, "counts": ["spannedLapCount", "resetInLap"] },
+        "fallback": { "exclusions": ["X4"], "published": false, "counts": [], "dominant": true }
+      },
+      "publishedFilter": "lap in [single, single_reset]",
+      "rule": "This is the single definition of the lap-origin dimension for the Analytics category. telemetry defines the field and its five literals; lapClock reads them and owns what each one means for its own distribution. No key may restate the value list, and neither key may adopt the other's field in place of citing this block.",
+      "settles": "cid/analytics/_verified.md RR-14, and the two mutual-deference inversions on this field across rounds 2 and 3",
+      "whyFiveNotTwo": "the two-value form loses X4 entirely and demotes X2 from a per-lap fact to an aggregate ratio; the five-value form costs +3 distinct values against roughly 6,300 of headroom under the 8,000 combined-value cap",
+      "reopensOnlyIf": "a sixth lap condition is needed that is not a combination of spanned, reset and fallback. That is a new request against lapClock, filed by the domain that owns the reading, naming the reading — not a field rename here.",
+      "mayNotBeJoinedTo": "session_start.load, which records the same store failure once per session but cannot be joined per lap; fallback exists on this field precisely because that join is impossible",
+      "precedent": "funnels.sharedPredicate, which settles the run-1 split the same way"
+    },
     "promotion": {
-      "buildRead": ["naming", "customFields", "sessionRecord", "clock", "aboveTickPayoffs", "sampling", "events", "economyCallSites", "funnelCallSites", "budget.perServerRequestsPerMinute", "budget.perPlayerRequestsPerMinute"],
+      "buildRead": ["naming", "customFields", "sessionRecord", "clock", "aboveTickPayoffs", "sampling", "events", "economyCallSites", "funnelCallSites", "sharedPredicate", "budget.perServerRequestsPerMinute", "budget.perPlayerRequestsPerMinute"],
       "developerFacing": ["budget.requestsPerMinuteRule", "budget.ccuScope", "budget.eventNameCap", "budget.customFieldCap", "budget.combinedValueCap", "budget.retentionDays", "budget.droppedEventBehaviour", "forbiddenPayload", "unproducible"],
       "why": "events[] is what a builder writes the telemetry module from — insertion point, API call, value, three field positions and a cadence per event — in the same sense composition is. The other six Analytics keys supply no value a Luau module reads; this one does.",
       "consumerNeededIn": "the technical contract, as a telemetry module entry in modules[]",
@@ -170,7 +186,8 @@ recorded rather than smoothed over.
       "customFieldCap": 3,
       "customFieldsUsed": 3,
       "combinedValueCap": 8000,
-      "combinedValuesUsed": 900,
+      "combinedValuesUsed": 954,
+      "combinedValueHeadroom": 7046,
       "retentionDays": 90,
       "droppedEventBehaviour": "dropped silently, never retried, the call does not error",
       "droppedEventBehaviourStatus": "unverified; assumed from the funnel-cardinality statement",
@@ -197,17 +214,18 @@ recorded rather than smoothed over.
       "field03": {
         "name": "per-event detail; name and values vary by row",
         "required": false,
-        "distinctValuesAcrossCatalog": 49
+        "distinctValuesAcrossCatalog": 52
       },
       "allValuesAreStrings": true,
-      "combinedValueArithmetic": "9 * 2 * (49 + 1 absent) = 900"
+      "combinedValueArithmetic": "9 * 2 * (52 + 1 absent) = 954"
     },
     "sessionRecord": {
       "heldBy": "the telemetry server module, a private map keyed by UserId",
       "persisted": false,
       "onTheWire": false,
       "inStateShape": false,
-      "fields": ["sessionId", "clockOriginSeconds", "lastAboveTickSeconds", "maxPayoffGapSeconds", "tickClockSeconds", "maxTickGapSeconds", "lastTickPositionXZ", "lapEntrySeconds", "lapOriginIsJoin", "perSessionEmissionCounts"],
+      "fields": ["sessionId", "clockOriginSeconds", "lastAboveTickSeconds", "maxPayoffGapSeconds", "tickClockSeconds", "maxTickGapSeconds", "lastTickPositionXZ", "lapEntrySeconds", "lapWasSpanned", "lapHadReset", "loadWasFallback", "perSessionEmissionCounts"],
+      "lapFlagLifecycle": "lapWasSpanned is true for the first lap terminus after any join and false for every later one in that session; lapHadReset is set by character_reset and cleared at each terminus; loadWasFallback is latched once at session_start from Persistence.load's readable return and never cleared",
       "sessionId": "HttpService:GenerateGUID(false), minted at session_start, supplied to funnel-definition work as funnelSessionId",
       "createdAt": "onJoin step 1, after Persistence.load",
       "destroyedAt": "onLeave, after session_end is emitted"
@@ -222,7 +240,7 @@ recorded rather than smoothed over.
       "clocks": [
         { "id": "aboveTickGap", "resetBy": ["any aboveTickPayoffs kind landing"], "reportedAs": ["payoffGapSeconds on the ending event", "maxPayoffGapSeconds on session_end"] },
         { "id": "tickGap", "resetBy": ["any patch clear"], "reportedAs": ["maxTickGapSeconds, bucketed, on session_end field 3"], "accumulatesOnlyWhileMoving": true, "movementThresholdStuds": 0.1, "movementThresholdTestRange": [0.05, 0.5] },
-        { "id": "lap", "origin": "lapClock.origins.entry — the increment that finished area N-1, or the restore at join", "reportedAs": ["realisedLapSeconds on area_cleared, tagged by lapOrigin"] }
+        { "id": "lap", "origin": "lapClock.origins.entry — the increment that finished area N-1, or the restore at join", "reportedAs": ["realisedLapSeconds on area_cleared, tagged by the lap field"] }
       ],
       "excludes": ["deathToRearm", "postTerminal", "characterNotMoving"],
       "excludeReasons": {
@@ -259,7 +277,7 @@ recorded rather than smoothed over.
           { "position": 2, "name": "owned", "required": true, "cardinality": 2 },
           { "position": 3, "name": "load", "required": true, "cardinality": 2, "values": ["store", "fallback"] }
         ],
-        "requiresCallSiteChange": "onJoin currently discards Persistence.load's second return `readable`; the load field needs it",
+        "requiresCallSiteChange": "onJoin currently discards Persistence.load's second return `readable`; this field and the lap field's fallback value both need it",
         "refutes": {
           "kind": "briefLine",
           "path": null,
@@ -354,27 +372,21 @@ recorded rather than smoothed over.
         "insertionPoint": "game/src/server/Clearing.luau :: tickPlayer step 4, at the areasFinished increment",
         "api": "LogCustomEvent",
         "value": "realisedLapSeconds",
-        "valueUnit": "seconds from entering this area to finishing it, within one session; laps begun in an earlier session are marked lapOrigin: join and excluded from the realised distribution",
+        "valueUnit": "seconds from entering this area to finishing it, on the session-local monotonic clock; nothing is ever subtracted from a lap, and a lap whose entry was in a prior session is emitted whole and excluded whole via the lap field",
         "cadence": "perOccurrence",
         "valueException": "this is the one above-tick event whose value is not payoffGapSeconds; OPEN.md §2 item (2) has no other carrier and its gap contribution survives in session_end's running maximum",
         "fields": [
           { "position": 1, "name": "area", "required": true, "cardinality": 9 },
           { "position": 2, "name": "owned", "required": true, "cardinality": 2 },
           {
-            "position": 3, "name": "lapOrigin", "required": true, "cardinality": 2,
-            "values": ["completion", "join"],
-            "spellingOwnedBy": "lapClock.originField — these two literals verbatim, copied not paraphrased",
-            "meaning": {
-              "completion": "entry was the increment that finished the previous area, in this session; enters median and p90",
-              "join": "entry was the restore at join, so the lap began in an earlier session; excluded from every realised figure and counted in spannedLapCount"
-            },
-            "withdrawn": "this sheet's round-1 five-value composite (single / single_reset / spanned / spanned_reset / fallback) is withdrawn in favour of lapClock's two literals"
+            "position": 3, "name": "lap", "required": true, "cardinality": 5,
+            "values": ["single", "single_reset", "spanned", "spanned_reset", "fallback"],
+            "definedIn": "telemetry.sharedPredicate — the mapping to lapClock's exclusions lives there and is not restated here",
+            "readFrom": "the session record's lapWasSpanned, lapHadReset and loadWasFallback flags, evaluated at the terminus; fallback dominates"
           }
         ],
         "fieldsDropped": [
-          "the per-lap finds count — a function of area under systems/05's partition, so it buys no information",
-          "the per-lap reset flag — recoverable as an aggregate ratio, count(character_reset at area k) / count(area_cleared at area k), which is what lapClock's resetInLap column needs",
-          "the per-lap store-fallback flag — NOT recoverable; see unproducible U8"
+          "the per-lap finds count — a function of area under systems/05's partition, so it buys no information. Mean finds per area is recoverable as count(find_revealed at area) / count(area_cleared at area)"
         ],
         "refutes": {
           "kind": "manifestField",
@@ -514,7 +526,7 @@ recorded rather than smoothed over.
         "value": "secondsSinceSessionStart",
         "valueUnit": "seconds, join-relative",
         "cadence": "perOccurrence",
-        "alsoServes": "lapClock's resetInLap column, as the aggregate ratio count(character_reset at area k) / count(area_cleared at area k)",
+        "alsoSets": "lapHadReset on the session record, which is what puts the current lap into lap=single_reset or spanned_reset",
         "fields": [
           { "position": 1, "name": "area", "required": true, "cardinality": 9 },
           { "position": 2, "name": "owned", "required": true, "cardinality": 2 }
@@ -577,7 +589,7 @@ recorded rather than smoothed over.
       { "id": "N17", "never": "a code, redemption or promo state", "rule": "03-META.md priority 3, codes", "source": "concept/spec/incremental-spinoff-v2/03-META.md", "observable": "no field name matches /code|promo|redeem|voucher/i" },
       { "id": "N18", "never": "a trade, gift or transfer between players", "rule": "03-META.md priority 3, trading", "source": "concept/spec/incremental-spinoff-v2/03-META.md", "observable": "no field name matches /trade|gift|transfer|send.?to/i" },
       { "id": "N19", "never": "a rebirth, prestige or reset cycle", "rule": "03-META.md priority 3, rebirth; cleared is permanent", "source": "concept/spec/incremental-spinoff-v2/03-META.md", "observable": "no field name matches /rebirth|prestige|reset.?count|ascend/i; character_reset names a Roblox menu action, not a progress reset" },
-      { "id": "N20", "never": "an offline-accrual period or time-away figure", "rule": "03-META.md priority 3, offline accrual", "source": "concept/spec/incremental-spinoff-v2/03-META.md", "observable": "no field name matches /offline|away|idle.?time|since.?last/i; lapOrigin join is an exclusion flag with no duration attached" },
+      { "id": "N20", "never": "an offline-accrual period or time-away figure", "rule": "03-META.md priority 3, offline accrual", "source": "concept/spec/incremental-spinoff-v2/03-META.md", "observable": "no field name matches /offline|away|idle.?time|since.?last/i; the lap field's spanned and spanned_reset values are exclusion flags with no duration attached" },
       { "id": "N21", "never": "a figure comparing one player to another", "rule": "X10 plus priority-3 leaderboards", "source": "cid/theme/tone/04-do-nots.md", "observable": "no event value or field is a function of more than one player" },
       { "id": "N22", "never": "a custom field spent on Platform, OS, device class or Age Group", "rule": "the dashboard supplies all four with no developer event", "source": "https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/analytics-dashboard.md", "observable": "no field name matches /platform|device|^os$|age|viewport|fps/i" },
       { "id": "N23", "never": "an absolute wall-clock date, time of day or Unix timestamp", "rule": "cid: decided — a date beside a Player narrows identity and answers nothing an elapsed second does not", "source": "cid/analytics/events/02-never-logged.md", "observable": "every seconds-valued valueUnit says since session start, since the previous above-tick payoff, or from entering this area" },
@@ -587,11 +599,10 @@ recorded rather than smoothed over.
       { "id": "U1", "what": "every client-side fact, categorically — device class, viewport, frame rate, whether a beat was seen, index-panel opens", "why": "events can only be sent from the server; index-screen.toggle() is a direct local call with no packet", "proxy": "Platform and OS as a free dashboard breakdown", "wouldSettleIt": "an eighth Protocol channel, which this sheet does not request" },
       { "id": "U2", "what": "OPEN.md §2's watch item, instance count per area on mobile", "why": "a client fact under U1", "proxy": "none", "wouldSettleIt": "an eighth channel plus a client reporter; the brief asked to watch something the platform forbids measuring" },
       { "id": "U3", "what": "first input", "why": "nothing server-side observes input; the arming gate observes displacement, which is strictly later", "proxy": "run_armed.value, an upper bound", "wouldSettleIt": "a client message carrying the first-input instant" },
-      { "id": "U4", "what": "a run ordinal, so \"run-1 sessions\" is a formable population", "why": "StoredState carries no join count and no session count; funnels/01's run1Sessions and its runOrdinal field both rest on it", "proxy": "the platform's new-user cohort", "wouldSettleIt": "persistence-shape work's stateShape revision request; not duplicated here" },
+      { "id": "U4", "what": "an integer run count per player", "why": "StoredState carries no join count and no session count. The run-1 BINARY is producible without one, as funnels.sharedPredicate over fields already persisted; only an integer count is not", "proxy": "funnels.sharedPredicate's pristine / progressed split", "wouldSettleIt": "a persisted counter, which persistence-shape work has withdrawn and banned by name" },
       { "id": "U5", "what": "why a purchase was refused, and the attempt total itself", "why": "tryBuy's bare boolean, this event's session cap, silent analytics rate-drops, and ingressLimits I2 forbidding any log on the pre-handler drop path", "proxy": "upgrade_refused count as a lower bound", "wouldSettleIt": "tryBuy returning a reason enum, and a counter Networking is willing to expose on the I2 path" },
       { "id": "U6", "what": "duplicate volume as an economy rate", "why": "systems/05's partition makes it structurally zero; defect_duplicate_find is a correctness counter, not a rate", "proxy": "none", "wouldSettleIt": "nothing — the quantity does not exist" },
-      { "id": "U7", "what": "whether a neighbour was perceived", "why": "social/02's criteria need a client frustum test", "proxy": "slot_claimed.value, presence rather than perception", "wouldSettleIt": "a client-side visibility report, which U1 forbids" },
-      { "id": "U8", "what": "lapClock exclusion X4 — filtering out laps from a session whose load fell back to defaultState", "why": "lapOrigin is two values and all three field slots on area_cleared are spent, so the fallback flag has no per-lap carrier; session_start.load records it once per session and nothing joins the two events", "proxy": "none per lap. The affected share is bounded in aggregate by session_start.load and save_written.outcome", "wouldSettleIt": "a fourth custom field, which the platform does not have, or a session id on the wire" }
+      { "id": "U7", "what": "whether a neighbour was perceived", "why": "social/02's criteria need a client frustum test", "proxy": "slot_claimed.value, presence rather than perception", "wouldSettleIt": "a client-side visibility report, which U1 forbids" }
     ]
   }
 }
@@ -599,23 +610,23 @@ recorded rather than smoothed over.
 
 ## Consequences for other work
 
-- **Session and lap-clock work** gets its spelling adopted unchanged — `lapOrigin`, `completion`,
-  `join` — and inherits two consequences of the two-value form it should state on its side:
-  `resetInLap` becomes an aggregate ratio over `character_reset`, not a per-lap flag; and **`X4` is
-  unproducible** (`U8`), so a fallback session's later laps cannot be excluded.
+- **Session and lap-clock work needs no edit.** `lapClock.originField` is `lap` with the same five
+  literals, the same order and the same exclusion mapping as `telemetry.sharedPredicate`, so its
+  criterion 1 passes byte-for-byte against disk. What changes is where the fact lives: both keys now
+  cite `telemetry.sharedPredicate` rather than each other's field, which is what stops a third
+  inversion. `X4` and per-lap `X2` are producible, so nothing in its exclusion list is censored.
 - **Module-and-channel-definition work** inherits one server module, thirteen call sites, six funnel
   emitters, two economy call sites, zero new remotes, and three changes at existing sites: `onJoin`
   keeps `readable`, `tickPlayer` keeps the previous XZ position, and `Plots` exposes an occupancy
-  count. `telemetry.promotion.buildRead` names the half it reads.
-- **KPI-shortlist work** owns the ref-recognition rule. This key carries `refShape: 1`, emits the
-  `ref` object at exactly one location, `events[*].refutes`, and declares that location in
-  `refsLocation` so a per-key registry needs no discovery. It names no discriminator field.
-- **Contract-and-seam work** can resolve `telemetry`'s refs today: nine `manifestField` paths and
-  four `briefLine` refs, all conforming to `refGrammar.pathGrammar`. Several point at proposed keys
-  (`pacing`, `depths`, `tierMix`, `discovery`, `firstSession`) and land in `pendingRefs[]` by design.
+  count. The session record now carries three lap flags with a stated lifecycle.
+- **KPI-shortlist work** owns the ref-recognition rule. This key carries `refShape: 1` and emits the
+  `ref` object at exactly one location, declared in `refsLocation`. It names no discriminator field.
+- **Contract-and-seam work** gets a second `sharedPredicate` in the category and the shape is
+  identical to `funnels`'. If two of them exist, it is worth a merge check: every key named in a
+  `readBy` must exist, and no two `sharedPredicate` blocks may claim the same `field`.
 - **Economy-flow work** owns the faucet's granularity outright; this sheet points at
-  `economyHealth.flows[patch-clear]` and rules none of it, ratifies `faucetBudgetShare` 0.25, and
-  supplies 320 as the denominator its `batchRule` divides by.
+  `economyHealth.flows[patch-clear]`, ratifies `faucetBudgetShare` 0.25, and supplies 320 as the
+  denominator its `batchRule` divides by.
 - **Funnel-definition work** gets six emitters verbatim, `CustomField02` as `owned` with
   `["none","span"]`, and `funnelSessionId` without a `stateShape` change.
 - **Plot-arrangement work** inherits a defect, not a request:
@@ -629,20 +640,22 @@ recorded rather than smoothed over.
    `briefLine` and a non-empty `sheet`; every `manifestField` ref has a non-null `path` parsing
    under `kpis.refGrammar.pathGrammar`; every `briefLine` ref has `path: null` and a non-empty
    `claim`; and no ref carries `field`, `value`, `min`, `max` or a numeric target.
-3. `area_cleared`'s field 3 is named `lapOrigin` with exactly the two values `completion` and
-   `join`, identical to `lapClock.originField`; `combinedValuesUsed` 900 equals `9 × 2 × 50`, where
-   49 is the sum of field-3 cardinalities (`2+5+2+3+4+2+3+2+24+2`).
-4. `funnelCallSites[]` has exactly 6 ordinal entries whose `site` strings equal
-   `funnels.onboarding.steps[].emitter` at the same ordinal, none naming `onPurchase`, and
-   `economyCallSites[0].cadence` names `economyHealth.flows[patch-clear]` and no window of its own.
+3. `area_cleared`'s field 3 is named `lap` with exactly the five values `single`, `single_reset`,
+   `spanned`, `spanned_reset`, `fallback`, in that order, identical to `lapClock.originField.values`
+   and to `telemetry.sharedPredicate.values`; `combinedValuesUsed` 954 equals `9 × 2 × 53`, where 52
+   is the sum of field-3 cardinalities (`2+5+2+3+4+5+3+2+24+2`).
+4. `telemetry.sharedPredicate` names `telemetry` as `definedBy`, lists `lapClock` paths in `readBy`,
+   maps all five values to their `lapClock` exclusions, and carries a `reopensOnlyIf`; no other key
+   in the category restates the five literals.
 
 ## Not decided here
 
 The reasoning behind each prohibition row — sheet `02`, this domain. How much may be emitted and
 what a dropped event means — sheet `03`. The clock, the gap derivation and the per-session pass
 predicate — sheet `04`. The ref-recognition rule and every element of `refGrammar` — KPI-shortlist
-work; this key conforms and names nothing. The lap's population, its exclusion verdicts and its
-aggregations — session and lap-clock work, which owns `lapOrigin`'s spelling. Funnel step names,
+work; this key conforms and names nothing. What each `lap` value *means for the distribution* — the
+published filter, the counted columns and the nine per-ordinal rows are session and lap-clock
+work's; this key defines the field and the mapping and reads none of it. Funnel step names,
 ordinals, populations and pass marks — funnel-definition work. Every `LogEconomyEvent` argument
 value, `batchPatchCount` and its flush list — economy-flow work. Every target and alarm —
 KPI-shortlist work. How the pipe is built, batched, retried or stored — logging-pipeline work.

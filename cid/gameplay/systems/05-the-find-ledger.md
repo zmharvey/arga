@@ -111,7 +111,8 @@ re-places nothing. The record is **one boolean per name in `collection`, and not
       "which patch indices the seed picks to carry a slice",
       "the order in which a depth's slices are assigned to its areas"
     ],
-    "sellableLuck": null,
+    "sellableLuck": "none",
+    "sellableLuckAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no sellable luck quantity of any kind; the sibling luckShaped false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
     "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
   }
 }

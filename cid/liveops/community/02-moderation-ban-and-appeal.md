@@ -2,6 +2,14 @@
 
 **Domain:** liveops/community · **Category:** Live Ops · **Wave:** 7
 
+> **Revised, round 1** (`cid/liveops/_verified.md`). **R1** closed: AC3 and the three chat-surface
+> observables are scoped to **executable use**. The unqualified form was false on disk —
+> `GameConfig.luau:1634` carries the string `"ChatWindowConfiguration.Enabled defaults to true"`,
+> which is `social.chat.overridesPlatformDefault`, the field this sheet cites approvingly in the
+> paragraph above the criterion it broke. **R7** closed: `RR-C1` no longer pins row id `P5`
+> (`marketing/thumbnails/02` claims the same id) and no longer states an absolute row count.
+> The rulings, the thirteen rows and the `conductSurfaceCount` are unchanged and were upheld.
+
 ## Decision
 
 **The moderation policy is a derivation, not a document: thirteen conduct surfaces enumerated,
@@ -30,6 +38,18 @@ other client's TextChannel — invisibly, but delivered"*
 `[research: game/src/server/World.luau]`. `social.chat` carries three booleans; the build closes
 four surfaces. I record it and ask `social` for nothing, because the build is already correct
 and the key is already satisfied.
+
+**Where the class names actually occur, because my first draft got this wrong and it is worth
+saying why.** `[revised: R1]` I asserted that all three configuration class names appear in
+`game/src` **only** inside `World.luau`. Two of them do. `ChatWindowConfiguration` does not:
+`game/src/shared/GameConfig.luau:1634` carries
+`overridesPlatformDefault = "ChatWindowConfiguration.Enabled defaults to true"` — a string
+value, not a reference, and it is **`social.chat.overridesPlatformDefault`, the very field this
+sheet cites approvingly two paragraphs above**. The fact was right and the location claim was
+wrong: the class name leaks out of the module that uses it into the key that documents it. So
+every observable here is now scoped to **executable use** — a reference a Luau runtime resolves —
+which is both true today and robust against the next documentation string, where an unqualified
+occurrence count is neither. `[cid: decided]` on the scoping form.
 
 **The platform's age-check regime confirms `social.chat: false` on a second, independent
 ground, and overrules nothing.** A facial age check is required to access chat; users are
@@ -103,19 +123,28 @@ Roblox restricts the playability of the experience on the platform for all playe
 labels map to age bands including 5–8 and 9–15
 `[research: https://create.roblox.com/docs/production/promotion/experience-guidelines]`. It fits
 `release`'s own routing test exactly — a settings surface, no file, no diff, no build step — and
-`release.publishChecklist` has four rows and this is not one of them. **I file `RR-C1` and add
-no row myself**, because a Community sheet writing a publish row would be a second answer to an
-approved key.
+no existing `publishChecklist` row covers it. **I file `RR-C1` and add no row myself**, because
+a Community sheet writing a publish row would be a second answer to an approved key.
 
 ## Revision request issued
 
-**RR-C1 · `cid/tech/deploy/01-the-release-contract.md`.** Add a fifth `publishChecklist` row,
-`P5`, for the Maturity & Compliance questionnaire: `surface` Creator Dashboard → experience →
-Maturity & Compliance; `scriptable` false; `readableBack` `[unverified]` (whether the resulting
-label is readable at runtime is not established by the page above); `failureIfWrong` *"Roblox
-restricts the playability of the experience on the platform for all players"*. The row's values
-are `release`'s to set; the obligation and its citation are what I supply. This changes
-`release` AC1's row count from 4 to 5.
+**RR-C1 · `cid/tech/deploy/01-the-release-contract.md`.** Add **a new `publishChecklist` row,
+id assigned by `release`**, for the Maturity & Compliance questionnaire: `surface` Creator
+Dashboard → experience → Maturity & Compliance; `scriptable` false; `readableBack` `[unverified]`
+(whether the resulting label is readable at runtime is not established by the page above);
+`failureIfWrong` *"Roblox restricts the playability of the experience on the platform for all
+players"*. The row's values and its id are `release`'s to set; the obligation and its citation
+are what I supply.
+
+**The id is deliberately unpinned.** `[revised: R7]` My first draft asked for `P5` and stated a
+`4 → 5` row count. **`marketing/thumbnails/02:155`'s `RR-T1` names the same id**, and two further
+wave-7 asks against the same checklist are live (`RR-H1` from `marketing/hype/01`, the
+private→public visibility flip, and an unnumbered ask from `marketing/icon/01:313`). Four
+independent requests cannot each own `P5`, and an absolute count in my sheet goes stale the
+moment any one of them lands. So this sheet requires only **at least one row beyond `P4`**, and
+`release` numbers them. **Composition is otherwise clean and worth recording:** `RR-C1` and
+`RR-H1` are disjoint obligations with different surfaces, read-backs and failure modes, and
+`marketing/hype/01:263` cites `RR-C1` rather than refiling it.
 
 ```manifest
 {
@@ -124,10 +153,11 @@ are `release`'s to set; the obligation and its citation are what I supply. This 
     "conductSurfaces": [],
     "conductSurfaceCount": 0,
     "conductSurfaceGuarantee": "social X7 (no replicated payload carrying another player's identifier) and X9 (no remote handler accepting a string later rendered to a different client) make the surfaces below unbuildable rather than merely unbuilt. A later wave adding a player-authored value to the wire fails against social before it reaches this key.",
+    "observableScopingRule": "every chat-surface observable in this key is scoped to EXECUTABLE USE — a reference a Luau runtime resolves — and never to raw textual occurrence. Round 0 used the unqualified form and was false on disk: GameConfig.luau:1634 carries the string \"ChatWindowConfiguration.Enabled defaults to true\", which is social.chat.overridesPlatformDefault. A documentation string is not a chat surface, and a criterion that cannot tell them apart fails on the next comment edit.",
     "conductSurfacesConsidered": [
-      { "id": "textChatWindow", "open": false, "closedBy": "social.chat.chatWindowEnabled false; world.configure writes ChatWindowConfiguration.Enabled = false at boot step 1", "observable": "ChatWindowConfiguration appears in game/src only inside World.luau's CHAT_SURFACES; at runtime TextChatService.ChatWindowConfiguration.Enabled reads false" },
-      { "id": "bubbleChat", "open": false, "closedBy": "social.chat.bubbleChatEnabled false; same boot path", "observable": "BubbleChatConfiguration appears in game/src only inside World.luau; at runtime its .Enabled reads false" },
-      { "id": "chatInputBar", "open": false, "closedBy": "social.chat.text false and playerAuthoredStringsToOtherClients 0. NOT NAMED BY social.chat's three booleans — the build closes it anyway. See finding F-C2.", "observable": "ChatInputBarConfiguration appears in game/src only inside World.luau; CHAT_SURFACES has exactly 3 entries; at runtime its .Enabled reads false" },
+      { "id": "textChatWindow", "open": false, "closedBy": "social.chat.chatWindowEnabled false; world.configure writes ChatWindowConfiguration.Enabled = false at boot step 1", "observable": "exactly one module references ChatWindowConfiguration in executable code, World.luau, inside CHAT_SURFACES. The ONLY other occurrence in game/src is non-executable: the social.chat.overridesPlatformDefault documentation string at GameConfig.luau:1634. At runtime TextChatService.ChatWindowConfiguration.Enabled reads false." },
+      { "id": "bubbleChat", "open": false, "closedBy": "social.chat.bubbleChatEnabled false; same boot path", "observable": "exactly one module references BubbleChatConfiguration in executable code, World.luau. It has no non-executable occurrence today, and the criterion is stated in the same scoped form as textChatWindow so a later documentation string cannot break it. At runtime its .Enabled reads false." },
+      { "id": "chatInputBar", "open": false, "closedBy": "social.chat.text false and playerAuthoredStringsToOtherClients 0. NOT NAMED BY social.chat's three booleans — the build closes it anyway. See finding F-C2.", "observable": "exactly one module references ChatInputBarConfiguration in executable code, World.luau; CHAT_SURFACES has exactly 3 entries; at runtime its .Enabled reads false. Its only other occurrence in game/src is the explanatory comment at World.luau:55, in the same file." },
       { "id": "voice", "open": false, "closedBy": "social.chat.voice false; release.publishChecklist P4", "observable": "grep -rn \"VoiceChatService\" game/src returns zero. NO SERVER-SIDE ASSERTION IS POSSIBLE: readableBack is none. See restsOnHumanTick." },
       { "id": "nameOrNameplate", "open": false, "closedBy": "social X6 (no DisplayName mutation), X11 (no string naming another player)", "observable": "grep -rn \"DisplayName\" game/src returns zero" },
       { "id": "plotSign", "open": false, "closedBy": "social X6, X9", "observable": "grep -rnE \"SurfaceGui|BillboardGui\" game/src returns zero" },
@@ -252,14 +282,20 @@ are `release`'s to set; the obligation and its citation are what I supply. This 
         "source": "https://create.roblox.com/docs/production/promotion/experience-guidelines",
         "ownedBy": "release",
         "rowAddedByThisSheet": false,
-        "revisionRequest": "RR-C1 — cid/tech/deploy/01-the-release-contract.md, add a fifth publishChecklist row P5. Values are release's; the obligation and its citation are supplied here.",
+        "revisionRequest": "RR-C1 — cid/tech/deploy/01-the-release-contract.md, add a new publishChecklist row, ID ASSIGNED BY release. Values are release's; the obligation and its citation are supplied here.",
+        "rowIdPinned": false,
+        "rowIdPinnedWhy": "marketing/thumbnails/02:155's RR-T1 names P5 for a different obligation, and two further wave-7 asks against the same checklist are live (marketing/hype/01's RR-H1, marketing/icon/01:313). Four requests cannot each own one id.",
+        "rowCountRequirement": "at least one row beyond P4",
+        "absoluteRowCountAsserted": false,
+        "composesWith": ["RR-H1 (marketing/hype/01, private-to-public visibility flip) — disjoint surface, read-back and failure mode; hype/01:263 cites RR-C1 rather than refiling it"],
         "fitsReleaseRoutingTest": "a settings surface, no file in this repository, no diff, producible by no build step"
       }
     ],
     "platformObligationCount": 1,
     "findings": [
       { "id": "F-C1", "what": "the platform age-check regime confirms social.chat false on a second, independent ground and pays social/01's outstanding [research owed:]", "isARequest": false, "targetKeyChanged": "none" },
-      { "id": "F-C2", "what": "the shipped World.luau disables ChatInputBarConfiguration, a fourth chat surface social.chat's three booleans do not name; the module comment gives the reason", "isARequest": false, "targetKeyChanged": "none", "whyNotARequest": "the build is already correct and social.chat is already satisfied; naming a fourth boolean would add a field no builder needs to read" }
+      { "id": "F-C2", "what": "the shipped World.luau disables ChatInputBarConfiguration, a fourth chat surface social.chat's three booleans do not name; the module comment gives the reason", "isARequest": false, "targetKeyChanged": "none", "whyNotARequest": "the build is already correct and social.chat is already satisfied; naming a fourth boolean would add a field no builder needs to read" },
+      { "id": "F-C3", "what": "social.chat.overridesPlatformDefault's value string contains the literal class name ChatWindowConfiguration, so that name occurs in game/src outside the module that uses it. Harmless — it is a documentation value, not a reference — and it is why every observable in this key is scoped to executable use.", "isARequest": false, "targetKeyChanged": "none", "foundBy": "cid/liveops/_verified.md R1" }
     ]
   }
 }
@@ -267,16 +303,21 @@ are `release`'s to set; the obligation and its citation are what I supply. This 
 
 ## Consequences for other work
 
-- **Publish-checklist work (`release`, `tech/deploy`).** `RR-C1`: a fifth row for the Maturity &
-  Compliance questionnaire, whose absence *"restricts the playability of the experience on the
-  platform for all players"*. Your AC1's row count moves from 4 to 5. **I add no row.** Your
-  `P3` and `P4` are also now cited by name in another key as the two ticks an entire domain's
-  ruling rests on — if either is ever asserted or read back, `community.moderation
-  .restsOnHumanTick` shrinks with it.
+- **Publish-checklist work (`release`, `tech/deploy`).** `RR-C1`: **a new row, id yours to
+  assign**, for the Maturity & Compliance questionnaire, whose absence *"restricts the
+  playability of the experience on the platform for all players"*. I state a requirement of *at
+  least one row beyond `P4`* and **assert no absolute count**, because three further wave-7
+  requests are live against the same checklist and one of them (`marketing/thumbnails/02`'s
+  `RR-T1`) named the same id I originally pinned. **I add no row.** Your `P3` and `P4` are also
+  now cited by name in another key as the two ticks an entire domain's ruling rests on — if
+  either is ever asserted or read back, `community.moderation.restsOnHumanTick` shrinks with it.
 - **Chat-configuration and boot work (`social`, `world`).** Nothing is owed and nothing is
   overruled. Your `[research owed:]` on age-based communication defaults is **paid** and it
   confirms your ruling; `overridesPlatformDefault` is correct as written because the gate is on
   the account. `F-C2` is a finding about your build being ahead of your key, not a request.
+  `F-C3` is a smaller one and also not a request: your `overridesPlatformDefault` **value
+  string** contains the literal `ChatWindowConfiguration`, which is why my observables are
+  scoped to executable use rather than to occurrence. Do not change the string.
 - **Exploit-response work (`integrity`, `tech/security`).** The jurisdiction line is drawn here
   and asks nothing of you. No tier is added, none of your five is restated, and your
   `Player:Kick` scoping is adopted verbatim. My ban check greps three ban symbols and does not
@@ -299,25 +340,32 @@ are `release`'s to set; the obligation and its citation are what I supply. This 
 2. `grep -rnE "BanAsync|UnbanAsync|GetBanHistoryAsync" game/src` returns zero matches, and the
    token `:Kick(` appears in no observable or acceptance criterion of this sheet.
 3. `grep -rnE "VoiceChatService|DisplayName|BillboardGui|SurfaceGui|leaderstats|GetOrderedDataStore" game/src`
-   returns zero matches; `ChatWindowConfiguration`, `BubbleChatConfiguration` and
-   `ChatInputBarConfiguration` each appear in `game/src` only inside
-   `game/src/server/World.luau`; and `World.luau`'s `CHAT_SURFACES` table has exactly 3 entries.
+   returns zero matches. `ChatWindowConfiguration`, `BubbleChatConfiguration` and
+   `ChatInputBarConfiguration` are each **referenced in executable code by exactly one module,
+   `game/src/server/World.luau`**, whose `CHAT_SURFACES` table has exactly 3 entries. Every
+   other occurrence of any of the three anywhere in `game/src` is non-executable, and today
+   there are exactly two: the explanatory comment at `World.luau:55` and the
+   `social.chat.overridesPlatformDefault` value string at `GameConfig.luau:1634`. **A raw
+   occurrence count is not this criterion and fails against the repo.**
 4. `community.moderation.restsOnHumanTick` has exactly 2 rows, `P4` and `P3`, each with a
    non-empty `failureIfWrong`; `community.platformObligations` has exactly 1 row whose `ownedBy`
-   is `"release"` and whose `revisionRequest` names
-   `cid/tech/deploy/01-the-release-contract.md`; and `release.publishChecklist` is unchanged by
-   this sheet at 4 rows until `RR-C1` is accepted.
+   is `"release"`, whose `revisionRequest` names `cid/tech/deploy/01-the-release-contract.md`,
+   and whose `rowIdPinned` is `false`; and no field in this sheet names a `publishChecklist` row
+   id that does not already exist, nor asserts an absolute `publishChecklist` row count.
 
 ## Not decided here
 
 Whether any channel exists, what the intake of record is, its admission rule and triage classes,
 and community roles — **sheet `01`, this domain**, which proposes the key this sheet amends.
-The fifth publish row's `surface`, `readableBack`, `assertedBy` and `standsInForARead` values —
-`release` (`tech/deploy/01`), via `RR-C1`; I supply the obligation and its citation only. What
-an integrity flag does — `integrity` (`tech/security/03`), whose five tiers are cited and not
-restated. The stale-session release and its single `Player:Kick` — `persistence/01`, excluded
-from every observable here. Whether a fourth chat boolean joins `social.chat` — `social`
-(`gameplay/social/01`); `F-C2` is recorded as a finding and requests nothing. Whether a creator
-can see reports from their own experience, and whether only an account owner may appeal — both
-`[unverified]`, with their settling fetches named above, and neither load-bearing. What any
-player-facing string says — `notices` and `vocabulary`; this sheet authors zero.
+The new publish row's **id**, `surface`, `readableBack`, `assertedBy` and `standsInForARead`
+values — `release` (`tech/deploy/01`), via `RR-C1`; I supply the obligation and its citation
+only, and deliberately not the id. How `RR-C1`, `RR-H1`, `RR-T1` and `marketing/icon/01`'s
+unnumbered ask are ordered and numbered against one checklist — `release`, which is the only
+holder that can see all four. What an integrity flag does — `integrity` (`tech/security/03`),
+whose five tiers are cited and not restated. The stale-session release and its single
+`Player:Kick` — `persistence/01`, excluded from every observable here. Whether a fourth chat
+boolean joins `social.chat` — `social` (`gameplay/social/01`); `F-C2` is recorded as a finding
+and requests nothing. Whether a creator can see reports from their own experience, and whether
+only an account owner may appeal — both `[unverified]`, with their settling fetches named above,
+and neither load-bearing. What any player-facing string says — `notices` and `vocabulary`; this
+sheet authors zero.

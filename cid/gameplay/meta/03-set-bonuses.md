@@ -72,17 +72,19 @@ is the axis that repeats because it is the only one with the headroom to be gran
       { "setId": "vault",   "depth": 3, "axis": "speed",  "factor": 1.20 },
       { "setId": "spire",   "depth": 4, "axis": "radius", "factor": 1.20 }
     ],
+    "axisHeadroomAbsenceRule": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". The value axis declares \"unbounded\" rather than \"none\", because on a headroom field \"none\" would assert that ZERO headroom remains — the opposite of the truth, which is that no ceiling exists on that axis at all. A checker iterating the three axes must test type(v) == \"number\" before comparing, and must treat \"unbounded\" as passing.",
     "axisHeadroom": {
       "radius": { "availableToSetsAtShippedPass": 2.158, "spentAtStartingFactors": 1.44, "derivation": "0.9 * systems06Ceiling(radius) / upgradeLadderMax(radius) / productFactor(radius)" },
       "speed":  { "availableToSets": 1.611, "spentAtStartingFactors": 1.20, "derivation": "0.9 * (movement.baseClearRadius / runtime.clearTickRate) / upgradeLadderMax(speed)" },
-      "value":  { "availableToSets": null, "spentAtStartingFactors": 1.20, "derivation": "no ceiling exists on this axis" }
+      "value":  { "availableToSets": "unbounded", "spentAtStartingFactors": 1.20, "derivation": "no ceiling exists on this axis" }
     },
     "invariants": [
       "every rows[].setId is a collection.sets[].id",
       "every collection.sets[].id appears in exactly one row",
       "every rows[].axis is an upgrades[].id",
       "every rows[].factor is at least 1.0 and inside factorTestRange",
-      "for each axis, the product of its set factors times every product factor on that axis is at most 0.9 times that axis's systems/06 ceiling"
+      "for each axis, the product of its set factors times every product factor on that axis is at most 0.9 times that axis's systems/06 ceiling",
+      "an axisHeadroom entry whose availableToSets is \"unbounded\" passes the check above trivially and is never compared numerically"
     ]
   }
 }
@@ -102,7 +104,10 @@ is the axis that repeats because it is the only one with the headroom to be gran
   factors multiply each other *and* the offer ladder's radius pass, so all three must clear
   `0.9 × ceiling` together. Moving `Span`'s factor moves the room I have, and moving mine
   moves the room it has. **`speed` carries one factor against the thinnest headroom in the
-  game and is the axis most likely to be priced into its own clamp.**
+  game and is the axis most likely to be priced into its own clamp.** Its own `axisBudget`
+  proposal carries the same `value.availableToSets` field with a **null**; under
+  `cid/tech/deploy/02` that becomes `"unbounded"` before `axisBudget` is promoted, or the
+  merge rejects it the moment it is.
 - **Offer-ladder work is unblocked with the distribution it asked for.** `speed` carries one
   set factor, so the 1.611x it declined to sell into is not further consumed by me. `radius`
   carries two, so at its shipped 1.75 the axis sits at `1.75 × 1.44 = 2.52` of a 3.776 budget

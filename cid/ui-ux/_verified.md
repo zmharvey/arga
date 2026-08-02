@@ -681,3 +681,159 @@ there is no scroll region for the difference.
 `feedback/01`, `feedback/02`, `feedback/03`, `platform/02`, and all six lead indexes.
 **Four sheets carry the six requests:** `hud/01` (R2-2, R2-4), `hud/03` (R2-1, R2-3),
 `platform/01` (R2-5), `screens/01` (R2-6). Round 3 should re-read those four and nothing else.
+
+---
+
+# Round 3 — final
+
+**Status: PARTIAL**
+**Five of six closed and verified against source. One is closed on one side only.** `hud/01` fixed
+the focus contract and filed the correction to Platform; **`platform/01`'s `gamepad.focusList` block
+is unchanged from round 2** and still reads the two paths `hud/01`'s new `citeAs.notFields` now
+formally declares do not exist. The cap is spent, so I name it precisely rather than open a round 4:
+**it is a defect, not a design disagreement** — both sheets want identical behaviour and one is
+quoting a stale path. It is one JSON block, and the replacement text already exists, written out
+verbatim inside `hud/01`. Everything else in the category releases.
+
+## The six, checked against source
+
+| # | verdict | what I read |
+|---|---|---|
+| **F-1** | **closed, and the two values are right** | I recomputed the spec-child counts rather than accept them. `readout()` with `stacked: true` (which `layout: "corners"` forces, `hud-overlay.mjs:259`) emits `[ReadoutIcon?, ReadoutLabel, ReadoutValue]` (`:100-123`). The collection group carries `icon: "find"` → **3** spec children → control at **4** ✓. The three upgrade groups carry no `icon` in `composition` or in the shipped brief → **2** spec children → control at **3** ✓. `iconNote` records that the number moves if an icon is added, which is the failure mode of a hard-coded 4. The check — *"strictly greater than every sibling's, and no `controlNode` has `LayoutOrder` 0"* — is stronger than the values it guards and survives a change to either. |
+| **F-2** | **closed** | All five group nodes now equal what the compiler emits: `Readout_Finds`, `Readout_Shards`, `Readout_Value`, `Readout_Reach`, `Readout_Pace`, plus pattern-fixed `ProgressGroup` (`hud-overlay.mjs:280`, correctly annotated `nodeIsPatternFixed`). `node` now always means the *group* node, so `oneNodePerGroup.staticCheck` holds on route B: `controlNode` is a child of `node`, and every `elements[].node` resolves under `node`. Uniqueness across `node ∪ controlNode` is 10 distinct names ✓. `hud/02`'s presence and `Visible` rules now bind the whole row, which is what they were written for. `nodeByRoute` / `controlNodeByRoute` / `classByRoute` with the active route deriving the flat values makes switching to route A one field. |
+| **F-3** | **closed, and the affordability channel genuinely survives** | See below. |
+| **F-4** | **closed** | `mechanismInstead: "viewport.gamepad.mechanism: explicitLinkGraph"`, and `deprecatedMechanismForbidden` now lists **both** `GuiService:AddSelectionParent` and `GuiObject.SelectionGroup` — right, since the banked pack marks the first Deprecated (`pack.md:327`) and records the second as absent from the current `GuiObject` reference (`pack.md:319`). `correctedInRevision2` names what it got wrong rather than quietly editing. |
+| **F-5** | **half closed — see below** | |
+| **F-6** | **closed, and it is the best work of the three rounds** | Screens' 328 px matches my independent recomputation **exactly**, and it found both errors I did (a fifth child, and a dropped `space.md`) rather than only the one I named. `0.88 × 375 = 330 ≥ 328` ✓, with the test range widened to 0.80–0.94 so the chosen value is not on its own boundary — the difference between a fix and a patch. Criterion 2 is replaced by the check that would have caught it: children + 4 gaps + padding ≤ `IndexSurface.AbsoluteSize.Y` at every viewport, a property rather than a number, which survives a token change. Navigation withdrew the *objection* rather than the control, on a real distinction — visual overlap (harmless, UI Art's) versus unreachability (fatal, its own) — and both sheets now state the surviving argument in a field (`exitReachability.restsOn`, `doesNotRestOn`). And it **raised** the severity the convergence would have buried: `zOrder.invariantSeverity: "bar (a)"`, with respawn recorded as `alsoServesAs: "the recovery floor … not a design path and never named in copy"`. Every geometric requirement Navigation made of another domain is withdrawn. |
+
+## Does route B produce a legal composition end to end?
+
+**Yes.** I walked it node by node against the emitter. `hud-overlay` emits
+`Cluster_topLeft → Readout_Finds → [ReadoutIcon 1, ReadoutLabel 2, ReadoutValue 3]`; `pressables`
+parents `Pressable_INDEX` in at `LayoutOrder` 4 with `Size`/`MinSize` from
+`viewport.classes.<class>.minTargetPx`; the frame's own vertical `UIListLayout` (`applyLayout`,
+`SortOrder.LayoutOrder`) places it last; the frame's `auto: 'xy'` (`hud-overlay.mjs:77`) grows to
+fit it. One box, one group, no `content.actions`, no `actionButton()`, no duplicate cluster name,
+no `maxSize` read, no `Position` or `AnchorPoint` written by any module. The three upgrade groups
+are identical with `LayoutOrder` 3. **Nothing in this path needs a `ui-forge` change**, which is
+what makes it a shipping answer rather than a plan.
+
+Two carve-outs are stated rather than hidden — `pressables` writes `Size`, `MinSize` and
+`LayoutOrder` on its own `controlNode` only, expiring when `U4` lands — and `U6` and `U7` are
+correctly marked **not refusable**, because `U6` is a live jump-button overlap on both routes and
+`U7` is the only thing between the notice stack and a full-width plate over the collection group.
+The honesty about `defaultOutcomeIsRefusal` (*"`ui-forge` pattern work has no owner, so route B is
+what actually ships unless somebody is assigned"*) is why this closes.
+
+## Does the affordability channel survive on the control's own `Text`?
+
+**Yes, and the move is an improvement rather than a workaround.** `primaryChannel: "text"` and
+`colourIsSecondaryOnly: true` are preserved on all three `upg*-state` elements; the words are still
+`Ready` / `Short` / `Max` — distinct first letters, distinct lengths, all inside `maxLabelChars`;
+and criterion 2 pins it with a regex (`^[0-9,]+ (Ready|Short)$` or exactly `Max`) rather than prose.
+`input.pressable.affordabilityByColourAlone: false` demanded a second channel that is not colour,
+and text on the control is one. HUD's argument — *the thing you press states its price* — is the
+correct reading of a purchase control, and it is what `modal-grid`'s `ctaPlacement: "per-item"`
+already does in the other pattern.
+
+**The collection control's `Text: ""` is also right**, for a stronger reason than the sheet gives.
+Its stated reason (the count above is its label; `onboarding/03` `T5` forbids an instruction) is
+sound. The structural one is better: the index control has no cost and no affordability state, so
+there is nothing for a second channel to carry — its `affordance` is pressability, and elevation
+plus stroke are shape channels, which is what the shape-not-hue constraint actually asks for.
+
+**One thing this move quietly bought.** The control's text is written by `pressables`, and
+`Pressables.luau:404` reads `type.body` → `SourceSans`. So the affordability string is **not** on
+the `type.numeric` path and does **not** hit the `MerriweatherBold` throw. Under route A it would
+have been a `ReadoutState` label whose type role nobody had assigned. The category's one
+must-be-legible string is, by accident, the one string in the HUD safe from Art's `A1`.
+
+## Does the focus contract dereference? **No — one half was not updated.**
+
+`hud/01` did its side completely: `citeAs` with five canonical paths, a four-entry `notFields` list
+naming `groups[].instanceName` and `groups[].members[].memberIndex` as non-fields, `selectableNode:
+"the group's controlNode, never its node"`, and a filed correction reading *"every
+`composition.groups` entry with `interactive` true, sorted by `groupIndex`; `selectionOrder = 10 *
+groupIndex`; the selectable Instance is `groups[].controlNode`"*.
+
+**`platform/01` still carries the round-2 text, unchanged:**
+
+- `gamepad.focusList.rule` — *"every composition **member** with `interactive` true, sorted by
+  (`groups[].groupIndex`, `members[].memberIndex`)"*
+- `gamepad.focusList.selectionOrderRule` — `10 * composition.groups[].groupIndex +
+  composition.groups[].members[].memberIndex`
+- `required[]` — still demands `groups[].members[].memberIndex` and `groups[].members[].instanceName`
+- `invariant` — still *"sorted by (groupIndex, memberIndex)"*
+- `citeAs.notFields` — still the four geometry entries, none of the focus ones
+
+So the two halves now **contradict explicitly** where in round 2 they merely failed to meet: one
+sheet's `notFields` names as non-existent exactly the two paths the other's `required[]` demands be
+added.
+
+**Blast radius, computed rather than asserted.** HUD's rule gives `10 × groupIndex` over groupIndex
+1, 4, 5, 6 → **10, 40, 50, 60**, total and tie-free. Platform's gives `10 × groupIndex +
+memberIndex`; resolved charitably through `elements[upg*-state].memberIndexWithinGroup = 3` it gives
+43, 53, 63 for the upgrades — and **nothing at all for the collection control**, because under route
+B `Pressable_INDEX` is `groups[collection].controlNode` and is not an element, so it has no
+`memberIndex`. One builder gets four integers; another gets three integers and a `nil`.
+
+**The cycle order is identical under both readings** — collection, value, reach, pace — so this is
+not player-visible and does not reopen bar (a). It is bar (b), narrowly: two builders write
+different `SelectionOrder` values and one indexes a nil.
+
+## The one open item, and exactly how to close it
+
+**Defect, not disagreement.** Nobody disputes the behaviour. `platform/01`'s `gamepad.focusList`
+and `required[]` should be replaced with the text `hud/01` already filed:
+
+- `focusList.rule` → *"every `composition.groups` entry with `interactive` true, sorted by
+  `composition.groups[].groupIndex` ascending, filtered to `Selectable` true"*
+- `focusList.selectionOrderRule` → `10 * composition.groups[].groupIndex` (no second term)
+- `focusList.selectableInstance` → `composition.groups[].controlNode`
+- `required[]` → drop the `groups[].members[].memberIndex` and `groups[].members[].instanceName`
+  rows; keep `groups[].groupIndex` and `groups[].interactive`
+- `invariant` → *"the four interactive groups, sorted by `groupIndex`, form a total order with no
+  ties"*
+- `citeAs.notFields` → add the two dropped paths, matching `composition.citeAs.notFields`
+
+Platform's acceptance criterion 4 (walk `NextSelectionDown` four times, visit each pressable once,
+return to start) is **already correct** and needs no change — it tests the behaviour both sheets
+agree on, which is why the defect is confined to the derivation and not to the outcome.
+
+## Carried, not fixed
+
+- **`F3` and Art's `A1` land on the same build step and both are total failures of the readouts.**
+  `hud/03` says so in terms. `F3`: `HudBinding.luau:404-406` uppercases, `hud-overlay.mjs:76` does
+  not, so the casing fix breaks every readout unless node names come from `composition.groups[].node`
+  first. `A1`: `palettes.mjs:150` gives `serif-ui` a numeric font of `MerriweatherBold`, not an
+  `Enum.Font` member, and `UIBuilder.luau:482`'s `(Enum.Font :: any)[t.font] or Enum.Font.Gotham`
+  **raises** on a missing member rather than falling through, so every `type.numeric` node throws
+  inside `buildNode`. The Art verifier's blast-radius claim is right: `type.numeric` only, and
+  `Pressables.luau:404` reads `type.body` → `SourceSans`, so the purchase controls survive. Marking
+  `A1` not refusable is correct.
+- **Ten `ui-forge` requests still have no owner** (`architect/06`). Route B means none of them blocks
+  the reported defect, which is the point of route B, but `U6` and `U7` are marked not refusable and
+  nobody is assigned. This is the wave's largest unowned item and belongs to the final
+  cross-category pass.
+- **Cosmetic, recorded not requested:** `navigation/02:251` cites Screens' extent as `0.94 × 0.86`
+  in prose where the field is now `0.94 × 0.88`. The same object states
+  `governedBy: "screens[index].geometry"` and `adoptedNotDecidedHere: true`, so no builder reads the
+  prose as authoritative and no field is wrong.
+
+## Verdict
+
+**PARTIAL. The category releases except `viewport.gamepad.focusList` and its `required[]` block**,
+which must take `hud/01`'s filed correction verbatim before any build reads the focus contract.
+Sixteen of seventeen sheets are approved as of this reading. `platform/01` is approved on every axis
+except that one block — its device classification, touch-target derivation, keepout rects,
+safe-area instrument, budget shares, orientation ruling and both `## Pushing back` sections all
+stand.
+
+Across three rounds this category closed 14 + 6 + 5 findings, and the arbitrations that resolved
+them were argued rather than split: HUD separated affordance from instance, Feedback conceded that
+`Active = false` made its own z-rule redundant, Platform withdrew a node it had required, Screens
+disproved its own guarantee and published the arithmetic that did it, and Navigation raised a
+severity its own concession would otherwise have hidden. **The one thing three rounds did not fix is
+the thing they fixed twice before: a field path quoted from memory instead of read.** That is worth
+carrying into the final pass as a category-independent finding — `citeAs` blocks now exist in two
+keys, and they exist because the same defect recurred three times.

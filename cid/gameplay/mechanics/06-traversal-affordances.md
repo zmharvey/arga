@@ -74,7 +74,7 @@ surface to have needed one.
 | jump | exists, platform default | `JumpHeight = 7.2`, `UseJumpPower = false` |
 | jump gates | zero | no patch, Find or route requires it |
 | jump upgrades | zero | no axis touches jump; the speed axis is walk speed only |
-| fall damage | none | at any height |
+| fall damage | none | at any height; `maxSurvivableFallStuds` is `"unbounded"`, not a number and not a null |
 | damage sources in the world | zero | no killbrick, no hazard, no trap, no drowning, no burning |
 | void below the play area | none | the ground is continuous under every walkable surface |
 | `Humanoid.Health` writes by game code | zero | health is never read or written |
@@ -100,7 +100,12 @@ surface to have needed one.
   "provides": "traversal",
   "value": {
     "jump": { "exists": true, "jumpHeight": 7.2, "useJumpPower": false, "changesGameState": false, "upgradable": false, "gatedContent": 0 },
-    "fall": { "damage": false, "voidBelowPlayArea": false, "maxSurvivableFallStuds": null },
+    "fall": {
+      "damage": false,
+      "voidBelowPlayArea": false,
+      "maxSurvivableFallStuds": "unbounded",
+      "maxSurvivableFallStudsAbsence": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". This field declares \"unbounded\", because \"none\" on an upper-bound field would assert that ZERO studs are survivable — the exact opposite of the decision. No fall is fatal at any height; the siblings damage false and voidBelowPlayArea false carry the same fact as booleans. A reader must test type(v) == \"number\" before comparing."
+    },
     "death": { "possibleByDesign": false, "damageSources": 0, "healthWrittenByGameCode": false, "respawnAt": "areaSpawn", "lossOnRespawn": "none", "authoredCue": "none", "respawnDelayOwner": "architect/01-runtime" },
     "boundary": { "kind": "collisionBarrier", "walkableMarginStuds": 12, "heightStuds": 20, "passable": false, "climbable": false, "jumpable": false, "opaque": false, "sightlineObstruction": "none", "cue": "none", "teleportBack": false },
     "surface": { "maxStepStuds": 2, "maxSlopeDegreesWherePatchesStand": 30, "climbSurfaces": 0, "ladders": 0, "seats": 0, "vehicles": 0, "water": 0, "speedModifyingSurfaces": 0, "teleportsWithinArea": 0 },
@@ -137,6 +142,9 @@ surface to have needed one.
 - **Architecture and runtime work:** `Players.CharacterAutoLoads` and `RespawnDelaySeconds` stay
   yours. This sheet requires only that a lost character is playing again at the area spawn with zero
   loss; whether the respawn stays hand-rolled is your call.
+- **Any module reading `fall.maxSurvivableFallStuds`:** it is the string `"unbounded"` under
+  `cid/tech/deploy/02`, not a null and not a number. Nothing in the build should read it at all —
+  there is no fall damage to bound — and anything that does must guard the type.
 
 ## Acceptance criteria
 

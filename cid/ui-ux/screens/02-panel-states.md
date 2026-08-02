@@ -1,23 +1,25 @@
 # 02 — The states of the collection surface
 
-**Domain:** ui-ux/screens · **Category:** UI/UX · **Wave:** 5 · **Revision round 1**
+**Domain:** ui-ux/screens · **Category:** UI/UX · **Wave:** 5 · **Revision round 3**
 
 ## Decision
 
 **No state of the `index` surface carries a player-facing string.** Two of the six are
 unreachable by construction and are declared so rather than designed for; the other four are
 silent, keep whatever is already drawn, and never unwrite a slot. **`screens` holds no system
-copy**: the save-failure message is `notices.members[saveNotLoaded]` and belongs to Feedback UI.
+copy**: the save-failure message is `notices.members[id=saveNotLoaded]` and belongs to Feedback
+UI.
 
 ## Why
 
 **An empty state and a loading state are what the category's verification asks of every screen,
 and this screen genuinely has neither.** The panel is available only from a snapshot holding at
-least one true entry in `found` (`firstSession.withheld.collectionPanel`, `latchSource` as
-corrected 2026-08-01 to *"at least one entry is true"*), so open-with-nothing and
-open-before-a-snapshot cannot be reached through the one path that opens it. Saying that is
-information; inventing an empty-state illustration to fill the section is not, and
-`onboarding/03` `T5` forbids a first-run-only string outright.
+least one true entry in `found` (`firstSession.withheld[surface=collectionPanel]`, whose
+`latchSource` reads *"at least one entry in the collection map is TRUE, counted over the names
+in `collection.sets`"*), so open-with-nothing and open-before-a-snapshot cannot be reached
+through the one path that opens it. Saying that is information; inventing an empty-state
+illustration to fill the section is not, and `onboarding/03` `T5` forbids a first-run-only
+string outright.
 
 | # | state | reachable | what renders | string | how it is caught |
 |---|---|---|---|---|---|
@@ -36,7 +38,7 @@ produces no panel, no sound, no shake, no flash and no movement suspension. The 
 behaviour is ratified `[research: game/src/client/IndexScreen.luau]`.
 
 **`S4` is the one that would be got wrong by default.** The obvious implementation blanks the
-labels it cannot confirm. `discovery.record`'s `found` field is cleared by *"nothing, ever"*,
+labels it cannot confirm. `discovery.record.fields[name=found].clearedBy` is *"nothing, ever"*,
 and blanking a slot because one snapshot was malformed is exactly the re-suppression
 `firstSession.suppressionForbidden` bans. **Once written, never unwritten**, including across a
 respawn, a rebind attempt and a malformed payload `[cid: decided]`.
@@ -49,20 +51,25 @@ and `vocabulary` does not govern it.
 
 **The system copy moved out of this key, and Feedback's argument was the better one.** My first
 draft carried `screens.systemCopy.saveLoadFailed`; `feedback/03` independently wrote
-`notices.members[saveNotLoaded].text` for the same trigger, the same channel and the same dwell
-semantics. **Two strings for one event means the build renders whichever key merges last**, so
-one had to go, and the surface argument settles which: a load-failure message is a transient
-notice drawn over live play, not a screen. Feedback's string is also Title Case against
-`vocabulary.casing: "title"`, where mine was sentence case. **This key now holds zero strings of
+`notices.members[id=saveNotLoaded].text` for the same trigger, the same channel and the same
+dwell semantics. **Two strings for one event means the build renders whichever key merges
+last**, so one had to go, and the surface argument settles which: a load-failure message is a
+transient notice drawn over live play, not a screen. Feedback's string is also Title Case
+against `vocabulary.casing`, where mine was sentence case. **This key now holds zero strings of
 its own, in every state, on every surface** `[brief: soft]` ← `theme/tone/01`'s routing of error
 copy, which this reverses with its own author's consent.
 
 **What travels with it, so nothing is dropped in the handover:** the `PROSE_PATHS` request in
-`bridge/schema.mjs` is now Feedback's and applies to `notices.members[].text`, not to a
-`screens` prefix; the trigger requirement stands unchanged and unowned, that persistence must
-be able to distinguish *loaded, empty* from *failed to load* and expose it at join, which
-nothing does today; and the ruling that **every other failure in this game is silent** stays
-here, because those failures are states of this surface.
+`bridge/schema.mjs` is now Feedback's and applies to `notices.members[].text`, not to a `screens`
+prefix; the trigger requirement stands unchanged and unowned, that persistence must be able to
+distinguish *loaded, empty* from *failed to load* and expose it at join, which nothing does
+today; and the ruling that **every other failure in this game is silent** stays here, because
+those failures are states of this surface.
+
+**Three paths this sheet cited did not resolve and are corrected**, as part of the round-3 sweep
+sheet 01 publishes as `screens.citations`: `firstSession.withheld.collectionPanel` (an array of
+rows, not a map), `discovery.record.found` (`fields` is an array of rows, not a map), and
+`notices.members[saveNotLoaded]` (keyed by an `id` field).
 
 ```json
 {
@@ -74,11 +81,11 @@ here, because those failures are states of this surface.
         "statesCarryNoString": true,
         "ownStringCountInEveryState": 0,
         "states": [
-          { "id": "S1", "name": "absentBeforeFirstFind", "reachable": true, "renders": "nothing; Visible false", "string": null, "cue": "none", "movementSuspended": false, "citation": "firstSession.withheld.collectionPanel; input.pressable.rejectionCueOnFailedPrecondition none" },
+          { "id": "S1", "name": "absentBeforeFirstFind", "reachable": true, "renders": "nothing; Visible false", "string": null, "cue": "none", "movementSuspended": false, "citation": "firstSession.withheld[surface=collectionPanel]; input.pressable.rejectionCueOnFailedPrecondition none" },
           { "id": "S2", "name": "openWithZeroFilled", "reachable": false, "unreachableBecause": "the panel latches on a snapshot holding at least one true entry in found", "renders": "4 headings and 24 empty slots", "string": null, "cue": "none", "onReach": "warn once, naming S2" },
           { "id": "S3", "name": "openBeforeFirstSnapshot", "reachable": false, "unreachableBecause": "availability is derived from a snapshot; no snapshot means not available", "renders": "as S2", "string": null, "cue": "none", "onReach": "warn once, naming S3" },
           { "id": "S3b", "name": "pressedBeforeBind", "reachable": true, "renders": "nothing", "string": null, "cue": "none", "onReach": "warn once", "citation": "wiring.onClientBoot connects input at step 4 and binds this surface at step 5" },
-          { "id": "S4", "name": "snapshotWithoutFound", "reachable": true, "renders": "exactly what was already drawn", "string": null, "cue": "none", "rule": "a slot written once is never unwritten, ever, by any cause", "citation": "discovery.record.found clearedBy nothing ever; firstSession.suppressionForbidden reSuppression" },
+          { "id": "S4", "name": "snapshotWithoutFound", "reachable": true, "renders": "exactly what was already drawn", "string": null, "cue": "none", "rule": "a slot written once is never unwritten, ever, by any cause", "citation": "discovery.record.fields[name=found].clearedBy is 'nothing, ever'; firstSession.suppressionForbidden bans reSuppression" },
           { "id": "S5", "name": "buildOrSlotFailure", "reachable": true, "renders": "build failure: no surface, presses do nothing. Slot failure: that slot stays empty, the other 23 unaffected", "string": null, "cue": "none", "onReach": "warn once per cause", "rule": "the client entry point survives both" }
         ]
       }
@@ -86,7 +93,7 @@ here, because those failures are states of this surface.
     "systemCopy": {
       "heldByThisKey": false,
       "withdrawn": "screens.systemCopy.saveLoadFailed, revision round 1, RR-10",
-      "heldInsteadAt": "notices.members[saveNotLoaded]",
+      "heldInsteadAt": "notices.members[id=saveNotLoaded]",
       "ownedBy": "ui-ux/feedback",
       "because": "a load-failure message is a transient notice drawn over live play, not a screen; two strings for one event render whichever key merges last",
       "requirementsThatTravelWithIt": [
@@ -127,19 +134,19 @@ here, because those failures are states of this surface.
 2. Over a session of any length, the number of transitions of any `Slot_*/Name.Text` from a
    non-empty value to the empty string is 0, including across a respawn, a second `bind()` call
    and a snapshot that carries no `found` field.
-3. The merged manifest holds exactly 1 save-failure string, at `notices.members[saveNotLoaded]`,
-   and `screens` holds 0 player-facing strings at any path.
+3. The merged manifest holds exactly 1 save-failure string, at
+   `notices.members[id=saveNotLoaded]`, and `screens` holds 0 player-facing strings at any path.
 4. On a save with zero Finds held, `IndexSurface.Visible` is `false` at join and stays `false`
    across any number of `toggle()` calls, and those calls create no `Instance`, play no sound
    and change no `Humanoid` property.
 
 ## Not decided here
 
-The screen inventory, the element tree, the panel extent and the producibility finding (sheet
-01, which holds this key). Rendered case, minimum text size, wrap behaviour and the copy budget
-(sheet 03). Whether a flavour line exists and what an empty `FlavourLine` renders as (sheet 04).
-**The save-failure string, its surface, its dwell and its `PROSE_PATHS` entry (Feedback UI,
-`notices.members[saveNotLoaded]`, which supersedes this sheet's first draft.)** Whether
-persistence can distinguish a failed load from an empty one, and whether it retries
-(architecture and persistence work). What the `warn` text says: it is not player-facing and
-`vocabulary` does not govern it (build work).
+The screen inventory, the element tree, the panel extent, the producibility finding and the
+published citation list (sheet 01, which holds this key). Rendered case, minimum text size, wrap
+behaviour and the copy budget (sheet 03). Whether a flavour line exists and what an empty
+`FlavourLine` renders as (sheet 04). **The save-failure string, its surface, its dwell and its
+`PROSE_PATHS` entry (Feedback UI, `notices.members[id=saveNotLoaded]`, which supersedes this
+sheet's first draft.)** Whether persistence can distinguish a failed load from an empty one, and
+whether it retries (architecture and persistence work). What the `warn` text says: it is not
+player-facing and `vocabulary` does not govern it (build work).

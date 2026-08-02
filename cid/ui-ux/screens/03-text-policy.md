@@ -1,6 +1,6 @@
 # 03 — How a string renders, and how much of it a screen may hold
 
-**Domain:** ui-ux/screens · **Category:** UI/UX · **Wave:** 5 · **Revision round 1**
+**Domain:** ui-ux/screens · **Category:** UI/UX · **Wave:** 5 · **Revision round 3**
 
 ## Decision
 
@@ -72,6 +72,11 @@ platform sanctions the cap it needs: a `UITextSizeConstraint` element *"won't ex
 So the 24 slot labels and the 4 headings are capped at their computed fit size; everything else
 in the game, including all prose, is uncapped and grows.
 
+**One path this sheet cited did not resolve and is corrected.** The `Slot_*/Name` cap read
+`collection.sets[].relics[].name`; `relics[]` holds bare strings, so it is
+`collection.sets[].relics[]`. Routed in by Objects as `RQ2` and swept across all four sheets in
+this domain; the full list is published as `screens.citations` on sheet 01.
+
 | rule | value | applies to | mechanism |
 |---|---|---|---|
 | `R1` rendered case | the stored value, verbatim | every player-facing string | zero `string.upper`, zero `:upper()`, zero all-caps literal |
@@ -91,20 +96,19 @@ verification). Under `R9` a rendered string that no key holds is a build failure
 note. Every string this category writes now sits in a key: `screens`, `composition`, `notices`,
 `navigation`, `viewport`.
 
-**The emitter change is a hard requirement, not an aspiration, and verification made that
-sharper.** Grepping `ui-forge/src` for `MinSize`, `UITextSizeConstraint`, `TextScaled` and
-`TextTruncate` returns **zero matches anywhere** (confirmed at verification round 1). So `R2`
-and `R7` have **no emitter path at all today**: not a weak one, none. Until `UIBuilder.luau`
-emits the constraint, every label on every surface renders at whatever the ramp says and both
-rules are unenforceable. This is one of the ten `ui-forge` edits wave 5 has requested from an
-owner that does not exist, and it is the one that gates an accessibility floor rather than a
-layout preference.
+**The emitter change is a hard requirement, not an aspiration.** Grepping `ui-forge/src` for
+`MinSize`, `UITextSizeConstraint`, `TextScaled` and `TextTruncate` returns **zero matches
+anywhere** (confirmed at verification round 1). So `R2` and `R7` have **no emitter path at all
+today**: not a weak one, none. Until `UIBuilder.luau` emits the constraint, every label on every
+surface renders at whatever the ramp says and both rules are unenforceable. This is one of the
+ten `ui-forge` edits wave 5 has requested from an owner that does not exist, and it is the one
+that gates an accessibility floor rather than a layout preference.
 
 **The copy budget the brief leaves unset.** `theme/vocabulary/01` records it as *"unset anywhere
 in the brief"* and routes it here; `vocabulary` bounds one label and nothing bounds a screenful.
-The budget is set against what this game actually holds rather than a general theory: the index
-carries 4 headings plus 24 names, so 32 is 28 plus one group of headroom, and one prose string at
-a time is what sheet 04's `FlavourLine` needs alone. All four figures are `[cid: decided]`.
+The budget is set against what this game actually holds: the index carries 4 headings plus 24
+names, so 32 is 28 plus one group of headroom, and one prose string at a time is what sheet 04's
+`FlavourLine` needs alone. All four figures are `[cid: decided]`.
 
 ```json
 {
@@ -123,7 +127,7 @@ a time is what sheet 04's `FlavourLine` needs alone. All four figures are `[cid:
       "automaticSizeY": { "prose": true, "singleWordLabel": false },
       "growthUnderPreferredTextSize": "uncapped",
       "cappedNodes": [
-        { "match": "Slot_*/Name", "count": 24, "maxTextSize": "the largest size at which the widest collection.sets[].relics[].name fits the slot's realised width, from TextService:GetTextBoundsAsync at build time" },
+        { "match": "Slot_*/Name", "count": 24, "maxTextSize": "the largest size at which the widest collection.sets[].relics[] entry fits the slot's realised width, from TextService:GetTextBoundsAsync at build time", "pathCorrectedFrom": "collection.sets[].relics[].name" },
         { "match": "Heading_*", "count": 4, "maxTextSize": "the same computation against the widest collection.sets[].label" }
       ],
       "overflowResolution": "fail the build and name the string; never shrink below the floor, never truncate",
@@ -166,9 +170,9 @@ a time is what sheet 04's `FlavourLine` needs alone. All four figures are `[cid:
   realised text size may not fall below 14 px on any supported device, and `TextScaled` is not
   available as the way to fit a device.
 - **Meta and Content (`collection`)** inherits the failure route, not a rename: if the widest
-  Find name cannot render at 14 px in one sixth of the panel width, the build stops and the fix
-  is a shorter name or a wider panel. 24 of 24 pass `theme/vocabulary/01`'s 12-character ceiling
-  today, so this is a guard, not a request.
+  `collection.sets[].relics[]` entry cannot render at 14 px in one sixth of the panel width, the
+  build stops and the fix is a shorter name or a wider panel. 24 of 24 pass
+  `theme/vocabulary/01`'s 12-character ceiling today, so this is a guard, not a request.
 - **Feedback UI (`notices`)** inherits `R5` and `R8` for its own prose strings, which is the only
   place in this sheet that reaches a key I do not touch.
 
@@ -190,10 +194,11 @@ a time is what sheet 04's `FlavourLine` needs alone. All four figures are `[cid:
 The typeface, the type-ramp values, colours, radii and panel art (Art and Visuals, UI Art, wave
 6, which this sheet constrains and does not set). The per-device scaling curve, safe area,
 gamepad focus order and the touch-target floor (Platform and Input). Which strings the HUD holds
-and how it groups them (HUD, `composition`). The screen inventory, the panel extent and the
-element tree the fit computation runs against (sheet 01). The save-failure string and every other
-notice string, including its wording and its own `PROSE_PATHS` entry (Feedback UI,
-`notices.members[]`). The flavour line's content and its 14-word bound, which is `theme/tone/02`'s
-and is only rendered here (sheet 04). Number formatting, separators and a colon between a label
-and a value, which `theme/tone/01` puts outside copy as furniture composed at render time (HUD).
-Whether `UIBuilder.luau` actually gains the constraint emitter (`ui-forge` emitter work).
+and how it groups them (HUD, `composition`). The screen inventory, the panel extent, the element
+tree the fit computation runs against, and the published citation list (sheet 01). The
+save-failure string and every other notice string, including its wording and its own
+`PROSE_PATHS` entry (Feedback UI, `notices.members[]`). The flavour line's content and its
+14-word bound, which is `theme/tone/02`'s and is only rendered here (sheet 04). Number
+formatting, separators and a colon between a label and a value, which `theme/tone/01` puts
+outside copy as furniture composed at render time (HUD). Whether `UIBuilder.luau` actually gains
+the constraint emitter (`ui-forge` emitter work).
