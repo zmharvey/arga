@@ -87,8 +87,9 @@ server rather than letting them play a whole session that will be discarded.
   and `endgame.postTerminalArea.patchCount` still carries 640 as well, so **neither is a safe
   pointer**. The live bound is `max(solvency.areaLedger[].patchCount,
   solvency.postTerminalBay.patchCount)` — both halves inside one manifest block, which is why I
-  point at one key rather than two. At 1,680 the payload is ~19,700 characters, 0.47% of the cap,
-  and it still does not grow with progress.
+  point at one key rather than two. At 1,680 the payload is **19,739 characters**, 0.47% of the cap,
+  and it still does not grow with progress. The figure is published **exact** rather than rounded,
+  because a worst-case bound that rounds down rounds toward the thing it bounds.
   `[research: cid/gameplay/balance/03-ladder-solvency.md]`
 - **This key now asks the architect to widen nothing.** The round-1 request for an eighth persisted
   field is withdrawn: Funnels and Engagement settled it on the ground that a brand-new save is
@@ -233,8 +234,9 @@ server rather than letting them play a whole session that will be discarded.
         "endgame.postTerminalArea.patchCount — resolves, but still carries 640; solvency's revision table asks endgame to move to 1680 and that edit has not landed"
       ],
       "supersedes": "stateShape's and Persistence.luau:13's 'at most 640 keys in cleared', which is low by 2.625x against the released bay",
-      "worstCaseChars": 19700,
-      "worstCaseDerivation": "at 1680 keys: cleared 19065 (9 one-digit keys at 9 chars, 90 two-digit at 10, 900 three-digit at 11, 681 four-digit at 12, plus a 12-char wrapper) + found 491 + upgrades 48 + rowsRevealed 67 + three scalars 58 + braces 10. Recompute from solvency if the bay count moves.",
+      "worstCaseChars": 19739,
+      "worstCaseCharsRounding": "exact, not rounded. A worst-case bound may only ever be restated upward; 19700 rounds toward the thing it bounds and is wrong even with 5261 characters of margin against the AC4 threshold.",
+      "worstCaseDerivation": "at 1680 keys: cleared 19065 (9 one-digit keys at 9 chars, 90 two-digit at 10, 900 three-digit at 11, 681 four-digit at 12, plus a 12-char wrapper) + found 491 + upgrades 48 + rowsRevealed 67 + three scalars 58 + braces 10 = 19739. Recompute from solvency if the bay count moves; each additional four-digit key adds 12.",
       "worstCasePercentOfValueCap": 0.47,
       "integerKeysReturnAsStrings": true,
       "integerKeyRule": "every reader of cleared uses tonumber(key) and never a type test, because the JSON round trip returns integer keys as strings",
@@ -295,7 +297,9 @@ rather than widening a shape.**
   successfully, and not on a Studio-suppressed pass, which does not touch it at all.
 - **Performance work** inherits the agreed pointer, `solvency.postTerminalBay.patchCount`, and
   should drop `depths.postTerminalArea.patchCount`, which does not resolve. Its scan-cost model and
-  my payload bound now read one field, so they move together or not at all.
+  my payload bound now read one field, so they move together or not at all. Its
+  `readingSolvencyIsACostInputNotAnIndexSpace` note is correct and is what sheet 03's `B2` limit
+  now records from my side.
 - **Build & Deploy work** owns `release.environments.studioWriteRule` and now has the field its AC3
   greps for: `persistence.studioWriteGuard`. It also inherits `D6` as the concrete case of its own
   emitted-null hazard — no value in any of my three keys is null.

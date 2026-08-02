@@ -10,7 +10,7 @@
 
 **A bus exists only if something ducks it, attenuates differently, or is stolen from at a different priority.** *"Target: the smallest game that still gives every creative area real work"* `[brief: binding]` (`00-CORE.md`) forbids a bus that exists to organise a lead's output. Each of the six passes that test: `Stingers` is the only duck cause; `World` is the only 3D bus; `WorldNeighbour` is the only cue class `social/03` `X10` lets reach a second client; `Interface` is the only bus that is never ducked; `Beds` is the only continuous one; `Master` is the single knob a hotfix can move `[cid: decided]`.
 
-**A bus with no member is not built.** `03-META.md` priority 3 is hard as a gate and forbids an unused bus held open for anything. So `buses[].builtWhen` is a predicate over another key's value — `Beds` exists iff `ambience.layerCount > 0`, `World` iff `sfx` has a row, `WorldNeighbour` iff `sfx` rules a neighbour's clear positional. That is not a reservation; it is a build condition naming its owner `[cid: decided]`.
+**A bus with no member is not built, and neither is a level.** `03-META.md` priority 3 is hard as a gate and forbids an unused bus held open for anything. So `buses[].builtWhen` is a predicate over another key's value — `Beds` exists iff `ambience.layerCount > 0`, `World` iff `sfx` has a row, `WorldNeighbour` iff `sfx` rules a neighbour's clear positional. **The same rule cost me a row:** my first draft gave the one system notice a level of 0.360 on `Interface`, and interface-sound work ruled that cue does not exist. A number written for a sound nobody may make is the reserved slot `M1` forbids, and it is exactly the row a builder implements because a figure was there. It is deleted, and `Interface` carries three cue classes: `B4`, a press cue, and index open and close.
 
 **Level lives in two properties and both are mine.** `Volume` is 0–10 on both `Sound` and `SoundGroup`, engine defaults 0.5 and 1, and the group's value multiplies its members `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/SoundGroup.yaml]` `[research: https://robloxapi.github.io/ref/class/Sound.html]`. Membership is by property, **not** by parenting, and groups nest `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/sound/groups.md]`. So a per-bus level and a per-cue level are the same arithmetic, and two keys writing them would be two writers for one number. `mix.assets.rows[].volume` and `mix.buses[].volume` are the only two writers in the game.
 
@@ -20,7 +20,7 @@
 
 **`Master` is pinned at 1.0 and that pin is load-bearing.** Whether `SoundGroup.Volume` compounds along a nested chain is not stated on any page fetched `[research owed: a Roblox page or engine reference stating whether a nested SoundGroup's Volume multiplies its parent's, or one Studio read of a member Sound's realised level under two nested groups]`. Pinning `Master` at 1.0 means the question can affect exactly one field, `WorldNeighbour`, and the manifest carries its realised target beside its property value so a builder writes whichever achieves it.
 
-**`Sound.PlaybackSpeed` and `SoundService.DopplerScale` are level's two back doors and both are shut.** Doppler is on by default at scale 1, so a positional `B5` heard while walking would shift in pitch with `movement.walkSpeed` — which rises with the `pace` upgrade axis, making a cue parameter a function of progress against `theme/tone/03`'s *"No cue's intensity is a function of progress, streak, count, elapsed time, or depth."* `DopplerScale` is written to 0 `[cid: decided]`.
+**`Sound.PlaybackSpeed` and `SoundService.DopplerScale` are level's two back doors and both are shut.** Doppler is on by default at scale 1, so a positional `B5` heard while walking would shift in pitch with `movement.walkSpeed` — which rises with the `pace` upgrade axis, making a cue parameter a function of progress against `theme/tone/03`'s *"No cue's intensity is a function of progress, streak, count, elapsed time, or depth."* `DopplerScale` is written to 0, and `PlaybackSpeed` is written by nobody, because in-world-sound work bakes its four pitches into four files rather than shifting one `[cid: decided]`.
 
 **No player will ever change any of this.** `04-PRESENTATION.md` declined the options pass `[brief: soft]` and `input` is a closed five-verb list, so there is no slider, no toggle and no settings verb. The platform's own volume is the whole of a player's control. That is stated as a consequence in sheet `04` and as `forbidden` `M6` here.
 
@@ -51,13 +51,13 @@
     "buses": [
       { "id": "Master", "parent": "SoundService", "volume": 1.0, "spatial": "n/a", "builtWhen": "always", "routes": [], "reservedVoices": 0, "why": "one knob for the whole game, and the pin that contains the nesting question" },
       { "id": "Stingers", "parent": "Master", "volume": 0.85, "spatial": "global2D", "builtWhen": "always", "routes": ["stingers.cues[findReveal]", "stingers.cues[setComplete]", "stingers.cues[areaComplete]"], "reservedVoices": 4, "why": "the only duck cause in the game, and the only bus carrying more than one beat" },
-      { "id": "Interface", "parent": "Master", "volume": 0.60, "spatial": "global2D", "builtWhen": "always", "routes": ["uiSound.* — upgradePurchased (B4), any press cue, index open and close, the one system notice"], "reservedVoices": 3, "why": "the only bus that is never ducked and never trimmed" },
-      { "id": "World", "parent": "Master", "volume": 0.55, "spatial": "positional3D", "builtWhen": "sfx has at least one row", "routes": ["sfx.* fired at the listening player's own patch positions"], "reservedVoices": 15, "why": "the only 3D bus" },
+      { "id": "Interface", "parent": "Master", "volume": 0.60, "spatial": "global2D", "builtWhen": "always", "routes": ["uiSound.cues[upgradePurchased] (B4)", "uiSound's press cue", "uiSound's index open and close"], "routesExclude": "the one system notice. uiSound rules it makes no sound and carries it as a forbidden row, so no level and no route exists for it — see forbidden M1.", "reservedVoices": 3, "why": "the only bus that is never ducked and never trimmed" },
+      { "id": "World", "parent": "Master", "volume": 0.55, "spatial": "positional3D", "builtWhen": "sfx has at least one row", "routes": ["sfx.cues[patchClear], fired at the listening player's own patch positions"], "reservedVoices": 15, "why": "the only 3D bus" },
       { "id": "WorldNeighbour", "parent": "World", "volume": 0.30, "volumeRealisedTarget": 0.165, "spatial": "positional3D", "builtWhen": "sfx rules a neighbour's clear positional", "routes": ["the one cross-player cue social/03 X10 permits: another player's own patch clearing"], "reservedVoices": 5, "reservedVoicesNote": "a sub-reservation inside World's 15, not additional", "why": "the only voice class whose loss costs no stated requirement, and the only fix for the five-stud case in sheet 02" },
       { "id": "Beds", "parent": "Master", "volume": 0.30, "spatial": "global2D by default; positional if ambience declares it", "builtWhen": "ambience.layerCount > 0", "routes": ["ambience.layers[*]"], "reservedVoices": 2, "why": "the only continuous bus; ducks deeper than World because a continuous layer masks more than an intermittent one" }
     ],
     "busCount": 6,
-    "buildRule": "a SoundGroup is instantiated only if at least one asset row routes to it. builtWhen is a predicate over another contract key's value, never a slot held open. 03-META.md priority 3 forbids the second thing.",
+    "buildRule": "a SoundGroup is instantiated only if at least one asset row routes to it, and a level exists in levelLadder only if a cue that may fire holds it. builtWhen is a predicate over another contract key's value, never a slot held open. 03-META.md priority 3 forbids the second thing.",
     "levelLadder": {
       "beats": [
         { "beat": "B1", "cue": "findReveal", "bus": "Stingers", "soundVolume": 1.00, "busChain": 0.85, "realised": 0.850 },
@@ -67,15 +67,17 @@
         { "beat": "B5", "cue": "patchClear", "bus": "World", "soundVolume": 0.60, "busChain": 0.55, "realised": 0.330, "contingentOn": "G1 — response.beats[patchClear].channels does not list audio today" }
       ],
       "nonBeats": [
-        { "class": "systemNotice", "bus": "Interface", "soundVolume": 0.60, "realised": 0.360 },
         { "class": "uiPress", "bus": "Interface", "soundVolume": 0.45, "realised": 0.270 },
         { "class": "indexOpenClose", "bus": "Interface", "soundVolume": 0.45, "realised": 0.270 },
         { "class": "ambienceLayer", "bus": "Beds", "soundVolume": 0.55, "realised": 0.165 },
         { "class": "neighbourPatchClear", "bus": "WorldNeighbour", "soundVolume": 0.60, "realisedInsideMinDistance": 0.0990, "realisedAt5Studs": 0.0758, "realisedAt3p5Studs": 0.0870 }
       ],
+      "nonBeatsDeleted": [
+        { "class": "systemNotice", "hadRealised": 0.360, "deletedBecause": "uiSound rules the one system notice makes no sound. A level assigned to a cue that may not exist is the reserved slot forbidden M1 bans, and is the kind of row a builder implements because a number was written for it. Restoring it is a revision request against this sheet for one row." }
+      ],
       "rankSource": "theme/tone/03-beat-map, B1 > B2 > B3 > B4 > B5, no ties, and nothing rises with depth. This key realises the inter-bus half.",
       "nonBeatCeiling": 0.432,
-      "nonBeatCeilingRule": "no non-beat cue's realised level may reach B4's. The highest is systemNotice at 0.360, which fires once per session and is the one moment something has genuinely gone wrong.",
+      "nonBeatCeilingRule": "no non-beat cue's realised level may reach B4's. The highest live non-beat is uiPress and indexOpenClose at 0.270.",
       "everyFigureIs": "[playtest unknown]. Test range: each realised value +/- 40%, subject to the strict ordering above holding at every point in the range. Instrument: a listening test on the floor device — a 3 GB phone at its own speaker, no earbuds — which no sheet in either contract owns taking.",
       "deviceFloorNote": "00-CORE.md's audience is 8-14 and mobile-heavy [brief: binding], so the ceiling on dynamic range is a phone speaker and a child. The ~70/25/5 split is [brief: soft] and uncorroborated, and no figure here depends on the share."
     },
@@ -84,6 +86,7 @@
         { "property": "AmbientReverb", "value": "NoReverb", "note": "equals the engine default, written explicitly so a hand pass cannot improve it. A global reverb colours all five beats at once and would make the level ladder untestable." },
         { "property": "DopplerScale", "value": 0, "note": "the engine default is 1. See forbidden M4." }
       ],
+      "theseTwoWritesAreRequired": "any acceptance criterion elsewhere in this category that counts writes to a SoundService property must scope itself to writes attributable to that key, or name these two as the stated exception. Forbidden M3 and M4 check FOR them, so an unqualified zero-writes criterion and this key cannot both pass.",
       "leftAtEngineDefault": [
         { "property": "RolloffScale", "value": 1 },
         { "property": "DistanceFactor", "value": 3.33 },
@@ -110,11 +113,11 @@
     "provisioning": {},
     "mutedPlay": {},
     "forbidden": [
-      { "id": "M1", "thing": "a bus, SoundGroup or level slot with zero members in the merged manifest", "ruling": "03-META.md priority 3, hard as a gate", "observable": "every mix.buses row has a non-empty routes list or a builtWhen predicate naming another contract key" },
+      { "id": "M1", "thing": "a bus, SoundGroup or level slot with zero members in the merged manifest", "ruling": "03-META.md priority 3, hard as a gate", "observable": "every mix.buses row has a non-empty routes list or a builtWhen predicate naming another contract key, and every mix.levelLadder row names a cue an owning key declares fires" },
       { "id": "M2", "thing": "a SoundEffect of any class on any bus or any Sound — compressor, limiter, equalizer, reverb, echo, flange, chorus, pitch-shift, distortion or tremolo", "ruling": "no key names one; a bus effect colours every cue routed through it and makes the level ladder untestable", "observable": "grep -rn \"SoundEffect\" game/src returns nothing" },
       { "id": "M3", "thing": "SoundService.AmbientReverb at anything but NoReverb", "ruling": "same as M2, and a stone-ruin reverb is the reflexive add", "observable": "the boot module writes NoReverb and nothing writes AmbientReverb twice" },
       { "id": "M4", "thing": "a non-zero SoundService.DopplerScale", "ruling": "theme/tone/03 — a Doppler shift makes B5's pitch a function of movement.walkSpeed, which rises with the pace upgrade axis, so a cue parameter would read progress", "observable": "DopplerScale == 0 in the boot module" },
-      { "id": "M5", "thing": "a write to Sound.PlaybackSpeed by any key other than sfx's ruling on the per-tierIndex clear note", "ruling": "a global speed write is a mix-level pitch shift wearing a cue's name", "observable": "grep -rn \"PlaybackSpeed\" game/src matches only the clear cue's play site" },
+      { "id": "M5", "thing": "a write to Sound.PlaybackSpeed by any key", "ruling": "a runtime speed write is a mix-level pitch shift wearing a cue's name. sfx bakes its four pitches into four uploaded files at PlaybackSpeed 1.0 rather than shifting one, so no exception is needed.", "observable": "grep -rn \"PlaybackSpeed\" game/src returns nothing" },
       { "id": "M6", "thing": "a volume control, mute toggle, caption, subtitle or audio-settings surface", "ruling": "input is a closed five-verb list; 04-PRESENTATION.md declined the options pass; navigation.notNodes contains settings", "observable": "zero controls anywhere in game/src write a SoundGroup.Volume from a player action" },
       { "id": "M7", "thing": "any runtime write to SoundGroup.Volume other than the ducking envelope", "ruling": "two writers for one number is the divergence this key exists to remove", "observable": "the envelope is the only writer and it restores exactly to mix.buses[].volume" },
       { "id": "M8", "thing": "a per-player, per-device or per-platform mix variant", "ruling": "00-CORE.md's ~70/25/5 split is [brief: soft] and uncorroborated per cid/_state.md; nothing may depend on the share", "observable": "mix contains no field keyed to a device class, a platform or a UserId" },
@@ -124,7 +127,8 @@
       { "id": "M12", "thing": "a second listener, a listener that is not the player's own character, or a runtime write to SoundService.DefaultListenerLocation", "ruling": "one player, one listener; social/03 X7 forbids a second player's identity crossing the wire", "observable": "grep -rn \"DefaultListenerLocation\\|AudioListener\" game/src returns nothing" },
       { "id": "M13", "thing": "uploading an audio asset where a Creator Store asset would serve", "ruling": "an upload costs two provisioning gates, a moderation queue and a per-experience permission grant; a store asset costs none of them", "observable": "every mix.assets row whose source is \"upload\" carries a non-empty whyNotCreatorStore" },
       { "id": "M14", "thing": "a reserved cue slot, empty SoundGroup, unused bus, placeholder id or future field for a progress-reset system, offline accrual, a code redeem, a daily reward, a leaderboard or rank, a trade or gift, or any calendar-keyed layer", "ruling": "03-META.md priority 3, hard as a gate; naming one in order to forbid it is compliant and silence is not", "observable": "every row in mix.buses and mix.assets.rows has a named owning key" },
-      { "id": "M15", "thing": "a loading, shutdown, maintenance, restart, reconnect or connection-lost sound", "ruling": "release.shutdown.playerFacing is \"nothing\"; performance/03 N15 forbids a loading screen", "observable": "no row in mix.assets.rows carries one of those causes" }
+      { "id": "M15", "thing": "a loading, shutdown, maintenance, restart, reconnect or connection-lost sound", "ruling": "release.shutdown.playerFacing is \"nothing\"; performance/03 N15 forbids a loading screen", "observable": "no row in mix.assets.rows carries one of those causes" },
+      { "id": "M16", "thing": "any field, criterion or precondition in an Audio key whose truth depends on a value in a key this category does not own being null, absent, \"none\" or 0", "ruling": "tech/deploy/02 replaces every null with a declared sentinel of the field's own type, and bridge/emit-config.mjs:79 already makes null and never-emitted the same bytes — so a test written against absence stops matching the moment its owner is corrected. See mix.provisioning.dependingOnAnotherKeysAbsence.", "observable": "no acceptance criterion under cid/audio/ tests a field owned outside this category for null, absence, \"none\" or 0" }
     ],
     "revisionRequests": []
   }
@@ -137,17 +141,17 @@
 
 - **Instance-representation work (`architect/sheets/06-representation.md`).** One client-side module gains the right to call `Instance.new("SoundGroup")` and `Instance.new("Sound")`; every other module loses it. That module runs before `Beats.connect`. Without this, all six audio keys are specced and unbuildable — the state `notices` found the notice plate in.
 - **Reward-hit work (`stingers`).** Your three cues sit on one bus at `0.85`, and `B1 > B2 > B3` is realised by `assets.rows[].volume` 1.00 / 0.88 / 0.76. You set the descriptor, the audible length and the construction; you do not set `Volume` and you do not name a bus.
-- **Interface-sound work (`uiSound`).** `B4` and every non-beat interface cue route to one bus at `0.60`, never ducked, never trimmed. Your press cue's realised ceiling is `0.270` and the system notice's is `0.360`; neither may reach `B4`'s `0.432`.
-- **In-world-sound work (`sfx`).** Two buses, not one. Your own-work rows route to `World`; the one cue `X10` permits to reach a second client routes to `WorldNeighbour` and shares its asset at zero extra bytes. If you rule the neighbour's clear silent or global-2D, `WorldNeighbour` is not built and nothing else in this key moves.
-- **Continuous-layer work (`ambience`).** `Beds` exists iff `layerCount > 0`. Its level is `0.30` and a layer's own `Volume` is `0.55`, giving a realised `0.165` — one fifth of the loudest beat. If you take a positional design, sheet `02` supplies the profile; if you take none, the bus is not created and that is not a hole.
+- **Interface-sound work (`uiSound`).** Three cue classes route to one bus at `0.60`, never ducked, never trimmed: `B4`, a press cue, and index open and close. **The system notice has no level and no route**, because you ruled it makes no sound; reversing that is a revision request against this sheet for one row. Any criterion of yours that counts writes to a `SoundService` property must scope itself to writes attributable to `uiSound`, or name `AmbientReverb` and `DopplerScale` as the stated exception — this key requires both, and `M3`/`M4` check for them.
+- **In-world-sound work (`sfx`).** Two buses, not one. Your own-work rows route to `World`; the one cue `X10` permits to reach a second client routes to `WorldNeighbour` and shares its assets at zero extra bytes. `mix.levelLadder.beats[B5].soundVolume` is **0.60** and `noOtherKeyMayWriteEither` is true, so the number is mine to set and yours to delete; the ordering invariant below `B4` stays yours to state. `M5` is absolute — no key writes `PlaybackSpeed` — precisely because you bake four pitches into four files rather than shifting one.
+- **Continuous-layer work (`ambience`).** `Beds` exists iff `layerCount > 0`. Its level is `0.30` and a layer's own `Volume` is `0.55`, giving a realised `0.165` — one fifth of the loudest beat.
 - **Music work (`music`).** `trackCount: 0` contributes zero rows and zero MB. Nothing here assumes a track and nothing reserves a bus for one.
 - **Boot-configuration work (`world`).** Two `SoundService` writes — `AmbientReverb` `NoReverb`, `DopplerScale` `0` — and seven properties explicitly left at their defaults.
 
 ## Acceptance criteria
 
 1. `mix.buses` has exactly 6 rows, and the five `mix.levelLadder.beats` realised values are strictly decreasing with no two equal: `0.850 > 0.748 > 0.646 > 0.432 > 0.330`.
-2. Every `mix.levelLadder.nonBeats` realised value is strictly below `nonBeatCeiling` `0.432`; the maximum is `systemNotice` at `0.360`.
-3. `grep -rn 'Instance.new("Sound' game/src` matches lines in exactly one module, that module is the one named in `mix.creatorRequirement.requirement`, and `grep -rn "SoundEffect" game/src` returns nothing.
+2. Every `mix.levelLadder.nonBeats` realised value is strictly below `nonBeatCeiling` `0.432`; the maximum is `uiPress` and `indexOpenClose` at `0.270`, and no row exists for a cue whose owning key rules it does not fire.
+3. `grep -rn 'Instance.new("Sound' game/src` matches lines in exactly one module, that module is the one named in `mix.creatorRequirement.requirement`, and `grep -rn "SoundEffect\|PlaybackSpeed" game/src` returns nothing.
 4. Every `mix.buses` row whose `builtWhen` is not `"always"` names another contract key in its predicate, and no bus present in a built tree has an empty `routes` list.
 
 ## Flagged to the developer
@@ -156,4 +160,4 @@
 
 ## Not decided here
 
-The ducking rule, the attenuation profiles and the concurrency cap — sheet `02`, this domain, which amends this key. The asset register, the memory split, preloading and the provisioning form — sheet `03`. The muted-play invariant and the reading-to-carrier table — sheet `04`. What any cue is made of, its audible length, its descriptor and its variation rule — `stingers`, `sfx`, `uiSound` and `ambience`, each in its own key. Whether `patchClear` has an `audio` channel at all (**G1**) — in-world-sound work, by revision request against `gameplay/mechanics/05`; both resolutions are legal here. Whether music exists — ruled `trackCount: 0` by music work, not reopened. Which module creates the `Sound` and where it sits in the build order — instance-representation work, requested above and placed by nobody in CID.
+The ducking rule, the attenuation profiles and the concurrency cap — sheet `02`, this domain, which amends this key. The asset register, the memory split, preloading and the provisioning form — sheet `03`. The muted-play invariant and the reading-to-carrier table — sheet `04`. What any cue is made of, its audible length, its descriptor and its variation rule — `stingers`, `sfx`, `uiSound` and `ambience`, each in its own key. Whether the one system notice ever gains a sound — interface-sound work, which ruled it does not. Whether `patchClear` has an `audio` channel at all (**G1**) — in-world-sound work, by revision request against `gameplay/mechanics/05`; both resolutions are legal here. Whether music exists — ruled `trackCount: 0` by music work, not reopened. Which module creates the `Sound` and where it sits in the build order — instance-representation work, requested above and placed by nobody in CID.

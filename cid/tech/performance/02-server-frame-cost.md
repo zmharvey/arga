@@ -76,7 +76,7 @@ branch, not by removal**, so cost is flat across a lap. Cost is
 formula plus a resolving pointer, not a total. **The pointer is
 `solvency.postTerminalBay.patchCount`**, verified against
 `cid/gameplay/balance/03-ladder-solvency.md:124-129`, whose own `clearingLoopCost.formula` reads
-`postTerminalBay.patchCount` and whose figures now match mine row for row; the released gate at
+`postTerminalBay.patchCount` and whose figures match mine row for row; the released gate at
 `_verified-wave4.md:354` names the same path. **`depths.postTerminalArea.patchCount`, which I
 wrote last round, does not resolve** — `postTerminalArea` belongs to `endgame` — and neither
 does Persistence's `depths.postTerminalBay.patchCount`. At the released 42 chunks and
@@ -107,6 +107,17 @@ most one `FireClient` per player per *changed* tick, and **its bandwidth is `rep
 field and not mine to restate**; my lead's 62 kB/s came from a retired 8.33 sends/s derivation
 and is withdrawn.
 
+**RR-P4's grep narrowing is stronger than I argued for it, and the evidence is in the shipped
+build.** `architect/01-runtime` acceptance criterion 3 bans `os.clock()`, and `Pressables.luau`
+and `Beats.luau` between them make **seven `os.clock()` calls** — `Pressables.luau:436` even
+carries the comment *"os.clock, not tick or DateTime: a monotonic clock cannot be moved by the
+system"* `[research: game/src/client/Pressables.luau]`. **A builder reached this sheet's
+conclusion independently, before wave 5 existed, and that criterion has been silently failing
+against the artifact ever since.** So the narrowing does not merely admit Security's and
+Networking's two new uses: **it makes a merged acceptance criterion true for the first time.**
+The same is true of the second token — `table.sort` matches `Layout.luau:428` and
+`Beats.luau:505` — so AC3 fails on two counts today and RR-P4 now carries both. `[cid: decided]`
+
 **The fallback, priced.** If the developer keeps `invariants[10]` as written, the only legal
 period under 0.04 is **2 frames = 0.0333 s** and the bill is **806,400 tests/s**, 4.0× the live
 figure. Bucketing then stops being optional: a **1-D partition along the lane axis (+Z), bucket
@@ -117,7 +128,8 @@ circle of radius ≤ 60 spans at most two adjacent buckets, so a player tests 2 
 whole bay, a `nBuckets / 2` reduction: at the released bay, `ceil(1260 / 120) = 11` buckets →
 320 tests per player per tick → **153,600 tests/s, below today's unbucketed 201,600.** At merged
 lengths there are 4 buckets and the reduction is 2×, which does not pay for the complexity.
-**The loop's shape is `modules`/`clearing`'s, so this is RR-P5 and not my decision.**
+**The loop's shape is `modules`/`clearing`'s, so this is RR-P5 and not my decision**, and sheet
+`03`'s `table.sort` exemption now makes the separate bucket index explicitly legal under `N10`.
 
 **The burst is the other half of the same budget and nobody costed it.**
 `plots.liveGeometry` builds a bay whole *"the instant the previous bay's last patch clears"* —
@@ -210,8 +222,9 @@ before the character is, so nothing spawns onto an absent slab.
       ],
       "onlyTheFirstRowIsLive": true,
       "pathVerifiedAt": "cid/gameplay/balance/03-ladder-solvency.md:124-129 for postTerminalBay and :122 for areaLedger[7]; its own clearingLoopCost block publishes 201600 / 537600 / 806400 and matches this table row for row. The released gate at cid/gameplay/_verified-wave4.md:354 names solvency.postTerminalBay.patchCount.",
+      "readingSolvencyIsACostInputNotAnIndexSpace": "these three pointers are read to multiply out a loop cost. NOTHING in this key or in budgets builds a patch index space from solvency — the index space is what layout.build(k) produces from depths and layout, which is why approving solvency changes no byte of GameConfig.luau. Recorded because persistence's B2 trigger names depths.areas[] only, so a future key that DID derive an index space from solvency would not fire it.",
       "spellingsThatDoNotResolve": {
-        "depths.postTerminalArea.patchCount": "this sheet's round-2 spelling. postTerminalArea is a field of ENDGAME (gameplay/meta/07), not of depths.",
+        "depths.postTerminalArea.patchCount": "this sheet's round-2 spelling. postTerminalArea is a field of ENDGAME (gameplay/meta/07), not of depths, and endgame.postTerminalArea.patchCount still reads 640.",
         "depths.postTerminalBay.patchCount": "tech/persistence/01's spelling. Neither the container nor the field exists on depths."
       },
       "supersededTotals": {
@@ -280,6 +293,7 @@ before the character is, so nothing spawns onto an absent slab.
       "why2": "a circle of radius <= 60 spans an interval of length <= 120 = one bucket depth, so it touches at most two adjacent buckets.",
       "nBuckets": "ceil(bayLengthStuds / 120)",
       "reduction": "nBuckets / 2",
+      "legalUnderN10": "the bucket index is a SEPARATE index array over the same patches, in the same order, with no removal and no renumbering — the shape performance/03 N10's table.sort exemption names as permitted.",
       "payoff": [
         { "basis": "released bay at 30 Hz",        "bayLengthStuds": 1260, "buckets": 11, "testsPerPlayerPerTick": 320, "testsPerSecond": 153600, "reduction": 5.5, "verdict": "below today's unbucketed 201600" },
         { "basis": "merged deepest bay at 7.5 Hz", "bayLengthStuds": 480,  "buckets": 4,  "testsPerPlayerPerTick": 320, "testsPerSecond": 38400,  "reduction": 2.0, "verdict": "does not pay for the complexity" }
@@ -322,7 +336,14 @@ before the character is, so nothing spawns onto an absent slab.
           { "field": "runtime.clearTickRate", "expressAs": "clearTickFrames: 8, with realisedPeriodSeconds: 0.13333 published beside it", "reason": "a period is not settable to arbitrary precision through task.wait. A frame count is exactly what the scheduler honours, and it makes the unreachable 0.0334-0.05 band impossible to request by accident." },
           { "field": "line 25 prose", "currently": "0.12 s is roughly two frames at 60fps", "correctTo": "0.12 s is 7.2 frames at 60 Hz and realises through task.wait as 8 frames, 0.1333 s", "reason": "wrong by a factor of four" },
           { "field": "line 28 prose and acceptance criterion 2", "currently": "5.5 / 0.12 = 45.83 studs per second", "correctTo": "5.5 / 0.13333 = 41.25 studs per second", "reason": "the ceiling is a function of the realised period, not the requested one" },
-          { "field": "acceptance criterion 3's grep pattern", "narrowBy": "os.clock", "reason": "carried jointly with security's RR-S1 and networking's RR-N8. A monotonic elapsed-time read introduces no randomness, no reordering and no reindexing, and touches nothing layout produces. math.random, an unseeded Random.new(), os.time() and tick() stay forbidden. performance/03 N10 has already taken this narrowing; architect AC3 carries the identical pattern and only architect can amend it." }
+          {
+            "field": "acceptance criterion 3's grep pattern",
+            "narrowBy": ["os.clock", "table.sort"],
+            "keepForbidden": ["math.random", "unseeded Random.new()", "os.time()", "tick()"],
+            "reason": "neither token introduces randomness, reordering or reindexing, and neither touches what layout produces. Carried jointly with security's RR-S1 and networking's RR-N8; performance/03 N10 has already taken both narrowings and cannot take them on architect's behalf.",
+            "thisMakesAMergedCriterionTrueForTheFirstTime": "AC3 as written has been SILENTLY FAILING against the shipped build since before wave 5. Pressables.luau and Beats.luau make seven os.clock() calls between them, and Pressables.luau:436 carries the comment 'os.clock, not tick or DateTime: a monotonic clock cannot be moved by the system' — an earlier builder reached this conclusion independently. table.sort adds two more failures at Layout.luau:428 and Beats.luau:505. The narrowing is not a permission for two new uses; it is the correction that makes the criterion checkable.",
+            "tableSortStaysBoundedBy": "performance/03 N10's two-site exemption table. A table.sort at any third site in game/src is a finding."
+          }
         ],
         "alsoFalsifiedElsewhere": [
           "modifiers.axes[speed].ceilingRule prints 45.83",
@@ -336,7 +357,7 @@ before the character is, so nothing spawns onto an absent slab.
         "status": "CONDITIONAL — issue only if depths.invariants[10] is kept as written",
         "requires": "replace the linear ipairs at Clearing.luau:392 with a 1-D bucketed scan: partition the live bay along +Z at a bucket depth of 120 studs, test the player's bucket and one neighbour.",
         "price": "0.0333 s period, 30 Hz, 806400 distance tests/s unbucketed at the released bay; 153600 bucketed",
-        "constraintsItMayNotBreak": "performance/03 N3 and N10 — the partition is an index over the same state.patches array, in the same order, with no removal and no reordering. state.cleared is keyed by array index and is a save-migration boundary."
+        "constraintsItMayNotBreak": "performance/03 N3 and N10 — the partition is a separate index array over the same state.patches, in the same order, with no removal and no renumbering. state.cleared is keyed by array index and is a save-migration boundary."
       }
     ]
   }
@@ -345,14 +366,13 @@ before the character is, so nothing spawns onto an absent slab.
 
 ## Pushing back
 
-**`architect/sheets/01-runtime.md`, its "Why" bullet on the tick.** Two claims there are wrong
-and both are load-bearing: *"0.12 s is roughly two frames at 60fps"* (it is 7.2, and realises
-as 8), and *"this number sets the speed ceiling at 5.5 / 0.12 = 45.83 studs per second"* (it is
-41.25, because the ceiling is a function of the realised period). Neither changes a value — the
-tick stays 0.12 and the speed ladder still passes — but 45.83 is printed in three merged keys,
-and every one of them is 11% optimistic. **That sheet's decision is ratified; its arithmetic is
-corrected by RR-P4**, which now also carries the `os.clock` narrowing Security and Networking
-both need and neither can make.
+**`architect/sheets/01-runtime.md`, its "Why" bullet on the tick, and its acceptance criterion
+3.** Three claims are wrong and all are load-bearing: *"0.12 s is roughly two frames at 60fps"*
+(it is 7.2, and realises as 8); *"this number sets the speed ceiling at 5.5 / 0.12 = 45.83"* (it
+is 41.25); and AC3's grep pattern, which **has been failing against the shipped build since
+before wave 5** on nine code sites across two tokens. None changes a value — the tick stays 0.12
+and the speed ladder still passes. **That sheet's decisions are ratified; its arithmetic and its
+observable are corrected by RR-P4.**
 
 ## Consequences for other work
 
@@ -360,21 +380,24 @@ both need and neither can make.
   has no tick term, so no footprint, chunk count or patch count moves. It inherits the corrected
   bounds — 655 at the config tick, 589.5 realised, failing by 5.9% to 8.6%.
 - **Runtime work (`architect/01-runtime`)** gets RR-P4: frame count, realised period, 45.83 →
-  41.25, and the one-token grep narrowing in acceptance criterion 3.
+  41.25, and a **two-token** narrowing of acceptance criterion 3 that makes it true against the
+  artifact for the first time.
 - **Modifier-resolution work (`modifiers`) and purchase-headroom work (`products.headroom`)**
-  both print a speed ceiling 11% too high. The merged Pace ladder still clears it at 1.34×, and
-  `solvency`'s S7 reports 10.8% of room at the shipped tick from the other side.
+  both print a speed ceiling 11% too high. `solvency`'s S7 reports 10.8% of room at the shipped
+  tick from the other side.
 - **Feedback and response work (`response`, `core-loop/02`)** inherits a field to value:
   `maxPatchClearsPerTick`, starting 1.0. Realised is 0.543 merged and 1.345 at the bay — the
   latter size-invariant, so it will not move when the bay does.
-- **Clearing-module work (`modules`, `wiring.onTick`)** inherits the burst rule — unparented
-  container, one parent assignment, 250 creations per server frame server-wide, whole lane
-  parented before the character at join — and, conditionally, RR-P5's bucketed scan.
+- **Clearing-module work (`modules`, `wiring.onTick`)** inherits the burst rule and,
+  conditionally, RR-P5's bucketed scan — now explicitly legal under `03`'s `N10` exemption,
+  because a bucket index is a separate array and not a renumbering of `patches`.
 - **Security work (`integrity`)** is told its per-tick step is 0.16% of the pass and that its
-  monotonic clock read is now permitted by `03` N10. **Networking work (`replication`)** owns
-  snapshot bandwidth outright; my lead's 62 kB/s is withdrawn.
-- **Persistence work (`persistence`)** should spell its bound `solvency.postTerminalBay.patchCount`,
-  which is the only one of the three circulating spellings that resolves.
+  monotonic clock read is permitted. **Networking work (`replication`)** owns snapshot bandwidth
+  outright; my lead's 62 kB/s is withdrawn.
+- **Persistence work (`persistence`)** should spell its bound `solvency.postTerminalBay.patchCount`.
+  Separately, its `B2` trigger names `depths.areas[]` only: **nothing in `budgets` or
+  `serverCost` derives an index space from `solvency`** — the three pointers here are cost
+  inputs multiplied into a loop total — but a future key that did would not fire that trigger.
 
 ## Acceptance criteria
 
@@ -393,14 +416,16 @@ both need and neither can make.
 ## Not decided here
 
 Every ceiling on how much content exists — sheet `01`, which holds `budgets`. Which savings
-this domain may never take — sheet `03`, which also owns `N10`'s wording. The tick's *value* is
-`architect`'s, which is why my ruling is a hold plus two revision requests rather than an edit.
-The loop's implementation shape, including whether RR-P5's bucketing is adopted —
-`modules`/`clearing`. Whether `architect/01-runtime` acceptance criterion 3 takes the
-`os.clock` narrowing — `architect`, on RR-P4, Security's RR-S1 and Networking's RR-N8. Every
-patch count, lap length and footprint — `depths` and `solvency`, read by field. **Snapshot bytes
-and outbound bandwidth — `replication`, outright.** What `maxPatchClearsPerTick` should be —
-feedback and response work. What a clear, a reveal or an area completion sounds or looks like —
-Audio, VFX, Feedback UI. The per-iteration cost, the per-tick millisecond budget and the
-per-frame creation cap are all `[playtest unknown]` because **no published figure exists for any
-of the three**, and the instrument that would settle them has no owner in either contract.
+this domain may never take, and `N10`'s wording and its `table.sort` exemption — sheet `03`.
+The tick's *value* is `architect`'s, which is why my ruling is a hold plus two revision requests
+rather than an edit. The loop's implementation shape, including whether RR-P5's bucketing is
+adopted — `modules`/`clearing`. Whether `architect/01-runtime` acceptance criterion 3 takes
+both narrowings — `architect`, on RR-P4, Security's RR-S1 and Networking's RR-N8. Every patch
+count, lap length and footprint — `depths` and `solvency`, read by field. **Snapshot bytes and
+outbound bandwidth — `replication`, outright.** The save payload, its character bound and the
+`B2` trigger's field list — Persistence; I hold no payload figure and issued no RR-P8. What
+`maxPatchClearsPerTick` should be — feedback and response work. What a clear, a reveal or an
+area completion sounds or looks like — Audio, VFX, Feedback UI. The per-iteration cost, the
+per-tick millisecond budget and the per-frame creation cap are all `[playtest unknown]` because
+**no published figure exists for any of the three**, and the instrument that would settle them
+has no owner in either contract.

@@ -1,5 +1,7 @@
 # Analytics — verification
 
+*Round 1 below. **Round 2 is at the end of this file** and supersedes the status line.*
+
 **Status: FAIL**
 Sixteen revision requests, four of them cross-domain contradictions inside this wave. Check 1 is
 additionally **blocked** on categories that have not run, so even with every request closed this
@@ -372,3 +374,246 @@ figure and ~4.7× on the category total. The five domains' claims on those two r
 collide. What they collide on is the *cadence* of one call site, the *encoding* of one dimension,
 the *count* of the funnel's steps and the *denominator* of the request budget — four contradictions,
 all closable, none of them about scarcity.
+
+---
+
+# Round 2
+
+**Status: FAIL** — three new defects, one round-1 request still open on disk, one invariant breach.
+Round 3 of 3 remains and every item below is single-field.
+
+**Thirteen of sixteen requests are genuinely closed**, several of them better than the fix I asked
+for. **RR-5 is not closed** — it was routed, and its target file is unedited. **RR-15 is not
+dissolved; it is inverted** — the two domains crossed rather than converged, and the contradiction
+is now in a manifest rather than in a prose line. Re-read in full this round: `funnels/01`,
+`funnels/04`, `events/01`, `events/03`, `events/04`, `economy/01`, `economy/03`, `engagement/01`,
+`kpis/02`, `_category.md`, `tech/deploy/02`, `game/src/server/Persistence.luau` (`defaultState`,
+`applyPayload`, `reconcile`, `load`). Nothing from round 1 carried forward on trust.
+
+## Round-1 requests, re-checked on disk
+
+| # | request | state | evidence |
+|---|---|---|---|
+| 1, 2 | faucet cadence | **closed** | `events/03:51` *"That is withdrawn"*; its cadence table and `events/01` site 1 both now point at `economyHealth.flows[patch-clear].batchPatchCount` and its `flushOn` list. One sheet states the granularity, the other cites it. |
+| 3 | 320 vs 440 | **closed, and generalised** | `events/03:37` adds *"Every other Analytics sheet must use 320 as its denominator"*; `economy/01`'s `batchRule` divides by `telemetry.budget.perServerRequestsPerMinute`. |
+| 4 | solvency figures | **closed** | `economy/01:77–81` states all four correctly and adds a revision-request row (`:287`) drafting the `_category.md` fix. |
+| 5 | `_category.md` | **OPEN** | Lines 124, 330–331 and 360 still publish *"244,839 against … 113,880 — a ×3.26 solvency ratio"*. Routed, drafted, not applied. |
+| 6, 7 | `economyHealth` prose rows | **closed** | `economy/03:76` emits `{"amends": "economyHealth"}` supplying `dormant`, `structurallyAbsent` and `forbidden`; `economy/01`'s three placeholder strings are gone. |
+| 8, 9 | funnel call sites and cap | **closed** | `events/01` sites 3, 11 and 15 now name their funnel steps, site 10 reads *"no custom event and no funnel step"*, and `events/03:134` reads **6 per player ever**. |
+| 10 | ownership encoding | **closed** | `funnels/01` field 2 is `owned ["none","span"]` with `encodingSharedWith: telemetry.customFields.field02`, enforced by its criterion 3. |
+| 11 | `O1` | **closed by withdrawal** — see below | |
+| 12 | `T5` | **closed** | Withdrawn to `noPassMark[]` with `ownedBy: kpis.rows[secondsToFirstReveal]`; `T4`'s reach rate correctly kept as a different quantity. |
+| 13 | `minimumSessions` arithmetic | **closed, and better than asked** | `T1` is reclassified from a 0.5-point rate to a `countInvariant` with `minimumSessions: 1`; `T12`'s gap is now 10 points; criterion 2 enforces `gapPoints ≥ 10` on every rate row. Changing the row's *kind* is the right fix and I did not propose it. |
+| 14 | `refGrammar` | **closed but for one choice** — see below | |
+| 15 | run-1 cohort | **INVERTED** — see below | |
+| 16 | payoff-gap circularity | **closed, with one stale reference** — see below | |
+| 17 | `slot_claimed` | **closed** | Not re-litigated here; the equality is gone. |
+
+## The three dissolved questions
+
+**RR-11 · `O1` withdrawn. Stays dissolved, and the replacement is sound.** I checked the three
+claims the coordinator flagged. (a) `LogCustomEvent(player, eventName, value, customFields)` does
+take a numeric `value` — it is the signature in the research pack and the same one `session_end`
+already rides. (b) It is a different API from `LogFunnelStepEvent` and inherits none of the funnel
+semantics, so neither auto-completion nor first-instance suppression touches it. (c) **The emitter
+does hold the state**, necessarily and not by assumption: steps 4, 5 and 6 have stateful predicates
+— *"the third clear after `firstReveal` that reveals nothing"*, *"the first clear whose `tierIndex`
+differs from every `tierIndex` cleared so far this session"*, and a latch transition — so a module
+that can emit them at all is already tracking which have fired. `valueRange [0, 5]` is right: at
+step 6 five lower ordinals can be outstanding. In the live case the value is 2 and the instrument
+fires. The withdrawal is also the *right shape* — `supersedes.notTaggedAndKept` states that an
+assertion that may or may not fire is worse than a stated gap, and the undocumented semantics are
+tagged `[unverified]` with a settling fetch rather than leaned on. `sinceJoinBucket` keeps its slot
+with `doesNotBuy: "step ordering"` in the manifest, which is the honest narrowing.
+
+**RR-16 · the payoff gap. Same split, reached separately, and it holds.** On disk `kpis/02` now
+carries `rows[aboveTickPayoffGapSeconds]` with `readsInstrument` naming
+`telemetry.events[session_end].maxPayoffGapSeconds`, `class: "build-read"`, and a `boundary` string
+leaving the clock, its origin, the above-tick set, the reset rule and gap-versus-maximum with
+event-catalog work; it sets target, alarm and actor only. `events/04` describes the identical split.
+The reversal is recorded in a `reversals[]` block with its reason, and the reason is correct:
+finding 5 settled a labelling defect and `pacing.laps[7].revealGapMaxSeconds` (101.5) exceeds
+`pacing.aboveTickGapMaxSeconds` (90.0) on disk, so the row is a live breaching prediction. The
+general rule added — *a verdict handed to a domain that declined it is unowned and fails admission*
+— is the correct generalisation and I would adopt it as a narrowing of check 2. **One stale
+reference, one line:** `events/04:78–81` and `:105` still instruct `kpis/02` to *"readmit
+`aboveTickPayoffGap` or restate its `declined[]`"* and say its `declined[]` entry *"must name this
+sheet"*. That entry no longer exists — `kpis.declined[]` has twelve rows and this is not among
+them. Not a divergence; a sentence describing a state that has since changed.
+
+**RR-15 · not dissolved. Inverted, and now load-bearing in a manifest.** The coordinator's account is
+wrong in both halves. Engagement's sentence did **not** stand unedited — *"cannot be a save-derived
+flag"* no longer appears in the file. And the two domains did not converge; they crossed:
+
+- `funnels/01` **withdrew** the request. `withdrawnRequests[]` carries
+  `{key: "stateShape", field: "runOrdinal", withdrawnBecause: "run 1 is a predicate over the seven
+  fields already persisted"}`; its acceptance criterion 5 asserts `requiresFromOtherKeys[]` contains
+  no `stateShape` entry; its consequences read *"both requests are withdrawn"*.
+- `engagement/01` **adopted** it. It now carries a `runOrdinalRuling` block in its manifest whose
+  `supports` field reads *"funnels' request for `stateShape.runOrdinal`"*, three admissibility
+  conditions `C1`–`C3`, an acceptance criterion (#3) asserting `mayBePersisted: true`, six rows
+  carrying `derivableIf: "stateShape.runOrdinal"`, a `populations.returning` defined over
+  `runOrdinal == run1`, and a closing line — *"I am not the requester; `funnels` is."*
+
+So the field is endorsed by a domain that is not asking and requested by nobody, and six manifest
+rows plus one acceptance criterion hang off a request that was withdrawn in the same round.
+Persistence-shape work reading these two sheets still gets two answers about whether `StoredState`
+grows a field — the same divergence RR-15 raised, with the polarity reversed.
+
+## New this round
+
+### `cid/analytics/engagement/01-session-shape.md` — supports a request `funnels` withdrew in the same round
+**Violates:** two domains, two instructions to one owner (RR-15, inverted).
+**Fix:** `funnels/01` no longer asks for `stateShape.runOrdinal` and its criterion 5 forbids it from
+doing so. Either restate `runOrdinalRuling` as a conditional admissibility finding with no requester
+— `supports: null`, and every `derivableIf` marked as contingent on a request nobody has made — or
+route it as this domain's own request and say so. As written, `supports` names a request that does
+not exist, and `populations.returning` is defined over a field that will not.
+
+### `cid/analytics/funnels/01-onboarding-funnel.md` — the `saveState` predicate never matches
+**Violates:** a derivation must be true of the code it names.
+**Fix:** `customFields[CustomField03].derivation` reads *"pristine when `Persistence.load` returns
+readable and the loaded state is byte-equal to `defaultState()`: currency, clearedCount and
+areasFinished all 0, and **found, upgrades, rowsRevealed and cleared all empty**"*. `load` runs
+`reconcile` before it returns (`Persistence.luau:430`), and `reconcile:352–361` fills
+`rowsRevealed` with one `false` per upgrade row and `found` with one `false` per Find name — 27 keys.
+**So `found` and `rowsRevealed` are never empty for any player, including a brand-new one, and a
+builder implementing the predicate literally emits `progressed` for every session forever.** The
+underlying claim is sound and the fix is one clause: *no `true` value in `found` or `rowsRevealed`;
+`upgrades` and `cleared` empty; `currency`, `clearedCount` and `areasFinished` all 0*. Drop
+"byte-equal to `defaultState()`", which is false of the returned state at every call site.
+
+**The bias is otherwise correctly bounded, and one conjunct I expected to be missing is present.**
+The predicate includes `readable`, which excludes the case I went looking for: a returning player
+whose DataStore read failed gets `defaultState()` back, and without the `readable` conjunct would
+have read `pristine`. It is there, so the stated bias — a zero-progress rejoin counted as run 1,
+over-counting and under-counting nothing — is very nearly the only one. The residue is one branch:
+`load:406–421` treats a stored payload that is present but not a table as a fresh session with
+`readable` still true, so a returning player with a corrupted save reads `pristine`. It warns, it is
+rare, and it fails both stopping-rule bars; recorded, not requested.
+
+### `cid/analytics/funnels/04-drop-off-thresholds.md` — `T3` has no carrier and no resolving boundary
+**Violates:** an instrument must be computable from the field that carries it.
+**Fix:** `T3` reads *"`steps[firstClear]` P90 seconds **from the arm transition**"* against
+`firstSession.ceilings.secondsToFirstClear.max`, which is **3.0** (`onboarding/02:89`). Two
+independent blockers. (a) The only carrier of per-step elapsed time is `sinceJoinBucket`, whose
+declared unit is *"seconds since join"* — and the arm transition is explicitly **not a step**
+(`funnels/01`: *"The arming transition is not a seventh step"*), so nothing carries seconds-since-arm
+at all. (b) Even join-relative, the lowest bucket is `0-5`, which straddles 3.0, so no P90 computed
+from these buckets can be compared to that ceiling. Either split the bottom bucket at the two
+ceilings it must be read against (`0-3`, `3-5`, `5-10`, … — eight values, product 8 × 2 × 3 = 48,
+still nothing against 8,000) and state that step 2's bucket is arm-relative, or withdraw `T3` the
+way `T5` was withdrawn. `T5`'s survivor, `secondsToFirstReveal` at 10.0, sits exactly on a bucket
+edge and is unaffected.
+
+### `cid/analytics/funnels/01-onboarding-funnel.md` — five acceptance criteria
+**Violates:** the universal invariant, and the graph's subagent contract ("2-4 criteria").
+**Fix:** the revision added criterion 5 (`requiresFromOtherKeys[]` carries no `stateShape` entry)
+without retiring one. It is the most valuable of the five — it is what makes the withdrawal
+mechanical — so fold criterion 2's `measuredFrom` test into criterion 1, which already walks the
+same array. Every other sheet in the category is at 4.
+
+### `cid/analytics/_category.md` — RR-5 is still open
+**Violates:** unchanged from round 1.
+**Fix:** `economy/01:287` has already drafted the replacement text. Apply it at lines 124, 330–331
+and 360. This is the only round-1 request with no edit on disk.
+
+## `refGrammar` v1 — could a resolver be written with no choices left?
+
+**Almost. One choice remains, and it collides with a field that is live on disk.**
+
+Four of the five gaps are closed cleanly and I would implement them as written. The index-versus-
+literal contradiction is resolved the right way round — numeric literals legal only inside `[…]`,
+`bareNumericSegment` a parse failure, and **`K5` moved off the path string onto the row**, which is
+the correct place for it because it was always a statement about targets and never about syntax.
+The three quantifiers are unambiguous, `absentKey` is a problem under all three, `presentButNull`
+resolves with `requireNonNull` as opt-in, the worked case (`pacing.laps[*].revealGapMaxSeconds`,
+null on the bay row) is named, `kind` dispatch replaces inference from a null path, and `refShape: 1`
+gives the resolver a way to reject an un-migrated key instead of skipping it. The EBNF is complete
+enough to write a parser from in one sitting.
+
+**The remaining choice: how the resolver *recognises* a ref.** The spec says the scope is *"every
+ref emitted by any key carrying `refShape: 1`: path, every `alsoReads` entry, and every
+`predictionRefuted`"* — but those are `kpis`' own field names. The other three keys put refs at
+different names and depths: `funnels.refs[]`, `economyHealth.readings[].refutes`,
+`telemetry.events[].refutes`. An implementer must choose between (a) deep-walking each key's value
+and treating any object carrying `kind` as a ref, or (b) a registry of field paths per key. These
+are not equivalent, and (a) breaks on disk today: **`economyHealth.readings[].alarm[].kind` exists
+and takes `relative` / `one-sided` / `invariant` / `share` / `absolute`** — the same field name, a
+disjoint value set, sitting inside the very key the grammar is migrating. Under (a) with no
+whitelist every alarm becomes a parse failure; under (a) with a whitelist alarms are silently
+skipped, which is the behaviour `refShape` exists to prevent. **Name the recognition rule** — I
+suggest a `refs` discriminator field or an explicit per-key registry — and the resolver has no
+choices left.
+
+**Two sequencing facts, not defects.** Only `kpis` carries `refShape: 1` today; `economy/01:117`
+still says *"One normalised ref shape must be named before that check can serve all three; **I do
+not name it**"*, written against the pre-revision `kpis`. So implementing the resolver now makes
+`bridge` reject three of the four citing keys on promotion. And `funnels`' `refutes[]` and
+`telemetry`'s `refutes` are likewise un-migrated. The migrations are specified; they have not been
+performed. Order: migrate, then promote, then implement.
+
+## The 42 nulls versus `tech/deploy/02`
+
+**Compatible in mechanism, in conflict on the worked case, and a promotion blocker today.**
+
+`deploy/02`'s rule is about **emitted** config: `emit-config.mjs:79` maps `null` to `nil`, Luau drops
+a nil-valued field from a table constructor, so *"an explicit null and a never-emitted key are the
+same bytes at runtime"*. Its criterion 3, however, is written over the whole manifest — `--emit`
+must exit non-zero on a null *"anywhere inside a key's value"*. So the moment these keys are
+promoted, 42 nulls fail the emit gate whether or not a single byte of them reaches
+`GameConfig.luau`.
+
+`deploy/02` supplies its own resolution and stops one step short of applying it: `DOCUMENTATION_ONLY`
+already drops `forbidden`, `forbiddenApis` and `invariants` **by name**, and the sheet's "Not decided
+here" routes *"whether a fourth name joins them"* to contract-and-seam work. A developer-facing key
+is precisely that case at key granularity. **Extend the mechanism to whole keys and the conflict
+disappears** — which is also the cleanest expression of my round-1 ruling 5: `telemetry.events[]` is
+build-read and must obey `deploy/02`; the other six keys are developer-facing and should never reach
+the emitter at all.
+
+**Where they genuinely conflict is `refGrammar`'s worked case.** `gap2` names
+`pacing.laps[*].revealGapMaxSeconds` and `pacing.laps[*].cumulativeSeconds` — null on the bay row —
+and says *"that case is why the rule is needed"*. `deploy/02` requires `pacing`, once promoted, to
+replace those nulls with a declared sentinel. At that point the rule's only worked example in the
+contract has no case: the value is the string `"none"`, which is present and non-null. So: **keep
+`presentButNull: resolves` as defensive behaviour** — a resolver that tolerates a null is strictly
+more robust than one that crashes on it — **but do not let any key depend on nulls surviving
+promotion**, and add the sentinel case: a resolved value equal to a declared sentinel should be
+recorded as absent-by-design, not as a number. Otherwise `requireNonNull` guards nothing after the
+sentinel migration, because `"none"` passes it.
+
+One consequence worth naming before promotion: several nulls are load-bearing *as* nulls.
+`retentionReadout.prohibited[P9].observable` is literally *"every `windows[].target` and
+`windows[].alarm` is null"*. Replace the nulls with `"none"` and that observable becomes false. The
+sentinel migration is not mechanical for this category; it touches the prohibition rows that cite
+the nulls.
+
+## Check 1, re-evaluated
+
+**Still BLOCKED, but for a narrower and more specific reason than in round 1.** Wave 6 is on disk —
+56 sheets across `cid/art/` (8 domains) and `cid/audio/` (6 domains), including
+`audio/mix/02-degradation-under-load.md`, `audio/mix/04-muted-play.md` and
+`audio/mix/03-the-asset-ledger.md`, all of which carry `[playtest unknown]` figures and the word
+"instrument". **Analytics' enumerated measurable surface (`_category.md` section B) predates all of
+them and names none.** So the check has moved from "cannot be evaluated, the claims do not exist" to
+"evaluable against wave 6, and not yet done" — a different and better state, but not a pass. Two
+things follow. Wave 7 (Live Ops, Discovery) is still unwritten, so the check cannot be completed at
+all. And at least one wave-6 subject is a real analytics question with a real answer: a muted-play
+share is a client fact, so it falls under `telemetry.unproducible` `U1` and would be *declined*
+rather than instrumented — but no sheet in this category has said so, because Audio did not exist
+when the surface was enumerated. **Recommendation: do not re-open Analytics for wave 6. Record the
+sweep as an explicit item for the final Cross-Category pass**, where the same reading can be taken
+once against Art, Audio, Live Ops and Discovery together instead of three times.
+
+## What must happen before this category can release
+
+1. Five single-field edits: `engagement/01`'s `runOrdinalRuling`, `funnels/01`'s `saveState`
+   derivation and criterion count, `funnels/04`'s `T3`, and `_category.md`'s solvency line.
+2. One line in `events/04` retiring its instruction to a `declined[]` entry that no longer exists.
+3. `refGrammar` gains a ref-recognition rule; the three un-migrated keys migrate **before** the
+   resolver is implemented, not after.
+4. A key-level exemption in `emit-config.mjs` (or a sentinel migration) before any of these seven
+   keys is promoted, and a decision on `telemetry.events[]` as the one build-read half.
+5. Check 1 stays open to the final pass. **The category cannot release above PARTIAL this wave**,
+   and every item above is closable inside round 3.

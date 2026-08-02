@@ -175,15 +175,6 @@ did not fetch" becomes checkable instead of trusted.
 - *The sentinel is `""` and neither existing precedent transfers.** `release.provisioning.unprovisionedIdValue` is `0`, a number; `Sound.SoundId` is a `ContentId` string whose engine default is empty ``, so `0` is a type error. `tech/deploy/02`'s scalar sentinel `"none"` would be a **non-empty content string the engine tries and fails to resolve** — an error, not silence — and that sheet's own rule admits the exception: `"none"` applies *"unless the containing table declares a more specific sentinel in place."* This key declares one, once, for all six audio keys. **Two other domains reached…
 - `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
 
-## https://robloxapi.github.io/ref/class/StarterPlayer.html
-
-*Cited by 5: `_digest`, `art/characters/01-the-unmodified-body`, `gameplay/meta/06-plot-arrangement`, `gameplay/social/02-presence-sufficiency`, `gameplay/social/_lead`*
-
-- *`theme/identity/03` criterion 2 cannot be satisfied by the route it names. I keep the ruling and decline the route.** Verbatim: *"Every player character has `HealthDisplayDistance = 0` set explicitly."* `grep -rn "HealthDisplayDistance" game/src` returns **0** — unimplemented — and `response.humanoidWritesAllowed` (`mechanics/05:111`, approved in wave 2, after identity/03) is exactly `["WalkSpeed"]`, so a module setting `Humanoid.HealthDisplayDistance` violates an approved key. **No health bar is right** in a game with no damage source and I am not reopening it. The available route is…
-- **A neighbour is nameless at rest and I am not fixing that.** `StarterPlayer.NameDisplayDistance` defaults to 100 `` against a realised 122. Raising it is identity's call and my execution.
-- *Identity work.** My test deliberately does not use the nameplate, so nothing here reopens `theme/identity/03-co-present-stranger`. But `StarterPlayer.NameDisplayDistance` defaults to **100** studs `` against a realised spawn separation of 160 today and 128 at best, so **a co-present stranger is nameless at rest either way.** If that ruling requires a readable nameplate, the display distance must rise above the realised separation — **identity's call, area arrangement's execution, not mine.**
-- `StarterPlayer.NameDisplayDistance` and `HealthDisplayDistance` default to **100** studs. ``
-
 ## https://www.international-sound-directory.com/2025/12/07/do-people-really-play-mobile-games-without-sound-myth-or-reality/
 
 *Cited by 5: `audio/mix/04-muted-play`, `audio/music/01-whether-music-exists`, `audio/music/_lead`, `audio/ui/01-press-acknowledgment`, `audio/ui/04-system-notice-sound`*
@@ -411,6 +402,15 @@ did not fetch" becomes checkable instead of trusted.
 - **Positional, because a neighbour's clear is the second half of presence.** `social/03` `X10` permits *"A's own patches clearing… and the clear cue that accompanies it"* to reach a second client, and `social/02` requires a neighbour read as a body whose ground is visibly being cleared. A global 2D cue would be 128 onsets a second at full level at 16 players. Spatialisation is decided by parent ``.
 - **Positional vs global is decided by parent.** *"Volume changes depending on the distance between the user's sound listener and the position of the part"* when parented to a BasePart or Attachment; parented to `SoundService` or `Workspace`, *"Volume and pan position remain the same regardless of the user's sound listener position or rotation"*. A BasePart parent emits from the whole surface; an Attachment emits from a point ``.
 - **`RollOffMode` defaults to `Inverse`; `EmitterSize` is deprecated — use `RollOffMinDistance` and `RollOffMaxDistance`** ``.
+
+## https://robloxapi.github.io/ref/class/StarterPlayer.html
+
+*Cited by 4: `art/characters/01-the-unmodified-body`, `gameplay/meta/06-plot-arrangement`, `gameplay/social/02-presence-sufficiency`, `gameplay/social/_lead`*
+
+- *`theme/identity/03` criterion 2 cannot be satisfied by the route it names. I keep the ruling and decline the route.** Verbatim: *"Every player character has `HealthDisplayDistance = 0` set explicitly."* `grep -rn "HealthDisplayDistance" game/src` returns **0** — unimplemented — and `response.humanoidWritesAllowed` (`mechanics/05:111`, approved in wave 2, after identity/03) is exactly `["WalkSpeed"]`, so a module setting `Humanoid.HealthDisplayDistance` violates an approved key. **No health bar is right** in a game with no damage source and I am not reopening it. The available route is…
+- **A neighbour is nameless at rest and I am not fixing that.** `StarterPlayer.NameDisplayDistance` defaults to 100 `` against a realised 122. Raising it is identity's call and my execution.
+- *Identity work.** My test deliberately does not use the nameplate, so nothing here reopens `theme/identity/03-co-present-stranger`. But `StarterPlayer.NameDisplayDistance` defaults to **100** studs `` against a realised spawn separation of 160 today and 128 at best, so **a co-present stranger is nameless at rest either way.** If that ruling requires a readable nameplate, the display distance must rise above the realised separation — **identity's call, area arrangement's execution, not mine.**
+- `StarterPlayer.NameDisplayDistance` and `HealthDisplayDistance` default to **100** studs. ``
 
 ## https://www.ofzenandcomputing.com/grass-incremental-tips-tricks/
 

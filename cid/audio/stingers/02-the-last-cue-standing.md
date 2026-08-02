@@ -2,6 +2,11 @@
 
 **Domain:** audio/stingers · **Category:** Audio · **Wave:** 6
 
+> **Revised, round 1** (`cid/audio/_verified.md`). **RR-9** closed: criterion 4 no longer reads
+> `notices.members[].extinctAfter`. It now tests the fact — that `findReveal` and `setComplete`
+> become permanently unreachable at 24 of 24 — against `endgame.extinctPayoffKinds` and
+> `endgame.survivingPayoffKinds`, which is where that fact lives. Nothing else moved.
+
 ## Decision
 
 **`B1` and `B2` go permanently silent at 24 of 24, nothing replaces them, and nothing about
@@ -29,6 +34,14 @@ after the terminal state. Their causes stop occurring. Nothing deletes a row, no
 on `found == totalFinds`, and no cue body ever reads the collection count — a cue that checked
 whether the game was finished would be a cue that behaves differently at the end, which is the
 ceremony under another name.
+
+**Extinction is a fact about `endgame`, not about how a sibling key spells absence.** The
+authority is `endgame.extinctPayoffKinds` (`findReveal`, `setCompletion`) and
+`survivingPayoffKinds` (`areaCompletion`, plus the tick), and this sheet's criteria test
+against those two arrays. `notices` reaches the same count from the other side in prose —
+*"after 24/24 the channel carries one member forever"* — and I cite that sentence and none of
+its encoding, because `tech/deploy/02` makes an explicit null a hard error and a criterion that
+breaks when a neighbour changes its null convention is testing the wrong thing. `[cid: decided]`
 
 ### The real cost, which is the subject of this sheet
 
@@ -104,6 +117,7 @@ this is recorded rather than escalated.
     "terminalState": {
       "condition": "endgame.terminalCondition — the player's found count reaches the total number of names in collection",
       "extinctCues": ["findReveal", "setComplete"],
+      "extinctAuthority": "endgame.extinctPayoffKinds, which lists findReveal and setCompletion; this key reads no sibling key's absence encoding",
       "extinctReason": "their causes stop occurring: there is nothing left to reveal and all four sets are complete",
       "cuesRemovedFromKey": 0,
       "cuesAddedAtTerminal": 0,
@@ -111,6 +125,7 @@ this is recorded rather than escalated.
       "replacementForbiddenBy": ["theme/tone/03 — 24 of 24 is the fourth B2 and nothing further", "notices.forbidden.endScreen", "endgame — no end screen, no congratulation, no completion percentage"],
       "survivingCues": ["areaComplete"],
       "survivingCueCount": 1,
+      "survivingAuthority": "endgame.survivingPayoffKinds, whose areaCompletion is this cue's beat; its currencyTick carries no stinger",
       "changesAtBoundary": [],
       "changesAtBoundaryMeans": "areaComplete is not lengthened, shortened, re-ranked, softened, replaced, retired, doubled or joined by a sixth cue; its length, voices, contour, tail, sample count and level are byte-identical either side of 24 of 24",
       "noCueBodyReadsProgress": true,
@@ -171,9 +186,14 @@ this is recorded rather than escalated.
   pair is **unreachable** in the terminal state, and a concurrency cap sized on the coincident
   triple is sized for a state a finished player never re-enters. Both are still needed before
   the terminal state; neither may be tuned as though the terminal state were the common case.
-- **Transient-message work (`notices`)** already reached the same count from the other side —
-  *"after 24/24 the channel carries one member forever."* The two keys agree at 1 and 1, and
-  neither may publish a different number without the other moving.
+- **Transient-message work (`notices`)** already reached the same count from the other side, in
+  its own sentence — *"after 24/24 the channel carries one member forever."* The two keys agree
+  at 1 and 1, and neither may publish a different number without the other moving. **I test
+  against `endgame`, not against how that key encodes "no expiry"**, so its round of
+  null-convention edits under `tech/deploy/02` breaks nothing here.
+- **Contract-and-seam work** should note the shape of RR-9's fix: two keys agreeing on one fact
+  should each cite the key that *owns* the fact rather than each other's field. That is the
+  general form, and it is cheaper than a cross-key reference check.
 - **Instance-representation work** inherits a lifetime, not just a creator: whatever module
   creates the three `Sound` instances must keep `areaComplete`'s alive indefinitely, because it
   is played without limit and re-creating it per firing is a per-bay allocation forever.
@@ -184,9 +204,6 @@ this is recorded rather than escalated.
   discrete audio surface is one 1.8-second cue at 93–157 second intervals, plus whatever `B5`
   turns out to be under `G1`. Anything continuous they author is what the terminal state
   mostly sounds like, and that is a conclusion about their domain, not a request.
-- **Whoever writes the cadence predicate** gains nothing from this sheet and loses nothing.
-  `endgame` already scoped `core-loop/01`'s 90-second rule off at the terminal state; no cue
-  here is added or removed to close a gap that rule stopped asserting.
 
 ## Acceptance criteria
 
@@ -200,8 +217,10 @@ this is recorded rather than escalated.
 3. `areaComplete` played 100 consecutive times produces 100 identical renders: the cue body
    contains zero calls to `math.random`, reads no counter, timer or clock, and selects from no
    list of assets.
-4. `terminalState.survivingCueCount` is 1 and equals the number of `notices.members` whose
-   `extinctAfter` is null; `terminalState.replacementCue` is the string `none` and
+4. `terminalState.extinctCues` is exactly `["findReveal", "setComplete"]` and each names a beat
+   whose payoff kind appears in `endgame.extinctPayoffKinds`; `terminalState.survivingCues` is
+   exactly `["areaComplete"]`, `survivingCueCount` is 1, and its beat's payoff kind appears in
+   `endgame.survivingPayoffKinds`; `terminalState.replacementCue` is the string `none` and
    `stingers.cues` contains no entry whose cause is collection completion.
 
 ## Not decided here
@@ -212,6 +231,8 @@ this is recorded rather than escalated.
 - **The post-terminal lap interval itself** — Balance and Tuning; `endgame`'s ~157 s and
   `cid/_state.md`'s 93 s are recorded here as an open divergence and neither is adopted as
   mine.
+- **How `notices` spells "no expiry" once `tech/deploy/02` is enforced** — transient-message
+  work, which owns that key. Nothing here reads the field either way.
 - **What a post-terminal bay contains, how long it is and whether the run rebases** —
   `endgame`, `layout` and `plots`, all Meta & Content's, plus Tech and Performance.
 - **Whether the developer should enlarge the collection so the terminal state governs less of

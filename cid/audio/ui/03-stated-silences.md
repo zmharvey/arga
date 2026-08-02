@@ -20,6 +20,13 @@ this project to *"the smallest game that still gives every creative area real wo
 sheet is silent rather than when a sheet is wrong. Every row is countable because a build agent
 cannot check *"restrained"* and can check *zero `MouseEnter` connections*.
 
+**Every row here forbids a *UI sound*, and nothing else.** The scope is stated once because a
+reviewer reading an observable in isolation can take it as a ban on the mechanism rather than on
+this domain's use of it — which is what happened to `F17` in round 1, where an unqualified *"zero
+writes to a `SoundService` property"* caught `mix`'s required `AmbientReverb` and `DopplerScale`
+boot configuration (RR-6). No row in this sheet reaches a sibling Audio domain's values, a plate,
+a motion, a string or a surface.
+
 **The rejection rows (`F1`–`F4`) are the ones most likely to be re-added.** Four approved sources
 close them independently and in different vocabularies:
 `input.pressable.rejectionCueOnFailedPrecondition: "none"`, `buy.onPreconditionFail:
@@ -62,7 +69,8 @@ play a sound on platform-menu open or close on mobile is
 CoreScript plays a sound on platform-menu open or close]`. **The ruling does not depend on the
 answer**: this game neither adds to nor suppresses any platform interface sound, in either case,
 because suppression is a write the game has no reason to make and addition is a cue with no cause
-in `input` (U8).
+in `input` (U8). `F17` bans that write **from this domain**; `mix` owns `SoundService`
+configuration and is untouched by it.
 
 **The seven priority-3 rows and the reservation row are one argument in eight parts.**
 `03-META.md` lists *"real procedural generation · rebirth · offline accrual · codes · daily
@@ -85,11 +93,13 @@ the rows below are this sheet's twenty-nine.
   failed-precondition branch, the debounce-swallowed branch, the `Activated` edge and the desktop
   `1`/`2`/`3` accelerator each reach zero `Sound`. This is the single most likely place a builder
   adds a sound by reflex and it is now four countable checks rather than a style note.
-- **Mix work (`mix`)** inherits two things. `F29` forbids it reserving a bus, a `SoundGroup` or a
-  headroom allocation for any priority-3 subject, so its bus tree closes at what the six domains
-  actually hold. And `F15`/`F16` hand it the consequence it must state and I may not: there is no
+- **Mix work (`mix`)** inherits three things. `F29` forbids it reserving a bus, a `SoundGroup` or
+  a headroom allocation for any priority-3 subject, so its bus tree closes at what the six domains
+  actually hold. `F15`/`F16` hand it the consequence it must state and I may not: there is no
   in-game volume control, no mute and no settings verb, so its defaults are the only mix any
-  player will ever have.
+  player will ever have. And **`F17` and criterion 2 are scoped to UI-sound writes**, so its own
+  `SoundService` configuration — `AmbientReverb`, `DopplerScale`, `RolloffScale`, `DistanceFactor`
+  — is outside both and is blocked by nothing in this sheet.
 - **Feedback-UI work (`notices`)** is contradicted by nothing here. Five rows cite its forbidden
   entries as inherited and scope themselves to sound; its plate rulings are untouched and its
   `rejectionCue` and `liftAnnouncement` observables are not restated in its own terms.
@@ -124,7 +134,7 @@ the rows below are this sheet's twenty-nine.
 | `F14` | A gamepad focus-move cue on `SelectionGained` or `SelectionLost` across the four selectable controls | same parity ground; `navigation.selectability.selectableCount` is 4 and constant open or closed `[cid: decided]` | zero `SelectionGained` and `SelectionLost` connections in `game/src/client/` |
 | `F15` | Toggle, switch or checkbox feedback of any kind | **no toggle exists**: `input` is a closed five-verb list with four pressables and no toggle role; `navigation.notNodes` includes `settings`; `04-PRESENTATION.md` declined the options pass | `input.verbs` has 5 entries and `gameDrawnPressables` is 4; no `composition` or `screens` node has a two-state interactive role |
 | `F16` | Slider drag, tick, detent or release feedback, **including a volume slider** | same ruling; the in-game volume control this row would sound does not exist. Consequence routed to `mix`, not decided here | zero `GuiObject` with a drag or slider role in `composition.elements` and `screens[index].tree` |
-| `F17` | Any platform UI sound the game adds to, replaces or suppresses — platform menu, chat, purchase chrome | `navigation/03`: the game does nothing at all on `MenuOpened`; U8 `[cid: decided]`, and the ruling holds under either answer to the research owed above | `game/src/` contains zero writes to `SoundService` properties and zero `CoreGui` or `RbxCharacterSounds` overrides attributable to this key |
+| `F17` | Any platform UI sound **this domain** adds to, replaces or suppresses — platform menu, chat, purchase chrome | `navigation/03`: the game does nothing at all on `MenuOpened`; U8 `[cid: decided]`, and the ruling holds under either answer to the research owed above. **Scoped to UI sound: `mix` owns `SoundService` configuration and this row does not reach it** (RR-6) | no module that plays a `uiSound` cue writes a `SoundService` property or overrides `CoreGui` or `RbxCharacterSounds`; `mix`'s boot-time `AmbientReverb`, `DopplerScale`, `RolloffScale` and `DistanceFactor` writes are outside this row |
 | `F18` | A join, splash, logo or first-frame cue | `onboarding/03` `T6` forbids an unrequested panel and `T5` forbids a first-session-only surface; a join sound is a cue with no player action behind it | `uiSound.cues[]` has no row whose `cause` names join, `PlayerAdded`, `CharacterAdded` or the first snapshot |
 | `F19` | A scroll tick, rubber-band or overscroll sound in the index panel | `screens/01`: the panel has **no scroll region** | `screens[index].tree` contains zero `ScrollingFrame` nodes |
 | `F20` | A per-slot fill sound when a collection slot resolves in the index | the reveal is `B1` and owns `atPatch` + `audio`; the Audio verification check is *"every reward moment has exactly one stinger, not two"* | no `uiSound` cue names a `Slot_*` node or `screens[index]` |
@@ -148,7 +158,12 @@ the rows below are this sheet's twenty-nine.
     "forbiddenRowIdsWrittenHere": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "F25", "F26", "F27", "F28", "F29"],
     "forbiddenRowWrittenElsewhere": { "id": "F30", "sheet": "cid/audio/ui/04-system-notice-sound.md", "reason": "one key, one row, one sheet" },
     "permittedCueCount": 3,
-    "forbiddenScope": "sound only; no row re-rules a plate, a motion, a string or a surface",
+    "forbiddenScope": "UI sound only. No row bans a mechanism, a plate, a motion, a string or a surface, and no row reaches a sibling Audio domain's values. Where a row's observable names an engine API, it is scoped to modules that play a uiSound cue.",
+    "doesNotReach": [
+      { "what": "SoundService configuration - AmbientReverb, DopplerScale, RolloffScale, DistanceFactor", "owner": "audio/mix", "row": "F17", "note": "RR-6: criterion 2 and F17 were unqualified in round 1 and caught writes mix requires" },
+      { "what": "SoundGroup structure, bus levels and the ducking rule", "owner": "audio/mix", "row": "F29", "note": "F29 bans a bus reserved for a priority-3 subject, not a bus with members" },
+      { "what": "the platform's default character sounds - footstep, jump, landing", "owner": "audio/sfx", "row": "F17", "note": "in-world sound, category gap G4" }
+    ],
     "inheritedRows": ["F5", "F6", "F7", "F8", "F12"],
     "inheritedFrom": "notices (ui-ux/feedback/01 and /03), cited and not re-ruled",
     "priorityThreeRows": ["F22", "F23", "F24", "F25", "F26", "F27", "F28"],
@@ -180,7 +195,7 @@ the rows below are this sheet's twenty-nine.
       { "id": "F14", "what": "a gamepad focus-move cue on SelectionGained or SelectionLost", "ruling": "cid: decided - same parity ground; navigation.selectability.selectableCount is 4 and constant", "observable": "zero SelectionGained and SelectionLost connections in game/src/client/" },
       { "id": "F15", "what": "toggle, switch or checkbox feedback of any kind", "ruling": "no toggle exists: input is a closed five-verb list, navigation.notNodes includes settings, 04-PRESENTATION.md declined the options pass", "observable": "input.verbs has 5 entries and gameDrawnPressables is 4; no composition or screens node has a two-state interactive role" },
       { "id": "F16", "what": "slider drag, tick, detent or release feedback, including a volume slider", "ruling": "same as F15; the in-game volume control this would sound does not exist", "observable": "zero GuiObject with a drag or slider role in composition.elements and screens[index].tree" },
-      { "id": "F17", "what": "any platform UI sound the game adds to, replaces or suppresses", "ruling": "cid: decided - navigation/03 has the game do nothing on MenuOpened; U8; holds under either answer to the research owed", "observable": "game/src/ contains zero writes to SoundService properties and zero CoreGui or RbxCharacterSounds overrides attributable to this key" },
+      { "id": "F17", "what": "any platform UI sound THIS DOMAIN adds to, replaces or suppresses - platform menu, chat, purchase chrome", "ruling": "cid: decided - navigation/03 has the game do nothing on MenuOpened; U8; holds under either answer to the research owed. Scoped to UI sound: mix owns SoundService configuration and this row does not reach it (RR-6)", "observable": "no module that plays a uiSound cue writes a SoundService property or overrides CoreGui or RbxCharacterSounds; mix's boot-time AmbientReverb, DopplerScale, RolloffScale and DistanceFactor writes are outside this row" },
       { "id": "F18", "what": "a join, splash, logo or first-frame cue", "ruling": "onboarding/03 T5 and T6; a join sound has no player action behind it", "observable": "no cues[] row whose cause names join, PlayerAdded, CharacterAdded or the first snapshot" },
       { "id": "F19", "what": "a scroll tick, rubber-band or overscroll sound in the index panel", "ruling": "screens/01 - the panel has no scroll region", "observable": "screens[index].tree contains zero ScrollingFrame nodes" },
       { "id": "F20", "what": "a per-slot fill sound when a collection slot resolves", "ruling": "the reveal is B1 and owns atPatch plus audio; the Audio check is one stinger per reward moment, not two", "observable": "no uiSound cue names a Slot_* node or screens[index]" },
@@ -204,8 +219,10 @@ the rows below are this sheet's twenty-nine.
    non-empty `what`, `ruling` and `observable`; 29 of them are supplied by this sheet and `F30` by
    sheet `04`, and `uiSound.forbiddenCount` is 30.
 2. `game/src/client/` contains zero `MouseEnter`, `MouseLeave`, `MouseMoved`, `SelectionGained`
-   and `SelectionLost` connections, and `game/src/` contains zero writes to a `SoundService`
-   property.
+   and `SelectionLost` connections, and **no module that plays a `uiSound` cue writes any
+   `SoundService` property**. `mix`'s own boot-time `SoundService` configuration —
+   `AmbientReverb`, `DopplerScale`, `RolloffScale`, `DistanceFactor` — is outside this criterion
+   and is not counted by it.
 3. `uiSound` contains no string matching any of `rebirth`, `prestige`, `daily`, `login`, `streak`,
    `code`, `redeem`, `leaderboard`, `rank`, `trade`, `gift`, `season`, `event`, `holiday`,
    `offline`, `welcome`, `reserved`, `future`, `planned`, `tbd` or `placeholder`.
@@ -219,10 +236,12 @@ which carries it so it is not written twice. The press-edge ruling `F3` cites, a
 permitted cue set — sheet `01`. The two index cues and the respawn close path — sheet `02`. Every
 plate, motion, string and surface these rows sit beside — `notices` (`ui-ux/feedback`) and
 `composition` (`ui-ux/hud`); five rows here are its rulings in the audio channel and re-decide
-none of them. Whether an options, volume or mute surface should exist at all — the developer, via
-`04-PRESENTATION.md`'s declined pass; and the consequence of its absence is `mix`'s to state.
-Volume, buses, roll-off, the concurrency cap and the MB allowance — `mix`. Whether Roblox
-CoreScripts play any sound on platform-menu open or close — `[research owed]` above; the `F17`
-ruling stands either way. The platform's default character sounds (footstep, jump, landing) —
-SFX, category gap `G4`; they are in-world sound and not interface sound. Whether any of these
+none of them. **Every `SoundService` and `SoundGroup` value, including `AmbientReverb`,
+`DopplerScale`, `RolloffScale` and `DistanceFactor`, plus volume, buses, roll-off, the concurrency
+cap and the MB allowance — `mix`; `F17` and criterion 2 are scoped off them and forbid none.**
+Whether an options, volume or mute surface should exist at all — the developer, via
+`04-PRESENTATION.md`'s declined pass; the consequence of its absence is `mix`'s to state. Whether
+Roblox CoreScripts play any sound on platform-menu open or close — `[research owed]` above; the
+`F17` ruling stands either way. The platform's default character sounds (footstep, jump, landing)
+— SFX, category gap `G4`; they are in-world sound and not interface sound. Whether any of these
 greps becomes a `bridge/merge.mjs` check or stays a build-report item — contract-and-seam work.

@@ -460,3 +460,224 @@ Recorded for the final pass; none is a failure now.
    any request: `screens/03`, `screens/04`, `navigation/03` (pending RR-3), `store/02`,
    `feedback/02`, `feedback/03`, `platform/02`, and both `platform` and `store` lead indexes. They
    are approved as of this reading.
+
+---
+
+# Round 2
+
+**Status: FAIL**
+All 14 round-1 requests are genuinely closed and the four mutually contradictory domains have
+really converged — the arbitration is argued, not agreed, and in three places a domain withdrew a
+position it had the standing to defend. **But route B rests on three mechanical claims about the
+emitter and two of them are false against the source**; the panel stack omits one gap and overflows
+a surface that forbids scrolling; and the convergence introduced one new contradiction (a
+deprecated API) while papering over one hole (a single exit whose protection was withdrawn in the
+same round). Six requests, every one a single edit to a single file, all in four sheets. No check is
+blocked on an unrun domain.
+
+## Did the convergence hold? Request by request
+
+| RR | closed? | how I checked |
+|---|---|---|
+| 1, 2 | **yes, and better than requested** | HUD did not take the absence ruling and did not merely assert fusion. It separated *instance* from *affordance* and made the affordance a checkable property set (`groups[collection].affordance.beforeLift`: elevation 0, stroke none, `Active`/`Selectable`/`Interactable` false, with the check *"differs from `Readout_Currency`'s in zero respects"*). That answers Navigation's actual bar-(a) objection — a thing that looks pressable and does nothing — rather than routing around it, and the `Visible == false` branch disappears with it. `unfusedFallback` is specified as data so the refusal branch costs one edit. This is the model closure of the round. |
+| 3, 4 | **yes** | Navigation withdrew, and the reasoning is argued rather than conceded: it distinguishes *"the exit must be drawn"* (which `input/mobile.md` supports) from *"the exit must be drawn inside the panel"* (which it does not), and weighs `input.gameDrawnPressables: 4` plus R-1's containment *"to one input class, two verbs, four controls … so nothing can widen it quietly"* against one convenience. Screens held and was ratified. **A way back now genuinely exists on all three device classes**: `Pressable_INDEX` toggles, is drawn from join, and at `zIndex` 20 draws above the panel at 10, so it stays visible and hit-testable while the panel is open. **Check 2 passes.** See F-6 for what the ratification rests on. |
+| 5 | **yes** | Screens disproved its own guarantee rather than defending it, and Navigation adopted the consequence. See the recomputation below. |
+| 6, 7 | **yes** | Feedback withdrew `zIndexBelow`/`zIndexAbove` and replaced it with a constraint plus its reason, conceding *"it bought nothing and cost `B2` and `B3` behind an open panel."* Its overlap list is re-derived as a **predicate on `groups[].interactive`** rather than an element list, so it re-resolves if the group set changes again — a better fix than the one I asked for. |
+| 8 | **yes, all four** | `zOrder`, `anchors[noticeStack]` with a derived rect, `focusRing`, `groupIndex`. The arbitration is reasoned: Feedback stated a *relation* between 1 and 20, which cannot determine a value against a panel at 10, so Navigation's values win — and the tap guarantee is carried by `Active = false`, which does not depend on depth. **I verified the constraint is satisfied by the chosen values**: `feedback/01` criterion 3 requires the notice `ZIndex` be strictly greater than `IndexSurface`'s and than every node in `composition.groups[].node`; 30 > 20 > 10 satisfies it. HUD also *derived* the `noticeStack` rect (`x ∈ [0.24, 0.76], y ∈ [0, 0.30]`, disjoint from the thumbstick frame, `jumpSmall` and both top clusters) rather than refusing or deferring it. |
+| 9 | **yes** | Platform withdrew `groupParentNode` outright and rebuilt focus from three documented properties. **Both platform facts confirmed against the banked pack**: `AddSelectionParent` is *"marked **Deprecated**"* (`pack.md:327`) and *"`SelectionGroup` is not a `GuiObject` property"* in the current reference (`pack.md:319`). Its criterion 4 walks the cycle four times, which is checkable by inspection. **But HUD named the deprecated API as its replacement mechanism — F-4.** |
+| 10 | **yes** | `screens.systemCopy` deleted; one string, one owner, one `PROSE_PATHS` request. |
+| 11 | **partly — this is the substance of round 2.** | See below. |
+| 12 | **yes** | Criterion 4 now reads **5** `content.readouts` plus one `content.progress`, and adds `variant.anchor: "edge"`. |
+| 13 | **yes, and it generalised** | `viewport.classes.<class>.minTargetPx`, plus `unitFieldKind: "floor"` with the reason it matters (`platform/02` forbids deriving an extent from a `ceiling`). Platform added a `citeAs` block with canonical paths and a `notFields` list that names `touchTargetFloorPx` as not-a-field. That turns one corrected citation into a mechanism. HUD also took my `Pressables.luau:485` find and named `representation:290` as still specifying the banned write. |
+| 14 | **yes** | Restated as a whitelist with a provenance clause — *a module may sit in the synced tree only if a contract key names it and it traces to a `ui-forge` brief derived from this game's context* — which is a rule rather than a list of seven filenames, and it names the root cause the seven storefronts share with the theme defect. |
+
+## Route B, verified against the emitter
+
+**The principle is sound and that matters most.** A control nested inside its group's own
+`Readout_*` frame *is* one box, produced by the shipped compiler, and it does avoid all four
+capability faults exactly as claimed: `content.actions` stays absent, so the duplicate
+`Cluster_bottomRight` is never emitted and `actionButton()` is never called;
+`Pressables.luau:433` already sets its own `UISizeConstraint.MinSize`; nothing reads `maxSize`.
+**Route B closes the developer's reported defect with zero `ui-forge` changes**, which is a
+materially better outcome than round 1.
+
+**The narrowing of `oneNodePerGroup` is safe and does not re-admit the defect.** The shape that
+produced it was two siblings of a *cluster*; `clusterSiblingRealisationForbidden: true` and the
+invariant *"no game-drawn pressable has a cluster frame or the ScreenGui as its Parent"* both still
+forbid exactly that, and the permitted shape (two children of one group parent) is strictly tighter
+than what shipped. I tried to construct a six-box tree that satisfies the narrowed rule and could
+not.
+
+Three mechanical claims carry route B. Two are false:
+
+**F-1 · The nested control renders FIRST, not last.** `hud/03` states *"the frame's own vertical
+`UIListLayout` places it as the last row"* and `routes[B].placement` repeats it. `applyLayout` sets
+`list.SortOrder = Enum.SortOrder.LayoutOrder` (`UIBuilder.luau:190`), and `buildNode` assigns
+`c.LayoutOrder = i` over a 1-based array (`:544-547`), so spec children are 1, 2, 3. A button from
+`Instance.new("TextButton")` carries `LayoutOrder = 0`. **0 sorts before 1**, so the control lands
+above the label and value inside the pill. A builder following the sheet writes no `LayoutOrder`
+and gets the opposite of what the sheet asserts.
+
+**F-2 · `groups[].node` names route A's node, so the key's own static check fails on the route that
+ships.** `hud/01.groups[].node` is `Pressable_INDEX` / `Pressable_BUY1/2/3` — which
+`hud/03.routes[A].groupNode` confirms is the route-A value. Under route B the group node is the
+`Readout_*` frame and the button is a *child* of it, so `ReadoutLabel`, `ReadoutValue` and
+`ReadoutState` are **siblings** of `Pressable_BUY1`, not descendants, and
+`oneNodePerGroup.staticCheck`'s *"every element's node is a descendant path under its own group's
+node"* fails for all four interactive groups. Two knock-ons: `hud/02.visibleIsForbidden` and
+`presence` both key off `groups[].node`, so under route B they bind the button rather than the row;
+and `groups[currency].node` is `Readout_Currency` while the pattern builds `Readout_${label}`
+(`hud-overlay.mjs:76`) from label `Shards` — **`Readout_Shards`**. The key names a node the
+compiler will not emit, and `hud/03.routes[B].groupNode` repeats the same wrong name.
+
+**F-3 · The affordability word has no node under route B.** `elements[upg*-state].node` is
+`ReadoutState`. `readout()` emits at most `ReadoutIcon`, `ReadoutLabel` and `ReadoutValue`
+(`hud-overlay.mjs:100-123`) — **there is no third text child** — and route B creates only the
+`TextButton`. So `Ready` / `Short` / `Max`, which exist precisely because
+`input.pressable.affordabilityByColourAlone: false` demands a second channel and no key supplied
+one, have nowhere to render on the active route. Either the button's own `Text` carries the state
+(likely, and free) or `pressables` creates a fourth Instance. The sheet says neither.
+
+## The 316 px stack, recomputed
+
+**The stated arithmetic is right; the model is missing one term.**
+`4×24 + 4×26 + 3×12 + 48 + 2×16 = 96 + 104 + 36 + 48 + 32 = 316` ✓. Inputs verified against source:
+`space.lg = 16` (`generate.mjs:14`), `label = 16 px`, `caption = 12 px` (`:20-28`), so a 24 px
+heading row and a 26 px slot row at sheet 03's 14 px floor are both defensible. The 375 × 667
+figure is landscape short-axis on a small phone, consistent with `platform/01`'s landscape ruling
+and more conservative than `ui-forge`'s own 414.
+
+**`IndexSurface` has five children, not four.** Four `Group_*` frames plus `FlavourLine`
+(`screens/04`, a child of `IndexSurface`, `reservedHeightLines: 2`). Five children take **four**
+inter-child gaps, not three: `316 + 12 = **328 px**`.
+
+Against `0.86 × 375 = 322.5 px` of panel height, **328 overflows by 5.5 px**, and `screens/01`
+forbids a scroll region, so there is nowhere for it to go. One number fixes it: `0.875` clears 328
+and `0.88` (330 px) leaves margin; both are inside the sheet's own test range of 0.78–0.92. Two
+notes. The `positionOffsetPx: [0, -28]` bottom margin sits outside the 316 stack but inside the
+viewport, so panel-plus-margin consumes 350 of 375 px at 0.86 and 358 at 0.88 — still legal, with
+no room left for a further revision. And **the unsourced 92 px name-width input is handled
+correctly**: it is tagged as an estimate, and the binding mechanism is sheet 03's build-time
+`GetTextBoundsAsync` fit check, which fails the build rather than shipping an unreadable name.
+That is the right shape for a number nobody could source.
+
+## What the convergence papered over
+
+**F-6 · Navigation dropped its close control on a guarantee Screens withdrew in the same round.**
+`navigation/03` ratifies Screens' refusal citing *"`mustNotIntersect: ["Pressable_INDEX"]` at
+`0.84 × 0.72` **bottom-anchored**, which keeps the top-left cluster clear on every viewport"*, and
+states plainly that one exit *"is not survivable against occlusion, which is why sheet `02` promotes
+`screens[index].geometry.mustNotIntersect` from a courtesy to a bar-(a) invariant: with one exit, a
+panel that covers it traps the player."* **Screens' revised geometry is `0.94 × 0.86` with
+`mustNotIntersect: []` and `mayIntersect` naming all four pressables**, and its own text disproves
+the clearance: *"No phone viewport admits a panel that both fits its contents and clears any
+cluster."* So the sole exit is now explicitly permitted to sit under the panel, and the only thing
+keeping it reachable is the z-order Navigation had just called insufficient.
+
+**Not fatal — I checked.** At `zIndex` 20 against the panel's 10, `Pressable_INDEX` draws above and
+stays hit-testable, so the player is not trapped and check 2 passes. But the two sheets each moved
+toward the other and the joint result is weaker than either intended, no sheet states the surviving
+argument, and `navigation/02`'s bar-(a) invariant now points at an empty list.
+
+**F-4 · HUD's `focusRing` names a deprecated API that two sibling sheets forbid.**
+`hud/01.focusRing.mechanismInstead` is *"`GuiService:AddSelectionParent` takes an arbitrary set and
+needs no shared tree parent."* The pack's note on that exact page reads *"marked **Deprecated**. The
+pre-2022 selection-group idiom is not the one to spec"* (`pack.md:327`); `navigation/03` lists
+`AddSelectionParent` in its gamepad `forbidden` array; `platform/01` calls it deprecated in terms.
+HUD's *refusal* of the group parent is right; its *stated replacement* is the one mechanism the
+category has ruled out three times, and the refusal stands perfectly well on Platform's link graph.
+
+**F-5 · The `viewport` → `composition` focus contract does not dereference.** Of the four fields:
+`groupIndex` ✓ (on groups, 1–6, unique); `interactive` ✓ (on groups); `instanceName` — HUD supplies
+`node`, not `instanceName`; `memberIndex` — HUD supplies `elements[].memberIndexWithinGroup` while
+Platform reads `composition.groups[].members[].memberIndex`, and `groups[].members` is an array of
+**id strings**, so the path resolves to nothing. Worse, `focusList.rule` filters *"every composition
+member with `interactive` true"* and **no element carries `interactive`** — it lives on groups. Read
+literally the focus list is empty; read charitably it is the four groups, and then `memberIndex` is
+undefined for them. **Do the four form a total order with no ties?** Only under the charitable
+reading: groupIndex 1, 4, 5, 6 → `selectionOrder` 11, 41, 51, 61, unique and total, and Platform's
+criterion 4 confirms the intent is a four-cycle. The intent is right; the data path is broken, which
+is RR-13's class recurring one layer up.
+
+## Round 2 revision requests
+
+### R2-1 · `cid/ui-ux/hud/03-pattern-producibility-and-the-brief-seam.md` — the nested control renders first, not last
+**Violates:** its own `routes[B].placement`.
+**Current:** *"the frame's own vertical `UIListLayout` places it as the last row."*
+**Required:** add `layoutOrder` to `routes[B]` — the control's `LayoutOrder` is the group's member
+count plus one — and add `LayoutOrder` to route B's carve-out beside `Size` and `MinSize`.
+**Why:** `UIBuilder.luau:190` sorts by `LayoutOrder`, `:546` numbers spec children from 1, and
+`Instance.new` defaults to 0, so the button sorts above the label and value.
+
+### R2-2 · `cid/ui-ux/hud/01-persistent-surface-composition.md` — `groups[].node` is route A's node, and one name is unemittable
+**Violates:** `oneNodePerGroup.staticCheck` under the active route.
+**Current:** `groups[].node` = `Pressable_INDEX` / `Pressable_BUY1/2/3`; `groups[currency].node` =
+`Readout_Currency`.
+**Required:** split the field per route — `groupNode` (the `Readout_*` frame under B, the button
+under A) and `controlNode` — so `elements[].node` is a descendant of `groupNode` on both routes and
+`hud/02`'s presence and `Visible` rules bind the group subtree rather than the button. Correct
+`Readout_Currency` to **`Readout_Shards`**, the name the pattern builds from its label.
+**Why:** as written, the key's own static check fails on the route that ships, and one of five group
+nodes does not exist in the emitted tree.
+
+### R2-3 · `cid/ui-ux/hud/03-pattern-producibility-and-the-brief-seam.md` — `ReadoutState` has no node under route B
+**Violates:** `input.pressable.affordabilityByColourAlone: false`.
+**Current:** route B creates only the `TextButton`; `readout()` emits no third text child.
+**Required:** state where `Ready` / `Short` / `Max` renders under B — most cheaply the control's own
+`Text`, which costs no Instance — or add the label to route B's created set.
+**Why:** the second affordability channel exists because no key supplied one, and on the active
+route it currently has nowhere to go.
+
+### R2-4 · `cid/ui-ux/hud/01-persistent-surface-composition.md` — `focusRing` names a deprecated, thrice-forbidden API
+**Violates:** `navigation/03.selectability.deprecatedMechanismForbidden`; `platform/01.gamepad`.
+**Current:** `mechanismInstead: "GuiService:AddSelectionParent takes an arbitrary set…"`.
+**Required:** `"viewport.gamepad.mechanism: explicitLinkGraph — Selectable, SelectionOrder and
+NextSelection* only"`.
+**Why:** the page HUD cites is marked Deprecated in the banked pack, and the refusal it justifies
+needs none of it.
+
+### R2-5 · `cid/ui-ux/platform/01-device-viewport-rules.md` — the focus contract dereferences fields that do not exist
+**Violates:** the derivation rule.
+**Current:** `focusList.rule` = *"every composition member with `interactive` true, sorted by
+`(groups[].groupIndex, members[].memberIndex)`"*; `selectionOrderRule` =
+`10 * groups[].groupIndex + groups[].members[].memberIndex`.
+**Required:** `interactive` is a property of **groups**; `groups[].members` is an array of element
+**id strings**; the per-element field is `elements[].memberIndexWithinGroup`. Restate as *"every
+`composition.groups` entry with `interactive` true, sorted by `groupIndex`"* and drop `memberIndex`
+from `selectionOrderRule`, or resolve it through `elements[]`. Add `instanceName` to `citeAs.notFields`
+or rename it to `node`.
+**Why:** read literally the focus list is empty; the intent — four pressables, one cycle — is right
+and only the path is wrong.
+
+### R2-6 · `cid/ui-ux/screens/01-collection-index.md` — the reserved stack omits one gap and overflows the panel
+**Violates:** its own no-scroll ruling.
+**Current:** `3 × 12` group gaps for a panel holding **five** children (four `Group_*` plus
+`screens/04`'s `FlavourLine`), and height `sizeScale` 0.86.
+**Required:** `4 × 12`, giving **328 px**, and a height scale that clears it — `0.88` gives 330 px
+with margin and is inside the stated test range.
+**Why:** at 0.86 the panel is 322.5 px on a 375-point short axis against 328 px of content, and
+there is no scroll region for the difference.
+
+## Carried into the verdict, not fixed here
+
+- **`F3` is confirmed and correctly classified as blocking on both routes.** `HudBinding.luau:404-406`
+  uppercases the label to build the node name; `hud-overlay.mjs:76` does not. It must land before or
+  with the casing fix, never after — three sheets now require that fix and the fix is what triggers
+  the failure.
+- **Wave 6's two theme defects both land on this category's output, and one is worse than reported.**
+  `palettes.mjs:150` gives `serif-ui` a numeric font of `MerriweatherBold`, which is not an
+  `Enum.Font` member — entry confirmed. `UIBuilder.luau:482` reads
+  `inst.Font = (Enum.Font :: any)[t.font] or Enum.Font.Gotham`, and **indexing `Enum.Font` with a
+  name that does not exist raises rather than returning `nil`, so the `or` never runs**: it throws,
+  it does not silently render Gotham. `readout()` types `ReadoutValue` as `numeric`
+  (`hud-overlay.mjs:113`), so under `fantasy-ornate` **every HUD value node throws inside
+  `buildNode`** — the same failure mode `UIBuilder.luau:460-467` records as having killed the client
+  entry point once before. Art's to fix; this category's every readout is what breaks.
+
+## Status of the 17 sheets
+
+**Approved and untouched by any round-2 request:** `hud/02`, `screens/02`, `screens/03`,
+`screens/04`, `navigation/01`, `navigation/02`, `navigation/03`, `store/01`, `store/02`,
+`feedback/01`, `feedback/02`, `feedback/03`, `platform/02`, and all six lead indexes.
+**Four sheets carry the six requests:** `hud/01` (R2-2, R2-4), `hud/03` (R2-1, R2-3),
+`platform/01` (R2-5), `screens/01` (R2-6). Round 3 should re-read those four and nothing else.
