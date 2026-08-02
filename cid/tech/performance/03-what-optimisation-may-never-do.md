@@ -39,6 +39,20 @@ four heights are Block 1.6, Cylinder 2.4, Ball 2.8, Wedge 3.4
 problem correctly: if `Ball` is expensive, the fix is a **shape swap**, which keeps four
 distinct silhouettes, never a distance collapse, which does not.
 
+**`N10` is amended this round, and the reason is that its observable overshot its own rule.**
+Its stated subject is **layout determinism** — randomness, reordering, reindexing — because
+`state.cleared` is keyed by patch array index and `architect/01-runtime` makes the seed a
+save-migration boundary. Its grep also caught `os.clock()`, which introduces none of the three
+and touches nothing `layout` produces: a monotonic elapsed-time read cannot move a patch. Both
+Security (RR-S1) and Networking (RR-N8) need one for rate limiting and reconciliation, and both
+were right on the substance, so **I amend it rather than make them escalate against a peer
+sheet they cannot edit.** The wording below keeps `os.time()` and `tick()` forbidden by name,
+because a wall clock *can* reach an award — `01-FOUNDATION.md`'s *"no offline accumulation"*
+`[brief: binding]` is exactly the rule a `lastSeen` read would break — so this is a narrowing,
+not a clock amnesty. **It is also not cosmetic: acceptance criterion 2 runs `N10`'s grep against
+current `game/src`, so the unamended row would have failed my own sheet the moment Security and
+Networking built as specified.**
+
 **`N15` and `N16` exist because the burst budget in `02` is the one place a performance
 decision touches a beat.** A bay build lands on the tick that fires the game's largest payoff.
 The available shortcuts — a loading screen, a frozen character, a camera lock, a staggered
@@ -65,7 +79,7 @@ change and it goes back to the sheet that owns the constraint, not to this domai
 | N7 | Making the inter-plot boundary opaque, or adding fog, `Atmosphere` or occlusion that obstructs the spawn-to-spawn sightline | `mechanics/06` (stops the body, not the eye); `social/02` criterion 3 | every instance intersecting the segment between two neighbouring spawn points has `Transparency == 1`; `grep -rn "Atmosphere\|FogEnd\|FogStart" game/src` returns nothing |
 | N8 | Removing, hiding, un-replicating or transparency-fading another player's character inside 128 studs | `social/02` B2 and B3 (a body in motion whose ground is visibly being cleared) | `grep -rn "LocalTransparencyModifier\|ReplicationFocus\|PersistentPerPlayer\|Archivable = false" game/src` returns nothing |
 | N9 | Reserving, stubbing, defaulting or holding open any `budgets` or `serverCost` field for procedural generation, rebirth, offline accrual, codes, daily rewards, leaderboards, trading, or seasons and events | `03-META.md` priority 3 | `grep -in "rebirth\|offline\|streak\|daily\|leaderboard\|OrderedDataStore\|MessagingService\|season\|promo\|procedural" cid/tech/performance/*.md` matches only this row and sheet `01`'s scope line |
-| N10 | Introducing a second source of randomness, or reordering, re-sorting, compacting or reindexing `layout`'s patch array | `architect/01-runtime` (one `LayoutSeed`); `layout` R9; `state.cleared` is keyed by array index and is a save-migration boundary | `grep -rn "math.random\|Random.new()\|os.time()\|os.clock()\|tick()\|table.sort" game/src` matches nothing outside a `Random.new(seed)` derived from `GameConfig.LayoutSeed` |
+| **N10** *(amended, round 3)* | **Deriving a placement, an award amount or a grant from an unseeded RNG or from a wall clock; or reordering, re-sorting, compacting or reindexing `layout`'s patch array. A monotonic elapsed-time read is permitted. `math.random`, an unseeded `Random.new()`, `os.time()` and `tick()` remain forbidden.** | `architect/01-runtime` (one `LayoutSeed`, and its AC3); `layout` R9; `state.cleared` is keyed by array index and is a save-migration boundary; `01-FOUNDATION.md`'s *"no offline accumulation"* `[brief: binding]`, which is what keeps `os.time()` banned | `grep -rn "math.random\|Random.new()\|os.time()\|tick()\|table.sort" game/src` matches nothing outside a `Random.new(seed)` derived from `GameConfig.LayoutSeed`. **`os.clock()` is deliberately absent from the pattern**, and no `os.clock()` return value may appear in an argument to `Progression.award`, in a patch position, or in a `layout` call |
 | N11 | Pooling, recycling or re-parenting a patch Instance across bays or across areas | *"Cleared is permanent"* `[brief: binding]` ← `[you chose: R2 Q1]`; a reused Instance carries a stale index | a lane teardown is one `Destroy` on the slab (`representation`); no patch Instance is ever assigned a second `Parent` or a second `Name` |
 | N12 | Reducing the four tier heights toward each other, clamping `tier.height` at distance, or writing `.Size` on a patch after creation | `04-PRESENTATION.md`; `art/objects/01` criterion 3 (four distinct heights) | the four `tiers[].height` values in `GameConfig.luau` are pairwise distinct; `grep -rn "\.Size = " game/src/server/Plots.luau` matches only the creation path, the slab and the four boundary parts |
 | N13 | Making a patch collidable, touchable or queryable in order to reuse an engine query as the proximity test | `art/objects/01` (does not collide); `mechanics/06` (nothing on a lane to climb or jump from) | `grep -rn "CanCollide = true" game/src/server/Plots.luau` matches only the slab and the boundary parts; no patch has a `Touched` connection |
@@ -74,8 +88,25 @@ change and it goes back to the sheet that owns the constraint, not to this domai
 | N16 | Staggering, fading, tweening or animating patches into existence across frames in a way another client can observe | `theme/identity/03` (*"a plot appears and disappears whole; nothing may stagger or animate its patches into existence"*) | the bay container's `Parent` is assigned exactly once per build (`serverCost.burstBudget.buildRule`); `grep -rn "TweenService\|Transparency = " game/src/server/Plots.luau` returns nothing |
 | N17 | Adding an uploaded image, mesh or sound asset to world geometry in order to reduce part count | `representation` (*"assembled from primitives; no asset ids"*); `budgets.textureCeilings` | `grep -rn "rbxassetid" game/src` returns nothing outside client UI files |
 
+## Amends
+
+**`N10`, round 3, closing RR-P9 and adopting Security's RR-S1 and Networking's RR-N8 in the
+sheet that owns the row.** Both escalated correctly on substance and incorrectly on route — a
+peer sheet in the same category, revised in the same round, cannot be told to amend mine, so I
+amended it. `os.clock()` moves from forbidden to permitted; `math.random`, an unseeded
+`Random.new()`, `os.time()` and `tick()` are unchanged, and the grep pattern is narrowed by
+exactly one token. **The same one-token narrowing is owed to `architect/01-runtime` acceptance
+criterion 3**, which carries the identical pattern and which neither Security nor Networking
+can edit either — that one is a legitimate upstream escalation and both of theirs stand.
+
 ## Consequences for other work
 
+- **Rate-limiting work (`integrity`) and reconciliation work (`prediction`)** are unblocked:
+  a monotonic elapsed-time read is permitted, so an ingress counter and a restore timer need no
+  new field and no waiver. Neither may read `os.time()` or `tick()`.
+- **Runtime work (`architect/01-runtime`)** should narrow acceptance criterion 3's grep by the
+  same token, per Security's RR-S1 and Networking's RR-N8. Until it does, that criterion and
+  this row disagree by one string and the build fails the stricter of the two.
 - **Whoever implements `budgets`' render ceilings** learns that `N1`, `N2` and `N12` remove
   every standard lever for a draw-call problem. If primitive parts do not batch, the remaining
   lever is `depths.areas[].patchCount` — a content decision, escalated to `depths`, never an
@@ -102,7 +133,8 @@ change and it goes back to the sheet that owns the constraint, not to this domai
    running: 17 of 17 are a grep, a manifest comparison or a static instance count.
 2. Running every `grep` in the check column against the current `game/src` produces the stated
    result for all rows that name one (`N1`, `N3`, `N4`, `N7`, `N8`, `N9`, `N10`, `N12`, `N13`,
-   `N15`, `N16`, `N17`).
+   `N15`, `N16`, `N17`). **`N10`'s pattern contains no `os.clock` token**, so a build that uses
+   a monotonic elapsed-time read for rate limiting or reconciliation passes it.
 3. This file contains zero fenced blocks tagged `manifest`, and `npm run bridge` reports no key
    provided or proposed by it.
 4. `budgets.streaming.StreamingIntegrityMode != "Disabled"` and
@@ -116,8 +148,10 @@ tick figure and burst rule these rows constrain — sheet `02`, which holds `ser
 sheet supplies neither key and proposes none; the key it would need does not exist, because a
 prohibition set is a constraint on two keys rather than a third thing.** What a patch, a
 boundary or a bay looks like inside the ceilings — Art & Visuals. Whether the bucketed scan in
-`serverCost` RR-P5 is adopted — `architect`, `modules`/`clearing`. Whether the checks above
-become a `bridge/merge.mjs` lint or stay build-report greps — contract-and-seam work; three
-wave-1 sheets have already asked for the same machinery. Which savings a *client* may take that
-never touch the server table — sheet `01` already takes two of them (streaming radius, streaming
-integrity) and nothing here forbids a third that leaves `state.patches` alone.
+`serverCost` RR-P5 is adopted — `architect`, `modules`/`clearing`. **Whether
+`architect/01-runtime` acceptance criterion 3 takes the same one-token narrowing — `architect`,
+on Security's RR-S1 and Networking's RR-N8; I amended my row and cannot amend theirs.** Whether
+the checks above become a `bridge/merge.mjs` lint or stay build-report greps —
+contract-and-seam work; three wave-1 sheets have already asked for the same machinery. Which
+savings a *client* may take that never touch the server table — sheet `01` already takes two of
+them and nothing here forbids a third that leaves `state.patches` alone.

@@ -8,7 +8,7 @@
 generation, 2020) on iOS, an Android 8.0+ / OpenGL ES 3.0 / 3 GB device on Android, 60 Hz
 display** `[cid: decided]`. Every ceiling in `budgets` derives from that one field, computed
 against the **merged** `depths.areas[].patchCount` maximum of 640 at `runtime.maxPlayers` **16**,
-with wave 4's requested counts read **by field** and marked unreleased.
+with wave 4's counts read **by field** from `solvency`.
 **`StreamingEnabled` is true**, min radius **160**, target radius **512**,
 `StreamingIntegrityMode` **`PauseOutsideLoadedArea`**, `ModelStreamingMode` **`Default`**.
 
@@ -52,23 +52,29 @@ written as sourced fact would be a claim no page supports.** The memory-category
 form a reading can be checked against, but their page is absent from the research pack.
 `[research owed: create.roblox.com/docs/studio/optimization/memory-usage — the PlaceMemory category tree]`
 
-**Which patch count, and why every wave-4 figure here is a field reference rather than a
-number.** 140 is `area.patchCount`, area 1 only, the smallest thing in the game and not a
-ceiling. 640 is `depths.areas[7..8]`, merged, the largest. Wave 4 **is FAIL**
-(`cid/gameplay/_verified-wave4.md` line 3) and **its post-terminal bay has moved three times —
-47 chunks, then 44, then 42 after round 3 cut the Vault set factor 1.20 → 1.15.** So 640 is the
-live column, the requested column is `depths.postTerminalArea.patchCount` (**1,680 at the
-current revision**), and I read it by field. Both are computed at 16, never the 20 wave 4
-costed against. **At the requested count three ceilings still break at once**, and the fix is
-`depths.areas[].patchCount`: sheet `03` forbids every optimisation that would close a 2.2×
-instance gap.
+**Which patch count, and at which field.** 140 is `area.patchCount`, area 1 only, the smallest
+thing in the game and not a ceiling. 640 is `depths.areas[7..8]`, merged, the largest. Wave 4's
+post-terminal bay has moved three times — 47 chunks, then 44, then 42 after round 3 cut the
+Vault set factor 1.20 → 1.15 — so I read it by field rather than restate it. **The field is
+`solvency.postTerminalBay.patchCount`, and I checked it resolves rather than picking the
+spelling I had written**: `cid/gameplay/balance/03-ladder-solvency.md:124-129` carries
+`postTerminalBay` inside the `solvency` manifest with `patchCount` 1,680, its own
+`clearingLoopCost.formula` reads `postTerminalBay.patchCount`, the released gate at
+`cid/gameplay/_verified-wave4.md:354` names the same path, and `analytics/economy/01:39`
+already consumes it. **My earlier `depths.postTerminalArea.patchCount` does not resolve** —
+`postTerminalArea` is a field of `endgame` (`meta/07`), not of `depths` — and neither does
+Persistence's `depths.postTerminalBay.patchCount`. Area 8 is
+`solvency.areaLedger[7].patchCount` for the same reason. Both are computed at 16, never the 20
+wave 4 costed against, and **at the released counts three ceilings break at once**; the fix is
+`depths.areas[].patchCount`, because sheet `03` forbids every optimisation that would close a
+2.2× instance gap.
 
 **The lane's instance shape is already fixed and I only count it.** `representation` makes a
 lane one slab Part resized inward per bay, four boundary parts, one spawn `Attachment`, and one
 anchored non-colliding Part per patch — `WedgePart` for Heartvine
 `[research: architect/sheets/06-representation.md]`. A lane is `patchCount + 6` instances and
 `patchCount + 5` parts, and nothing below the live bay holds a patch (`plots.liveGeometry`).
-Merged: **646 per lane, 10,336 at 16 players.** At the requested bay: **1,686 and 26,976.**
+Merged: **646 per lane, 10,336 at 16 players.** At the released bay: **1,686 and 26,976.**
 
 **Streaming is the one lever left and it is unowned today.** `StreamingEnabled` appears in
 neither contract and nowhere in `game/src`; instance streaming *"improves join times, reduces
@@ -92,10 +98,9 @@ budget behind it.** `serverWorldInstanceCeiling` is 12,000: 16 × 646 = 10,336 (
 player adds exactly `patchCount + 6`. `runtime.maxPlayers` 16 is ratified against it, not
 re-decided. **Its test range is the open interval (10,336, 12,920), not an arbitrary band**:
 at or below 10,336 the merged design fails its own ceiling, and at or above 12,920 the second
-half of acceptance criterion 2 inverts and 20 players becomes legal. My first draft's
-`[8000, 20000]` contained values on both sides of that interval, which is a defect in the range
-rather than latitude. `clientStreamedInstanceCeiling` carries the same defect and the same fix:
-its floor is the 5,814-instance worst case, not a round number below it.
+half of acceptance criterion 2 inverts and 20 players becomes legal.
+`clientStreamedInstanceCeiling` carries the same defect and the same fix: its floor is the
+5,814-instance worst case, not a round number below it.
 
 **One saving at zero design cost.** `Plots.luau` sets `CanCollide` and `CastShadow` false on a
 patch and sets neither `CanTouch` nor `CanQuery`. Nothing raycasts, region-queries or
@@ -141,20 +146,24 @@ false.
       "areaOneIsNotACeiling": "art/objects/01's 140 is area 1's patchCount and is the smallest area in the game.",
       "playersMultipliedBy": 16,
       "playersSource": "runtime.maxPlayers. NOT the 20 wave 4 costed against.",
-      "requestedButUnreleased": {
-        "released": false,
-        "status": "cid/gameplay/_verified-wave4.md line 3: Stage 4 does not release.",
-        "readByField": "depths.postTerminalArea.patchCount and depths.areas[7].patchCount. DO NOT COPY EITHER NUMBER INTO ANOTHER KEY.",
-        "whyByField": "the post-terminal bay has moved three times — 47 chunks, then 44, then 42 after wave 4 round 3 cut the Vault set factor 1.20 to 1.15. Every figure below is evaluated at the current revision and is re-derivable from breachFormula rather than restated.",
+      "waveFourCounts": {
+        "readByField": ["solvency.postTerminalBay.patchCount", "solvency.areaLedger[7].patchCount"],
+        "doNotCopyEitherNumberIntoAnotherKey": true,
+        "pathVerifiedAt": "cid/gameplay/balance/03-ladder-solvency.md:124-129 carries postTerminalBay inside the solvency manifest with patchCount 1680; its own clearingLoopCost.formula reads postTerminalBay.patchCount; the released gate at cid/gameplay/_verified-wave4.md:354 names solvency.postTerminalBay.patchCount; analytics/economy/01:39 already consumes it.",
+        "spellingsThatDoNotResolve": {
+          "depths.postTerminalArea.patchCount": "this sheet's earlier spelling. postTerminalArea is a field of ENDGAME (gameplay/meta/07), not of depths.",
+          "depths.postTerminalBay.patchCount": "tech/persistence/01's spelling. Neither the container nor the field exists on depths."
+        },
+        "whyByField": "the bay has moved three times — 47 chunks, then 44, then 42 after wave 4 round 3 cut the Vault set factor 1.20 to 1.15. Every figure below is evaluated at the released revision and is re-derivable from breachFormula rather than restated.",
         "postTerminalBayPatchCountAtThisRevision": 1680,
         "breachesAtThisRevision": [
           "serverWorldInstanceCeiling: 16 x (1680 + 6) = 26976 against 12000 — 225%",
           "clientStreamedInstanceCeiling: 9 lanes x 1686 = 15174 against 6000 — 253%",
           "triangles at the 100/patch budget: 15174 x 100 = 1517400 against 1000000 — 152%"
         ],
-        "breachFormula": "serverInstances = 16 * (depths.postTerminalArea.patchCount + 6); clientStreamed = 9 * (patchCount + 6); triangles = clientStreamed * renderCeilings.trianglesPerPatchBudget",
+        "breachFormula": "serverInstances = 16 * (solvency.postTerminalBay.patchCount + 6); clientStreamed = 9 * (patchCount + 6); triangles = clientStreamed * renderCeilings.trianglesPerPatchBudget",
         "whoFixesIt": "depths.areas[].patchCount, not this domain. Sheet 03 forbids every optimisation that would close a 2.2x instance gap.",
-        "stillBreachingAfterThreeReductions": "47 to 44 to 42 chunks has moved the breach from 251% to 225% of serverWorldInstanceCeiling. Chunk-count trimming is not converging on a fix."
+        "crossWaveFinding": "wave 4 released at PASS with a bay that breaches this ceiling by 2.25x. Wave 4 could not see the ceiling because it did not exist yet, and wave 5 cannot move the patch count. Recorded for the final cross-category pass; 47 to 44 to 42 chunks has moved the breach only from 251% to 225%, so chunk trimming is not converging."
       }
     },
     "instanceCeilings": {
@@ -241,9 +250,10 @@ false.
       "ownedBy": "representation work (architect/06); stated here as a consequence, not applied here."
     },
     "readFromOtherKeysNeverCopied": {
-      "snapshotOutboundBandwidth": "replication's 16-player outbound figure. Networking owns it; this key states no byte total of its own and no earlier draft's figure survives here.",
-      "postTerminalBayPatchCount": "depths.postTerminalArea.patchCount",
-      "areaEightPatchCount": "depths.areas[7].patchCount",
+      "snapshotOutboundBandwidth": "replication's 16-player outbound field. Networking owns it; this key states no byte total of its own.",
+      "postTerminalBayPatchCount": "solvency.postTerminalBay.patchCount",
+      "areaEightPatchCount": "solvency.areaLedger[7].patchCount",
+      "mergedAreaPatchCounts": "depths.areas[].patchCount",
       "coPresenceSeparation": "social.maxCoPresenceSeparationStuds",
       "lanePitchAndWidth": "plots.pitchStuds, plots.laneWidthStuds",
       "revealDeadline": "firstSession.beats[firstReveal].bySecond"
@@ -296,11 +306,13 @@ assertion, which is the shape `maxPlayers` already uses.
 - **Publish-checklist work (Build & Deploy)** gains a third `placeConfiguration` entry with five
   properties and a boot assertion. Missed, the place ships at 64/1024 and a client loads all
   sixteen lanes.
+- **Persistence work (`persistence`)** should spell its bound `solvency.postTerminalBay.patchCount`.
+  Its `depths.postTerminalBay.patchCount` and my earlier `depths.postTerminalArea.patchCount`
+  both fail to resolve; the released `solvency` manifest and the wave-4 gate agree on one path,
+  and `analytics/economy/01` already uses it.
 - **Area-authoring-by-depth work (`depths`)** inherits a hard ceiling: 640 patches per live bay
-  at 16 players is 86% of `serverWorldInstanceCeiling`. **The post-terminal bay is 225% of it at
-  the current revision, and three successive chunk-count reductions have moved it only from 251%
-  to 225% — trimming is not converging.** The lever is `patchCount`, and no optimisation sheet
-  `03` permits will close it.
+  at 16 players is 86% of `serverWorldInstanceCeiling`. **The post-terminal bay is 225% of it**,
+  and the lever is `patchCount` — no optimisation sheet `03` permits will close it.
 - **Overgrowth-tier and representation work (`tiers`, `representation`)** inherit a 400-triangle
   budget across four shapes. If `Ball` (Bramble, 14% of patches) overruns, the fix is a shape
   swap, never an LOD. `representation` should also set `CanTouch` and `CanQuery` false.
@@ -314,9 +326,8 @@ assertion, which is the shape `maxPlayers` already uses.
   controllable character, with a 6.0 s target so the 10 s join-relative reveal survives a 3 s
   input-relative budget.
 - **Environment and object art** get a closed asset budget: zero uploaded images, zero meshes,
-  three built-in materials.
-- **Networking (`replication`)** keeps sole ownership of snapshot bandwidth. This key states no
-  byte total and reads its field.
+  three built-in materials. **Networking (`replication`)** keeps sole ownership of snapshot
+  bandwidth; this key states no byte total.
 
 ## Acceptance criteria
 
@@ -327,9 +338,10 @@ assertion, which is the shape `maxPlayers` already uses.
 3. Every value in `serverWorldInstanceCeilingTestRange` satisfies criterion 2, and every value
    in `clientStreamedInstanceCeilingTestRange` is at least `clientStreamedInstancesWorstCase`:
    `10,500 > 10,336`, `12,800 < 12,920`, `5,900 ≥ 5,814`.
-4. `budgets.streaming.StreamingMinRadius ≥ social.maxCoPresenceSeparationStuds.value` and
-   `budgets.streaming.StreamingTargetRadius ≥ 4 × plots.pitchStuds` both hold (160 ≥ 128;
-   512 ≥ 488).
+4. Every path in `budgets.readFromOtherKeysNeverCopied` and in
+   `patchCountBasis.waveFourCounts.readByField` resolves against the merged manifest, and no
+   sheet in this domain contains the strings `depths.postTerminalArea` or
+   `depths.postTerminalBay`.
 
 ## Flagged to the developer
 
@@ -345,11 +357,11 @@ changes.
 The tick's value, the proximity scan's cost model, the per-frame instance burst and the
 bucketing requirement — sheet `02`, which holds `serverCost`. Which savings this domain may
 never take — sheet `03`, which supplies no key. The art inside these ceilings — Art & Visuals.
-Every patch count, footprint and area size — `depths` and `layout`, read by field. Snapshot
+Every patch count, footprint and area size — `depths` and `solvency`, read by field. Snapshot
 bytes and outbound bandwidth — Networking's `replication`, which owns the figure outright. The
 save payload — Persistence. **Whether a device is ever measured, and by whom: no sheet in either
 contract owns taking a MicroProfiler, Server Jobs or Memory reading**, and every
 `[playtest unknown]` here depends on one. Named for the final cross-category pass, beside
-Security's logging pipe. Whether anchored parts stay precise beyond ~20,000 studs from the
-origin — inherited unresolved from `meta/06`'s `[research owed:]`, and it bounds `endgame`'s
-endless run.
+Security's logging pipe and the 2.25× cross-wave instance breach. Whether anchored parts stay
+precise beyond ~20,000 studs from the origin — inherited unresolved from `meta/06`'s
+`[research owed:]`, and it bounds `endgame`'s endless run.

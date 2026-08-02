@@ -319,3 +319,238 @@ Recorded for the final pass, not failures now.
 That is disclosed correctly on every sheet that cites one and is **not** a reason to hold this
 category — but it does mean release here is release of a category whose numbers move when stage 4
 lands. The final cross-category pass owns that, and the three unowned pipes above.
+
+---
+
+# Round 2
+
+**Status: FAIL** (round 2 of a maximum of 3)
+Twelve of fourteen requests closed correctly, several of them better than I asked for. Three
+defects remain, all cheap, and one of them is the round-1 defect in a new costume: the category
+still contains a pair of acceptance criteria that cannot both pass, because the peer sheet the
+escalation was aimed at did not move.
+
+## Round-1 requests, re-verified against the changed files
+
+| # | request | closed | evidence |
+|---|---|---|---|
+| V1 | security/03 Kick prohibition | **yes** | `response.forbidden` row now reads *"no `Player:Kick`, ban, disconnect or connection close caused by an integrity flag or by ANY `integrity.response` tier"*, with an `explicitlyExcluded` field naming `persistence/01 staleSession.releaseMechanism` and its reason. AC2 rewritten. |
+| V2 | networking/02 `I3` | **yes** | AC2 now reads *"the over-limit branch of each of the two handlers contains no `warn`, `print`, `error`, `Kick`, `Ban` or connection close"*. Scoped to the branch. |
+| V3 | security/01 `os.clock()` | **escalated, correctly — but see below** | RR-S1 issued; `step.criterionConflict` and `step.fallbackIfRefused` added. |
+| V4 | networking/02 `os.clock()` | **escalated, correctly — but see below** | RR-N8 issued; `algorithm.clockExemption` added with `ridesPersistenceRRP7: false`. |
+| V5 | security/03 `os.time()` | **yes, and best of the three** | `at` is now `math.floor(workspace:GetServerTimeNow())`, with a note stating why this sheet rides no escalation. |
+| V6 | the log sink's home | **yes** | One sink in `clearing`, exposed as `log(record)`, one `interfaces` entry via RR-S2. |
+| V7 | 1,880 → restated | **yes for Performance, no for Persistence** | See defect 2. |
+| V8 | the `LAP_TARGET` bound | **yes** | 157.2 s laps, bounds 655 and 589.5, failures 5.9%/5.9%/8.6%/8.6%. |
+| V9 | 62 kB/s | **yes, and better than asked** | Withdrawn outright rather than corrected: *"THIS KEY STATES NO BYTE TOTAL … `replication`'s value is authoritative."* One number, one owner. |
+| V10 | 752,000 in security/01 | **yes** | `cost.shareOfTickWork` now cites `serverCost.scanCostModel.rows[]` and defers. |
+| V11 | 45.83 in security/01 | **yes** | No longer present in the sheet. |
+| V12 | `studioWriteGuard` | **yes** | Field added with `where`, `returns: "(false, 'studio')"`, `coversCallSites`, plus `D16` and a rewritten AC1. |
+| V13 | the release counter | **yes** | Strict reading, three explicit fields. See ruling below. |
+| V14 | the `BindToClose` citation | **yes** | Re-cited; the sheet no longer matches a grep for that anchor. |
+
+## Ruling on the two clock escalations
+
+**Both arguments are correct, and they are genuinely two arguments, not one repeated.**
+
+**Security's (RR-S1) is right.** The stated rule in both criteria is layout determinism — N10's own
+text is *"introducing a second source of randomness, or reordering, re-sorting, compacting or
+reindexing `layout`'s patch array"* — and a monotonic elapsed-time read introduces none of the three
+and reads nothing `layout` produces. The observable genuinely overshoots the rule it enforces. The
+counter-argument is also right and I checked it: `GetServerTimeNow()` is synchronised, can step
+backwards on a correction, and a backwards step inside a payout gate is a defect. Naming
+`fallbackIfRefused` with its cost analysed (a backwards step yields `dt ≤ 0`, clamps to 0, advances
+the origin not at all for one tick; a forwards step is bounded by `dtCapSeconds` **and** by the
+coverage cap) means no builder waits on the escalation. That is exactly the shape I asked for.
+
+**Networking's (RR-N8) is right and is a different argument.** *"A bucket refilled from a
+synchronised wall clock refills backwards when that clock steps, handing a modified client free
+tokens."* That is a security property of a rate limiter, not a restatement of Security's payout-gate
+concern — different mechanism, different victim, different failure. Its distinction between the two
+clocks is exactly correct: a lock heartbeat must be comparable **across** servers, so
+`GetServerTimeNow()` is right in `persistence/02`; a token bucket needs a monotonic delta on **one**
+server, so it is wrong here. Rejecting the per-tick refill job for destroying `serverCostAdded.perTick: 0`
+is also right. And `ridesPersistenceRRP7: false` is correct on its stated ground: RR-P7's wording
+neither forbids nor permits a bucket, because a bucket derives no placement, payout or grant.
+
+**Security's `os.time()` → `GetServerTimeNow()` switch is right, and is the sharpest judgement in
+the round.** A timestamp is an instant, not a duration; the synchronised clock serves an instant
+exactly; and the switch removes a whole sheet from the escalation rather than widening it. "RR-S1
+covers one use, not two" is a real reduction in what has to be argued upstream.
+
+**So: two arguments, one fix.** Both uses need precisely the same sentence — *a monotonic
+elapsed-time read is permitted* — and neither needs anything the other does not. **One restatement
+covers both, and there must therefore be one request, not two.** That is defect 1.
+
+## Ruling on the sink scoping
+
+**Honest, not a retreat.** I re-read `security/01`'s original claim: *"No new `interfaces` entry, no
+`PlayerState` field and no `onLeave` hook are needed, **because the re-anchor triggers are
+`state.spawnPivot` and `state.armState.character`, which the tick already reads.**" The justification
+given was always about the re-anchor path, so the claim was scoped by its own stated reason before
+anyone narrowed it. It was never a claim about `integrity.logging`, and all three still hold for
+`positionAuthority` — I re-verified each. The `narrowsWhichEarlierClaim` field says exactly this and
+does not pretend the original was more careful than it was.
+
+**The rejections are also right.** Two sinks genuinely cannot work: `maxRecordsPerServerPerMinute`
+is one counter and two sinks would each enforce it separately, giving 120/minute. And
+`server-main` genuinely cannot host it — `game/src/server/init.server.luau` is a `Script`, not a
+`ModuleScript`, so it can expose nothing to `clearing`; I confirmed the file name. One
+`interfaces` entry is the minimum, and RR-S2 asks for exactly one.
+
+## Kick criteria: jointly satisfiable, and now mutually reinforcing
+
+`persistence/01` AC3 requires exactly one `Player:Kick`. `security/03` AC2 now reads: *"`grep
+":Kick(\|BanAsync\|banList" game/src/server/Clearing.luau` returns nothing, and the only `:Kick(`
+anywhere in `game/src` is `persistence/01`'s stale-session release in `server-main`."*
+`networking/02` AC2 is scoped to the over-limit branch of two handlers. **All three pass on the same
+artifact.** Better than I asked for: `security/03` AC2 no longer merely tolerates the kick, it
+*asserts the same fact* `persistence/01` AC3 asserts, so the two criteria now fail together if
+anyone adds a second kick. That is the right repair.
+
+## Persistence's strict reading closes the hole and opens no new one
+
+`aReReadThatReturnsAPayloadCountsAsAFailedPass: true`, `aReReadThatFailsCountsAsAFailedPass: true`,
+`counterResetsOn: "a pass that writes, and on nothing else"`. I checked the three populations:
+
+- **Returning player, save intact, join read failed** — released at 135 s. This is the stated cost
+  and it is the right trade: the alternative is the round-1 defect, a whole session lost silently.
+- **New player, no save, join read failed transiently** — the re-read succeeds and returns `nil`,
+  `clearsWhen` fires, the latch clears, the pass writes, the counter resets. **Never kicked.** The
+  strict rule only releases players who have something to lose, which is the population it exists
+  to protect.
+- **Studio play-test** — this is where a strict "resets only on a pass that writes" rule would have
+  kicked every player at 135 s, because `studioWriteGuard` suppresses every write. The sheet found
+  that interaction itself: `studioWriteGuard.returns` is `"(false, 'studio')"`,
+  `isAStaleSessionReason: false`, `countsTowardRelease: false`, and `releaseMechanism` triggers only
+  on `readFailed`. **Closed before I could raise it**, and it is the interaction most likely to have
+  been missed.
+
+No new hole. RR-P3's widening of `save` to `(boolean, string?)` is what makes all three distinguishable.
+
+## The reference rewrite (RR-P5): right shape, wrong target, and it did not pre-empt the conflict
+
+Asking `stateShape` for a pointer instead of an integer is the correct move and it does remove
+`persistence` from the class of sheets that must be edited every time a chunk count moves.
+**But the pointer does not resolve, and the two sheets that now hold pointers disagree on it.**
+
+- `persistence/01` `payload.clearedMaxKeysSource` → `depths.postTerminalBay.patchCount`
+- `performance/01` and `/02` → `depths.postTerminalArea.patchCount`
+- `cid/gameplay/_verified-wave4.md:354`, the released gate, names → **`solvency.postTerminalBay.patchCount`**
+
+Three names, one field. A reference is worth exactly what its path is worth, and neither of these
+two resolves. `bridge` cannot catch it because both are prose strings rather than merged manifest
+paths, which is precisely why a human pass has to. `persistence/03` AC3 already requires that
+*"every row names a contract key and field path that resolves in the merged manifest"* — the same
+discipline has to apply here.
+
+## Loop cost: one stale publisher remains
+
+Wave 4 closed **PASS at round 3** with a 42-chunk bay, 1,680 patches, and
+**201,600 / 537,600 / 806,400**. Performance restated to exactly those figures and added
+`supersededFigures` recording all four dead sets — a good pattern, and its AC3 now forbids
+752,000, 940,000, 902,400 and 844,800 by name. Security defers to `serverCost.scanCostModel.rows[]`
+and publishes no number. **But `persistence/01` still publishes 1,880 as a value**, in
+`clearedMaxKeysAtCitedRevision`, with `clearedMaxKeysSource` reading *"At the wave-4 revision those
+are 1200 and 1880; **UNRELEASED, `cid/gameplay/_verified-wave4.md` line 3, 'Stage 4 does not
+release'**"* — a status that is now false on both counts, since line 3 reads *"Final verdict: PASS
+(round 3)"*. `supersedes` ("low by 2.94×") and `worstCaseDerivation` ("at 1880 keys") ride the same
+stale figure. The payload bound stays safe because 1,680 < 1,880 and AC4 tests against 25,000
+characters, so nothing a player sees moves — but the category does still publish a superseded number
+and a false release status, which is what round 1 asked it to stop doing.
+
+One smaller instance: `security/01` `cost.shareOfTickWork` says *"the 1,880-patch row `serverCost`
+**currently publishes**"*. It publishes 1,680. The field defers correctly and the percentages hold
+either way; the sentence about a sibling's current content is wrong.
+
+## The two ceiling ranges: both derivations check out
+
+- `serverWorldInstanceCeilingTestRange` [10,500, 12,800] against AC2's two anchors, 10,336 and
+  12,920. Every value in the range keeps `10,336 ≤ ceiling` true and `12,920 > ceiling` true, so
+  AC2 holds across the whole range instead of flipping inside it. Correct, and it is the open
+  interval between the two numbers AC2 separates, rounded inward. This was my round-1 noted-not-acted
+  item and Performance found it without being asked.
+- `clientStreamedInstanceCeilingTestRange` [5,900, 10,000] against a 5,814 worst case. Every value
+  is ≥ the worst case; no criterion asserts an upper breach, so the top is unconstrained. Correct.
+
+## 589.5 versus 588.75
+
+**589.5 is right.** `meta/04:199` publishes the merged config-period bound as **655** for ordinals
+5–8, and `655 × 0.24 = 157.2 s`. Gameplay's 588.75 comes from the **rounded** 157 s on
+`meta/04:195`, which is a display value. The clean check: the realised bound is the config bound ×
+`0.12 / 0.13333` = × 0.9 exactly, and `655 × 0.9 = 589.5`. Gameplay's figure is 0.13% low. Nothing
+turns on it — 624 and 640 exceed both — and Performance's stated failure margins (5.9%, 5.9%, 8.6%,
+8.6%) reproduce against 589.5.
+
+## The 225% breach: a Balance finding, and Performance has finished its part
+
+**Wave-5 finding, no. Balance/Meta finding, yes — and it is now a cross-gate finding, which is the
+sharper description.** Performance owns the ceiling and has published it; `depths`/`solvency` own
+the patch count. Three chunk reductions (47 → 44 → 42) have moved the breach 251% → 225%, which is a
+10% improvement for a 2.25× problem, and `performance/03` forbids every optimisation that would
+close the gap — correctly, since each of them breaks a binding constraint. There is nothing left for
+this domain to do: it named the ceiling, named the lever, and refused the cheap ways out.
+
+What must be recorded, because neither gate can see it alone: **wave 4 released at PASS with a
+post-terminal bay that breaches wave 5's server instance ceiling by 2.25×.** Wave 4 could not see it
+because the ceiling did not exist when it ran; wave 5 cannot fix it because the lever is not its
+field. That is the final cross-category pass's, and it is the single largest item this category
+hands it. It does **not** block Tech's release: this category's sheets are internally consistent
+about it and route it correctly.
+
+## Round-2 revision requests
+
+### `cid/tech/performance/03-what-optimisation-may-never-do.md` — N10 was not amended, so the contradiction is still inside the category
+**Violates:** acceptance criteria must be mutually satisfiable.
+**Fix:** N10's check cell is unchanged and still reads
+`grep -rn "math.random\|Random.new()\|os.time()\|os.clock()\|tick()\|table.sort" game/src` matches
+nothing. `security/01` and `networking/02` both now ship `os.clock()` deliberately. `performance/03`
+AC2 requires every check in the table to produce its stated result against the current `game/src`,
+including N10 by name — so if those two sheets are built, this sheet's own AC2 fails.
+**An escalation against `architect/01-runtime` AC3 is legitimate: architect is upstream, merged, and
+CID may not edit it. An escalation against `performance/03` N10 is not — it is a peer sheet, in this
+category, in this wave, revised this round.** Amend N10's check to the agreed wording and record the
+architect half as the only thing still open. Splitting the pair is the whole repair: the upstream
+half goes up, the sibling half closes here.
+
+### `cid/tech/networking/02-ingress-limits.md` — two competing restatements of one criterion
+**Violates:** one field, one request.
+**Fix:** RR-S1 asks for *"no module derives a placement, an award amount or a grant from an unseeded
+RNG or from a wall clock; a monotonic elapsed-time read is permitted."* RR-N8 asks for *"no module
+derives a placement or a grant … a monotonic elapsed-time read (`os.clock`) is permitted, and
+`math.random`, `Random.new()` with no seed, `os.time()` and `tick()` remain forbidden."* Two
+different texts against the same two criteria, and each sheet tells the other to join it —
+`security/01` says *"`ingressLimits` … should cite RR-S1 rather than issue a third request"*, while
+`networking/02` says *"RR-N8 is worded to cover both instruments; joining it is cheaper."* Architect
+cannot apply both. **Withdraw RR-N8 and cite RR-S1, carrying RR-N8's better half into it** — the
+explicit "and `math.random`, `Random.new()` with no seed, `os.time()` and `tick()` remain forbidden"
+clause, which is what stops the restatement from being read as a general clock amnesty. Networking's
+bucket argument is correct and should survive as the *second* justification inside the one request,
+not as a second request.
+
+### `cid/tech/persistence/01-the-save-write.md` — still publishes 1,880 and a false release status
+**Violates:** no sheet publishes a superseded figure or a stale gate status.
+**Fix:** `payload.clearedMaxKeysSource` reads *"At the wave-4 revision those are 1200 and 1880;
+UNRELEASED, `cid/gameplay/_verified-wave4.md` line 3, 'Stage 4 does not release'."* Line 3 now reads
+*"Final verdict: PASS (round 3)."* Set `clearedMaxKeysAtCitedRevision` to **1,680**, drop the
+UNRELEASED clause, and correct `supersedes` (2.625×, not 2.94×) and `worstCaseDerivation` ("at 1,680
+keys"). **And fix the path in the same edit:** `depths.postTerminalBay.patchCount` does not resolve;
+`_verified-wave4.md:354` names **`solvency.postTerminalBay.patchCount`**. RR-P5's body carries the
+same wrong path and the same 1,880 and must move with it. `performance/01` and `/02` carry a
+*third* spelling, `depths.postTerminalArea.patchCount`; whichever of you is right, one field name
+has to be agreed between the two of you before either pointer is worth having. Also
+`security/01` `cost.shareOfTickWork` says `serverCost` "currently publishes" 1,880 — it publishes
+1,680; one clause.
+
+## What must happen before round 3 closes
+
+1. **N10 is amended in this category** and the two clock requests become one against architect only.
+   Until then a builder cannot satisfy `security/01`, `networking/02` and `performance/03` AC2
+   together — the round-1 defect, relocated.
+2. **One field name for the post-terminal bay's patch count**, agreed between Persistence and
+   Performance and matching the released wave-4 gate, and 1,680 published everywhere or referenced
+   everywhere.
+3. Nothing else. The other eleven closures hold on re-reading, four of them are better than what I
+   asked for, and no revision broke anything I had previously passed — I re-checked the Kick trio,
+   the studio-guard/release-counter interaction, both ceiling ranges and every restated cost figure
+   against the artifact.

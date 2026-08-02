@@ -6,7 +6,7 @@
 
 One key per player — bare `tostring(player.UserId)` under `runtime.dataStoreName`, one partition,
 never `SetAsync` — read and written through `UpdateAsync` with a four-profile deterministic retry
-schedule, at 3.4% of the experience write budget and 0.53% of the value cap. **No write path runs in
+schedule, at 3.4% of the experience write budget and 0.47% of the value cap. **No write path runs in
 Studio**, guarded once, inside `save`.
 
 **The `blockedSaves` latch is adopted as declared data and then bounded.** It stays as the *write*
@@ -23,7 +23,7 @@ server rather than letting them play a whole session that will be discarded.
 - **It does not foreclose priority-2 visitable restored ruins**, the only excluded item a key format
   could foreclose: a shared restored-ruin record would be a *different store name* keyed by area
   ordinal, not a prefixed key in a per-player store. `[brief: soft]` `03-META.md` priority 2. **One
-  partition**, because sharding a 22 KB value against a 4,194,304-character cap is invented
+  partition**, because sharding a 20 KB value against a 4,194,304-character cap is invented
   machinery. `[cid: decided]`
 - **`UpdateAsync` for both directions.** Roblox states `SetAsync` "can cause data inconsistency if
   two servers try to set the same key at the same time" and recommends `UpdateAsync` "to handle
@@ -79,14 +79,19 @@ server rather than letting them play a whole session that will be discarded.
   write returns `(false, "studio")`, which is **not** a `staleSession` reason, never arms the latch
   and never counts toward the release counter. `wiring`'s existing `onShutdown` guard is redundant
   under this and stays, because it is `wiring`'s.
-- **The payload bound in both contracts is wrong by 2.94×.** `stateShape` and `Persistence.luau:13`
-  both assert "at most 640 keys in `cleared`". `depths` as revised in wave 4 puts area 8 at 1,200
-  patches and the post-terminal bay at 1,880, cited as **unreleased** —
-  `cid/gameplay/_verified-wave4.md` line 3, "Stage 4 does not release." At that count the payload is
-  ~22,100 characters, 0.53% of the cap, and it still does not grow with progress. The figure is
-  `depths`'s and moves with it.
+- **The payload bound in both contracts is low by 2.625×, and the pointer belongs on `solvency`.**
+  `stateShape` and `Persistence.luau:13` both assert "at most 640 keys in `cleared`". **Wave 4 has
+  since released** — `cid/gameplay/_verified-wave4.md` line 3 now reads *"Final verdict: PASS
+  (round 3)."* — and `solvency` puts area 8 at **1,120** patches and the post-terminal bay at
+  **1,680**. `depths.areas[].patchCount` was not re-emitted and still carries the superseded 640,
+  and `endgame.postTerminalArea.patchCount` still carries 640 as well, so **neither is a safe
+  pointer**. The live bound is `max(solvency.areaLedger[].patchCount,
+  solvency.postTerminalBay.patchCount)` — both halves inside one manifest block, which is why I
+  point at one key rather than two. At 1,680 the payload is ~19,700 characters, 0.47% of the cap,
+  and it still does not grow with progress.
+  `[research: cid/gameplay/balance/03-ladder-solvency.md]`
 - **No link between the tick and the save.** `runtime.clearTickRate` and `saveIntervalSeconds` are
-  independent; the requested 0.12 → 0.04 tick change moves no figure in the budget block. Stated
+  independent; the withdrawn 0.12 → 0.04 tick request moved no figure in the budget block. Stated
   because a builder reading both sheets will look for one.
 
 ```manifest
@@ -101,7 +106,7 @@ server rather than letting them play a whole session that will be discarded.
       "maxCharsAllowed": 50,
       "worstCaseChars": 19,
       "partitions": 1,
-      "partitionReason": "one player, one bounded payload, no shared record; sharding a 22 KB value against a 4194304-character cap is invented machinery",
+      "partitionReason": "one player, one bounded payload, no shared record; sharding a 20 KB value against a 4194304-character cap is invented machinery",
       "foreclosesVisitableRestoredRuins": false,
       "foreclosureNote": "a priority-2 shared restored-ruin record would be a different DataStore name keyed by area ordinal, never a prefixed key in this store. Nothing here reserves space for it and nothing here blocks it."
     },
@@ -205,20 +210,27 @@ server rather than letting them play a whole session that will be discarded.
       "shutdownDeadlineSeconds": 20,
       "retriesThatFitInsideShutdown": 3,
       "perKeyWriteThroughputMBPerMin": 4,
-      "perKeyUsedKBPerMin": 29.5,
-      "perKeyPercentOfThroughput": 0.72,
+      "perKeyUsedKBPerMin": 26.3,
+      "perKeyPercentOfThroughput": 0.64,
       "valueCapChars": 4194304,
       "keyNameCapChars": 50,
-      "clearTickRateLink": "none. runtime.clearTickRate and runtime.saveIntervalSeconds are independent and the requested 0.12 to 0.04 tick change moves no figure in this block."
+      "clearTickRateLink": "none. runtime.clearTickRate and runtime.saveIntervalSeconds are independent and the withdrawn 0.12 to 0.04 tick request moved no figure in this block."
     },
     "payload": {
       "fields": "exactly the seven stateShape fields marked persisted, plus the envelope fields sessionLock.record declares and nothing else",
-      "clearedMaxKeysSource": "max(depths.areas[].patchCount, depths.postTerminalBay.patchCount) — read from that key, never copied. At the wave-4 revision those are 1200 and 1880; UNRELEASED, cid/gameplay/_verified-wave4.md line 3, 'Stage 4 does not release'.",
-      "clearedMaxKeysAtCitedRevision": 1880,
-      "supersedes": "stateShape's and Persistence.luau:13's 'at most 640 keys in cleared', which is low by 2.94x at the cited revision",
-      "worstCaseChars": 22100,
-      "worstCaseDerivation": "at 1880 keys: cleared 21465 (9 one-digit keys at 9 chars, 90 two-digit at 10, 900 three-digit at 11, 881 four-digit at 12) + found 491 + upgrades 48 + rowsRevealed 67 + three scalars 58 + braces 10. Recompute from depths if the bay count moves.",
-      "worstCasePercentOfValueCap": 0.53,
+      "clearedMaxKeysSource": "max(solvency.areaLedger[].patchCount, solvency.postTerminalBay.patchCount) — read from that key, never copied. Both halves sit in one manifest block, which is why this points at one key rather than two.",
+      "clearedMaxKeysAtSource": 1680,
+      "sourceStatus": "RELEASED — cid/gameplay/_verified-wave4.md line 3, 'Final verdict: PASS (round 3).'",
+      "pointersThatDoNotResolve": [
+        "depths.postTerminalBay.patchCount — depths has no postTerminalBay field at all",
+        "depths.postTerminalArea.patchCount — depths has no postTerminalArea field either",
+        "depths.areas[].patchCount — resolves, but was not re-emitted after wave 4 and still carries the superseded 640",
+        "endgame.postTerminalArea.patchCount — resolves, but still carries 640; solvency's revision table asks endgame to move to 1680 and that edit has not landed"
+      ],
+      "supersedes": "stateShape's and Persistence.luau:13's 'at most 640 keys in cleared', which is low by 2.625x against the released bay",
+      "worstCaseChars": 19700,
+      "worstCaseDerivation": "at 1680 keys: cleared 19065 (9 one-digit keys at 9 chars, 90 two-digit at 10, 900 three-digit at 11, 681 four-digit at 12, plus a 12-char wrapper) + found 491 + upgrades 48 + rowsRevealed 67 + three scalars 58 + braces 10. Recompute from solvency if the bay count moves.",
+      "worstCasePercentOfValueCap": 0.47,
       "integerKeysReturnAsStrings": true,
       "integerKeyRule": "every reader of cleared uses tonumber(key) and never a type test, because the JSON round trip returns integer keys as strings",
       "growsWithProgress": false
@@ -258,33 +270,33 @@ I do not edit `architect/`. Each of these names a field.
 
 | id | target | request |
 |---|---|---|
-| **RR-P1** *(narrowed, round 1)* | `architect/03-state-shape` — `fields` | Add an eighth persisted field **`sessions: integer`**, `writtenBy: "persistence"`, incremented exactly once per successful load (a first-ever load yields `1`), never decremented, never read by any path that grants anything. **The request now covers the run-ordinal half only.** Event Logging has since closed the session-id half with no schema change, holding one in a module-local `UserId` map, so `(UserId, sessions)` is no longer the argument. What remains underivable anywhere in the game is **which run this is**: `load` returns `readable`, which is `true` for a fresh save, so nothing can tell a returning player from a new one or order two sessions. Engagement and Funnels both need that and neither can derive it. It is **not a streak** (no date component, cannot express consecutiveness) and not a timestamp, so `01-FOUNDATION.md`'s no-offline-accumulation line is untouched. Cost: one integer, `log10` digits of payload. **Adding it fires my own sheet-03 trigger `B3` and bumps the store, which is free today and is the point of stating the trigger list.** |
+| **RR-P1** *(narrowed r1, tightened r2)* | `architect/03-state-shape` — `fields` | Add an eighth persisted field **`runOrdinal: integer`** (`sessions` in round 1; renamed to the spelling Engagement uses), `writtenBy: "persistence"`. **Engagement's three conditions are adopted verbatim and are what make it acceptable:** (1) a **monotonic integer incremented at join**, never a clock and never a duration; (2) **no path converts it to currency, progress, a grant or a modifier**; (3) it counts **saved** sessions, so it is a **lower bound** rather than an exact count — which falls out of my own design, since a `writesBlocked` session increments in memory and never persists. A first-ever load yields `1`. The gap it closes is the run-ordinal half only: Event Logging has since closed session identity with no schema change, holding one in a module-local `UserId` map. What remains underivable anywhere in the game is **which run this is** — `load` returns `readable`, which is `true` for a fresh save, so nothing can tell a returning player from a new one or order two sessions, and Engagement and Funnels both need that. It is **not a streak** (no date component, cannot express consecutiveness). Cost: one integer, `log10` digits of payload. **Adding it fires my own sheet-03 trigger `B3` and bumps the store.** |
 | **RR-P2** | `architect/03-state-shape` — acceptance criterion 2 | Narrow to: "The persisted payload contains exactly the seven fields marked `persisted: true`, **plus any envelope field declared in `sessionLock.record` and declared nowhere else**. `patches`, `spawnPivot`, `owned`, `armState` and `player` never reach a DataStore." The criterion's purpose is that no *live* field reaches the store; a lock field is `persistence`'s envelope and is not a `PlayerState` field at all. |
 | **RR-P3** | `architect/02-modules` — `persistence.exposes` | `save(player, state): boolean` → `save(player, state): (boolean, string?)`. `server-main` cannot distinguish an ordinary write failure from a stale session from a Studio suppression without it, and both the release counter and `studioWriteGuard.countsTowardRelease` turn on exactly that distinction. Backward compatible: an existing caller ignoring the second return still compiles. |
-| **RR-P4** | `architect/02-modules` — `entitlements` criterion 3 | `grep -rn 'owned' game/src/server/Persistence.luau returns nothing` is **unsatisfiable** — it returns two matches (a comment and `owned = {}`) and it must, because `07-wiring.constructs` requires `defaultState()` to set `owned {}` there. Narrow it to `grep -rn 'state.owned'`, which is what `03-state-shape` criterion 8 already greps and which passes. The underlying rule holds in the shipped file: `save`'s payload literal is exactly the seven persisted fields. |
-| **RR-P5** | `architect/03-state-shape` — the `cleared` note, and `02-modules` `persistence` criterion 1 | Replace the literal "at most 640 keys" with a **reference to `depths`** rather than a second integer: the bound is `max(depths.areas[].patchCount, depths.postTerminalBay.patchCount)`, which is 1,880 at wave 4's unreleased revision. Stated as a reference because three keys now carry that figure and all of them must move together if wave 4 releases at a different chunk count. |
+| **RR-P4** | `architect/02-modules` — `entitlements` criterion 3 | `grep -rn 'owned' game/src/server/Persistence.luau returns nothing` is **unsatisfiable** — it returns two matches (a comment and `owned = {}`) and it must, because `07-wiring.constructs` requires `defaultState()` to set `owned {}` there. Narrow it to `grep -rn 'state.owned'`, which is what `03-state-shape` criterion 8 already greps and which passes. |
+| **RR-P5** *(path verified r2)* | `architect/03-state-shape` — the `cleared` note, and `02-modules` `persistence` criterion 1 | Replace the literal "at most 640 keys" with **`max(solvency.areaLedger[].patchCount, solvency.postTerminalBay.patchCount)`**, which is **1,680** against released wave 4. I checked all four candidate paths against the released manifests rather than against anybody's prose: `depths` carries **no** `postTerminalBay` field and **no** `postTerminalArea` field, so my own round-1 spelling and Performance's both fail to resolve; `depths.areas[].patchCount` and `endgame.postTerminalArea.patchCount` do resolve but were not re-emitted after wave 4 and still read 640. `solvency` is the only key whose block holds both the eight-area ledger and the bay, which is why the pointer names one key rather than two. **Agreed with Performance as the single spelling.** |
 | **RR-P6** | `architect/07-wiring` — `onSave` step 1 | Its description reads "a failure warns and the loop continues; the next pass retries by existing", which is true of a *write* failure and silent on the read-failure latch. Add that for a `writesBlocked` player the pass performs a re-read rather than a write, that a re-read returning a payload is still a failed pass, and that three consecutive `readFailed` returns release the player. |
 
 ## Consequences for other work
 
 - **Notice work (`ui-ux/feedback`, sheet 03)** gets its case (a) answered from my side: the session
-  is bounded at 135 seconds and ends in a `Kick`, not in a silent full-session discard. If it
-  supplies a kick string that string is what the player reads; if it declines, the platform default
-  shows. There is **no notice for `lockHeld` and none for a Studio-suppressed write.**
+  is bounded at 135 seconds and ends in a `Kick`, not in a silent full-session discard. There is
+  **no notice for `lockHeld` and none for a Studio-suppressed write.**
 - **Server-boot and join work (`server-main`)** gains one counter per player and one `Player:Kick`
   call site. The counter resets **only on a pass that writes** — not on a pass that merely read
   successfully, and not on a Studio-suppressed pass, which does not touch it at all.
+- **Performance work** inherits the agreed pointer, `solvency.postTerminalBay.patchCount`, and
+  should drop `depths.postTerminalArea.patchCount`, which does not resolve. Its scan-cost model and
+  my payload bound now read one field, so they move together or not at all.
 - **Build & Deploy work** owns `release.environments.studioWriteRule` and now has the field its AC3
-  greps for: `persistence.studioWriteGuard`, one `IsStudio` test inside `save` covering all three
-  write call sites. It also inherits `D6` as the concrete case of its own emitted-null hazard — no
-  value in any of my three keys is null.
-- **Engagement and Funnels work** should read the narrowed RR-P1 rather than deriving a run ordinal
-  from `readable`. Event Logging's module-local session id needs nothing from me.
-- **Security work** inherits that a save is never client-reachable (`D12`) and that the only
-  detection signal this module produces is a `warn` into an unowned pipe.
-- **Performance work** inherits a payload figure to budget against and the statement that the tick
-  rate does not move it. Both of us should cite `depths` rather than restating 1,880.
-- **Area-layout and endgame work** are untouched: nothing here stores a per-area boolean.
+  greps for: `persistence.studioWriteGuard`. It also inherits `D6` as the concrete case of its own
+  emitted-null hazard — no value in any of my three keys is null.
+- **Engagement and Funnels work** get RR-P1 written to Engagement's three conditions, including that
+  `runOrdinal` is a **lower bound** on sessions played and may never be reported as an exact count.
+- **Whoever executes `solvency`'s revision table** should note that `endgame.postTerminalArea
+  .patchCount` and `depths.areas[].patchCount` both still read 640 and are now named by three keys
+  as unsafe pointers. Landing that table retires `pointersThatDoNotResolve` rows 3 and 4.
+- **Security work** inherits that a save is never client-reachable (`D12`).
 
 ## Pushing back
 
@@ -305,7 +317,7 @@ seconds, and is then released. The criterion was written when the alternative to
    `saveIntervalSeconds` 45, releases that player at pass 3 in **both** of these runs: one where
    every re-read also fails, and one where every re-read succeeds and returns a payload. Zero writes
    carry that player's payload in either run.
-4. A payload for a player in the post-terminal bay with all `depths.postTerminalBay.patchCount`
+4. A payload for a player in a post-terminal bay with all `solvency.postTerminalBay.patchCount`
    `cleared` keys serialises to fewer than 25,000 characters, and payloads for the same player at
    `areasFinished` 8 and at 40 differ by at most 2 characters.
 
@@ -316,7 +328,7 @@ Whether a session lock exists, its record, its cadence and its steal timeout —
 whether a prior version is read, and the migration and per-bump rollback — sheet 03, which holds
 `storeMigration`. The persisted field list, the store name and the 45-second interval —
 `architect`'s `stateShape`, `runtime` and `wiring`; every change I need is a revision request above.
-The **rule** that no write runs in Studio, the environment split and the build version —
-`cid/tech/deploy`, which holds `release`; I own only where the guard sits. The exact string a
-released player reads — `notices` (`ui-ux/feedback` 03). Where the warning pipe writes — nobody's;
-named in `observability.pipe`. Whether `clearTickRate` changes — Tech & Performance.
+Every patch count, footprint and bay length — `solvency` and `depths`; I read one field and set
+none. The **rule** that no write runs in Studio — `cid/tech/deploy`'s `release`; I own only where
+the guard sits. The exact string a released player reads — `notices` (`ui-ux/feedback` 03). Where
+the warning pipe writes — nobody's; named in `observability.pipe`.

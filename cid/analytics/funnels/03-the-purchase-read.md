@@ -10,6 +10,10 @@ below. **One live reading exists** — the join-time ownership boolean `Entitlem
 to `state.owned` — and it is **specced-but-dormant**, a structural constant while every
 `products.items[].gamePassId` is `null`.
 
+> **Revised, round 1** (`cid/analytics/_verified.md` RR-10). The ownership dimension is encoded
+> `owned ["none","span"]`, adopted from `telemetry.customFields.field02`; the first draft's
+> `ownsSpan ["owned","notOwned"]` is withdrawn. No row, closure or conclusion moves.
+
 ## Why
 
 **This is a negative finding and it is written as data, because a negative finding folded into a
@@ -62,9 +66,11 @@ reading is specced, the population is defined, and it returns one value until an
 **The consequence is larger than this sheet.** `pacing` publishes **ten `milestones[]` rows, each
 with a `baseSeconds` and a `purchaserSeconds`**. The purchaser column is defined over `spanOwners`,
 which is definable and **empty**. So the dormancy suspends **the purchaser half of ten instruments,
-not one** — and `01`'s `ownsSpan` custom field is spent on a dimension that reads `notOwned` for
-every session until the id exists. Spending it anyway is deliberate: the field costs nothing while
-constant, and adding it later would break comparability across the whole retention window.
+not one** — and `01`'s `owned` custom field is spent on a dimension that reads `none` for every
+session until the id exists. Spending it anyway is deliberate, and verification ruled the same way:
+the field costs nothing while constant, and **a reading taken without the split cannot be re-split
+later**, so adding it on the day the id is filled would put a discontinuity across the whole 90-day
+retention window.
 
 **No purchase surface is proposed here, and none may be inferred from this sheet.** Sheet `04`'s
 `forbiddenActions[]` includes an in-game store by name, so a dormant reading cannot be argued into a
@@ -87,10 +93,11 @@ reason to build one.
 | persisted | no — `F20` |
 | on the wire | no — not one of the eight snapshot fields |
 | population | every session (`allSessions`); the derived split is `spanOwners` / non-owners |
+| carried as | `funnels.customFields[owned]`, values `none` / `span`, shared with `telemetry.customFields.field02` |
 | attributable to | this player owning the pass at the instant of this join |
 | **not** attributable to | purchase time, purchase during this session, any in-game cause, or a mid-session purchase taking effect |
 | status | **specced-but-dormant** — `products.externalPrerequisite` |
-| reads today | `false`, for every player, resolved with no web call because `gamePassId` is `null` |
+| reads today | `none`, for every player, resolved with no web call because `gamePassId` is `null` |
 
 ```json
 {
@@ -119,10 +126,13 @@ reason to build one.
         "onTheWire": false,
         "population": "allSessions",
         "derivedSplit": ["spanOwners", "nonOwners"],
+        "carriedAs": "funnels.customFields[owned]",
+        "encoding": ["none", "span"],
+        "encodingSharedWith": "telemetry.customFields.field02",
         "attributableTo": "that this player owned the pass at the instant of this join",
         "notAttributableTo": ["when the pass was bought", "whether it was bought during this session", "any in-game cause", "whether a mid-session purchase has taken effect"],
         "readableToday": true,
-        "constantToday": false
+        "constantToday": "none"
       },
       "status": "specced-but-dormant",
       "dormantUntil": "products.externalPrerequisite",
@@ -132,8 +142,8 @@ reason to build one.
         "count": 10,
         "what": "the purchaserSeconds column of every pacing.milestones[] row",
         "why": "purchaserSeconds is defined over the spanOwners population, which is definable and empty",
-        "alsoSuspends": ["funnels.customFields[ownsSpan] as a discriminating dimension"],
-        "note": "the ownsSpan field is emitted anyway from day one; it costs nothing while constant, and adding it later would break comparability across the 90-day retention window"
+        "alsoSuspends": ["funnels.customFields[owned] as a discriminating dimension"],
+        "note": "the owned field is emitted anyway from day one; it costs nothing while constant, and a reading taken without the split cannot be re-split later, so adding it on the day the id is filled would put a discontinuity across the whole 90-day retention window"
       }
     }
   }
@@ -149,11 +159,11 @@ reason to build one.
 - **Economy-flow work (Analytics — Economy Health)** should read this sheet's `liveReading` block as
   the definition and not restate it: payer share and ARPDAU are structurally zero for the same
   single cause, and two keys carrying two descriptions of one boolean is the divergence to avoid.
+- **Event-catalog work** and this sheet now share one encoding for one dimension,
+  `owned ["none","span"]`. A funnel-step breakdown and a custom-event breakdown join with no mapping
+  table.
 - **Networking work and store-UI work** are ruling on the `[unverified]` above and disagree. The tag
   here is deliberately not a vote. Whichever way it lands, no row in this sheet moves.
-- **Event-catalog work** gets one insertion point it may want and one it may not: entitlement
-  resolution at `onJoin` is worth an event with a constant value; there is no purchase event to
-  catalogue, in any path, and specifying one would be inventing a call site.
 - **Offer-ladder work (`products`)** is contradicted by nothing here. No surface, no prompt and no
   store is proposed, and `04` forbids one as a threshold action.
 - **Dashboard-and-target work (KPI)** already declined DAU, ARPDAU and payer share as structurally
@@ -168,7 +178,10 @@ reason to build one.
    fetch that would settle it in `settledBy`.
 3. `funnels.purchase.suspendedInstruments.count` equals the number of `pacing.milestones[]` rows
    carrying a `purchaserSeconds` field.
-4. No file in `cid/analytics/funnels/` names a purchase surface, a store screen, an offer row, a
+4. `funnels.purchase.liveReading.encoding` is identical to `funnels.customFields[owned].values` and
+   to `telemetry.customFields.field02`'s values, and the string `ownsSpan` appears inside no
+   `manifest` or `amends` block under `cid/analytics/`.
+5. No file in `cid/analytics/funnels/` names a purchase surface, a store screen, an offer row, a
    price string or a `PromptGamePassPurchase` call as something to build.
 
 ## Not decided here
@@ -177,7 +190,9 @@ Which products exist, their axis, factor and price (`gameplay/monetization/01`, 
 `products`). What may never be sold and the `F1`–`F20` rows themselves (`gameplay/monetization/02`).
 The inequalities bounding a purchase (`gameplay/monetization/03`). Whether the `[unverified]`
 trigger claim is true (networking work and store-UI work, who disagree; the settling fetch is named
-in the block). Payer share, ARPDAU and price-to-value as readings (economy-flow work). Whether a
-purchase surface is ever built — nobody, under R-4; reopening it is a revision against
-`monetization/01` and `mechanics/02`. The `gamePassId` value itself (`products.externalPrerequisite`,
-the developer's). The pass mark and alarm on the one live reading (`04`, this domain).
+in the block). Payer share, ARPDAU and price-to-value as readings (economy-flow work). The custom
+field's event-side name and position (event-catalog work; I adopt its encoding and set no id).
+Whether a purchase surface is ever built — nobody, under R-4; reopening it is a revision against
+`monetization/01` and `mechanics/02`. The `gamePassId` value itself
+(`products.externalPrerequisite`, the developer's). The pass mark and alarm on the one live reading
+(`04`, this domain).
