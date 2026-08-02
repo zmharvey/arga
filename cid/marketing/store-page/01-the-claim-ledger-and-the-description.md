@@ -233,7 +233,9 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       { "id": "E14", "thing": "'as shown', 'pictured' or any reference to a screenshot", "why": "G2 and T8. No capture is legitimate from any build that exists." }
     ],
     "blocksMirrored": {
-      "rule": "storeListing.discovery, .contentMaturity, .passListing and .updateNotes are amended by sheets 02, 03, 04 and 05 respectively and mirrored here in full. If a mirrored block ever differs from its amending sheet, the amending sheet governs and this sheet is revised.",
+      "rule": "storeListing.discovery, .contentMaturity, .passListing and .updateNotes are amended by sheets 02, 03, 04 and 05. The amending sheet carries the complete block and governs every field in it. The copy below is a deliberate STRICT SUBSET, carrying only the fields a reader of the description needs; on any difference on a shared field, the amending sheet governs and this sheet is revised.",
+      "mirrorIsStrictSubset": true,
+      "checkedBy": "for every field present in both, the values are equal; no field exists here that is absent from the amending sheet",
       "amendedBy": {
         "discovery": "cid/marketing/store-page/02-genre-and-where-keywords-live.md",
         "contentMaturity": "cid/marketing/store-page/03-age-and-content-settings.md",
@@ -247,6 +249,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       "changeFrequencyLimit": "once every three months",
       "tagField": { "exists": "unverified", "selectableTagCount": 0 },
       "keywordSurface": "storeListing.description.S1",
+      "keywordMaxRepeatsPerWord": 1,
       "keywords": [
         { "word": "restoration", "sitsIn": "S1.L2", "status": "true" },
         { "word": "ruin",        "sitsIn": "S1.L2", "status": "true" },
@@ -256,10 +259,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
         { "word": "find",        "sitsIn": "S1.L1", "status": "true" },
         { "word": "index",       "sitsIn": "S1.L2", "status": "true" },
         { "word": "sets",        "sitsIn": "S2.L3", "status": "true" }
-      ],
-      "keywordMaxRepeatsPerWord": 1,
-      "keywordsUnavailable": ["relic", "relics", "tier", "artifact", "antique", "rebirth", "loot", "treasure"],
-      "keywordsDeclined": ["simulator", "incremental", "idle", "collect", "collection", "scavenger hunt", "free", "new", "update", "codes"]
+      ]
     },
     "contentMaturity": {
       "label": "Minimal",
@@ -269,19 +269,15 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       "categoryCount": 15,
       "categoriesAtNone": 15,
       "unsetConsequence": "Roblox restricts the playability of the experience on the platform for all players.",
-      "spendGuard": { "exists": false, "developerControllable": false, "routedTo": "the developer" },
       "analyticsUnder13Suppression": "unverified"
     },
     "passListing": {
       "surface": "the Store tab of the experience page",
       "itemCount": 1,
-      "nameRule": "equals products.items[0].label",
-      "description": "Clears a wider circle as you walk. Bought once and kept forever. It does not find anything for you - all 24 finds can be reached without it.",
       "statesFactorNumber": false,
       "statesPrice": false,
-      "priceSource": "products.items[0].priceRobux",
       "published": false,
-      "publishedGate": "release.provisioning gate 4"
+      "publishedGate": 4
     },
     "updateNotes": {
       "published": false,
@@ -302,7 +298,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
 | Thumbnail and icon work (`storeThumbnails`, `storeIcon`) | Reuse `claimRowShape` unchanged, and add `captureSource` to every image row. **Do not restate a claim this ledger already carries** — an overlay repeating `C1` is one claim on two surfaces with two `backedBy` arrays that can drift. `E14` forbids any description line referring to an image. |
 | Social and Hype work (`channels`, `launchBeats`) | `E6` and `E7` are the description's half of the same closure. If either key ever names a channel, `E6` becomes false and this sheet is revised, not quietly widened. |
 | Balance & Tuning (`pacing`) | `durationClaim.reopeningCondition` is the one thing that would let a time figure into outward copy. Until `LAP_TARGET` is fixed, **do not hand this domain a number to publish**. |
-| Contract-and-seam work | `storeListing` is proposed with no shape. The rows a schema author needs are `claims[].backedBy` non-empty, `claims[].check` non-empty, `emojiCount == 0`, `exclamationMarkCount == 0`, and the `blocksMirrored` equality. **Nothing in this key may emit into `GameConfig`** — it is human-typed at `release.provisioning` gates 1 and 4. |
+| Contract-and-seam work | `storeListing` is proposed with no shape. The rows a schema author needs are `claims[].backedBy` non-empty, `claims[].check` non-empty, `emojiCount == 0`, `exclamationMarkCount == 0`, and the `blocksMirrored` strict-subset equality. **Nothing in this key may emit into `GameConfig`** — it is human-typed at `release.provisioning` gates 1 and 4. |
 | Release work (`release.publishChecklist`) | The checklist covers place settings and does not cover the description, the genre or the maturity questionnaire. **Three publish-time steps have no owner**, and gate 1 cannot legitimately complete without them. Requested as new rows there; not written here. |
 
 ## Acceptance criteria
