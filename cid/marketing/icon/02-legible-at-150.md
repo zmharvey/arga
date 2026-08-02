@@ -45,20 +45,21 @@ floor**, which is headroom rather than compliance.
 
 **The region cap of 2 is set by the smallest size, and the smallest size is `[unverified]`.** The
 docs say only that *"icons scale down to smaller sizes **like** 150×150 pixels"* — an example, and
-**no minimum is published** `[research: same creator-docs icon page]`. At 150 px a 10%-area third
-region is 2,250 px; at 64 px it is 410 px, a strip roughly six pixels tall across the frame, which
-survives a box downsample but is indistinguishable from an edge artifact.
-`[research owed: a per-surface rendered-size table for the Home, Search and Discover rows of the
-Roblox mobile app; no such table surfaced on the experience-icons page or its thumbnails sibling]`
-**The cap is deliberately conservative because the floor is unknown**, and the one thing that would
-relax it is that fetch: if 150 is the true floor, `maxRegions` rises to 3 and every other threshold
-below is unchanged. `[cid: decided]`
+**no minimum is published**
+`[research: https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/experience-icons.md]`.
+At 150 px a 10%-area third region is 2,250 px; at 64 px it is 410 px, a strip roughly six pixels
+tall across the frame, which survives a box downsample but is indistinguishable from an edge
+artifact. `[research owed: a per-surface rendered-size table for the Home, Search and Discover rows
+of the Roblox mobile app; no such table surfaced on the experience-icons page or its thumbnails
+sibling]` **The cap is deliberately conservative because the floor is unknown**, and the one thing
+that would relax it is that fetch: if 150 is the true floor, `maxRegions` rises to 3 and every other
+threshold below is unchanged. `[cid: decided]`
 
 **Two arithmetic facts do most of the work here and both come from the palette, not from me.**
 `stone.cleared` 201.84 and `stone.built` 195.84 differ by **6.00** — inside the 40 floor by
 `styleGuide` `C8`'s design, *"they are one stone"* — so the tread and the riser are **one region**
 and the icon does not get a free third band by including built stone. And `canopy.leaf` 59.31 sits
-**10.26** from `tiers[3]` 69.57, so canopy and dark overgrowth are also one region in greyscale,
+**10.26** below `tiers[3]` 69.57, so canopy and dark overgrowth are also one region in greyscale,
 which is why sheet `01` set canopy area to 0. **Neither exclusion is taste; both are subtraction.**
 
 **The rendered half of the check has no owner, and this sheet says so rather than pretending.**
@@ -66,7 +67,8 @@ which is why sheet `01` set canopy area to 0. **Neither exclusion is taste; both
 need a captured image, and sheet `01` records that no legitimate capture exists from any build that
 ships. Beyond that, `art/lighting/02` `V12` already recorded that **no sheet in either contract owns
 taking a reading**, and the in-engine pixel route is separately blocked: `CaptureService` is
-client-only and returns temporary ids `[research: https://create.roblox.com/docs/reference/engine/classes/CaptureService]`.
+client-only and returns temporary ids
+`[research: https://create.roblox.com/docs/reference/engine/classes/CaptureService]`.
 So `L12` states the instrument's owner as **absent** and the static half reaches a verdict without
 it. That is the same shape `V12` took and it is the honest one.
 
@@ -128,9 +130,9 @@ lighting.
    `passRule == "minimum"`, and
    `luma601(styleGuide.roles["stone.built"].rgb) − luma601(tiers[0].rgb) == 72.73 ≥ 40`
    (and `styleGuide.roles["stone.cleared"]` − `tiers[0]` `== 78.73`).
-3. `luma601(styleGuide.roles["stone.cleared"].rgb) − luma601(styleGuide.roles["stone.built"].rgb)`
+3. `|luma601(styleGuide.roles["stone.cleared"].rgb) − luma601(styleGuide.roles["stone.built"].rgb)|`
    is **6.00**, strictly under 40, which is the condition under which `L10` treats both as one
-   region; and `luma601(styleGuide.roles["canopy.leaf"].rgb) − luma601(tiers[3].rgb)` is **10.26**,
+   region; and `|luma601(styleGuide.roles["canopy.leaf"].rgb) − luma601(tiers[3].rgb)|` is **10.26**,
    also under 40, which is the arithmetic that puts canopy area at 0 in `storeIcon.composition`.
 4. `storeIcon.legibility.evaluatedAtPx` has exactly three entries and the 64 px entry carries
    `status: "unverified"` with a non-empty `settlingFetch`; this sheet records **no** contrast-ratio

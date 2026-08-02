@@ -21,7 +21,7 @@ is this family's uniform.** `[🌱] Grass Incremental Simulator`, `Scrap Increme
 `[UPDT🍂] Leaves Incremental 🍂` all wear one, across at least two studios shipping a shared
 marketing sentence `[research: research/landscape.md]`. Wearing it puts this title visually
 **inside** the category `CONCEPT.md` deliberately moved the game out of — *"a restoration /
-completion game, not an incremental"* `[brief: binding]` — at the cost the brief already paid.
+completion game, not an incremental"* `[brief: binding]` — at a cost the brief already paid.
 A glyph is the cheapest possible signal that this is the fourth `X Incremental`, and the one
 thing this project cannot afford to signal. `[cid: decided]`
 
@@ -57,31 +57,32 @@ message, which is a UI reading and not a fetch.
 
 **So the applied bound is derived from shipped titles, not from the field.** Every competitor
 title in `research/landscape.md` is under 30 characters — `Scrap Incremental 🧲` 20,
-`Grass Incremental Simulator` 27, `Lumber Incremental Simulator` 28, `[UPDT🍂] Leaves Incremental 🍂`
-28. **`maxTitleChars` is 28**, the longest of them, because a title the length of the longest
-shipping title in the family demonstrably renders. The field limit is therefore almost certainly
-not the binding constraint; **tile legibility at phone size is**, and nobody in this project has
-measured it `[playtest unknown]`, starting value 28, test range `[16, 30]`. The measurement that
-settles it: render the ratified string in the platform's smallest experience tile at a 360-px
-logical width and check it does not truncate or wrap past two lines. The recommendation is 17
-characters, which has 11 characters of headroom against the bound and does not depend on the
-measurement landing anywhere in particular.
+`Grass Incremental Simulator` 27, `Lumber Incremental Simulator` 28,
+`[UPDT🍂] Leaves Incremental 🍂` 28. **`maxTitleChars` is 28**, the longest of them, because a
+title the length of the longest shipping title in the family demonstrably renders. The field
+limit is therefore almost certainly not the binding constraint; **tile legibility at phone size
+is**, and nobody in this project has measured it `[playtest unknown]`, starting value 28, test
+range `[16, 30]`. The measurement that settles it: render the ratified string in the platform's
+smallest experience tile at a 360-px logical width and check it does not truncate or wrap past
+two lines. The recommendation is 17 characters, with 11 characters of headroom, so it does not
+depend on the measurement landing anywhere in particular.
 
 **`maxLabelChars` 14 does not reach here and this sheet does not use it.**
-`crossCuttingProblems()` applies it only over the ten contract paths `playerFacingStrings()`
-walks, every one a `GuiObject` string inside `game/src`
-`[research: bridge/schema.mjs, read this run]`. `theme/vocabulary/01` exempts the title by name;
-`art/ui-art/01` states *"`meta.sourceTitle` is never rendered, so `vocabulary`'s 14-character
-ceiling and casing rule do not bind it"*. The confirming tell: the shipped starting value
-`"Ruin Restoration"` is **16 characters** and merged without a violation.
+`crossCuttingProblems()` applies it only over the paths `playerFacingStrings()` walks, all of
+them `GuiObject` strings inside `game/src` `[research: bridge/schema.mjs]`.
+`theme/vocabulary/01` exempts the title by name, and `art/ui-art/01` states
+*"`meta.sourceTitle` is never rendered, so `vocabulary`'s 14-character ceiling and casing rule
+do not bind it"*. The confirming tell: the shipped starting value `"Ruin Restoration"` is
+**16 characters** and merged without a violation, which is what a non-binding ceiling looks like.
 
 **The rename policy is where the sourced cost actually bites.** Before first publish the name is
 free to change and an alternate is promoted by editing one field. After first publish it is
 fixed: `renamesAfterPublish: 0`, because the platform states the cost directly and this project
-has no acquisition budget to spend re-earning discovery it gave away. Three exceptions, each
-externally forced rather than chosen: a post-publish exact-match collision discovered by
-`01`'s owed search, a platform moderation requirement, and a factual falsity in the name itself.
-`[cid: decided]`
+has no acquisition budget to spend re-earning discovery it gave away — `00-CORE.md`'s
+*"Success is shipped artifacts, not players"* `[brief: binding]` is what makes the cost
+unpayable rather than merely unattractive. Three exceptions, each externally forced rather than
+chosen: a post-publish exact-match collision found by `01`'s owed search, a platform moderation
+requirement, and a factual falsity in the name itself. `[cid: decided]`
 
 **Casing is a listing decision and I make it.** `theme/vocabulary/01`: *"Uppercase in a store
 listing is a listing decision."* Title case, no all-caps word, no all-lowercase stylisation.
@@ -126,7 +127,7 @@ beyond legibility.
       { "id": "X6", "thing": "an all-caps or all-lowercase stylisation", "count": 0, "examples": ["STONE UNDER GREEN", "reStore"], "ruledOn": "a listing decision, per theme/vocabulary/01; reStore's intercapping is a shipping competitor's signature", "check": "every word in the name field starts uppercase and continues lowercase" },
       { "id": "X7", "thing": "a leading, trailing or doubled space", "count": 0, "ruledOn": "avoid spamming; a padded name sorts and searches unpredictably", "check": "the name field equals its own trimmed value and contains no two consecutive spaces" },
       { "id": "X8", "thing": "any vocabulary.bannedWords entry", "count": 0, "words": ["relic", "relics", "tier", "artifact", "antique", "rebirth", "loot", "treasure"], "ruledOn": "category ruling M-B: bannedWords binds every outward string", "check": "case-insensitive substring test against all eight" },
-      { "id": "X9", "thing": "a seasonal, event or holiday variant of the name", "count": 0, "ruledOn": "03-META.md priority 3, a hard gate; theme/setting/03 leaves no season channel to attach one to", "check": "the name field has exactly one value across the life of the experience, subject to the rename policy below" }
+      { "id": "X9", "thing": "a seasonal, event or holiday variant of the name", "count": 0, "ruledOn": "03-META.md priority 3, a hard gate; theme/setting/03 leaves no season channel to attach one to", "check": "the name field has exactly one value across the life of the experience, subject to the change policy below" }
     ],
     "changePolicy": {
       "freeUntil": "firstPublish",
@@ -175,8 +176,8 @@ beyond legibility.
    `Simulator`, `Incremental`, `Tycoon`, `Obby`, `RNG` as a trailing word.
 3. `title.changePolicy.renamesAfterPublish` is `0` and `permittedTriggers` has exactly three
    entries, each naming an external forcing condition rather than a marketing choice.
-4. `title.field.platformFieldLimit.value` is the string `"unverified"` and
-   `settlingFetch` names a specific endpoint reference, not a number.
+4. `title.field.platformFieldLimit.value` is the string `"unverified"` and `settlingFetch` names
+   a specific endpoint reference, not a number.
 
 ## Not decided here
 
