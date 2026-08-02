@@ -9,7 +9,8 @@ key `kpis`.** Every target is a pointer into a manifest field rather than a copi
 every alarm is pointer-relative or `[playtest unknown]` with a range, every row names a kind of
 work that acts, and **a breached game row produces a revision request against a named sheet and
 field — never a tuning change, because the game ships and settles.** The key also publishes
-`refGrammar`, the one normalised reference shape every citing key emits.
+`refGrammar`: the normalised reference shape, **a per-key registry that says where refs live**,
+and the migration order.
 
 | # | row | family | target points at | alarm | actor [current holder] |
 |---|---|---|---|---|---|
@@ -30,18 +31,16 @@ is *"all three test assumptions this spec rests on rather than reporting vanity"
 
 **Row 4 is the brief's own self-named highest risk** — *"discovery rates must be generous
 enough that a typical session yields at least one find, or the stated session objective
-silently fails. This is the highest-risk tuning in the game"* (`03-META.md`) — read against the
-brief's own measurable, *"collection count rose this session"* `[brief: soft]` ←
-`[you accepted: R6 Q3 → R5 Q3]`. Its alarm is a **counterexample test**, not a proportion
-comparison: one qualifying session with no find is a breach, readable in the breach direction
-at n = 1, and `minimumSessions` is needed only to confirm a pass.
+silently fails"* (`03-META.md`) — read against the brief's own measurable, *"collection count
+rose this session"* `[brief: soft]` ← `[you accepted: R6 Q3 → R5 Q3]`. Its alarm is a
+**counterexample test**, not a proportion comparison: one qualifying session with no find is a
+breach, readable at n = 1 in the breach direction.
 
 **Row 5 is not about currency; it is about the greedy buyer.** Every `arrivalLevels` row in
 `solvency.areaLedger[]` assumes the player spends what they earn as soon as they can. If the
-median player sits above the cheapest rung they have not bought, every arrival throughput,
-every footprint sized from it and every lap derived from those is wrong. `[cid: decided]` — no
-sheet states that assumption as a claim; it is implied by the ledger, which is why nothing else
-catches it.
+median player sits above the cheapest rung they have not bought, every arrival throughput and
+every lap derived from it is wrong. `[cid: decided]` — no sheet states that assumption as a
+claim; it is implied by the ledger, which is why nothing else catches it.
 
 **Row 6 is a zero-invariant, not a rate.** `discovery.repeat.possible` is `false` and the
 shipped guard at `Clearing.luau:288` warns and fires nothing
@@ -50,23 +49,19 @@ both read off the key, so economy-flow work may not publish a number for the sam
 
 **Row 7 reverses my own decline, and the reversal is the point.** I declined the above-tick gap
 because its instrument was `events/04`'s; `events/04` hands the pass mark here. Circular, so a
-whole sheet's output reached no reader. Re-checked against `K1`–`K8` it passes:
-`_verified-wave4.md` finding 5 settled a **labelling** defect — a mean presented as a maximum —
-and did not settle the realised maximum, and `pacing.laps[7].revealGapMaxSeconds` already
-exceeds `pacing.aboveTickGapMaxSeconds` on disk. It also gives `telemetry`'s `session_end` a
-consumer, one of the six orphans behind the category's check-2 FAIL. The cost is eight rows
-against my index's *"seven or fewer"*; declining a live breaching prediction to hold a count is
-the wrong trade.
+whole sheet's output reached no reader. `_verified-wave4.md` finding 5 settled a **labelling**
+defect — a mean presented as a maximum — not the realised maximum, and
+`pacing.laps[7].revealGapMaxSeconds` already exceeds `pacing.aboveTickGapMaxSeconds` on disk.
+It also gives `telemetry`'s `session_end` a consumer. The cost is eight rows against my index's
+*"seven or fewer"*, which is the right trade.
 
 **Row 8 is the only row that returns a verdict on `00-CORE.md`**, and it needs no player, no
-event, no publish and no `gamePassId`. If every game row sits at `readableToday: false` for the
-life of this project, row 8 is still the honest answer.
+event, no publish and no `gamePassId`.
 
 **Five rows are unreadable today and I am not softening that.** Grepped `game/src/` for
-`AnalyticsService` and `LogService`: zero calls in 29 modules. `Types.luau`'s `StoredState`
-carries seven fields and no timestamp, session id or run ordinal
-`[research: game/src/shared/Types.luau]`, so no join-relative second is formable. Rows 1 and 5
-need nothing built — the Engagement page supplies session time at P50
+`AnalyticsService` and `LogService`: zero calls in 29 modules; `Types.luau`'s `StoredState`
+carries no timestamp, session id or run ordinal `[research: game/src/shared/Types.luau]`. Rows
+1 and 5 need nothing built — the Engagement page supplies session time at P50
 `[research: https://create.roblox.com/docs/production/analytics/engagement]` and the persisted
 fields list through Open Cloud
 `[research: https://create.roblox.com/docs/cloud/guides/data-stores]`.
@@ -75,27 +70,27 @@ fields list through Open Cloud
 aggregated daily so it may take up to 24 hours for charts to populate"*
 `[research: https://create.roblox.com/docs/production/analytics/custom-events]`, and *"Ships
 and settles. No seasons or events"* `[brief: soft]` ← `[I assumed]` means no loop feeds a
-standing review, so the window closes. The `pipeline` family runs per wave at the existing gate.
+standing review, so the window closes.
 
-**Dashboard layout is declined as a design artifact and kept as a per-row placement column.**
-The Creator Dashboard's pages exist and are not ours to lay out
+**Dashboard layout is declined as a design artifact, kept as a per-row placement column.** The
+Creator Dashboard's pages exist and are not ours to lay out
 `[research: https://create.roblox.com/docs/production/analytics/analytics-dashboard]`, against
-a sourced capacity of 100 custom event names and ten funnel tabs
+100 custom event names and ten funnel tabs
 `[research: https://create.roblox.com/docs/production/analytics/funnel-events]`. These rows add
-**no new event name** — the four they read are already declared in `telemetry.events[]`.
+**no new event name**.
 
-### `refGrammar` — the four gaps closed
+### `refGrammar` v1 — recognition, sentinels, and the migration order
 
-The previous statement of this requirement could not be implemented. Each closure is data in
-the manifest, not prose; the resolver has no choices left to make.
+**A resolver never deep-walks.** Deep-walking on `kind` collides with
+`economyHealth.readings[*].alarm[*].kind`, which is live and takes a disjoint value set. A
+registry is also cheaper to *check*: a discriminator can only be verified by proving a negative,
+where a registry plus a declared `refCount` is one traversal and one integer comparison.
 
-| gap | closure |
+| the remaining choice | closed as |
 |---|---|
-| numeric index vs. numeric literal | A numeric literal is legal **only inside square brackets**, where it is an array position; a bare numeric path segment is a parse failure. `solvency.areaLedger[6].cumulativeIncome` is therefore legal. **`K5` moves off the path string onto the row**: no ref and no row may carry a scalar target — no `value`, `min`, `max` or numeric `target` — and the only numbers permitted in a row sit in `targetTolerance` and `alarm.startingValue` / `testRange`, each carrying `status: "playtest unknown"`. |
-| `*` unquantified | Three subscript forms with explicit quantifiers: `[*]` **all** (the remainder must resolve against every element), `[?]` **any** (against at least one), `[n]` / `["key"]` **exact**. Every path in this key uses `[*]`. |
-| present-but-null | An **absent** key is a problem under every subscript form. A key **present with a null value resolves**, and the resolver records `value: null`. A ref may set `requireNonNull: true` to make null a problem; no ref here does, which is why `pacing.laps[*].revealGapMaxSeconds` resolves despite the bay row's null. |
-| `null` paths | Not an exemption granted by silence. Every ref carries `kind`, the resolver **dispatches on `kind` and never infers from a null `path`**, and `path` is required non-null iff `kind: "manifestField"`. `commandOutput` and `briefLine` carry no path and are never resolved. Row 8's `predictionRefuted` is `briefLine`, because it cites `00-CORE.md` and no manifest field exists for it. |
-| three encodings | One `ref` object, emitted by every citing key, with `refShape: 1` on the key so an un-migrated key is rejected rather than skipped. `funnels`' `refutes[]` of dotted strings and `economyHealth`'s `{key, field}` both map mechanically; `economyHealth`'s **prose `field`** case gets the home it lacked — `kind: "briefLine"` with a `sheet` and a `claim`. |
+| how a ref is recognised | **A per-key registry.** Each key carrying `refShape: 1` also carries `refSites[]` — path patterns in `pathGrammar`, rooted at that key's own value — and `refCount`, the number of ref objects those patterns reach. **At a registered site an object missing `kind` is a problem; outside a registered site `kind` is ignored entirely.** That inversion makes the `alarm[].kind` collision structurally impossible, and `refCount` closes the silent-skip hole a whitelist would leave. |
+| declared sentinels | Resolution returns a **triple**, not a boolean: `absent` (a problem), `present`, or `absentByDesign` — the value equals a sentinel declared by `deploy/02` (`false`, `{}`, `0`, or `"none"` unless the containing table declares a more specific one). **`requireNonNull` fails on a sentinel as well as on `null`**, or it guards nothing once `"none"` replaces the null. `presentButNull: resolves` stays, and it is **not only defensive**: the resolver runs against merged ∪ proposals, proposals are never emitted, so nulls genuinely persist in the proposal half at resolve time. |
+| migration order | **`telemetry`, then `economyHealth`, then `funnels`, then promote all four, then implement the resolver.** A key without `refShape` is **out of scope, not rejected**, so nothing breaks mid-migration; `bridge` reports un-flagged citing keys in `pendingRefShape[]` as a note, and that note becomes a problem once all four carry the flag. |
 
 ```manifest
 {
@@ -105,6 +100,8 @@ the manifest, not prose; the resolver has no choices left to make.
     "purpose": "the small set of numbers carrying a project-level target, an alarm and an actor. Every row passes K1-K8 of cid/analytics/kpis/01-kpi-admission-rule.md.",
     "admissionRule": "cid/analytics/kpis/01-kpi-admission-rule.md",
     "refShape": 1,
+    "refSites": ["rows[*].predictionRefuted", "rows[*].targetRef"],
+    "refCount": 16,
     "families": ["game", "pipeline"],
     "minimumSessions": {
       "value": 30,
@@ -129,15 +126,30 @@ the manifest, not prose; the resolver has no choices left to make.
     },
     "refGrammar": {
       "version": 1,
-      "everyEmittingKeyCarries": "refShape: 1, so the resolver rejects an un-migrated key rather than skipping it silently",
+      "everyEmittingKeyCarries": "refShape 1, refSites[] and refCount. refShape is the migration flag; a key without it is out of scope for the resolver and is never rejected by it.",
       "ref": {
         "kind": "REQUIRED on every ref. One of manifestField, commandOutput, briefLine. The resolver dispatches on kind and never infers from whether path is null.",
         "path": "required and non-null iff kind == manifestField; absent or null for the other two kinds",
-        "alsoReads": "optional array of manifestField paths, resolved by the same rules as path",
-        "requireNonNull": "optional boolean, default false",
+        "alsoReads": "optional array of manifestField paths, resolved by the same rules as path. Not a ref site: it is a member of a ref and is reached through it.",
+        "requireNonNull": "optional boolean, default false. When true, both null AND a declared sentinel are a problem.",
         "assertions": "required iff kind == commandOutput; each element carries a non-empty command, field and target",
         "sheet": "required on every ref: the sheet that owns the cited claim",
         "claim": "required iff kind == briefLine; optional otherwise"
+      },
+      "recognition": {
+        "rule": "the resolver NEVER deep-walks a key's value. It expands each entry of that key's refSites[] against the key's own value root and treats every object it lands on as a ref.",
+        "atARegisteredSite": "an object missing kind is a problem, never a skip",
+        "outsideARegisteredSite": "kind is ignored entirely, whatever its value",
+        "whyNotADiscriminator": "deep-walking on kind collides with economyHealth.readings[*].alarm[*].kind, which is live on disk and takes relative / one-sided / invariant / share / absolute. Under a bare deep-walk every alarm becomes a parse failure; under a deep-walk with a whitelist alarms are silently skipped, which is what refShape exists to prevent. A registry is also cheaper to check: verifying a discriminator means proving no intended ref forgot the flag, which is a negative, where a registry is one bounded traversal.",
+        "refCount": "each key declares the number of ref objects its refSites[] reach. The resolver compares; a mismatch is a problem. This is what catches an omitted site, which is the one hole a registry would otherwise have.",
+        "siteSyntax": "the same pathGrammar as a ref path, rooted at the key's own value rather than at the manifest root",
+        "startingRegistries": {
+          "note": "the mechanism is stated here; each key confirms or corrects its own site list, because the internal shape is that key's own",
+          "kpis": ["rows[*].predictionRefuted", "rows[*].targetRef"],
+          "funnels": ["refs[*]"],
+          "economyHealth": ["readings[*].refutes"],
+          "telemetry": ["events[*].refutes"]
+        }
       },
       "pathGrammar": {
         "path": "SEGMENT ('.' SEGMENT)*",
@@ -155,11 +167,15 @@ the manifest, not prose; the resolver has no choices left to make.
         "starSubscript": "ALL. Resolves iff the container is a non-empty array or map AND the remainder of the path resolves against every element.",
         "questionSubscript": "ANY. Resolves iff the container is non-empty AND the remainder resolves against at least one element.",
         "exactSubscript": "an INTEGER or QUOTED_STRING subscript. Resolves iff that index or key is present.",
-        "absentKey": "a problem under every subscript form",
-        "presentButNull": "RESOLVES. The resolver records value null.",
-        "requireNonNull": "a ref may set it true to make a present-but-null value a problem. Default false.",
+        "outcome": "resolution returns one of three states, not a boolean: absent, present, absentByDesign",
+        "absentKey": "state absent. A problem under every subscript form.",
+        "presentButNull": "state present, value null. NOT a problem by default.",
+        "presentButNullIsNotOnlyDefensive": "the resolver runs against merged union proposals, and a proposal is never emitted, so tech/deploy/02's no-explicit-null rule does not reach the proposal half. Nulls genuinely persist there at resolve time and the rule has a live case for as long as any citing key is unpromoted.",
+        "absentByDesign": "state absentByDesign. The resolved value equals a sentinel declared by tech/deploy/02: false for a boolean, {} for a list, 0 for an unprovisioned platform id, or the string 'none' for any scalar unless the containing table declares a more specific sentinel. It is recorded as absent-by-design and NEVER read as a number, a count or a duration.",
+        "requireNonNull": "optional, default false. When true it fails on null AND on absentByDesign. Without the second half it would guard nothing after the sentinel migration, because 'none' is present and non-null.",
         "noRefInThisKeySetsRequireNonNull": true,
-        "workedCase": "pacing.laps[*].revealGapMaxSeconds and pacing.laps[*].cumulativeSeconds are null on the bay row and resolve under the default. That case is why the rule is needed."
+        "workedCase": "pacing.laps[*].revealGapMaxSeconds and pacing.laps[*].cumulativeSeconds are null on the bay row today and resolve as present-null. On promotion tech/deploy/02 requires those nulls to become the declared sentinel, at which point the same paths resolve as absentByDesign - which is the correct reading, since the post-terminal bay buries no Finds and therefore has no reveal gap. The case survives the migration; only its state name changes.",
+        "consequenceForObservables": "a prohibition may not be observed by the literal token null. retentionReadout.prohibited[P9].observable asserts 'every windows[].target and windows[].alarm is null', which becomes false the moment the sentinel lands. Rewrite it over the declared sentinel or over absentByDesign. That edit belongs to retention-readout work; it is named here because this grammar is what makes it necessary."
       },
       "gap3_nullPaths": {
         "rule": "path null is legal only under kind commandOutput or kind briefLine, and the resolver attempts no path for either. A ref with kind manifestField and a null path is a problem.",
@@ -170,7 +186,7 @@ the manifest, not prose; the resolver has no choices left to make.
       },
       "gap4_oneShape": {
         "problem": "three keys encoded one idea three ways: a dotted string in kpis, an array of dotted strings in funnels' refutes[], and a {key, field} object in economyHealth whose field is sometimes a sentence rather than a path.",
-        "normalisedShape": "the ref object above, emitted by every key that cites another key's field",
+        "normalisedShape": "the ref object above, emitted by every key that cites another key's field, reached through that key's refSites[]",
         "migrations": [
           "funnels: refutes[] of dotted strings becomes refs[] of { kind: manifestField, path, sheet }. One map, mechanical.",
           "economyHealth: { key, field } becomes { kind: manifestField, path: key + '.' + field, sheet } wherever field is a real field path.",
@@ -178,10 +194,21 @@ the manifest, not prose; the resolver has no choices left to make.
           "telemetry: refutes { sheet, field } becomes the same object. telemetry.events[] is a BUILD INPUT and is cited from this key as build-read, never as a developer-facing reading."
         ]
       },
+      "migrationOrder": {
+        "sequence": [
+          "1. telemetry. It is the only citing key that is build-read, so it is also the only one tech/deploy/02's sentinel rule reaches. Migrating it first answers the ref question and the sentinel question together on the one key where both bite.",
+          "2. economyHealth. It carries the alarm[].kind collision the registry closes and the prose-field case briefLine closes, so it is the migration most likely to need a second pass and should not be last.",
+          "3. funnels. refutes[] to refs[] is one mechanical map with no ambiguity, so it is cheapest and can land alongside the resolver.",
+          "4. promote all four keys.",
+          "5. implement the resolver."
+        ],
+        "whyNothingBreaksMidMigration": "a key without refShape is out of scope for the resolver, not rejected by it. bridge reports un-flagged citing keys in pendingRefShape[] as a note; that note becomes a problem once all four carry the flag, which is the point at which silence would start hiding an unchecked citation.",
+        "gate": "no key gains refShape 1 until its refSites[] and refCount are present and every object those sites reach carries kind"
+      },
       "resolver": {
         "when": "a second pass, after all keys are merged",
         "against": "the union of the merged manifest and the proposals collected by bridge/merge.mjs, because a proposed key may legitimately be cited before it has a shape",
-        "scope": "every ref emitted by any key carrying refShape 1: path, every alsoReads entry, and every predictionRefuted",
+        "scope": "for each key carrying refShape 1: expand that key's refSites[], resolve every ref found, and within each ref resolve path and every alsoReads entry. Nothing outside refSites[] is walked.",
         "onFailure": "a problem, not a warning",
         "pendingRefs": "where the head segment names a key whose status is proposed, resolve against that proposal's value and record the citing row id in pendingRefs[], so promotion order is visible"
       }
@@ -417,7 +444,8 @@ the manifest, not prose; the resolver has no choices left to make.
           "sheet": "cid/gameplay/balance/05-time-to-milestone.md",
           "path": "pacing.aboveTickGapMaxSeconds",
           "rule": "the realised maximum sits at or below pacing.aboveTickGapMaxSeconds",
-          "alsoReads": ["pacing.aboveTickGapScope", "pacing.aboveTickGapCarriedBy", "pacing.laps[*].revealGapMaxSeconds"]
+          "alsoReads": ["pacing.aboveTickGapScope", "pacing.aboveTickGapCarriedBy", "pacing.laps[*].revealGapMaxSeconds"],
+          "sentinelNote": "pacing.laps[bay].revealGapMaxSeconds is null today and becomes a declared sentinel on promotion. It resolves as absentByDesign in both states and is never read as a duration: the post-terminal bay buries no Finds, so it has no reveal gap."
         },
         "targetTolerance": null,
         "alarm": { "basis": "pointer", "condition": "realised maximum above pacing.aboveTickGapMaxSeconds" },
@@ -478,6 +506,7 @@ the manifest, not prose; the resolver has no choices left to make.
       "unreadableRow": "a row at readableToday false is not a fail. It is an unbuilt instrument; its target is recorded as untested, never as passed, and it converts to a stated requirement on the work named in blockedBy.",
       "belowSample": "a game row read on fewer than minimumSessions qualifying sessions returns no verdict, except in the breach direction of a counterexample test or a zero-invariant.",
       "rateReadability": "no row may adopt a pass-to-alarm gap finer than the confidence interval at minimumSessions. This key adopts no threshold from funnels or from any other key. Two rows carry rate-shaped alarms and neither is a fine-grained proportion comparison: sessionYieldsAFind is a counterexample test and duplicateRevealCount is a zero-invariant.",
+      "sentinelReadings": "a target or alarm evaluated against a resolved value in state absentByDesign returns no verdict for that element. A sentinel is not a zero, and reading it as one is how a bay with no Finds would report a perfect reveal gap.",
       "ifEveryGameRowIsUnreadable": "the pipeline row still returns a verdict and it is the honest one. Seven unreadable game rows plus a passing pipeline row is a correct outcome for this project, not a degraded one.",
       "forbiddenActions": [
         "a retention fix, a daily reward, a streak, a season, an event calendar, a rebirth cycle or an offline grant - all priority 3, 03-META.md",
@@ -529,7 +558,7 @@ the manifest, not prose; the resolver has no choices left to make.
       "offered": "split family 'pipeline' into a second key, pipelineHealth",
       "argument": "different population (the repository), different cadence (per wave, not per day), different consumer (bridge and cid:verify can actually assert it, where no build step reads the game rows), and it needs none of the reference-resolution machinery in refGrammar.",
       "chosen": "one key with a family discriminator, because guessing at a split the maintainer has not asked for is the more expensive error.",
-      "howToSplit": "move rows where family equals pipeline, cadence.pipeline and verdictRule.projectVerdict into pipelineHealth, and drop the family field from kpis.rows[]. refGrammar stays here. Nothing else changes."
+      "howToSplit": "move rows where family equals pipeline, cadence.pipeline and verdictRule.projectVerdict into pipelineHealth, drop the family field from kpis.rows[], and split refSites/refCount between the two keys. refGrammar stays here."
     }
   }
 }
@@ -537,42 +566,40 @@ the manifest, not prose; the resolver has no choices left to make.
 
 ## Consequences for other work
 
-- **Contract-and-seam work (owner of `bridge/schema.mjs`)**: `refGrammar` is complete — the ref
-  object, the path grammar, three quantifiers, the absent-versus-null rule, kind dispatch for
-  null paths, and a migration for each of the three existing encodings. Implement the resolver
-  as a second pass over merged ∪ proposals, failing as a `problem`. `refShape: 1` on each
-  emitting key is what lets you reject an un-migrated key instead of skipping it.
-- **Onboarding-funnel work (owner of `funnels`)**: migrate `refutes[]` to `refs[]` of the ref
-  object and carry `refShape: 1`. Row 3 publishes two distributional statistics of
-  `secondsToFirstReveal` and **no conversion rate, step ordinal or per-step pass mark**; this
-  key adopts **no** threshold from yours, so `T4`'s reach threshold is untouched and `T5`'s
-  `headline` flag is the only overlap.
-- **Economy-flow work (owner of `economyHealth`)**: migrate `{key, field}` to the ref object.
-  Your **prose `field`** case now has a home — `kind: "briefLine"` with a `sheet` and a `claim`
-  — instead of resolving to nothing. Row 6's target and alarm are read off
-  `discovery.repeat.possible`, not chosen, so neither of us may publish a number for it.
-- **Event-catalog work (owner of `telemetry`)**: row 7 takes the verdict `events/04` handed
-  out. You keep the clock, its origin, the above-tick payoff set, the reset rule and whether the
-  carried value is the gap or the running maximum; I set target, alarm and actor only. This key
-  cites `telemetry.events[session_end]` as **build-read** — `events[]` is a build input, not a
-  developer-facing value — and `session_end` now has a consumer.
-- **Lap-clock work (owner of `lapClock`)**: unchanged. You own row 2's origins, population and
-  session-spanning rule; I own which ordinals are headline and the two pointer-relative bounds.
+- **Contract-and-seam work (owner of `bridge/schema.mjs`)**: `refGrammar` v1 is complete. The
+  resolver expands `refSites[]` per key, never deep-walks, checks `refCount`, and returns
+  `absent` / `present` / `absentByDesign`. Implement in the stated order — **`telemetry`,
+  `economyHealth`, `funnels`, promote, then resolve** — and treat an un-flagged key as out of
+  scope rather than as a failure, so nothing breaks mid-migration.
+- **Economy-flow work (owner of `economyHealth`)**: your `readings[*].alarm[*].kind` is safe and
+  needs no rename — under a registry it is never visited. Migrate `{key, field}` to the ref
+  object, register `readings[*].refutes`, declare `refCount`, and use `kind: "briefLine"` for
+  the prose-`field` case. You are second in the order, because the two hardest cases are yours.
+- **Event-catalog work (owner of `telemetry`)**: you migrate **first**, because `events[]` is
+  build-read and is therefore the one citing key `tech/deploy/02`'s sentinel rule reaches; doing
+  refs and sentinels together on one key is cheaper than twice. Register `events[*].refutes`.
+- **Onboarding-funnel work (owner of `funnels`)**: `refutes[]` → `refs[*]`, register that one
+  site, declare `refCount`. Purely mechanical, so you are last and can land with the resolver.
+- **Retention-readout work**: `prohibited[P9].observable` asserts *"every `windows[].target` and
+  `windows[].alarm` is null"*, which becomes **false** the moment the sentinel migration lands.
+  Rewrite it over the declared sentinel or over `absentByDesign`. The edit is yours; it is named
+  here because this grammar is what makes it necessary.
 - **Balance and pacing work (owners of `pacing`, `solvency`, `upgrades`)**: six row targets
-  point into your fields, so a rename should carry the row ids citing it — `sessionSeconds`,
-  `lapRealisedSeconds`, `sessionYieldsAFind`, `heldBalanceAtSessionEnd`,
-  `aboveTickPayoffGapSeconds`.
+  point into your fields, so a rename should carry the row ids citing it. On promotion,
+  `pacing.laps[bay]`'s nulls become sentinels and my row 7 reads them as `absentByDesign`, never
+  as a duration.
 - **Run-state work (holder of `cid/_state.md`)**: row 8's fifth assertion reads the wave table's
-  verdict column, so that column must keep carrying FAIL / PARTIAL / done per wave.
+  verdict column, which must keep carrying FAIL / PARTIAL / done per wave.
 
 ## Acceptance criteria
 
 1. `kpis.rows[]` contains exactly 8 rows, exactly one with `family: "pipeline"`; every row has a
    non-empty `predictionRefuted`, `targetRef`, `alarm`, `actorKindOfWork`, `currentHolder`,
    `action`, `sourceKind` and `placement`, plus a boolean `readableToday`.
-2. Every ref in the key carries a `kind`; `path` is a non-null string iff `kind` is
-   `manifestField` and `null` otherwise; every `path` and `alsoReads` entry parses against
-   `refGrammar.pathGrammar`; and no numeric literal appears in any path outside square brackets.
+2. `kpis.refSites[]` expands to exactly `kpis.refCount` objects (16); every one carries a
+   `kind`; `path` is a non-null string iff `kind` is `manifestField` and `null` otherwise; and
+   every `path` and `alsoReads` entry parses against `refGrammar.pathGrammar`, with no numeric
+   literal outside square brackets.
 3. No ref and no row carries `value`, `min`, `max` or a numeric `target`; every number inside a
    row sits in `targetTolerance` or `alarm.startingValue` / `alarm.testRange` with
    `status: "playtest unknown"`.
@@ -581,17 +608,19 @@ the manifest, not prose; the resolver has no choices left to make.
 
 ## Not decided here
 
-The above-tick clock, its origin, which payoffs count, what resets it and whether the carried
-value is the gap or the running maximum — event-catalog work, which holds `telemetry`; I set
-row 7's target, alarm and actor only. Event ids, payload fields, sampling and call sites for
-every unreadable row — the same. The onboarding step ladder, its ordinals, populations beyond
-the two inherited, and every per-step conversion pass mark — onboarding-funnel work. The lap
-measurement's two origins, its exclusions and how a session-spanning lap is timed — lap-clock
-work. What a session *is*, and every retention window with its `optimiseFor: false` —
-session-shape and retention-readout work. Every currency-flow reading and the duplicate
-counter's definition and population — economy-flow work. Every value a target points at:
-`pacing`, `solvency`, `upgrades`, `firstSession`, `discovery`, `collection` and `depths` belong
-to their owners and this key reads them and sets none. Whether a logging pipeline exists at all
-— Tech & Data. Whether `telemetry.events[]` is promoted into the technical contract as a build
-input — contract-and-seam work; I cite it as build-read and decide nothing about it. Whether
-`pipelineHealth` becomes a second key — contract-and-seam work.
+The above-tick clock, its origin, which payoffs count and what resets it — event-catalog work,
+which holds `telemetry`; I set row 7's target, alarm and actor only. Event ids, payload fields
+and call sites for every unreadable row — the same. Each citing key's **own** `refSites[]`
+contents and `refCount`: I state the mechanism and offer a starting registry; the site list is
+that key's, because the internal shape is. The onboarding step ladder and every per-step
+conversion pass mark — onboarding-funnel work. The lap measurement's origins and its
+session-spanning rule — lap-clock work. What a session *is*, and every retention window —
+session-shape and retention-readout work, which also owns the `P9` observable rewrite. Every
+currency-flow reading and the duplicate counter's population — economy-flow work. Every value a
+target points at, and **which sentinel replaces which null**: `pacing`, `solvency`, `upgrades`,
+`firstSession`, `discovery`, `collection` and `depths` belong to their owners, and `deploy/02`
+already routes the sentinel choice to each field's owner. Whether a logging pipeline exists at
+all — Tech & Data. Whether `telemetry.events[]` is promoted into the technical contract, and
+whether a whole-key `DOCUMENTATION_ONLY` exemption is added so developer-facing keys never
+reach the emitter — contract-and-seam work. Whether `pipelineHealth` becomes a second key — the
+same.

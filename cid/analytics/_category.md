@@ -104,6 +104,11 @@ Tech & Data.
 Every row is a number a sheet already published. Each domain assignment below names which of these
 rows it is responsible for making refutable.
 
+> **Cite these by field path, not by the figure printed here.** Wave 4 is FAIL and its keys have
+> moved through three revision rounds; a figure quoted in this brief is a snapshot, and this file
+> is read by every domain in the category, so a stale number here propagates further than one in a
+> leaf sheet. Where a row below names a field, use the field.
+
 - **`pacing`** (`balance/05`, proposed): `lapTargetSeconds` 165 `[120, 200]` · `routeSlack` 2.0
   `[1.5, 2.6]` · nine `realisedLapSeconds` (127.9–149.6) and nine `underbuyLapSeconds` ·
   `revealGapSeconds` per lap against `aboveTickGapMaxSeconds` 90.0 · `tickGapRealisedSeconds` 1.17
@@ -121,7 +126,10 @@ rows it is responsible for making refutable.
   depth · eight `incomePerAreaAtLevelZero` rows · `freeParameter` 22, `testRange` `[18, 25]`
   (wave-4 verification requires `[18, 23]`).
 - **`solvency` / `upgrades`** (`balance/03`, proposed): `costGrowth` test range `[1.24, 1.40]`,
-  `maxLevel` `[16, 24]`, the ladder total against cumulative income (the ×3.26 solvency ratio).
+  `maxLevel` `[16, 24]`, and **`solvency.ladderTotal` against
+  `solvency.areaLedger[6].cumulativeIncome`, whose realised ratio `solvency.tests.S1` states.**
+  Read those three fields; this line prints no ratio, deliberately — see the correction at
+  Economy Health's assignment below.
 - **`axisBudget`** (`balance/04`, proposed): four `setBonus` factors at 1.20, `[1.10, 1.35]`
   (verification requires radius `[1.10, 1.22]`) · **`products.items[span].factor` 1.75,
   `factorTestRange` `[1.40, 1.95]`, requested `[1.40, 1.82]`.**
@@ -327,12 +335,22 @@ the assignment.**
   `[you accepted: R5 Q3 → R4 Q3]`; faucet *"clearing overgrowth, scaled by tier"*, sink
   *"clearing-speed upgrades"* (`02-GAMEPLAY.md`). `economy` keeps `faucetCount: 1` /
   `sinkCount: 1`. Your flow graph has two edges. Size the domain to that.
-- **The ladder is the sink and it runs out.** `balance/03` puts the ladder total at 244,839 against
-  cumulative income of 113,880 — a ×3.26 solvency ratio — and `pacing` dates ladder exhaustion at
-  1,459 s base. `_verified-wave4.md` confirms *"42% of the ladder bought at 24/24"*. **Currency
-  held per player is therefore predicted to be non-accumulating right up to exhaustion and
-  monotonic after it.** `GameConfig.Economy.balanceCap` is `nil` (`_state.md` build note 5), so
-  nothing caps it.
+- **The ladder is the sink and it runs out.** `balance/03` publishes `solvency.ladderTotal` against
+  `solvency.areaLedger[6].cumulativeIncome`; `solvency.tests.S1` states the realised ratio;
+  `solvency.ladderBoughtAtCollectionComplete` states the fraction bought at 24 of 24; and
+  `pacing.milestones[ladderExhausted]` dates exhaustion in both populations. **Read those four
+  fields.** **Currency held per player is therefore predicted to be non-accumulating right up to
+  exhaustion and monotonic after it.** `GameConfig.Economy.balanceCap` is `nil` (`_state.md` build
+  note 5), so nothing caps it.
+
+  > **Corrected 2026-08-02**, at the request of `cid/analytics/economy/01-currency-flow-and-holdings.md`
+  > and under Analytics verification RR-5. This line previously read *"the ladder total at 244,839
+  > against cumulative income of 113,880 — a ×3.26 solvency ratio"*, with exhaustion at 1,459 s and
+  > *"42% of the ladder bought at 24/24"*. **That pair computes to ×2.15, not ×3.26**; the ×3.26
+  > figure belongs to a different pair (244,839 / 75,033); and all of them are superseded revision
+  > rounds of `balance/03`, which is itself unreleased. **Four sheets inherited the false ratio from
+  > this line.** It is replaced by field paths rather than by corrected figures, because the fields
+  > have moved three times in a week and this file is read by every domain in the category.
 - **Duplicates went live under ruling R-2 and nobody has measured them.** `_state.md`: *"the
   duplicate problem goes live. `systems/05`'s safety argument was 'at today's 6×1 this is a
   no-op', and that expires here … the draw is now load-bearing and must be tested rather than
@@ -357,7 +375,8 @@ figure; **yours is the live reading that would confirm or refute it.**
 
 **The predictions your work is capable of refuting:** `tierMix`'s four `expectedValuePerPatch`
 figures and its eight per-area income rows · `meta/01` criterion 3's 700–1,200 band, predicted at
-722 · `solvency`'s ×3.26 ratio and the 42%-bought figure · the duplicate rate implied by R-2 ·
+`tierMix.incomePerAreaAtLevelZero[0].currency` · **`solvency.tests.S1`'s realised ratio and
+`solvency.ladderBoughtAtCollectionComplete`** · the duplicate rate implied by R-2 ·
 and **`products.items[span].factor` 1.75, whose `factorStatus` string `_verified-wave4.md` ruling 5
 found to make two false claims — *"1.95 is not the limit and area 2 is not where it binds (the bay
 is, at 13.7%)."* A live price-to-value reading is the only thing that settles it, and it cannot be
@@ -503,3 +522,9 @@ Passed upward, not filled. Each names the domain that will have to decide it.
     **their figures are in flux** — RR-9 and RR-10 both move rows this category would instrument.
     → **every domain here** cites the merged manifest and states which of its instruments moves if
     the corresponding revision lands. Do not copy a figure without naming its source sheet.
+
+11. **This file was itself the largest instance of gap 10, and it took two verification rounds to
+    close.** The ×3.26 ratio at Economy Health's assignment was arithmetically false, four sheets
+    inherited it, and every one of them filed a revision request against a file no domain owns.
+    → **whoever dispatches a category** owns its brief for the life of the wave. A figure in a
+    category brief should be a field path unless the brief itself is its source.

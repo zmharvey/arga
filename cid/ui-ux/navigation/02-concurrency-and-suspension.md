@@ -1,16 +1,15 @@
 # 02 — Concurrency and suspension
 
-**Domain:** ui-ux/navigation · **Category:** UI/UX · **Wave:** 5 · **Revised round 1** (RR-5)
+**Domain:** ui-ux/navigation · **Category:** UI/UX · **Wave:** 5 · **Revised round 2** (F-6)
 
 ## Decision
 
 **The index is an overlay, not an input modal.** All four game-drawn pressables stay activatable
-while it is open, guaranteed by z-order alone: the pressables draw **above** the panel, so the
-panel's `Active` sink never reaches them. **Exactly one rect must also stay clear —
-`Pressable_INDEX`, because it is the only exit.** It suspends exactly two things, character
-translation and jump, through the player's own control module, and leaves camera, clearing tick,
-tool, snapshot and notices running. **No beat, tick, completion or bay build ever closes it. A
-respawn does.**
+while it is open, and **z-order is the whole guarantee**: they draw above the panel, so the panel's
+`Active` sink never reaches them. **No rect is reserved — the panel may cover all four, including
+the exit.** It suspends exactly two things, character translation and jump, through the player's
+own control module, and leaves camera, clearing tick, tool, snapshot and notices running. **No
+beat, tick, completion or bay build ever closes it. A respawn does.**
 
 ## Why
 
@@ -32,30 +31,42 @@ pressables *"are left at the default ZIndex of 1"*
 `[research: game/src/client/IndexScreen.luau]`. **The stacking order is exactly backwards** and
 that is the mechanical form of the defect.
 
-**Z-order is the mechanism and — after round 1 — it is the *only* mechanism for three of the four
-controls.** My first draft also required the panel's rect be disjoint from all four pressables.
-`screens/01` decided the opposite deliberately, and better: `geometry.mayIntersect` names
-`Pressable_BUY1/2/3` and `mustNotIntersect` names `Pressable_INDEX`, at `0.84 × 0.72`
-**bottom-anchored** so the top-left cluster stays clear on every viewport. **Screens is right and
-I withdraw my request against its extent.** The arithmetic was never on my side — my own sheet
-conceded that a centred panel leaves about 5% of width for four controls — and a `rule` field a
-builder reads as binding but cannot satisfy is worse than no field at all. Z-order alone keeps the
-three purchase controls hit-testable through an intersecting panel, which is what the mechanism
-was chosen for.
+**Round 2: the exit is reachable by z-order, not by clearance, and clearance is disproved.** In
+one line, because F-6 is precisely that no sheet stated it:
 
-**One rect does still have to stay clear, and it is now load-bearing rather than cosmetic.** Sheet
-`03` drops the in-panel close control, so `Pressable_INDEX` is the **only** exit from the only
-openable surface. A panel covering it is a player who cannot get out — bar (a), and worse than the
-purchase case because there is no second path. `screens[index].geometry.mustNotIntersect` already
-says so; this key adopts it as an invariant rather than restating a geometry it does not own.
+> **`Pressable_INDEX` is reachable while the panel is open because it draws at `ZIndex` 20 above a
+> panel at 10 and is therefore hit-testable — not because any region is kept clear.
+> `screens[index].geometry.mustNotIntersect` is now `[]`, its own arithmetic disproves the
+> clearance, so `navigation.purchaseWhileOpen.geometry` reserves nothing and the exit rests
+> entirely on `zOrder.invariant` plus `indexControlRemainsActivatable: true`.**
 
-**Z-order was also chosen because it is robust to the one fact this domain could not settle.**
-`GuiObject.Active` is documented only as *"Determines whether this UI element sinks input"*
+**My round-1 sentence was wrong, so I withdraw it rather than defend it.** I wrote that one exit
+*"is not survivable against occlusion"*. That conflated two different things: **visual overlap**,
+which is harmless, and **unreachability**, which is fatal. A control drawn above the panel is both
+visible and pressable; the panel passing under it costs legibility, which is `composition`'s and
+UI Art's, not reachability, which is mine. Z-order prevents the fatal case outright. Clearance was
+only ever the second line, and Screens disproved it honestly — *"no phone viewport admits a panel
+that both fits its contents and clears any cluster"* — rather than defending a number. **Z-order
+alone is sufficient here and I am not asking for the clearance back.**
+
+**What genuinely changed is the severity of one invariant, and that is the part worth writing
+down.** Under round 1 a z-order regression merely degraded the game, because the in-panel close
+control still worked. With one exit and no reserved region, **a pressable whose `ZIndex` is not
+strictly above the panel's is a trapped player.** So `zOrder.invariant` moves from "keeps the
+currency sink reachable" to bar (a), and the key says so where a builder reads it. The residual
+failure is recoverable rather than a stuck session — a respawn closes the panel under rule (e) and
+the platform menu's Reset Character is always available — but that is a floor, never a path, and
+no copy may ever name it (`onboarding/03` `T5`, `T6`).
+
+**Z-order was chosen in the first place because it is robust to the one fact this domain could not
+settle.** `GuiObject.Active` is documented only as *"Determines whether this UI element sinks
+input"*
 `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiObject.yaml]`.
 `[unverified — whether Active sinks a touch tap identically to a mouse click. Settled by the
 creator-docs input-propagation page for `content/en-us/ui/`, or by a Studio device-emulator run on
 a phone viewport with a button under an Active frame. It would decide ~70% of the audience's
-behaviour under a geometry rule, and decides nothing under a z-order rule.]`
+behaviour under a geometry rule and decides nothing under a z-order rule — which now carries the
+exit as well as the purchase path.]`
 
 **(b) What the suspension is.** `response.humanoidWritesAllowed` is exactly `["WalkSpeed"]` and
 that write is `server-main`'s, so the suspension **may not be a Humanoid write**. It is
@@ -119,6 +130,8 @@ beats, so `R5` is untouched. The cost is one activation to reopen.
         { "layer": "notice", "zIndex": 30, "members": "everything on the notice channel" }
       ],
       "invariant": "every member of gameDrawnPressables has a ZIndex strictly greater than IndexSurface and than every descendant of IndexSurface",
+      "invariantSeverity": "bar (a)",
+      "invariantSeverityBecause": "no region is reserved and there is one exit, so a pressable not strictly above the panel is a player who cannot close it; this invariant is the only thing between an open panel and a stuck session",
       "shippedValueIsWrong": "IndexScreen.luau SURFACE_Z_INDEX 10 against pressables at the default 1"
     },
     "concurrency": {
@@ -137,14 +150,22 @@ beats, so `R5` is untouched. The cost is one activation to reopen.
       "indexControlRemainsActivatable": true,
       "mechanism": "zOrder",
       "mechanismIsSufficientAlone": true,
+      "exitReachability": {
+        "statement": "Pressable_INDEX is reachable while the panel is open because it draws above the panel and is therefore hit-testable, not because any region is kept clear of the panel",
+        "restsOn": ["navigation.zOrder.invariant", "navigation.purchaseWhileOpen.indexControlRemainsActivatable"],
+        "doesNotRestOn": "screens[index].geometry.mustNotIntersect",
+        "visualOverlapIsPermitted": true,
+        "visualOverlapIsA": "legibility question owned by composition and UI Art, not a reachability question owned here",
+        "ifTheZOrderInvariantIsBroken": "the player cannot close the panel; recoverable only through the platform menu's Reset Character, which closes it under navigation.respawn — a floor, never a path, and never named in copy"
+      },
       "geometry": {
-        "mustNotIntersectPanel": ["Pressable_INDEX"],
-        "mustNotIntersectReason": "sheet 03 drops the in-panel close control, so this node is the only exit from the only openable node; a panel covering it traps the player",
-        "mayIntersectPanel": ["Pressable_BUY1", "Pressable_BUY2", "Pressable_BUY3"],
-        "mayIntersectReason": "z-order keeps them hit-testable through the panel; a disjointness rule over all four is not satisfiable at any panel extent screens would accept",
+        "mustNotIntersectPanel": [],
+        "mayIntersectPanel": ["Pressable_BUY1", "Pressable_BUY2", "Pressable_BUY3", "Pressable_INDEX"],
         "governedBy": "screens[index].geometry",
         "adoptedNotDecidedHere": true,
-        "withdrawnInRound1": "the round-1 requirement that all four rects be disjoint from IndexSurface"
+        "reservesNothingBecause": "screens/01 recomputed its content stack and disproved the clearance — no phone viewport admits a panel that both fits its contents and clears any cluster — so a reserved region would be a rule field a builder reads as binding and cannot satisfy",
+        "withdrawnInRound1": "the requirement that all four rects be disjoint from IndexSurface",
+        "withdrawnInRound2": "the requirement that Pressable_INDEX's rect be disjoint from IndexSurface"
       },
       "panelSinksWithinOwnBoundsBelowItself": true,
       "dimBlurOrScrimBehindPanel": "none",
@@ -196,6 +217,7 @@ beats, so `R5` is untouched. The cost is one activation to reopen.
       "isABeat": false,
       "r5Untouched": true,
       "reopenCost": "one activation; presence is latched and derived from the snapshot",
+      "alsoServesAs": "the recovery floor if the zOrder invariant is ever broken; not a design path and never named in copy",
       "supersedes": "game/src/client/IndexScreen.luau watchRespawns"
     }
   }
@@ -215,27 +237,31 @@ that captures input is an area exit in every sense that matters to a player hold
 
 ## Consequences for other work
 
-**Persistent-surface composition (`composition`, ui-ux/hud).** One z-order requirement and one
-prohibition. Every interactive group's node carries `ZIndex` 20 and every non-interactive element
-carries 1. **The HUD is never hidden, dimmed, blurred, scaled or scrimmed by an open index** —
-`economy` keeps currency visible and uncapped, and there is no state in which it stops being. The
-round-1 request that cluster rects be disjoint from `IndexSurface` is **withdrawn** for the
-`bottomRight` cluster and stands only for `topLeft`, which holds the sole exit.
+**Persistent-surface composition (`composition`, ui-ux/hud).** The z-order values are the whole
+seam now: `ZIndex` 20 on every interactive group node, 1 on every non-interactive element, and
+**this is bar (a) rather than housekeeping** — with no reserved region and one exit, a pressable
+not strictly above the panel is a trapped player. Two consequences follow. Whichever route
+`hud/03` ships, the control node must carry the group's `ZIndex` and a nested control must not
+inherit a lower one. And whether a pressable drawn over an open panel reads clearly is now a real
+question for that key and for UI Art, because it is the normal case rather than an edge one.
+**The HUD is never hidden, dimmed, blurred, scaled or scrimmed by an open index** — `economy`
+keeps currency visible and uncapped.
 
-**Index-panel composition (`screens`).** Its geometry is adopted verbatim and my request against
-its extent is **withdrawn**. What remains is a dependency I now rely on: `mustNotIntersect` must
-keep naming `Pressable_INDEX`, on every viewport in its own `sizeScale` test range, because that
-node is the only exit. `IndexSurface` and every descendant carry `ZIndex` 10, applied per node.
+**Index-panel composition (`screens`).** Its recomputed geometry is adopted whole and **I ask it
+for nothing**: `mustNotIntersect: []` at `0.94 × 0.86` stands and its disproof of the clearance is
+accepted as correct. My round-1 request against its extent stays withdrawn. What it inherits is
+one statement to carry from its side: the exit is reachable by z-order, so the panel may pass
+under `Pressable_INDEX` and must never be given a `ZIndex` at or above it. `IndexSurface` and
+every descendant carry `ZIndex` 10, applied per node.
 
-**Notice channel (`notices`, ui-ux/feedback).** Notices carry `ZIndex` 30 and draw above an open
-panel. This is a requirement, not a preference: a notice drawn below the panel drops `B2` and `B3`
-entirely at the moment they fire. Nothing about their non-focusable, click-through,
-non-dismissible-only properties changes — those are the guarantee that stops a notice swallowing a
-tap, which is why the z-order can afford to be above.
+**Notice channel (`notices`, ui-ux/feedback).** Notices carry `ZIndex` 30, above both the
+pressables and the panel; a notice below the panel drops `B2` and `B3` at the moment they fire.
+Their non-focusable, click-through, non-dismissible-only properties are what let the z-order sit
+above without swallowing a tap.
 
-**Platform and input (`viewport`).** The four pressables must remain hit-testable above a
-`ZIndex` 10 panel on all three device classes, and three of them may sit over the panel, so the
-touch-target floor is measured against a control that can overlap an opened surface.
+**Platform and input (`viewport`).** All four pressables may now sit over the panel, so the
+touch-target floor and the keepout regions are measured against controls that routinely overlap
+an opened surface, and the one carrying the exit is the one that must never lose its stacking.
 
 **Plot arrangement (`plots`) and area-completion detection.** `plots.advance` runs unchanged
 behind an open panel and may not move, teleport or reparent the character.
@@ -247,20 +273,22 @@ above the panel, delete the false comment at `:583-584`, and replace `watchRespa
 
 | against | file | field | current | required | why |
 |---|---|---|---|---|---|
-| `composition` | `cid/ui-ux/hud/01-persistent-surface-composition.md` | element and group `ZIndex` | no `ZIndex` field in the key | 20 on every interactive group node, 1 on every non-interactive element | the shipped stacking order is inverted, so an open panel sits on top of the game's only currency sink |
-| `notices` | `cid/ui-ux/feedback/01-the-notice-channel.md` | notice `zIndex` layer | `zIndexBelow: "pressable"` | 30, above both the pressables and the index panel | a notice below a `ZIndex` 10 panel silently drops `B2` and `B3` while the index is open |
+| `composition` | `cid/ui-ux/hud/01-persistent-surface-composition.md` | group and element `ZIndex` | no `ZIndex` field in the key | 20 on every interactive group node and on a nested control under `hud/03` route B, 1 on every non-interactive element | with no reserved region and one exit, this is the only thing preventing a trapped player |
+| `notices` | `cid/ui-ux/feedback/01-the-notice-channel.md` | notice `zIndex` layer | `zIndexBelow` withdrawn; constraint restated | 30, above both the pressables and the index panel | a notice below a `ZIndex` 10 panel silently drops `B2` and `B3` while the index is open |
 | shipped build | `game/src/client/IndexScreen.luau:462-477` | `watchRespawns` | re-applies the suspension on `CharacterAdded` | close the panel and restore movement | a spawn event causing a control change is what `response.controlEverAffected: false` exists to prevent |
 
-**Withdrawn from round 1:** the request that `screens` change `IndexSurface`'s extent, and the
-disjointness requirement against `Pressable_BUY1/2/3`.
+**Withdrawn in round 1:** the request that `screens` change `IndexSurface`'s extent, and the
+disjointness requirement against `Pressable_BUY1/2/3`. **Withdrawn in round 2:** the disjointness
+requirement against `Pressable_INDEX`, and with it every geometric requirement this sheet made of
+any other domain.
 
 ## Acceptance criteria
 
 1. Every instance named `Pressable_BUY1`, `Pressable_BUY2`, `Pressable_BUY3` and
    `Pressable_INDEX` has a `ZIndex` strictly greater than `IndexSurface.ZIndex` and than the
    `ZIndex` of every descendant of `IndexSurface`.
-2. `navigation.purchaseWhileOpen.geometry.mustNotIntersectPanel` is exactly `["Pressable_INDEX"]`
-   and is equal to `screens[index].geometry.mustNotIntersect`.
+2. `navigation.purchaseWhileOpen.geometry.mustNotIntersectPanel` is the empty list and is equal to
+   `screens[index].geometry.mustNotIntersect`.
 3. `game/src/client/IndexScreen.luau` contains zero writes to any `Humanoid` property, and
    `navigation.suspension.humanoidWrite` is `false`.
 4. Firing `CharacterAdded` while the panel is open leaves `IndexSurface.Visible == false` and the
@@ -268,10 +296,10 @@ disjointness requirement against `Pressable_BUY1/2/3`.
 
 ## Not decided here
 
-The panel's extent, anchor and internal layout (`screens`, whose geometry this sheet adopts).
-Cluster rects, group order and every pixel of HUD geometry (`composition`). The touch-target
-floor, the safe-area inset and the platform keepout regions (`viewport`). Which physical input
-closes the panel on each device, and where focus lands — sheet `03`. Notice dwell, queueing and
-stacking (`notices`); this sheet fixes only their z-order relative to the panel. The coincident
-beat order and the 0.35 s onset separation (`core-loop/02`, inherited). The server tick rate
-(architecture). What `plots.advance` builds (`plots`).
+The panel's extent, anchor and internal layout (`screens`, whose geometry this sheet adopts and
+asks nothing of). Cluster rects, group order, every pixel of HUD geometry, and whether a pressable
+drawn over an open panel reads clearly (`composition` and UI Art). The touch-target floor, the
+safe-area inset and the platform keepout regions (`viewport`). Which physical input closes the
+panel on each device, and where focus lands — sheet `03`. Notice dwell, queueing and stacking
+(`notices`). The coincident beat order and the 0.35 s onset separation (`core-loop/02`, inherited).
+The server tick rate (architecture). What `plots.advance` builds (`plots`).
