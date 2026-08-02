@@ -76,7 +76,8 @@ lit, framed or sounded as one. **Find placement may not read a patch's tier.**
         "affects": []
       }
     ],
-    "findRarityField": null,
+    "findRarityField": "none",
+    "findRarityFieldAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). It asserts exactly what the null asserted — a Find has no rarity field — and nothing weaker: a null emits as nil, Luau drops the key, and a reader cannot tell it from a key that was never emitted.",
     "findPlacementReadsTier": false,
     "findPlacementWeighting": "blind to tier: the probability a patch carries a Find is independent of its tierIndex. Whether that choice is spatially uniform or spread is content-structure work's, not this key's.",
     "depthRarityChannel": "tiers[].weight, shifted toward the rare end per depth",
@@ -110,6 +111,11 @@ lit, framed or sounded as one. **Find placement may not read a patch's tier.**
 - **Balance & Tuning** gets a channel with no values in it: the per-depth tier mix. I set none.
 - **Offer-ladder work** may not sell a "find better Finds" multiplier: there is no per-Find rank
   for a multiplier to move. Sheet `05` closes the rate half of the same question.
+- **Object and Find art work (Art — Objects, five sheets).** `findRarityField` is now the string
+  `"none"` rather than a null, per `cid/tech/deploy/02`. The **fact those sheets cite is
+  unchanged** — a Find has no rarity field — so `02-the-object-roster` `Z6`, `04-what-a-find-is-
+  made-of` and `05-foliage-form` all still hold. Their prose wording *"is `null`"* is now stale
+  by one word and is a wording fix in their own sheets, not a design change here.
 
 ## Pushing back
 
@@ -121,8 +127,9 @@ system, which the brief prices as a requirement rather than a nicety.
 
 ## Acceptance criteria
 
-1. `rarity.findRarityField` is `null`, and no manifest key, emitted config field or module
-   carries a rarity, grade, tier, star or quality value attached to a Find.
+1. `rarity.findRarityField` is the string `"none"` and **is not null** (`cid/tech/deploy/02`),
+   and no manifest key, emitted config field or module carries a rarity, grade, tier, star or
+   quality value attached to a Find.
 2. Build the layout under 10,000 different seeds and bucket the Find-carrying patches by
    `tierIndex`: the distribution matches `tiers[].weight` with no significant difference,
    because placement is blind to tier.

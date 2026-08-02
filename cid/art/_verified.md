@@ -173,3 +173,209 @@ Not failures now. Recorded so the final pass diffs against them.
 7. **`representation` gains a lane-dressing subject with a named creator**, or `environment`, `builtEdge`, `groundwork`, `chunkDressing` and `backdrop` merge as five keys nothing can build.
 
 **Not blocking release, and worth saying:** `characters/01`, `lighting/01`, `lighting/02`, `objects/02`, `objects/04`, `objects/05`, `vfx/01`, `vfx/02`, `ui-art/01`, `ui-art/03`, `ui-art/05` and `ui-art/06` carry no revision request. Four of them found a live player-visible defect the pipeline had shipped past — the magenta icon boxes, the `MerriweatherBold` throw, the bouncing purchase press, and the false *"the only property the server writes on a character is WalkSpeed"* — and each closed it against source rather than against a retelling. That is the category doing its job.
+
+---
+
+# Round 2
+
+**Status: FAIL**
+Three requests, all one line, one of them blocking. **Eleven of thirteen round-1 requests closed
+cleanly and five domains swept beyond what they were asked.** The blocking failure is new, and it is
+the same defect class round 1 found, arriving in the one sheet that was told to read by field:
+`style/03` was revised for `RR-1` but not re-derived against the siblings whose revisions it now
+depends on. `detailBudget` merges asserting a breach that Environment and VFX have closed, its
+acceptance criterion 2 requires a false evaluation that is now true, and three of the paths its own
+`citeAs` block instructs readers to use do not resolve.
+
+Gates re-confirmed as reported: `cid:verify --category art` PASS, `bridge` COMPLETE 25/25 with 0
+problems, 170 tests. As in round 1, none of them can see a cross-sheet contradiction.
+
+## Round-1 requests — disposition
+
+| # | file | verdict | evidence |
+|---|---|---|---|
+| 1 | `style/03` | **closed, then re-broken** | `allocatesNothing` struck the rows, `citeAs.notInThisKey` names them absent, criterion 3 counts zero allocation rows. Then the sheet kept round-0 arithmetic everywhere else. See RR-14. |
+| 2 | `environment/01` | **closed** | `9 × 16 + 6 + 35 = 185 ≤ 186`, with `allowance.perClientReservation.effects` a named field rather than an assumption. |
+| 3 | `environment/01` | **closed, without widening anything** | `Cobblestone → Limestone` (`M1`) on paving, `Sandstone` (`M3`) on channel and basin, `litter` struck from the roster entirely. `distinctDrawClasses` 11 → 10, `X15` added, **zero revision requests filed against `styleGuide`**. Every `material` is a `styleGuide.materials.rows[].enum` and every `colourRole` a key of `styleGuide.roles`. Resolving inside a closed set rather than asking to widen it is the right instinct. |
+| 4 | `environment/01` | **closed at zero instance cost** | Two tiers. `lane`: paving, kerb, channel, parapet — one part per lane per side, spanning bay 1 to the live bay, resized by the same `applyLaneExtent` that already resizes the slab. `liveBay`: cross-wall, basin, signature. `environment/02` `E9` and `/03` `G11` each forbid a rebuild where a resize is required. |
+| 5 | `environment/03` | **closed by concession** | Slab is `Limestone` at `stone.cleared`; the `Cobblestone` request is withdrawn; `RR-A1` is the sole filing and carries material and colour together; the criterion reads `styleGuide.materials.rows[M1].enum` **by field**, so the two criteria cannot diverge again. |
+| 6 | `style/01` | **closed, and better than asked** | `metal.cast` kept as an **explicitly unassigned** role rather than deleted — `M6` still needs it for `P3` fittings *"SET INTO THE BUILDING… Does NOT reach the held tool"*, and `theme/setting/01` names cast bronze in the Find register. Deleting it would have stranded both. `roleAssignmentBoundary` added: Style Guide sets roles, values and rules; who takes which role is `objectArt`'s, `environment`'s or `effects`'. It also ratified `objectArt`'s two timber values against its own five applicable rules rather than asserting a competing pair. |
+| 7 | `objects/03` | **closed, and swept** | Both paths corrected. Objects found four more in its own sheets and one in a sibling — `screens` reads `collection.sets[g].relics[i].name` where `collection.sets[].relics[]` is an array of bare strings — filed as `RQ2`. |
+| 8 | `lighting/01` | **closed, and swept** | `readability.authoredColourField` is `styleGuide.roles["stone.cleared"].rgb`; criterion 3 now requires every external path in the key to resolve. It also **dropped the 188 threshold it had stated on Objects' behalf**, which is correct and which I should have caught in round 1: 188 is `objectArt.tool.invariants.clearedStoneLumaRequiredAtLeast`, a derived invariant of another key, not a merged field Lighting had standing to restate. |
+| 9 | `vfx/01` | **closed, and swept furthest** | Both paths corrected, and all 36 cross-key paths re-resolved and published as `effects.externalPathsCited`, with criterion 4 requiring each to resolve. That is the right response to a two-path request, and it is the sweep `style/03` did not do. |
+| 10 | `ui-art/04` | **closed** | `RR-A3` files `composition.elements[collection-count].icon` and `[currency-value].icon` → `null` against `cid/ui-ux/hud/01`, under a `## Pushing back` that names the sheet and the ruling. `hud.brief.json` is demoted to `downstreamConsequence` with `ifRevisionRefused`: *"regenerating the brief restores both icons and both magenta boxes at `hud.luau:69,153`; deleting them from the brief alone is not a fix."* Criterion 1 now tests the merged key. |
+| 11 | `environment/05` | **closed by scoping, which was the honest option** | The per-slot table is arithmetically right: slot 5's nearest long wall is `488 − 60 + 90 = 518` studs, just outside 512. `closedForSlots [1,2,3,4,13,14,15,16]`, `notClosedForSlots [5..12]`, `noBackdropGeometryFixesThis: true`, `B13` forbids the reflex fix by name (*"there are only 2 studs between lanes"*), and the three levers are named as `budgets`' and `plots`'. Backdrop re-cut 24 → 20 with `maxStreamedConcurrently` 6. |
+| 12 | `ui-art/02` | **closed, and it found the better defect** | Criterion 4 is now an arithmetic table over pairs that share an edge. The finding underneath it is the one that matters: **the bar fill never touches the world** — a `surface.sunken` track and its `border.subtle` hairline always sit between — so the 34.33 I asked it to floor is recorded under `notAdjacent` as *"the number a reviewer will compute first"* and no floor applies. My request asked for the wrong pair to be measured; the sheet corrected the question rather than complying with it. |
+| 13 | `environment/*`, `lighting/01` | **closed** | Seventeen decisions across five Environment sheets and eight rows in `lighting/01`, each with the alternative not taken, the reversing field and a recommendation. |
+
+## The sum, verified
+
+**It holds.** Every figure recomputed from `budgets` by field.
+
+| quantity | arithmetic | verdict |
+|---|---|---|
+| client headroom | `6,000 − 5,814` | **186** |
+| Environment's identity | `9 × 16 + 6 + 35 = 144 + 6 + 35` | **185 ≤ 186** ✓ |
+| per-consumer sum | `builtEdge 6 + groundwork 4 + chunkDressing 6 + reserve 0` | **16** ✓ — and `environment/02` states `instancesPerLane` 6, `/03` states 4, `/04` states 6, so the three consumers agree with the allocator |
+| backdrop | `12 canopy + 8 trunk` | **20** place-wide, **6** streamed ✓ |
+| server | `16 × 662 + 20` | **10,612 ≤ 12,000** ✓ |
+| **at VFX's actual need** | `144 + 6 + 11` | **161** — 25 spare |
+| conservative reading (all 20 shared charged) | `5,814 + 144 + 20 + 11` | **5,989 ≤ 6,000** ✓ |
+
+**Solvent under every accounting.** The reservation is *over*-sized, not under: Environment reserved
+35 against VFX's round-0 worst case, and VFX's revision took the true bound to 11. That is slack, not
+a breach, and it is the right direction to be wrong in — but the derivation string is now false and
+24 instances are parked against a need that no longer exists. RR-15.
+
+**Charging what streams rather than what exists is sound.** `clientStreamedInstanceCeiling` is a
+ceiling on streamed instances and `clientStreamedInstancesWorstCase` is itself a streamed figure, so
+charging 20 backdrop parts of which at most 6 are ever inside `StreamingTargetRadius` would
+double-count. `environment/05`'s trunk re-spacing to *"even quarters of the long wall run, 765 studs
+apart, so at most 2 are inside the streaming radius at once"* is a real design change made to earn
+that accounting, not a relabelling. **But the two sheets do not agree which field enters the sum** —
+`environment/01`'s `clientIdentity` takes `sharedMaxStreamedConcurrently` 6, `vfx/01`'s criterion 3
+takes `sharedPlaceInstances` 20. Both evaluate true, so nothing breaks; one should be named
+canonical before a third key picks the other. RR-16.
+
+## Rulings
+
+**VFX's client-only reveal: accepted, and it is the right kind of concession.**
+
+The geometry checks: `2 × atan(1.5 / 122)` = **1.41°**. A neighbour's reveal object occupied about a
+pixel and a half at phone resolution, so what server replication bought was never legible, and
+cutting it is a cost reduction rather than a budget argument — the distinction round 1 was looking
+for. Four things I checked before accepting. `decidedBy` stays `server`, so
+`response.beats[findReveal]` is untouched and no approved key moves — only the renderer changes, in
+the `cueFindReveal` seam `Beats.luau` already has. `social/02`'s *"ground visibly being cleared"*
+survives, because the patch Instances are server-destroyed and replicate. `theme/tone/03`'s forbidden
+peak on *another player's reveal* now holds **by construction** rather than by rule, which is
+strictly stronger, and `forbidden[otherPlayerRevealCue]`'s observable was correctly rewritten to say
+so. And the cost is stated where it belongs — *Flagged to the developer* item 3, with
+`cues[findReveal].createdBy` named as the reversing field.
+
+**One new cost arrives with it and the sheet does state it.** `RR-V1` now needs a position for
+*both* cues, adding a `Vector3` to `FindRevealed`'s payload, priced at 12 bytes on a channel
+`tech/networking/01` costs at 23 bytes worst case, firing `collection.relicsPerArea` times per area.
+That is a real wire change traded for 48 server instances and a lane-scaling client term. It is a
+good trade and it is a trade, not a free win, and the sheet says so rather than presenting the
+saving alone.
+
+**The two-tiered residency: accepted.**
+
+It closes the seam for the four things that run along a lane at zero instance cost, because a part
+spanning bays 1..k is one part however many bays there are — two per lane is exactly what two per
+live bay cost when only one bay was ever dressed. `N12` and `N11` do not reach it: both are scoped to
+a **patch**, and `style/03`'s `whatNDoesNotReach` states the exemption for a builder who would
+otherwise misapply them to a wall. The residual is correctly kept rather than argued away: a
+cross-wall stands *at* a boundary, so retaining one per boundary grows without bound under `endgame`,
+and each of `environment/02` `E7`, `/03` `G7` and `/04` `F11` restates its own half of the seam in
+its own prohibition table instead of leaving it in one sheet. `retainedBaySeam` carries the bar-(a)
+status, the reversing field and the price.
+
+**One arithmetic slip in the reversal cost, non-blocking and not filed.**
+`residency.retainedBaySeam.reversalCost` says 16 → 32. At `residentBays` 3 it is the 5 lane-tier
+parts plus (cross-wall 8 — three bays share four boundaries at two parts each — plus basin 3 plus
+signature 18) = **34**, so `9 × 34 + 6 + 35 = 347` against 186 of headroom. The conclusion, *does not
+fit*, survives by 1.9×, so no decision moves and I am recording rather than filing it.
+
+**Check 6 at the narrowed wording: PASS.**
+
+*"…cited as `budgets.deviceFloor` by field and never as the brief's own."* `style/03`
+`instrument.where` names `RR-P1` and the two simulated briefs explicitly; `environment/01`,
+`objects/05`, `lighting/02` `V10` and `vfx/01` `budget.instrument` all cite the field. Grepped all 23
+sheets for `brief's 3 GB`, `3 GB device floor` and `the brief's device floor`: **zero matches.** The
+clause that round 2 nearly failed is the first one — *"total detail fits the Performance budget"* —
+and it now holds at 161–185 of 186, with the arithmetic published in three keys and checkable in one
+line. **The renarrowing was correct and the check is now evaluable.**
+
+## Revision requests
+
+### `cid/art/style/03-detail-budget.md` — the key merges asserting a breach that no longer exists
+**Violates:** the acceptance-criteria invariant; check 4, the budget consistency this key exists to hold.
+**Fix:** the sheet was revised for `RR-1` and then not re-derived against the siblings it now reads.
+It still carries `overSubscription.status: "BREACHED at the arbitrated totals"`,
+`environmentSpends: "9 * 18 + 24 = 186"`, `effectsNeeds: "17 to 35"`,
+`mergedTotal: "6017 to 6035"` and `overBy: [17, 35]`; `envelope.chunkArithmetic` computes 1.13 parts
+per chunk from 18; `bindingCeiling.serverCheckAtArbitratedTotals` says `16 × (646 + 18) + 24 = 10648`;
+`drawCalls.atArbitratedTotals` is `(9 × 663 + 24)/f` with `minimumBatchingFactorAtArbitratedTotals`
+5.991. Environment is now **16 + 20 (6 streamed)** and `effects` is **11**, so the merged total is
+5,975–5,989 and the constraint is satisfied with 11–25 spare. **Acceptance criterion 2 requires
+`9E + S + effects ≤ 186` to evaluate `false`; it now evaluates `true`, so this sheet fails its own
+criterion against the merged manifest.** Set `overSubscription.status` to `CLOSED`, record how it
+closed (Environment cut 2 per lane and struck the litter mat; VFX moved the reveal client-side,
+taking 17–35 to a hard bound of 11), invert criterion 2, and re-derive the server check, the chunk
+arithmetic and the draw-call floor at 16 + 6 + 11. The correct floor is
+`(9 × (645 + 16) + 6 + 11)/1000` = **5.962**, not 5.991.
+
+### `cid/art/style/03-detail-budget.md` — three paths in `citeAs.notInThisKey` do not resolve
+**Violates:** check 1 — the same defect `RR-7`, `RR-8` and `RR-9` closed everywhere else.
+**Fix:** `citeAs.notInThisKey` instructs readers to *"Read `environment.perLaneInstances`,
+`environment.sharedInstances` and `effects.totalInstances` by field"*, and `envelope.constraint`,
+`drawCalls.formula` and acceptance criterion 2 all use those three. **None of the three exists.**
+They are `environment.allowance.residentInstancesPerLane`,
+`environment.allowance.sharedPlaceInstances` (with `.sharedMaxStreamedConcurrently` for the streamed
+sum) and `effects.budget.clientInstancesAdded`. This is the sheet that established the
+instances-versus-parts citation rule and it should be able to resolve three of its own; add the
+`wrongSpellingsSeenInRoundOne` block `style/01` already carries.
+
+### `cid/art/environment/01-world-part-budget.md` — the effects reservation cites VFX's superseded figures
+**Violates:** check 1.
+**Fix:** `allowance.perClientReservation.effects` carries `worstCase: 35`, `realistic: 17` and
+`derivation: "vfx/01 budget.clientInstancesAdded 8 + concurrentRevealObjectsOnOneScreen 27 (9 realistic)"`.
+The revised `vfx/01` states `clientInstancesAdded: 11`, `concurrentRevealObjectsOnOneScreen: 3` and
+`clientInstancesAreAHardBound: true` — a per-player concurrency ceiling that cannot scale with loaded
+lanes because neither cue replicates. **There is no longer a worst case and a realistic figure;
+there is one bound.** Reset the derivation to read `effects.budget.clientInstancesAdded` **by field**,
+and either keep the 24 as a stated cushion with its own reason or release it. Releasing it funds
+exactly the two things four *Flagged to the developer* tables name as first to buy back: the litter
+mat (`groundwork` 4 → 5, and `environment/03`'s own flag says *"buy it back first; the place
+currently has nothing that says it was left alone"*) and the retained-boundary cross-walls
+(`builtEdge` 6 → 10, which closes the residual seam this round accepted). Also reconcile with
+`vfx/01` which field enters the client sum — `sharedMaxStreamedConcurrently` 6 or
+`sharedPlaceInstances` 20 — and name one canonical.
+
+## What the revisions broke, and what they did not
+
+**Broke:** one sheet, three ways, all listed above, and every one is a stale citation of a sibling's
+pre-revision number rather than a new design error. That is worth naming as a process finding rather
+than only as a defect: **five sheets re-resolved their cross-key paths this round and the sixth did
+not, and the sixth is the one whose entire content is other domains' numbers.** A key that
+deliberately allocates nothing is a key made only of citations, and it needs the sweep most.
+
+**Did not break:** every round-1 finding I could re-test still holds. The three colour claims are
+jointly satisfied at the merged value — `stone.cleared` 201.84 ≥ Lighting's 195 ≥ Objects' 188 ≥
+`theme/setting/01`'s 165 — and the tool's 68.5 / 38.8 / 39.9 separations are intact now that `M6`
+states `metal.cast` *"does NOT reach the held tool"*. `lighting/02` recomputed the WCAG ratio at the
+merged colour rather than at its worked example and reports **2.31 : 1**; I recomputed it
+independently at 2.311 and it is still below 3, still carrying `V13`. `objects/02`'s
+`looseObjectInstanceCount` 0 and Environment's `P4` zero-parts row still agree. `effects.forbidden[]`
+is still 31 rows. `builtEdge`, `groundwork` and `chunkDressing` still sum to the allocator's 16.
+**Nothing regressed.**
+
+**New, and outside anyone's fix:** `environment/05` has produced the sharpest cross-category finding
+of the wave and it is not an art problem. **Eight of sixteen slots have no rendered lateral horizon
+and no backdrop geometry can give them one**, because a 1,950-stud row is 3.8× a 512-stud streaming
+radius and there are 2 studs between lanes. The levers are `budgets.streaming.StreamingTargetRadius`,
+`runtime.maxPlayers` and the row arrangement in `plots`. That belongs in the final cross-category
+pass beside `depths.areas[].patchCount`, and it is the second finding this wave where the honest art
+answer is *"this is a place-shape decision, not a dressing decision."*
+
+**Also new, and cheap:** `objects` filed `RQ2` against `screens` — it reads
+`collection.sets[g].relics[i].name` where `collection.sets[].relics[]` is an array of bare strings.
+That is a UI/UX-owned path defect found by an Art domain sweeping its own citations, and it should
+travel to the `screens` owner rather than sitting in an Art sheet.
+
+## What must happen before this category can release
+
+1. **RR-14 and RR-15 land** — one sheet, two edits, both arithmetic. `detailBudget` cannot merge
+   asserting a breach that three keys have closed, and cannot instruct readers toward three paths
+   that do not exist.
+2. **RR-16 lands**, or Environment and VFX name one canonical shared field between them.
+3. **Everything from round 1 stays closed. No round-1 request needs reopening**, and two of them
+   (`RR-6`, `RR-12`) were answered better than they were asked.
+4. The three items in *Predicted cross-category conflicts* that grew this round — `RR-E1` and
+   `RR-V2` as one `representation` answer, the horizon-closure finding, and `RQ2` — carry forward
+   unchanged.
+
+Given that all three requests are re-derivations inside sheets whose decisions are already
+arbitrated, **round 3 should be a check, not a revision round.**

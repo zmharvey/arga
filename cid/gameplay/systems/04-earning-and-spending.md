@@ -57,7 +57,8 @@ nothing, and is neither capped nor hidden.**
   "value": {
     "currencyKey": "currency",
     "startingBalance": 0,
-    "balanceCap": null,
+    "balanceCap": "none",
+    "balanceCapAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config), and it is load-bearing here: the balance is UNCAPPED, which is this sheet's decision and atMaxLadder.readoutHidden false depends on it. A null emitted as nil and Luau dropped the key, so no module could tell \"no cap\" from \"never emitted\". 0 was NOT used because it would assert a cap of zero — the opposite of the decision. A reader treating balanceCap as a number must test type(v) == \"number\" first.",
     "negativeBalance": "impossible; a purchase that cannot be afforded changes nothing at all",
     "authority": "server only; no client message carries a cost, an amount or a balance, and whether a client message exists at all is input's",
     "faucetCount": 1,
@@ -93,7 +94,8 @@ nothing, and is neither capped nor hidden.**
     ],
     "atMaxLadder": {
       "incomeContinues": true,
-      "convertsTo": null,
+      "convertsTo": "none",
+      "convertsToAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02. Currency converts to nothing at max ladder; the sibling newSinkAppears false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
       "newSinkAppears": false,
       "readoutHidden": false,
       "balanceFrozen": false,
@@ -131,6 +133,9 @@ nothing, and is neither capped nor hidden.**
 - **Feedback-UI work** has an area-completion moment and a set-completion moment with no number
   attached. Whatever the notice says, it cannot say "+N".
 - **Persistence work** stores one integer balance. Nothing about the economy grows with play.
+- **Any module reading `balanceCap`.** It is the string `"none"`, not a number and not nil, per
+  `cid/tech/deploy/02`. Guard with `type(cap) == "number"` before comparing; a bare `if cap then`
+  is now true and would cap at nothing.
 
 ## Flagged to the developer
 

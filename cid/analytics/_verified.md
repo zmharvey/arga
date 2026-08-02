@@ -1,6 +1,6 @@
 # Analytics — verification
 
-*Round 1 below. **Round 2 is at the end of this file** and supersedes the status line.*
+*Round 1 below. **Rounds 2 and 3 are at the end of this file**; round 3 carries the closing verdict.*
 
 **Status: FAIL**
 Sixteen revision requests, four of them cross-domain contradictions inside this wave. Check 1 is
@@ -617,3 +617,164 @@ once against Art, Audio, Live Ops and Discovery together instead of three times.
    keys is promoted, and a decision on `telemetry.events[]` as the one build-read half.
 5. Check 1 stays open to the final pass. **The category cannot release above PARTIAL this wave**,
    and every item above is closable inside round 3.
+
+---
+
+# Round 3 — closing verdict
+
+**Status: PARTIAL.** Every round-2 item is closed, several of them beyond what I asked. **One defect
+remains**, it is mechanically checkable, it is single-field, and because the 3-round cap is spent I
+state its resolution below rather than request it. Nothing else is outstanding: the rest of the
+category is sound and, in the places the revisions reached, better specified than the sheets it
+replaced.
+
+Re-read in full this round: `funnels/01`, `funnels/04`, `events/01`, `events/02`, `events/04`,
+`engagement/01`, `engagement/02`, `economy/01`, `kpis/02`, `_category.md`, plus
+`game/src/server/Persistence.luau` and `bridge/merge.mjs` for the two claims that turn on code.
+
+## Round-2 items, re-checked
+
+| item | state | evidence |
+|---|---|---|
+| RR-15 inversion | **closed, as a withdrawal, both sides** | `funnels/01` `withdrawnRequests[]` now gives three grounds, including *"neither this key nor engagement has a row needing an integer run count"*, and `sharedPredicate.reopensOnlyIf` names the single condition that would reopen it and who must file it. `engagement/01` withdrew `runOrdinalRuling` **entire** — `requiresFromOtherKeys: []` (`:140`), six `derivableIf` rows now `null` with `closedBy: "persistence D9"`, `E13` forbidding this key from requesting any persisted field, `E14` forbidding a join to `saveState`. **Nothing in the category now asks Persistence for anything**, and I checked the negative directly rather than taking the summary. Engagement naming its own error — it argued from `readable` alone when the seven fields together are what distinguish a pristine save — is the right record to leave. |
+| `saveState` predicate | **closed** | `notByteEquality` (`funnels/01:203`) states the mechanism — *"reconcile fills rowsRevealed with one false per upgrade row and found with one false per Find name, so the returned state is NEVER byte-equal to defaultState()"* — and the test is now *no `true` value*, not emptiness. Recording **why** the wrong derivation was wrong is what stops it being re-derived; that is the correct fix and not the minimum one. |
+| `T3` and the buckets | **closed, and it was three findings** | `sinceJoinBucket` → `sinceStepOriginBucket`, unit is the step's own `measuredFrom` — which is the per-step-origin rule already inherited from `firstSession.ceilings`, not a new concept. Edges `0-3, 3-5, …` put **both** ceilings on boundaries; product 8 × 2 × 3 = 48. `T3`, `T7`, `T9` and `T11` are now bucket-overlap rates with `gapPoints`, and `bucketResolutionLimit` states the cost (*"of six band edges read, one aligns"*) and names the removal — a numeric-valued `LogCustomEvent` per step, **costed against the 100-name cap by Event Logging rather than spent unilaterally**. Finding that a median is no more computable from buckets than a P90 is a generalisation I did not make and should have. |
+| acceptance-criteria count | **closed** | `funnels/01`, `03` and `04` are at 4. All sixteen leaf sheets now carry exactly 4. |
+| RR-5 · `_category.md` | **closed, applied** | Lines 347–350 carry the corrected text with the superseded figures recorded rather than silently swapped, and the same sentence's two other stale numbers (1,459 s exhaustion, 42%-bought) taken with it. Fixing the whole sentence rather than the one line I named is the right call. |
+| batch window | **closed, and now two-sided** | `batchPatchCount ≤ min_k depths.areas[k].patchCount` is the constraint I did not think to ask for: below it the smallest area yields no full window and contributes nothing to `realisedValuePerPatch`. On-disk floor 121, ceiling 140 (area 1's `patchCount` is 140 in `balance/03:115` — verified), 128 inside with ~6% and ~9%. `windowAtOnDiskFigures` closes with *"the rule and the re-derivation bind; this evaluation does not"* and names RR-8 as the input that will move it. |
+
+## The one defect
+
+### `area_cleared` field 3 has two published answers and neither key claims it
+**Class: defect, not a design disagreement.** Both domains agree on the principle and both executed
+it by yielding to the other. Neither is arguing for its own answer.
+
+- `events/01:37` — *"**`area_cleared`'s third field is `lapOrigin`, taken verbatim from `lapClock`,
+  and my own five-value composite is withdrawn.**"* Field 3 is `lapOrigin`, cardinality **2**,
+  values `completion` / `join`. Its acceptance criterion 3 requires *"exactly the two values
+  `completion` and `join`"*.
+- `engagement/02:84` — *"**My round-1 `lapOrigin` is withdrawn. `area_cleared` field 3 is `lap`,
+  five values, event-catalog work's spelling, adopted verbatim with no substitution.**"*
+  `originField.name` is `"lap"`, five values, `adoptedVerbatim: true`, `substitutions: 0`. Its
+  acceptance criterion 1 requires those *"five values are byte-identical to
+  `telemetry.events[area_cleared].fields[3].values`"*.
+
+Each adopted what the other published in round 2, not what the other published in round 3.
+**Engagement's criterion 1 fails against disk today** — the telemetry field it demands byte-identity
+with is a two-value field under a different name — and the two criteria cannot both pass. The
+downstream divergence is material, not cosmetic: under the two-value field `lapClock` `X2` degrades
+to an aggregate ratio and `X4` becomes `unproducible U8`; under the five-value composite both are
+per-lap facts and `spannedLapCount` and `resetInLap` are exact. Two builders emit a different field
+name, a different cardinality and different exclusion semantics.
+
+**Resolution, stated because the cap is spent: adopt the five-value `lap` composite.** It is
+Engagement's round-3 position and Event Logging's own round-2 design, so no domain has to be
+overruled. It preserves `X4` and per-lap `X2`, which the two-value field loses and which
+`events/01` itself costs out as a real loss rather than absorbing. The cardinality cost is +3
+distinct values on a category total near 1,716 against 8,000 — nothing. Edits: `events/01` field 3
+name, values and acceptance criterion 3; delete `U8`; `events/02`'s `N20` observable and
+`events/04`'s reset table both reference `lapOrigin` and follow the rename. `engagement/02` needs no
+edit at all, which is the tie-break: one file moves, not two.
+
+**Structural finding for the final pass, and it is the more important half.** This is the second
+mutual-deference inversion between the same two domains in three rounds — `stateShape.runOrdinal` in
+round 2, `area_cleared` field 3 in round 3. Both times each sheet yielded to the other's *previous*
+revision, and both times the yielding was correct in isolation and produced a contradiction jointly.
+The mechanism that would prevent a third is cheap and neither domain has it: **a shared field needs
+one named owner recorded in both sheets before either withdraws**, not two sheets each recording
+that the other owns it. `funnels/01`'s `sharedPredicate` block — which names both readers, the
+mapping and the reopen condition in one place — is exactly that mechanism, invented in this category
+for `saveState` and not applied to `area_cleared` field 3.
+
+## `refGrammar` — implementable, with no choices left
+
+**Yes.** The registry closes it, and it closes it better than the discriminator I suggested.
+`refSites[]` holds path patterns in the same `pathGrammar`, rooted at the key's own value; the
+resolver expands them and treats what it lands on as refs; **it never deep-walks**. At a registered
+site an object missing `kind` is a problem; outside one, `kind` is ignored entirely. That makes the
+`economyHealth.readings[*].alarm[*].kind` collision **structurally impossible** rather than
+whitelisted around, which is the difference between a rule and an exception. `refCount` closes the
+omitted-site hole an inclusion-list would otherwise have, with an integer comparison. Economy Health
+then removed the collision at source anyway (`alarm[].kind` → `alarmKind`, with a grep criterion) —
+belt and braces, and the braces are the right one.
+
+The migration order is correct and its reasons are the real ones: `telemetry` first because it is
+the only build-read citing key and therefore the only one `deploy/02`'s sentinel rule reaches;
+`economyHealth` second because it owns the two hardest cases (the prose citation and the renamed
+field). **Nothing breaks mid-migration** — a key without `refShape` is *out of scope*, not rejected,
+which is the correction to my round-2 concern. I verified `telemetry` (`events/01:136`) and
+`economyHealth` (`economy/01:123`) carry `refShape: 1`; **`funnels` has not migrated**, and that is
+the plan rather than an omission — `kpis/02:582` puts it last, *"purely mechanical, so you are last
+and can land with the resolver"*. Implement in that order and the resolver has nothing left to
+decide.
+
+## KPI's pushback on the proposal half — upheld, and I was wrong
+
+**They are right and my round-2 statement was too strong.** I wrote that after the sentinel migration
+the `presentButNull` rule "has no case in the contract at all". It does. `bridge/merge.mjs:146–149`
+is explicit that *"a proposal is a finding, not a contribution. It is reported by name and never
+merged"*, so a proposed key's value never reaches the merged manifest and therefore never reaches
+`emit-config.mjs`. `deploy/02`'s hard error cannot fire on it. The resolver, by contrast, runs
+against **merged ∪ proposals**. So nulls genuinely persist on the proposal side at resolve time, and
+they will for as long as any citing key is unpromoted — which today is all seven of this category's
+keys. The rule has a live case now and keeps one through the whole migration.
+
+The three-state resolution is also better than the two-state form I proposed. `absent` / `present` /
+`absentByDesign` distinguishes *"the sheet forgot"* from *"the sheet said there is not one of these"*,
+where my "record it as absent-by-design" folded the sentinel into the present case and lost that.
+`requireNonNull` failing on a sentinel as well as on `null` is the necessary second half, and
+`verdictRule.sentinelReadings` is the part that matters at read time: **a sentinel is not a zero, and
+reading it as one is how a bay with no Finds would report a perfect reveal gap.** That sentence is
+the whole argument and it is correct — `pacing.laps[bay].revealGapMaxSeconds` is exactly that case.
+The grammar also names the consequence I raised and routes it: `retentionReadout.prohibited[P9]`
+observes a prohibition by the literal token `null` and must be rewritten over the sentinel or over
+`absentByDesign`.
+
+## Check 1 — can it close?
+
+**No, and it should be reassigned rather than left open against this category.** All nine categories
+now exist on disk (`cid/liveops/_category.md` and `cid/marketing/_category.md` are the wave-7 pair,
+under names my earlier globs missed). So for the first time the check is *evaluable*. But it cannot
+be evaluated **by this category**: Analytics ran in wave 5, its measurable surface was enumerated
+before Art, Audio, Live Ops and Marketing existed, and nothing in a wave-5 sheet can be responsible
+for a claim published in wave 6 or 7. Re-opening Analytics to sweep them would mean re-opening it
+again after the final pass moves anything.
+
+**This is a checklist-scoping defect, not a category defect.** *"Every measurable claim in **any
+category** has a matching event"* is a cross-category invariant wearing a per-category check's
+clothes: it is the only one of the five that quantifies over categories other than the one being
+verified, and it is unsatisfiable by construction for every category except the last to run.
+**Recommendation: move check 1 to the final Cross-Category Verification node and narrow the
+Analytics-node check to "every measurable claim in a category that has released has a matching event
+or a stated reason it has none."** Under that wording the check would have passed in round 1. I am
+recording it as unresolved-by-scope rather than as a failure by this category, and the sweep against
+waves 6 and 7 belongs to the final pass with the wave-4 reconciliation already queued there.
+
+One concrete item to carry into that sweep, because it is the shape the rest will take: a muted-play
+share (`audio/mix/04-muted-play.md`) is a client fact and falls under `telemetry.unproducible` `U1`,
+so the correct Analytics answer is a *decline with a reason*, not an instrument. Most of wave 6 will
+resolve the same way; that is a cheap sweep, not a new domain.
+
+## What the revisions broke
+
+**Nothing, apart from the `area_cleared` field.** I checked the four places where a fix could have
+had a second-order cost and all four held: the bucket re-split changed the cardinality product from
+42 to 48 and every combined-value figure downstream still reconciles; `T1`'s reclassification to a
+count invariant did not orphan its action row; the `alarmKind` rename is grepped by its own
+criterion so it cannot half-land; and `economy/01`'s two-sided window did not disturb the
+`faucetBudgetShare` seam with `events/03`. Two near-misses worth naming: `events/02`'s `N20`
+observable and `events/04`'s reset table both hard-code the string `lapOrigin`, so they move with the
+field-3 resolution above and are the reason that edit is three files rather than one; and the null
+count is a moving floor — 43 published, 46 within a round, two since removed by Audio — so **publish
+the method and the date, not the number**, exactly as the coordinator proposes.
+
+## Closing
+
+**PARTIAL**, and the one open item is a defect with a stated single-owner resolution. This category
+produced the strongest self-correction in the run: three of the sixteen round-1 requests were closed
+by *dissolving* the question rather than answering it, and in each case the dissolution was better
+than the fix requested — `O1` withdrawn rather than tagged, the run-ordinal request withdrawn from
+both ends rather than arbitrated, and the payoff-gap split reached independently by two domains that
+had not read each other. The category's remaining exposure is not internal: it is that all seven keys
+describe instruments for a game with **zero analytics calls in `game/src`**, and whether any of them
+is ever readable is one decision by logging-pipeline work that no sheet here can make.
