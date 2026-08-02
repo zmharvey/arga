@@ -2,6 +2,13 @@
 
 **Domain:** ui-ux/feedback · **Category:** UI/UX · **Wave:** 5
 
+> **Revised, round 1** (`cid/ui-ux/_verified.md`). **RR-6** closed: the `zIndexBelow`/
+> `zIndexAbove` pair is **withdrawn** and replaced by a depth *constraint with its reason*,
+> for `composition` to arbitrate. **RR-7** closed: the two `noticeStack` rectangle lists are
+> re-derived against `composition.groups` post-fusion and are now stated as group ids and a
+> predicate, not as element descriptions. Membership, strings, dwell and `forbidden[]` are
+> unchanged and were upheld.
+
 ## Decision
 
 A notice is a **static, non-interactive text plate in HUD space** holding one fixed
@@ -81,14 +88,32 @@ and Roblox publishes no other duration guidance for in-experience messages
 `[research: https://create.roblox.com/docs/production/game-design/onboarding]`.
 `[research owed: a words-per-minute reading rate for an 8–11 age band, which would let dwell be derived from word count rather than picked]`
 
-### Interaction, in the engine's own vocabulary
+### Interaction, and the depth constraint that replaces my z-order value — RR-6
 
 All four booleans false. Realised as `Active = false` — *"Determines whether this UI element
 sinks input"* — and `Selectable = false` — *"Determine whether the GuiObject can be selected
 by a gamepad"*
 `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiObject.yaml]`.
-That is the whole of `response`'s *"a notice that swallows a tap would swallow a purchase"*,
-expressed as two property writes a build can be failed against rather than as a sentence.
+**That pair is the whole of *"a notice must never swallow a tap"*, and it holds at every
+depth**, which is what my withdrawn `zIndexBelow: "pressable"` was redundantly trying to buy.
+It bought nothing and cost `B2` and `B3` behind an open panel. **Accepted, not contested.**
+
+**The constraint, stated so the arbitration has something to satisfy rather than a number to
+obey:** *the notice layer's depth must be strictly greater than the depth of every surface
+that can be co-present with it — the index panel, every interactive group, and every
+non-interactive readout — because a notice is the only carrier `B2` and `B3` have on this
+channel, so an occluded notice is a dropped beat rather than a dimmed one.* Per the
+coordinator's routing I carry **no depth value**; `navigation/02`'s layer table (readout 1,
+`indexPanel` 10, `gameDrawnPressables` 20, `notice` 30) satisfies it, and `composition`
+arbitrates.
+
+**It is reachable, and worth deriving rather than asserting**, because `input`'s
+`indexScreenSuspendsMovement` makes it look unreachable: if the player cannot move, no patch
+clears, so no completion fires. But the coincident triple takes 1.2 s to drain at
+`minOnsetGapSeconds` 0.6 and the plates outlive it by 2.5 s. Clear the final patch at t = 0,
+press the index at t = 0.3, and the `setComplete` plate is scheduled at t = 0.6 into an open
+panel. **The largest payoff in the game, invisible, on a lap the player reaches four times.**
+`[cid: decided]` on the derivation; the ruling is `navigation/02`'s and I adopt it.
 
 ### The dwell timer lives in the cue body, never in the scheduler
 
@@ -99,6 +124,39 @@ carry a dwell on either notice beat, so a builder reads it from
 `notices.members[].dwellSeconds` and from nowhere else. `[cid: decided]` — I do **not** file
 a revision request growing `response` a field, because two sources for one number is the
 defect this key exists to close.
+
+### The keepout, re-derived against the fused element set — RR-7
+
+My first draft named element descriptions and `composition` then fused four of them into
+pressables: the collection count **is** `Pressable_INDEX`, and the three upgrade readouts
+**are** `Pressable_BUY1/2/3` `[research: cid/ui-ux/hud/01-persistent-surface-composition.md]`.
+Four of my five may-overlap surfaces were on my own may-not-intersect list.
+
+**Restated as group ids and one predicate, so it survives the next fusion too:**
+
+| list | contents, post-fusion | reason |
+|---|---|---|
+| may not intersect | **every group where `interactive == true`** — today `collection`, `upgradeValue`, `upgradeReach`, `upgradePace` | a control aimed at by an eight-year-old on a phone must be seen to be hit; `Active = false` stops the plate eating the tap, not the player missing the button |
+| may not intersect | `areaProgress` | `04-PRESENTATION.md`'s *"area-completion progress must be visible while moving"* is the brief's only sentence about a persistent element |
+| may not intersect | the platform touch and jump keepout regions | `input.mayOverlapPlatformControlRegions: false`; the extent is `viewport`'s |
+| **may overlap** | `currency` — **and it is the only one** | a readout is re-readable on the next frame, and `economy` requires it visible and uncapped, not unoccludable |
+
+**`composition.slots.hudTop` already sets `mayOverlapAnyGroup: false`, which is stricter than
+this, and I do not contest it.** A safe superset is the right default. What the table above
+becomes is the **relaxation ladder** if the top edge between the `topLeft` and `topRight`
+clusters proves too narrow at a phone viewport to hold two slots:
+
+1. release the `currency` overlap;
+2. release the `areaProgress` overlap **for the plate's dwell only** — both notices fire at or
+   just after a completion, when the bar has filled or reset, so *"visible while moving"* is
+   untouched;
+3. shrink the plate itself, which is legal at both strings' 12 and 13 characters.
+
+**There is no rung 4.** No plate ever intersects an interactive group, and `slots` never falls
+below 2 — sheet `02`'s stacking rule is not viewport-conditional, and dropping to one slot
+would reinstate the truncation it rejects. If all three rungs are spent and the region still
+does not fit, **refuse the anchor out loud in `composition`** and hand it back; that is a
+producibility finding for `viewport` and `ui-forge`, not a licence to overlap a button.
 
 ```manifest
 {
@@ -118,9 +176,15 @@ defect this key exists to close.
       "realisation": {
         "Active": false,
         "Selectable": false,
-        "zIndexBelow": "pressable",
-        "zIndexAbove": "hudReadout",
-        "eventConnectionsPermitted": []
+        "eventConnectionsPermitted": [],
+        "depthValue": null,
+        "depthOwnedBy": "composition",
+        "depthConstraint": "strictly greater than the depth of every surface that can be co-present with a notice: navigation.zOrder's indexPanel layer, every interactive group, and every non-interactive readout",
+        "depthConstraintReason": "a notice is the only carrier B2 and B3 have on this channel, so an occluded notice is a dropped beat rather than a dimmed one",
+        "depthConstraintSatisfiedBy": "navigation/02's notice layer at ZIndex 30 against indexPanel 10, gameDrawnPressables 20, readout 1",
+        "nonBlockingIsIndependentOfDepth": true,
+        "nonBlockingIsIndependentOfDepthReason": "Active=false does not sink input at any ZIndex, so the tap guarantee never depended on drawing below anything",
+        "supersedes": "the withdrawn zIndexBelow: pressable / zIndexAbove: hudReadout pair of round 0"
       },
       "source": "response — nothing on the notice channel may be dismissible-only, focusable, or block a click-through"
     },
@@ -141,23 +205,32 @@ defect this key exists to close.
     "dwellCeilingSource": "Roblox CoreScript DEFAULT_NOTIFICATION_DURATION = 5",
     "anchorGroup": {
       "id": "noticeStack",
+      "compositionSlot": "hudTop",
       "slots": 2,
       "growth": "downward",
       "slotAssignment": "arrivalOrder",
       "promoteOnExpiry": false,
       "memberPositionDerivedFromSlot": true,
+      "slotExtentOwnedBy": "composition",
+      "slotExtentConstraint": "two slots must both fit without either intersecting a rectangle named in mayNotIntersectGroupsWhere, mayNotIntersectGroups or mayNotIntersectRegions",
       "requiredOf": "composition",
-      "mayNotIntersect": [
-        "the hit rectangle of any of the four game-drawn pressables (Pressable_BUY1, Pressable_BUY2, Pressable_BUY3, Pressable_INDEX)",
-        "the area progress bar and its label",
-        "the platform touch and jump control keepout regions, whose extent is viewport's"
+      "statedAgainst": "composition.groups as of hud/01 — six groups, four of them interactive",
+      "mayNotIntersectGroupsWhere": { "field": "interactive", "equals": true, "todayResolvesTo": ["collection", "upgradeValue", "upgradeReach", "upgradePace"] },
+      "mayNotIntersectGroups": ["areaProgress"],
+      "mayNotIntersectRegions": ["the platform touch thumbstick and jump button keepout regions, whose extent is viewport's"],
+      "mayOverlapGroups": ["currency"],
+      "compositionMayBeStricter": true,
+      "compositionCurrentRule": "slots.hudTop.mayOverlapAnyGroup is false, which is a safe superset of this list and is not contested",
+      "relaxationLadder": [
+        { "rung": 1, "release": "the currency overlap ban", "cost": "one readout occluded for at most 3.0 s; economy requires it visible and uncapped, not unoccludable" },
+        { "rung": 2, "release": "the areaProgress overlap ban, for the plate's dwell only", "cost": "none in practice - both notices fire at or just after a completion, when the bar has filled or reset" },
+        { "rung": 3, "release": "the plate's own width and height", "cost": "none - both strings are 12 and 13 characters" }
       ],
-      "mayOverlap": [
-        "the collection count readout",
-        "the currency readout",
-        "the three upgrade readouts"
+      "neverRelaxed": [
+        "intersecting any group where interactive is true",
+        "reducing slots below 2, because sheet 02's stacking rule is not viewport-conditional"
       ],
-      "mayOverlapReason": "a readout is re-readable on the next frame; a control aimed at by an eight-year-old on a phone is not, and a purchase is the game's only currency sink"
+      "ifLadderExhausted": "composition refuses the anchor out loud and hands it back as a producibility finding for viewport and ui-forge; it does not overlap a control"
     },
     "members": [
       {
@@ -195,8 +268,8 @@ defect this key exists to close.
     ],
     "beatsWithNoNotice": [
       { "beat": "findReveal", "ruling": "response.beats[findReveal].forbiddenChannels contains notice", "onScreenComponent": "world-anchored only, at the patch, owned by Art - VFX under the atPatch channel" },
-      { "beat": "upgradePurchased", "ruling": "notice absent from channels; theme/tone/03 forbids it by name", "onScreenComponent": "the upgrade readout updating, owned by composition" },
-      { "beat": "patchClear", "ruling": "notice absent from channels; theme/tone/03 forbids it by name", "onScreenComponent": "the currency and progress readouts updating, owned by composition" }
+      { "beat": "upgradePurchased", "ruling": "notice absent from channels; theme/tone/03 forbids it by name", "onScreenComponent": "the upgradeValue/Reach/Pace group's own readouts updating, owned by composition" },
+      { "beat": "patchClear", "ruling": "notice absent from channels; theme/tone/03 forbids it by name", "onScreenComponent": "the currency and areaProgress groups updating, owned by composition" }
     ],
     "forbidden": [
       { "id": "revealNotice", "what": "any HUD-space plate at a Find reveal, including the Find's name", "ruling": "response.beats[findReveal].forbiddenChannels", "observable": "no notices member has beat findReveal; cueFindReveal writes nothing into onset.gui" },
@@ -206,7 +279,7 @@ defect this key exists to close.
       { "id": "firstFindCelebrationModal", "what": "a panel, overlay or takeover at the first Find", "ruling": "onboarding/03 T6; firstSession.tutorialDevicesForbidden.unrequestedModalPanelOrOverlay", "observable": "interaction.modal is false and no module opens a Frame at a reveal" },
       { "id": "tutorialCallout", "what": "a coach mark, arrow, pointer, hint or highlight of any control", "ruling": "firstSession.tutorialDevicesForbidden; 02-GAMEPLAY.md 'No text, no tutorial'", "observable": "notices.members has no entry whose cause is a player's inaction or a first-run flag" },
       { "id": "firstRunOnlyString", "what": "any string shown once and never again", "ruling": "onboarding/03 T5", "observable": "every beat member's varies field is 'never'; no cue body reads a persisted boolean to choose text" },
-      { "id": "liftAnnouncement", "what": "any plate, sound or motion when an upgrade row, the /24 denominator or the index panel lifts", "ruling": "firstSession S6/S7 - a lift is silent and still", "observable": "no member's cause is a firstSession lift" },
+      { "id": "liftAnnouncement", "what": "any plate, sound or motion when an upgrade group, the /24 denominator or the index panel lifts", "ruling": "firstSession S6/S7 - a lift is silent and still", "observable": "no member's cause is a firstSession lift or a composition.presence transition" },
       { "id": "duplicateFoundToast", "what": "an 'already found' plate, a slot that fills twice, a consolation cue", "ruling": "discovery - no reachable duplicate exists", "observable": "no member's cause is a repeat find" },
       { "id": "rejectionCue", "what": "any response to an unaffordable or refused press", "ruling": "input.rejectionCueOnFailedPrecondition is none; theme/tone/04 D12; response.negativeBeats is 0", "observable": "no member has class 'negative'; no cue body is reachable from a failed BuyUpgrade" },
       { "id": "setBonusNotice", "what": "a plate naming the axis a completed set granted, or its factor", "ruling": "meta/03 - nothing may signal which axis was granted", "observable": "setComplete.text is byte-identical for all four sets and reads no set id" },
@@ -257,40 +330,49 @@ defect this key exists to close.
 label, and splitting it into `Set` and `Complete` would put two ordinary English words into
 the register while recording neither string. **The route is a `class` field on the intake, not
 a shorter string** — a revision request against `theme/vocabulary/04`, filed here and not
-worked around. The same request covers sheet `03`'s longer string.
+worked around. The same request covers sheet `03`'s longer string, and both need the
+`PROSE_PATHS` entry at `bridge/schema.mjs` that the verification confirmed is real.
 
 ## Consequences for other work
 
-- **Persistent-surface composition (`composition`, ui-ux/hud sheet `01`)** inherits one new
-  anchor group, `noticeStack`, with three keepout rows and three may-overlap rows, all in the
-  manifest above. It is a data row in your key, not a placement I made: I state the
-  constraint and you carry the coordinates, the direction `social/01` used for
-  `maxCoPresenceSeparationStuds`. **If no free region satisfies all three keepouts at a phone
-  viewport, refuse it out loud** rather than moving the notice over a pressable — the
-  fallback I would accept is releasing the upgrade-readout overlap, never the pressable one.
+- **Persistent-surface composition (`composition`, ui-ux/hud sheet `01`)** — this is RR-8's
+  (a), and here is exactly what to hold. Add `noticeStack` as an anchor group inside
+  `slots.hudTop` with: `slots` 2, `growth`, `slotAssignment`, `promoteOnExpiry`,
+  `mayNotIntersectGroupsWhere` (a predicate on `groups[].interactive`, so it re-resolves if
+  the group set changes again), `mayNotIntersectGroups`, `mayNotIntersectRegions`,
+  `mayOverlapGroups`, `relaxationLadder`, `neverRelaxed`, and one depth field satisfying
+  `interaction.realisation.depthConstraint`. **I carry no coordinates and no depth number.**
+  Your `mayOverlapAnyGroup: false` is stricter than my list and is accepted as written; the
+  list is what to relax *to*, in order. **If the ladder is exhausted, refuse it out loud** —
+  the answer is never a plate over `Pressable_BUY1`.
+- **Screen graph and concurrency (`navigation`, sheets `01`–`03`)** — your `notice` layer at
+  30 is adopted and my contradicting z-order pair is withdrawn, so RR-6 closes from my side
+  with nothing owed back. Your invariant that every `gameDrawnPressables` member outranks
+  `IndexSurface` is untouched by anything here; a notice sits above all of it and sinks no
+  input at any depth.
+- **Audio — Stingers (wave 6)** owns `B2` and `B3` and inherits a hard join: the audible
+  length of the `B2` cue must be at most 3.0 s and the `B3` cue at most 2.5 s, or the plate
+  leaves the screen while its sound is still playing. `theme/tone/03` lets `B2` be *"longer
+  and wider than B1"*, so this is live. **There is 2.0 s of headroom to the 5.0 s ceiling and
+  it resolves as one number** — a revision request against this sheet's `dwellSeconds`, not a
+  redesign of either channel.
+- **Audio — UI Sound (wave 6)** inherits `forbidden[noticeSound]`: this key authors no sound
+  and names no `soundId`. The notice beats' audio is the `audio` channel of `B2` and `B3`,
+  which is Stingers'. **A notice-specific sound would be a sixth cue against
+  `theme/tone/03`'s five**, so if UI Sound has anything to place it is on a pressable, not
+  here.
 - **Instance representation (`representation`, architect sheet `06`)** must name a legal
   creator, and today there is none. Only `pressables` and `index-screen` may create a
   `GuiObject`, `HudBinding` contains no `Instance.new`, and `Beats.luau` holds the
-  `ScreenGui` while its cue bodies are empty. **A notice cannot be built by any module in the
-  current build order.** The smallest change is one row adding a `noticeStack` `Frame` with
-  two `TextLabel` slots and one named creator; whether that creator is `Beats` or a new
-  `notices` module is architecture's call, not mine.
-- **Set-completion and area-completion cue work (Audio)** inherits a hard join: the audible
-  length of the `B2` cue must be at most 3.0 s and the `B3` cue at most 2.5 s, or the plate
-  leaves the screen while its sound is still playing. `theme/tone/03` lets `B2` be *"longer
-  and wider than B1"*, so this is a live collision, not a hypothetical. If Audio needs more,
-  the route is a revision request against this sheet raising the dwell inside its 5.0 s
-  ceiling — one number, not a redesign.
-- **Reveal-cue work (Art — VFX)** owns everything the reveal shows, and owns it exclusively:
-  the `atPatch` channel is world-anchored and nothing about a reveal enters HUD space. **If
-  you decline to render the Find's name at the patch, the name reaches the player only inside
-  the collection index.** That is a finding for whoever owns the reveal's legibility; it is
-  not something this key can supply.
-- **Coinage intake (`theme/vocabulary/04`)** gets its first prose-class renderable coinage and
-  a field rule that does not fit it. Three strings across this domain need it.
+  `ScreenGui` while its cue bodies are empty. The smallest change is one row adding a
+  `noticeStack` `Frame` with two `TextLabel` slots and one named creator.
+- **Reveal-cue work (Art — VFX)** owns everything the reveal shows, exclusively: the
+  `atPatch` channel is world-anchored and nothing about a reveal enters HUD space. **If you
+  decline to render the Find's name at the patch, the name reaches the player only inside the
+  collection index.**
 - **Collection-surface work (`screens`)** keeps the index panel's own empty, loading and error
-  states. What it does **not** get is any transient message: nothing this key holds is drawn
-  inside an opened surface, and nothing `screens` holds is drawn over live play.
+  states, and per RR-10 deletes `screens.systemCopy` in favour of
+  `notices.members[saveNotLoaded]`. Nothing this key holds is drawn inside an opened surface.
 
 ## Acceptance criteria
 
@@ -301,25 +383,28 @@ worked around. The same request covers sheet `03`'s longer string.
    `^[A-Za-z0-9 ,.'%%/-]+$`, contains no digit, contains none of `relic relics tier artifact
    antique rebirth loot treasure`, and appears in the built client as a single literal — zero
    uses of `string.format`, `..` or an `args` index in either notice cue body.
-3. `notices.interaction` has all four booleans false, and the built client contains zero
-   `Active = true`, zero `Selectable = true` and zero event connections on any descendant of
-   the `noticeStack` anchor.
+3. On the built HUD: all four `notices.interaction` booleans are false, every node under the
+   `noticeStack` anchor has `Active == false`, `Selectable == false` and zero event
+   connections, and its realised `ZIndex` is **strictly greater** than `IndexSurface.ZIndex`
+   and than the `ZIndex` of every node named in `composition.groups[].node`.
 4. `forbidden[]` has 24 rows, every row carries an `observable` that is a grep or a count, and
    running all 24 against `game/src/` returns zero hits.
 
 ## Not decided here
 
-- **What happens when both notices are live at once** — sheet `02`, this domain, which amends
-  `maxConcurrent`, `onCoincidence` and the slot rules into this key.
-- **Whether any non-beat message exists at all** — sheet `03`, this domain, which adds the
-  `system` class. This sheet's `members` array holds only `class: "beat"` entries.
-- **Where the `noticeStack` anchor physically sits, in scale, offset or cluster** —
-  `composition` (ui-ux/hud). I state a keepout, not a position.
+- **What happens when both notices are live at once** — sheet `02`, this domain, unchanged by
+  this round and approved as of `_verified.md`.
+- **Whether any non-beat message exists at all** — sheet `03`, this domain, unchanged by this
+  round and approved. Its `saveNotLoaded` member is the only `class: "system"` entry.
+- **The `noticeStack` anchor's coordinates, its slot extent in pixels, and the depth value
+  satisfying my constraint** — `composition` (ui-ux/hud), arbitrating four domains'
+  requirements per RR-8. I state a constraint, a predicate and a ladder; I set no number.
+- **Whether a fifth game-drawn pressable exists** — RR-3, between `navigation/03`,
+  `screens/01` and the owner of `input`. `noticeStack` holds no control either way.
 - **What a notice is made of visually** — panel art, trim, colour and font are Art & Visuals —
   UI Art; rendered case and typography are `screens`.
-- **What either completion sounds like, and how loud** — Audio, under `theme/tone/03`'s
-  ranking, which this sheet does not reopen.
+- **What either completion sounds like and how long for** — Audio — Stingers, against the
+  dwell ceiling above.
 - **What the reveal looks like at the patch** — Art & Visuals — VFX, under `response`'s
   `atPatch` channel and its `dwellSeconds` of 2.5.
-- **Which module creates the Instance** — `representation`, architect. I state that none
-  legally may today.
+- **Which module creates the Instance** — `representation`, architect. None legally may today.

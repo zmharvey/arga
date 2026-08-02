@@ -20,13 +20,12 @@ similar-experience benchmark set
 `[research: https://devforum.roblox.com/t/analytics-view-retention-by-acquisition-source-and-select-your-benchmark-set/4010157]`,
 the only external comparator this project has. `[cid: decided]` — the brief defines no boundary.
 
-**Stitching is also not derivable, so it was never a live alternative.** `Persistence.save` writes
-`currency`, `upgrades`, `rowsRevealed`, `found`, `areasFinished`, `cleared`, `clearedCount` —
-seven fields, no timestamp, no join count, no session count
-`[research: game/src/server/Persistence.luau]`. Session count per player, time since last session
-and run index are therefore **not derivable from game state at all**, only from the platform's
-new-user cohort. Adding a field is persistence-shape work's decision; the `stateShape` revision
-request it needs is being raised there and is referenced, not duplicated, here.
+**No session ordering exists in game state today.** `Persistence.save` writes `currency`,
+`upgrades`, `rowsRevealed`, `found`, `areasFinished`, `cleared`, `clearedCount` — seven fields, no
+timestamp, no join count, no session count `[research: game/src/server/Persistence.luau]`, and
+`Persistence.load`'s `readable` boolean is true for a first-time player too, so it cannot stand in.
+Session count per player, time since last session and run index are therefore **not derivable
+today** — a statement about the current shape, not a prohibition. See `## Revision round 1`.
 
 **"10–20 minute active sessions" `[brief: binding]` ← `[you chose: R1 Q4]` is read as a band on
 the whole join-to-leave interval, not as an instruction to subtract idle time.** Nothing
@@ -59,8 +58,7 @@ decision: a requirement on logging-pipeline work, and a row KPI-shortlist work a
 **`OPEN.md §2` item (3) is replaced, not dropped.** *"Set-completion rate per set"* presumed a
 discovery rate; `systems/05` made placement a seeded partition, so set *k* completes exactly when
 `areasFinished >= k × collection.areasPerDepth`. The replacement is the **distribution of
-`areasFinished` across saved players**, from the same snapshot at no extra cost — strictly cheaper
-than the instrument it replaces. `[cid: decided]`.
+`areasFinished` across saved players**, from the same snapshot at no extra cost. `[cid: decided]`.
 
 **No pass mark and no alarm value appears here or in this key.** Verdict rules are KPI-shortlist
 work's; this sheet supplies the reading only.
@@ -87,13 +85,31 @@ minutes after joining your game for the first time"*
 `[research: https://create.roblox.com/docs/production/analytics/engagement]` — settles it for free,
 read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
 
+## Revision round 1
+
+**RR-15 closed. My sentence over-reached and I am narrowing it, not defending it.** I ruled that
+run 1 *is not distinguishable from game state today*; I wrote it as though a persisted run ordinal
+would be illegitimate. **It is not. A run ordinal may be persisted, this sheet does not forbid it,
+and `funnels`' request for `stateShape.runOrdinal` is supported rather than closed.** Three
+conditions, all from my own subject and none of them new:
+
+| # | condition on a persisted run ordinal | why it is mine to state |
+|---|---|---|
+| C1 | a monotonic integer incremented at join; never a clock and never a duration | `01-FOUNDATION.md` no offline accumulation `[you chose: R2 Q1]`; `04-PRESENTATION.md`'s no-timestamp-exploit claim is true only while no stored value is time |
+| C2 | no code path converts it to currency, progress, a grant or a modifier | the same two lines; it is a cohort label, not a reward counter |
+| C3 | it counts **saved** sessions, so it is a lower bound: a session ending before a save does not increment it | stated so no reading treats it as an exact session count |
+
+If it lands, three of my `notDerivableFromGameState` rows become derivable. The fourth, time since
+last session, still does not, because C1 forbids the stored clock that would give it. Nothing in
+this sheet depends on it landing.
+
 ```manifest
 { "provides": "engagement", "status": "proposed", "value": {
   "session": {
     "definition": "one join to the matching leave, for one Player, on one server",
     "startsAt": "the join path, after persistence.load returns",
     "endsAt": "the leave path, before plot teardown",
-    "clock": "platform wall clock; the game holds no session id and stores no timestamp",
+    "clock": "platform wall clock; the save holds no session id and no timestamp",
     "rejoinAfterDisconnect": "a new session; never stitched to the previous one",
     "stitchWindowSeconds": null,
     "idleSubtraction": false,
@@ -108,8 +124,22 @@ read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
       { "ref": "firstSession.ceilings.secondsToFirstReveal.population",
         "text": "run-1 sessions whose first input arrived by second 5.0" }
     ],
-    "returning": "the complement of the platform's new-user cohort; not derivable from game state",
+    "returning": "the complement of the platform's new-user cohort today; the complement of runOrdinal == run1 if stateShape.runOrdinal lands",
     "coinedHere": 0
+  },
+  "runOrdinalRuling": {
+    "mayBePersisted": true,
+    "forbiddenByThisSheet": false,
+    "supports": "funnels' request for stateShape.runOrdinal, owned by state-shape work",
+    "whatIRuled": "no persisted field distinguishes run 1 today; Persistence.load's readable boolean is true for a first-time player too",
+    "conditions": [
+      { "id": "C1", "rule": "a monotonic integer incremented at join; never a clock and never a duration",
+        "closedBy": "01-FOUNDATION.md no offline accumulation; 04-PRESENTATION.md no timestamp exploit" },
+      { "id": "C2", "rule": "no code path converts it to currency, progress, a grant or a modifier",
+        "closedBy": "the same two lines" },
+      { "id": "C3", "rule": "it counts saved sessions and is a lower bound on sessions played",
+        "closedBy": "this sheet; a session ending before a save does not increment it" }
+    ]
   },
   "gameDefinedEventsRequired": 0,
   "eligibilityGate": {
@@ -161,13 +191,21 @@ read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
   },
   "notDerivableFromGameState": [
     { "what": "session count per player", "why": "no persisted counter",
-      "replacedBy": "the platform new-user cohort" },
-    { "what": "time since last session", "why": "no persisted timestamp",
-      "replacedBy": "the platform retention cohorts" },
+      "todayReplacedBy": "the platform new-user cohort",
+      "derivableIf": "stateShape.runOrdinal, as a lower bound under condition C3" },
     { "what": "run index", "why": "no persisted counter",
-      "replacedBy": "the platform new-user cohort" },
+      "todayReplacedBy": "the platform new-user cohort",
+      "derivableIf": "stateShape.runOrdinal" },
+    { "what": "run 1 versus returning as a save-derived cohort",
+      "why": "Persistence.load's readable boolean is true for a first-time player too",
+      "todayReplacedBy": "the platform new-user cohort",
+      "derivableIf": "stateShape.runOrdinal" },
+    { "what": "time since last session", "why": "no persisted timestamp",
+      "todayReplacedBy": "the platform retention cohorts",
+      "derivableIf": null,
+      "note": "condition C1 forbids the stored clock that would give it; this row stays closed on purpose" },
     { "what": "collection count rose this session", "why": "the save carries no per-session baseline",
-      "replacedBy": null,
+      "todayReplacedBy": null,
       "requires": "a join-to-leave diff of found, knowable at the leave decision; a requirement on logging-pipeline work" }
   ],
   "verdictRules": { "passMark": null, "alarm": null, "owner": "kpis" },
@@ -195,7 +233,9 @@ read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
     { "id": "E11", "what": "a second definition of a run-1 session",
       "closedBy": "firstSession.ceilings.* owns both" },
     { "id": "E12", "what": "any target, pass mark or alarm value in this key",
-      "closedBy": "kpis owns verdict rules" }
+      "closedBy": "kpis owns verdict rules" },
+    { "id": "E13", "what": "a persisted run ordinal that is a clock, a duration, or convertible to currency or progress",
+      "closedBy": "runOrdinalRuling C1 and C2; the field itself is permitted" }
   ],
   "refutes": [
     { "field": "pacing.sessionBandSeconds",
@@ -209,10 +249,11 @@ read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
       "direction": "also settles endgame's open question of whether a player reaches the terminal state at all" },
     { "field": "balance/05 consequence: a floor session ends inside area 5 for a base player",
       "reading": "the areasFinished distribution against sessionSecondsP50",
-      "direction": "weak; the snapshot cannot tie a save to a session count, so it refutes a gross error only" },
+      "direction": "weak; the snapshot cannot tie a save to a session count, so it refutes a gross error only",
+      "strengthenedIf": "stateShape.runOrdinal, which supplies the session count the snapshot lacks" },
     { "field": "theme/fantasy/02 promise floor: laps to fill the index exceed the longest bound session",
       "reading": "share of saves at 24 of 24 against sessionSecondsP90",
-      "direction": "refutable in the strong direction only; a clean test needs lapClock plus a session id" },
+      "direction": "refutable in the strong direction only; a clean test needs lapClock plus a run ordinal" },
     { "field": "00-CORE.md device split, about 70 percent mobile / 25 desktop / 5 console",
       "reading": "platformBreakdown", "direction": "settled for free; the split is currently unsourced" },
     { "field": "00-CORE.md audience band 8-14", "reading": "ageGroupBreakdown",
@@ -229,19 +270,20 @@ read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
 
 ## Consequences for other work
 
+- **Onboarding-funnel work** inherits the run-1 population by reference, not by copy, and its
+  `stateShape.runOrdinal` request is **supported by this sheet under C1–C3**. Until it lands, the
+  only available run-1 cohort is the platform's new-user cohort, which is what its `unknown` value
+  reads against. One request to one owner, not two.
+- **State-shape and persistence work** get a ruling from me and no second request: a run ordinal is
+  admissible as an integer under C1–C3. I am not the requester; `funnels` is.
 - **Lap-measurement work (sheet `02`)** owns every lap figure; `completeLapsPerSession` is
   refutable only by the two keys together and neither may publish it alone.
 - **Retention-window work (sheet `03`)** inherits the same `eligibilityGate` by reference.
-- **Onboarding-funnel work** inherits the run-1 population by reference, not by copy. Its run-1
-  cohort is the platform's new-user cohort and **cannot** be a save-derived flag: no persisted
-  field distinguishes run 1 from run 40.
 - **Logging-pipeline work [currently Tech & Data]** receives exactly one requirement — at the leave
   decision, the change in `found` since that session's join must be knowable. No event id, payload
-  field or channel is named here; `Protocol.luau` declares seven channels and an eighth is that
-  work's request `[research: game/src/shared/Protocol.luau]`.
+  field or channel is named here `[research: game/src/shared/Protocol.luau]`.
 - **Event-catalog work** should note this sheet spends **no** custom field on Platform, OS or Age
   Group, because the dashboard breaks every default metric down by all three without one.
-- **Persistence-shape work** is told what the absent fields cost and is not asked to add them.
 - **KPI-shortlist work** takes every target and alarm; this key deliberately carries none.
 
 ## Acceptance criteria
@@ -252,10 +294,10 @@ read at the minute mark `pacing.laps[1].realisedLapSeconds` falls in.
 2. `engagement.populations.run1` has exactly two entries; each entry's `text` is byte-identical to
    the `population` string of the `firstSession.ceilings.*` field its `ref` names, and
    `engagement.populations.coinedHere` is `0`.
-3. No key named `target`, `passMark`, `alarm` or `threshold` carries a non-null value anywhere in
-   the `engagement` value.
-4. `engagement.forbidden[]` has 12 rows, each with `what` and `closedBy`, and no string in
-   `engagement.readings[]` matches `/streak|daily|login|season|rebirth|offline|leaderboard/i`.
+3. `engagement.runOrdinalRuling.mayBePersisted` is `true` and `forbiddenByThisSheet` is `false`; no
+   string anywhere in the `engagement` value asserts that a run ordinal cannot be persisted.
+4. `engagement.forbidden[]` has 13 rows, each with `what` and `closedBy`, and no key named `target`,
+   `passMark`, `alarm` or `threshold` carries a non-null value anywhere in the value.
 
 ## Flagged to the developer
 
@@ -267,8 +309,8 @@ The brief says *"10–20 minute **active** sessions"* and never says what "activ
 | B | a second figure over sessions in which the arming gate fired | one emission, owned by logging-pipeline work; comparability with the dashboard lost |
 | C | subtract idle stretches from every session length | a client input observation the platform forbids logging from, plus an eighth channel |
 
-**Recommendation: A.** B is a legitimate later addition and is Funnels' population anyway; C
-cannot be built and would make every figure incomparable with the benchmark set.
+**Recommendation: A.** B is a legitimate later addition and is Funnels' population anyway; C cannot
+be built and would make every figure incomparable with the benchmark set.
 
 Second item: if this game never clears the `eligibilityGate`, sheets `01` and `03` return nothing
 and only sheet `02`'s instrument produces a reading at all.
@@ -277,10 +319,10 @@ and only sheet `02`'s instrument produces a reading at all.
 
 The per-area realised lap, its origins, exclusions and session-spanning rule — sheet `02`, which
 holds `lapClock`. D1/D7/D30 and the retention ruling — sheet `03`, which holds `retentionReadout`.
-Every event id, payload field, custom-field allocation and emission cadence — event-catalog work,
-which holds `telemetry`. Onboarding funnel steps, pass marks and the first-purchase read —
-funnel-definition work. Faucet and sink volume, currency held and payer share — economy-flow work,
-which holds `economyHealth`; the three upgrade rows' adoption is its sink volume seen from the
-other side and is deliberately not read here. Every target, alarm, cadence and owner action —
-KPI-shortlist work. Whether a session counter or timestamp is ever persisted — persistence-shape
-work. `social.maxPlayers` — per-server-capacity work.
+**Whether `stateShape.runOrdinal` is actually added, its type and its write site** — state-shape and
+persistence work, at `funnels`' request; I rule only that it is admissible. Every event id, payload
+field, custom-field allocation and emission cadence — event-catalog work, which holds `telemetry`.
+Onboarding funnel steps, pass marks and the first-purchase read — funnel-definition work. Faucet and
+sink volume, currency held and payer share — economy-flow work, which holds `economyHealth`; the
+three upgrade rows' adoption is its sink volume seen from the other side. Every target, alarm,
+cadence and owner action — KPI-shortlist work. `social.maxPlayers` — per-server-capacity work.

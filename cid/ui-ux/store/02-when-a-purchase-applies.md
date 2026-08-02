@@ -1,6 +1,7 @@
 # 02 — When a purchase applies
 
-**Domain:** ui-ux/store · **Category:** UI/UX · **Wave:** 5
+**Domain:** ui-ux/store · **Category:** UI/UX · **Wave:** 5 · **Revised:** UI/UX verification
+round 1, `P1` re-worded so this block stays byte-identical to sheet `01`'s mirror of it
 
 ## Decision
 
@@ -102,7 +103,7 @@ closes. Forbidding it converts an instant application into a several-minute one.
 cost of R-4 beside the discovery cost `monetization/01` already records, and it is stated rather
 than argued: the ruling is not mine to reverse. `[cid: decided]` that it is worth recording.
 
-```json
+```manifest
 {
   "amends": "offerSurface",
   "path": "pendingPurchase",
@@ -113,7 +114,7 @@ than argued: the ruling is not mine to reverse. `[cid: decided]` that it is wort
     "shownOnFailedOwnershipRead": [],
     "emptySetReason": "products.F19 leaves no surface that may refer to a product; theme/tone/04 D12 removes every way of signalling a thing has not happened; input.pressable.rejectionCueOnFailedPrecondition is none. The three jointly force silence, so the empty set is a build instruction and not an oversight.",
     "forbidden": [
-      { "id": "P1", "thing": "A purchase-pending state on any readout, pressable or panel", "closedBy": ["products.F19", "R-4"], "observable": "no readout has a third visual state beyond present and withheld" },
+      { "id": "P1", "thing": "A purchase-pending state on any readout, pressable or panel", "closedBy": ["products.F19", "R-4"], "observable": "no readout has a third authored state beyond present and withheld" },
       { "id": "P2", "thing": "A rejoin instruction, in any words", "closedBy": ["products.F19", "theme/tone/01 P1/P2/P6"], "observable": "zero rendered strings match /rejoin|restart|log ?out|come back|try again/i" },
       { "id": "P3", "thing": "A notice, toast, banner or modal when ownership resolves true mid-session", "closedBy": ["theme/tone/03 B4", "response.notice channel"], "observable": "the notice channel carries exactly two members, both completions; an ownership change enqueues nothing" },
       { "id": "P4", "thing": "A cue distinguishing not-yet-propagated from not-owned", "closedBy": ["theme/tone/04 D12", "input.rejectionCueOnFailedPrecondition: none"], "observable": "the two states are byte-identical on every surface; a diff of the rendered HUD across them is empty" },
@@ -134,8 +135,8 @@ than argued: the ruling is not mine to reverse. `[cid: decided]` that it is wort
       "quotaArithmetic": "1 product x 16 players / interval; at 150 s that is 6.4 UserOwnsGamePassAsync calls per minute per server",
       "defaultPolicyUntilTested": "branchA",
       "policy": {
-        "branchA": "re-read every interval, for the whole session, for every product currently resolving false. Contract: a purchase applies within the session.",
-        "branchB": "re-read only products whose last read errored, bounded attempts, and treat a clean false as final for the session. Contract: a purchase applies from the next join."
+        "branchA": "re-read every interval, for the whole session, for every product currently resolving false",
+        "branchB": "re-read only products whose last read errored, bounded attempts, and treat a clean false as final for the session"
       },
       "notAvailableAtAnyLatency": "a client message asserting ownership — economy.authority and the two-channel client surface both forbid it"
     },
@@ -185,10 +186,10 @@ nothing and says nothing; `storeExists` stays false.
 
 **Against the networking domain's ownership-authority subject**, which is being written this same
 wave and instructed to record *"no in-server re-resolution trigger exists"* as data. Under my
-ruling a periodic re-read **is** an in-server trigger, and the honest contract is not unconditionally
-"applies from the next join". I do not ask it to adopt my reading on my authority — I ask that it
-carry the fact as disputed with both branches, as I have, so that whichever way the named test
-lands, no key has to be rewritten and no builder is blocked.
+ruling a periodic re-read **is** an in-server trigger, and the honest contract is not
+unconditionally "applies from the next join". I do not ask it to adopt my reading on my authority —
+I ask that it carry the fact as disputed with both branches, as I have, so that whichever way the
+named test lands, no key has to be rewritten and no builder is blocked.
 
 **A narrowing, not a contradiction, for notice work.** Its case-(c) ruling — no notice may fire —
 stands unchanged and I depend on it. Its stated *reason*, "the client never learns the purchase
@@ -208,7 +209,7 @@ poll" and drops the re-read that is the entire remedy here.
 
 ## Acceptance criteria
 
-1. Zero strings rendered anywhere in the build match `/rejoin|restart|log ?out|come back|try again/i`, and no client-side element is created, tweened or made visible by a change to `state.owned`.
+1. Zero strings rendered anywhere in the build match `/rejoin|restart|log ?out|come back|try again/i`, and no client-side element is created, tweened, faded or made interactable by a change to `state.owned`.
 2. `entitlements` is called from at least two sites: `wiring.onJoin` step 2 and a periodic re-read whose interval satisfies `intervalSeconds <= maxAcceptableDetectionLatencySeconds / 2` (≤ 150 s at the starting value of 300).
 3. The save payload written by `persistence` contains no pass id, product id, purchase-sourced factor or pending marker, before and after a mid-session ownership change.
 4. A simulated ownership flip from `false` to `true` mid-session changes the effective clear radius on the next tick and produces zero notices, zero sounds and zero new `Instance`s on any client.
@@ -217,10 +218,11 @@ poll" and drops the re-read that is the entire remedy here.
 
 The re-read interval, its retry shape, its back-off and its rate-limit budget — ownership-resolution
 work behind `products.ownershipCheck`; I state a bound and set no value. Which surfaces may carry an
-offer at all, the deleted `shop` row and the artifact-hygiene finding — sheet `01`, this domain,
+offer at all, the deleted `shop` row and the artifact-hygiene rule — sheet `01`, this domain,
 which holds `offerSurface`. What is sold, at what factor and what price — `products`, Monetization.
 Whether an error or system surface exists at all — `notices` (gap G2); I decide only that the
-ownership failure may not appear on it. The wire form of the snapshot that carries the applied
-factor — replication work. Whether the tool head expresses effective radius — held-tool work.
-Whether any of this is instrumented and at what pass mark — Analytics. Whether R-4 should be
-reopened now that its second cost is priced — the developer; I record the cost and reverse nothing.
+ownership failure may not appear on it. The withholding mechanism a readout uses — `composition`,
+`ui-ux/hud` `S2`/`S12`. The wire form of the snapshot that carries the applied factor — replication
+work. Whether the tool head expresses effective radius — held-tool work. Whether any of this is
+instrumented and at what pass mark — Analytics. Whether R-4 should be reopened now that its second
+cost is priced — the developer; I record the cost and reverse nothing.
