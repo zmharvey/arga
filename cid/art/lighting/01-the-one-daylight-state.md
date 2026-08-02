@@ -188,7 +188,7 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
       "authoredColourField": "styleGuide.roles[\"stone.cleared\"].rgb",
       "authoredLumaAsMerged": 201.84,
       "headroomOverStaticGate": 6.84,
-      "chainHolds": "201.84 >= 195 (V6) >= 188 (objectArt.clearedStoneLumaRequiredAtLeast) >= 165 (theme/setting/01 criterion 3); and 195 * 0.85 = 165.75 >= 165, which is V8",
+      "chainHolds": "201.84 >= 195 (V6) >= 165 (theme/setting/01 criterion 3); and 195 * 0.85 = 165.75 >= 165, which is V8",
       "passRule": "minimum",
       "samplePointsPerBay": 28,
       "sampleSelection": "24 patch anchors, every ceil(N/24)-th in layout order, plus the 4 slab corners inset by layout.chunk.edgeKeepoutStuds",
@@ -306,11 +306,12 @@ eight sheets, and `OPEN.md §1` has no audit row for any of it.
    nothing.
 2. `luma601(styleGuide.roles["stone.cleared"].rgb) ≥ lighting.readability.minAuthoredLuma`
    (201.84 ≥ 195 as merged), and **every field path either sheet in this domain cites into another
-   key resolves in the merged manifest** — `styleGuide.roles["stone.cleared"]`,
+   key resolves in the merged manifest** — `styleGuide.roles["stone.cleared"]`, `styleGuide.roles["sky"]`,
    `layout.chunk.edgeKeepoutStuds`, `layout.families[].setId`, `depths.areas[].patchCount`,
    `budgets.streaming.StreamingTargetRadius`, `budgets.deviceFloor`, `budgets.renderCeilings`,
    `social.maxCoPresenceSeparationStuds`, `tiers[0].rgb`, `representation.plot`,
-   `runtime.placeConfiguration`, `chunkDressing.roofedStudsOfZ`.
+   `runtime.placeConfiguration`, `chunkDressing.roofedStudsOfZ`,
+   `chunkDressing.maxHorizontalDistanceToOpenSkyUnderARoofStuds`.
 3. A count over the whole DataModel returns **0** for each of `Atmosphere`, `Clouds`, `Sky`,
    `PointLight`, `SpotLight`, `SurfaceLight`, `ColorCorrectionEffect`, `BloomEffect`,
    `SunRaysEffect`, `BlurEffect`, `DepthOfFieldEffect`, and `lighting.counts.lightingStates` is 1.
@@ -324,10 +325,12 @@ eight sheets, and `OPEN.md §1` has no audit row for any of it.
 and enforces `lighting.readability` above. **The stone's hue, its rgb triple and the closed material
 list** — `styleGuide` (`art/style/01`); I read `roles["stone.cleared"]` by field, choose no colour,
 and take no position on the `Limestone`-versus-`Cobblestone` slab material `art/_verified.md` `RR-5`
-is adjudicating. **Where the openings that light a vaulted bay sit and what they are made of, and
-whether a `Sky` instance is ever added** — `environment`. **Every performance ceiling this key is
-measured against** — `budgets`, Tech & Data. **Whether `lighting` is promoted into
-`bridge/schema.mjs`, and what to do about the name collision with `ui-forge`'s
-`assetContract.lighting` prompt field** — whoever maintains the contract and the seam. **The per-part
-constant hour** — nobody, until `theme/setting/03` criterion 1 is revised; it is available, unspent,
-and no field here is held open for it.
+is adjudicating. **Any luma requirement the tool or the Finds place on cleared stone** —
+`objectArt`, which reads `roles["stone.cleared"].luma` for itself; I state no threshold on its
+behalf. **Where the openings that light a vaulted bay sit and what they are made of, and whether a
+`Sky` instance is ever added** — `environment`. **Every performance ceiling this key is measured
+against** — `budgets`, Tech & Data. **Whether `lighting` is promoted into `bridge/schema.mjs`, and
+what to do about the name collision with `ui-forge`'s `assetContract.lighting` prompt field** —
+whoever maintains the contract and the seam. **The per-part constant hour** — nobody, until
+`theme/setting/03` criterion 1 is revised; it is available, unspent, and no field here is held open
+for it.

@@ -50,9 +50,9 @@ collide.
 and `N12` forbid every optimisation that would flatten them. **I state the rule and restate none
 of the values, propose no fifth, and recolour and resize nothing.** Carried from sheet `01`: the
 luma floor is Rec.601 luma, WCAG 1.4.11's 3:1 is sRGB relative luminance computing to roughly
-1.5:1 against `tiers[0]`, and **no sheet may claim the floor as the legibility guarantee.** The
-guarantee is the four shapes and four heights. That is why the greyscale test below reads outline
-and not value.
+1.5:1 against `tiers[0]` (3:1 would need about 231 luma, above `styleGuide` `C1`'s cap), and **no
+sheet may claim the floor as the legibility guarantee.** The guarantee is the four shapes and
+four heights. That is why the greyscale test below reads outline and not value.
 
 **"Ornate" was undefined and the producible vocabulary is four parameters.** `validateBrief`
 (`[research: ui-forge/src/compose/index.mjs:55-64]`) rejects any parameter outside
@@ -68,6 +68,11 @@ applies a 1.06 factor"*. It returns **1.15**: `generate.mjs:56` tests `lower <= 
 band's lower bound is 8, so the 1.06 branch at line 57 is never reached for this audience
 `[research: ui-forge/src/theme/generate.mjs:54-57]`. A type ramp designed against 1.06 will ship
 about 8% small. **This is UI Art's to act on, not mine.**
+
+**`vfx/01` cited `styleGuide.form.minimumFeatureStuds`, which resolves to nothing.** Every size,
+proportion and ornament field is in **this** key, and the path is
+`formLanguage.featureSize.near.minStuds`. `citeAs` below is the canonical list, added because one
+miscitation across a seam is a defect in my field names before it is one in the citing sheet.
 
 **Ornament that carries function is not ornament, and that is what makes the count honest.** One
 ornamental element is a form whose **only** function is decorative: it carries no collision, no
@@ -86,6 +91,32 @@ reflex and it makes the tread unreadable at 4 studs.
   "provides": "formLanguage",
   "status": "proposed",
   "value": {
+    "citeAs": {
+      "whyThisExists": "verification round 1 found vfx/01 citing styleGuide.form.minimumFeatureStuds, which resolves to nothing. Every size, proportion, height and ornament field is in THIS key. An alias is a merge error, not a synonym.",
+      "canonical": [
+        "formLanguage.featureSize.near.minStuds",
+        "formLanguage.featureSize.near.atStudsUpTo",
+        "formLanguage.featureSize.far.minStuds",
+        "formLanguage.featureSize.far.atStuds",
+        "formLanguage.eyeHeightStuds",
+        "formLanguage.boundaryHeight.longSideMaxStuds",
+        "formLanguage.boundaryHeight.endMaxStuds",
+        "formLanguage.proportionRelations[] — keyed by .id R1 through R7",
+        "formLanguage.greyscaleSilhouetteRule.test",
+        "formLanguage.ornament.definition",
+        "formLanguage.ornament.failTest",
+        "formLanguage.ornament.byClass[] — keyed by .class, each with .max and .positions",
+        "formLanguage.ornament.permittedForms",
+        "formLanguage.ornament.forbiddenForms",
+        "formLanguage.uiOrnament.producibleVocabulary",
+        "formLanguage.uiOrnament.countRule",
+        "formLanguage.uiOrnament.typeScaleCorrection"
+      ],
+      "wrongSpellingsSeenInRoundOne": [
+        { "cited": "styleGuide.form.minimumFeatureStuds", "by": "vfx/01", "resolvesTo": "formLanguage.featureSize.near.minStuds. styleGuide holds no form, size or proportion field at all." }
+      ],
+      "notInThisKey": "every colour, material, Reflectance and Transparency value is in styleGuide (sheet 01). Every instance, part and triangle figure is in detailBudget (sheet 03), environment or effects. formLanguage.color and formLanguage.budget do not exist and never will."
+    },
     "featureSize": {
       "near": { "atStudsUpTo": 24, "minStuds": 0.5, "status": "[playtest unknown]", "testRange": [0.3, 0.8], "meaning": "a player standing beside the thing on their own lane. Nothing in world geometry is authored below this in ANY dimension; a form below it is not small, it is absent." },
       "far": { "atStuds": 122, "atStudsSource": "plots.pitchStuds — cited, not set here", "minStuds": 4.0, "status": "[playtest unknown]", "testRange": [3.0, 6.0], "meaning": "a silhouette-bearing dimension of anything intended to read from a neighbouring lane. A floor, not a promise: beyond this distance nothing is required to read, and beyond budgets.streaming.StreamingTargetRadius nothing renders." },
@@ -108,7 +139,7 @@ reflex and it makes the tread unreadable at 4 studs.
       { "id": "R2", "relation": "no built element is longer along Z than half a chunk's depth", "against": "layout.chunk", "why": "so a chunk seam never cuts one element, which is what makes 8 families x 16 variants shuffle without visible joins" },
       { "id": "R3", "relation": "zero built geometry inside the patch field", "against": "layout (the central band of the chunk) and layout.edgeKeepoutStuds", "why": "a patch is non-colliding and a wall is not; anything inside the field turns clearing into navigation" },
       { "id": "R4", "relation": "no built element within one area.minSpacing of a patch anchor", "against": "area.minSpacing", "why": "the clear radius is a distance test, not a query; geometry inside the spacing hides a payable patch behind an unpayable wall" },
-      { "id": "R5", "relation": "a P3 fitting is either at least 2x patch.footprint in its largest dimension, or set into a surface with zero standoff. Never a free-standing object at patch scale.", "against": "patch.footprint", "why": "with C6 (green is the overgrowth channel alone) this is the second half of what stops a fitting reading as a patch" },
+      { "id": "R5", "relation": "a P3 fitting is either at least 2x patch.footprint in its largest dimension, or set into a surface with zero standoff. Never a free-standing object at patch scale.", "against": "patch.footprint", "why": "with styleGuide C6 (green is the overgrowth channel alone) this is the second half of what stops a fitting reading as a patch" },
       { "id": "R6", "relation": "an opening's clear height is at least 2x eyeHeightStuds and its clear width at least 8 studs", "against": "eyeHeightStuds; two R15 bodies abreast", "why": "theme/setting/04 gives every part exactly two openings and Environment sets their width; this is the floor that width must clear" },
       { "id": "R7", "relation": "walkable margin, kerb and paving proportions are read from layout and plots by field and are not restated here", "against": "layout.chunk, layout.edgeKeepoutStuds, plots.laneWidthStuds, plots.pitchStuds", "why": "gameplay/meta/06 has an open request against the 12-stud walkable margin; a value copied here would go stale the moment it resolves" }
     ],
@@ -116,7 +147,7 @@ reflex and it makes the tread unreadable at 4 studs.
       "test": "render one instance of each tiers[].shape at its tiers[].height, all four filled with one identical flat grey, at featureSize.far.atStuds, on budgets.deviceFloor. Each of the four must be nameable from outline alone.",
       "citedByField": "tiers[].shape and tiers[].height. NOT restated, recoloured, resized, or extended to a fifth.",
       "secondHalf": "no built element within one area.minSpacing of a patch anchor may present a silhouette matching any tiers[].shape at that shape's tiers[].height +/- 20%.",
-      "whyNotALumaClaim": "the 165 floor is Rec.601 luma; WCAG 1.4.11's 3:1 is sRGB relative luminance, a different quantity computing to roughly 1.5:1 against tiers[0]. Shape and silhouette carry legibility and tiers ships four of each. No sheet may cite the luma floor as the legibility guarantee.",
+      "whyNotALumaClaim": "the 165 floor is Rec.601 luma; WCAG 1.4.11's 3:1 is sRGB relative luminance, a different quantity computing to roughly 1.5:1 against tiers[0], and a 3:1 ratio would need about 231 luma, above styleGuide C1's cap. Shape and silhouette carry legibility and tiers ships four of each. No sheet may cite the luma floor as the legibility guarantee.",
       "source": "04-PRESENTATION.md 'rarity tiers must differ by shape or silhouette, not only hue... a requirement, not a nicety' [brief: soft], treated as effectively binding; rarity 'silhouette first, colour second'; N1, N2, N12."
     },
     "ornament": {
@@ -140,7 +171,7 @@ reflex and it makes the tread unreadable at 4 studs.
       "permittedFormsIsClosed": "a thirteenth form is a revision against this key. All twelve are geometric and cuttable; none requires an asset, per 00-CORE.md 'content design is the primary creative work on this project, not art' [brief: binding] and representation's 'no asset needs to be produced to build this game'.",
       "forbiddenForms": ["statuary of a person or creature", "relief figure", "mask", "acanthus or foliate leaf carving", "egg-and-dart", "volute or scroll capital", "cartouche", "inscription, lettering, numeral or symbol", "gilded or inlaid moulding", "gemstone setting", "banner, drape or cloth", "hanging chain", "torch or lamp bracket", "grave marker, memorial, plaque or staged rubble", "cobweb, skull, bone or scorch mark", "a face, eyes or mouth on any form"],
       "forbiddenSources": "theme/setting/01 (no iconography, no statuary, no gilding, no gemstones); theme/lore/01 (no gold, gilding or gemstones); theme/setting/05 A-column (no cloth, rope, torches, lamps, cut lettering, water); theme/tone/04 D1, D13, D14; A7 (no light source but daylight).",
-      "everyElementIsAnInstance": "an ornamental element is a Part and is counted against detailBudget in its parent class's row. Ornament is not free."
+      "everyElementIsAnInstance": "an ornamental element is a Part and is counted against detailBudget's envelope inside environment's own per-class allocation. Ornament is not free and has no allocation of its own."
     },
     "uiOrnament": {
       "producibleVocabulary": { "modal-grid.ornament.cardBadge": ["none", "ribbon", "pill"], "modal-grid.ornament.panelTrim": ["none", "top-accent"], "hud-overlay.ornament.readoutTrim": ["none", "accent-edge"], "hud-overlay.ornament.barCap": ["flat", "round"] },
@@ -164,7 +195,8 @@ reflex and it makes the tread unreadable at 4 studs.
   proportion relations against `layout.chunk` and `plots`, and an ornament count per subject
   class with named positions. **The retaining wall and the low parapet are not interchangeable
   and cannot swap sides** — one crosses the sightline and one does not. `R6` sets the floor its
-  opening widths must clear; the widths stay Environment's.
+  opening widths must clear; the widths stay Environment's. Every ornamental element is a `Part`
+  and is spent from Environment's own allocation, not from a separate ornament allowance.
 - **Traversal work (`gameplay/mechanics/06`)** is untouched: this key sets no property of the
   invisible boundary. If the 12-stud walkable margin is released per `gameplay/meta/06`, `R7`
   re-derives and no value here moves, because none of them is a copy.
@@ -174,13 +206,14 @@ reflex and it makes the tread unreadable at 4 studs.
   the greyscale test is what a fifth form or a softened height would fail.
 - **VFX work** inherits `featureSize.near.minStuds`: a residue or reveal form below 0.5 studs is
   not subtle, it is invisible on `budgets.deviceFloor`, and `response.dwellSeconds` 2.5 buys
-  nothing if the thing dwelling cannot be seen.
+  nothing if the thing dwelling cannot be seen. **The path is
+  `formLanguage.featureSize.near.minStuds`**, not `styleGuide.form.minimumFeatureStuds`.
 - **UI Art work** inherits a count of 2 non-default ornament parameters, the naming of the other
   four channels, and **the `typeScaleFor` correction: 1.15, not 1.06.** Which parameters and
   which values ship is `uiTheme`'s.
-- **Detail-budget work (sheet `03`, this domain)** inherits `ornament.everyElementIsAnInstance`:
-  every ornamental element is a `Part` and is counted, so the ornament ceiling and the instance
-  ceiling are the same ceiling read twice.
+- **Detail-budget work (sheet `03`, this domain)** inherits
+  `ornament.everyElementIsAnInstance`: an ornamental element is a `Part`, so the ornament ceiling
+  and the instance envelope are the same ceiling read twice.
 - **`tiers`, `plots`, `layout`, `patch` and `area`** get nothing asked of them. Every geometric
   input above is a field reference and no value of theirs is restated, resized or recoloured.
 
@@ -214,13 +247,13 @@ alone; the definition, the positions and the two form lists survive any number.
 ## Not decided here
 
 Every colour, material, `Reflectance` and `Transparency` value these forms are made of — sheet
-`01`, which holds `styleGuide`. How many parts, triangles and instances may carry them — sheet
-`03`, which holds `detailBudget`. The wall and parapet section, the paving pattern, the channel
-run, the vaulting, the authored openings and their widths, and how dressing distributes across
-`layout`'s families and variants — Environment's `environment`. The tool's two parts'
-proportions and the four foliage forms inside `tiers`' shipped shapes — Objects' `objectArt`.
-Which ornament parameter values, stroke weight, radius scale, gradient strength and font stack
-ship — **UI Art's `uiTheme`**. Cluster geometry, touch-target size and safe areas — UI/UX
-`composition` and `viewport`. The invisible boundary's height, material, opacity and thickness —
-traversal work. What a clear or a reveal is shaped like inside `response`'s two lifetimes —
-VFX's `effects`.
+`01`, which holds `styleGuide`. How many parts may carry them — sheet `03`, which holds
+`detailBudget`'s envelope, and `environment` and `effects`, which hold the per-subject-class
+counts. The wall and parapet section, the paving pattern, the channel run, the vaulting, the
+authored openings and their widths, and how dressing distributes across `layout`'s families and
+variants — Environment's `environment`. The tool's two parts' proportions and colours, and the
+four foliage forms inside `tiers`' shipped shapes — Objects' `objectArt`. Which ornament
+parameter values, stroke weight, radius scale, gradient strength and font stack ship — **UI Art's
+`uiTheme`**. Cluster geometry, touch-target size and safe areas — UI/UX `composition` and
+`viewport`. The invisible boundary's height, material, opacity and thickness — traversal work.
+What a clear or a reveal is shaped like inside `response`'s two lifetimes — VFX's `effects`.

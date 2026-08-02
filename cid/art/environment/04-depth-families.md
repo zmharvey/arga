@@ -1,15 +1,16 @@
 # 04 — Depth families
 
-**Domain:** art/environment · **Category:** Art & Visuals · **Wave:** 6
+**Domain:** art/environment · **Category:** Art & Visuals · **Wave:** 6 · **Revision:** round 1
 
 ## Decision
 
-Four families are four **arrangements of the same eleven tuples, six parts each**: Terrace is
-three cross-lane lips, Cistern is one covered span over a row of basins, Vault is a twin-strip
-band you walk under, Spire is a stand of six 12-stud shafts. **Depths 2 and 3 are roofed, over 6
-and 12 studs of a bay respectively — 1.8% and 2.5% of its length** — carried on a pier line, and
-the gaps between strips are the authored openings that light them. **The 16 variants of a family
-are dressed identically; there are zero dressed variants and zero landmarks.**
+Four families are four **arrangements of the same ten tuples, six parts each**: Terrace is three
+cross-lane lips, Cistern is one covered span over a row of basins, Vault is a twin-strip band you
+walk under, Spire is a stand of six 12-stud shafts. **Depths 2 and 3 are roofed, over 6 and 12
+studs of a bay — 1.8% and 2.5% of its length** — carried on a pier line, and the gaps between
+strips are the authored openings that light them. **The 16 variants of a family are dressed
+identically; zero dressed variants and zero landmarks.** Every signature is **bay-resident** and
+vanishes with its bay, which is the seam `environment.residency.retainedBaySeam` states.
 
 ## Why
 
@@ -17,57 +18,61 @@ are dressed identically; there are zero dressed variants and zero landmarks.**
   present column, and no depth may introduce a thirteenth class. A deeper part is not a different
   kind of matter, only more green over the same twelve classes."* `theme/lore/01` `L4` fixes
   weathering identical at every depth and `theme/setting/03` forbids depth reading as darker or
-  later. Every channel except **count, position and height** is closed before this sheet starts,
-  so those three are the whole design space and the sheet uses all three.
+  later. Every channel except **count, position and height** is closed before this sheet starts.
 - **Why 2.5% is a roof and 100% is not available.** The Piscina Mirabilis is 48 pillars in four
   rows of twelve carrying barrel vaults over 72 × 25 m, with water drawn *"from above …
   exploiting the holes in the barrel vaults"*
   `[research: https://en.wikipedia.org/wiki/Piscina_Mirabilis]`. Its pier grid of roughly 5 × 6 m
   is about 18 × 21 studs, which over a 480-stud bay is ~144 piers — **an order of magnitude above
-  this domain's entire per-lane allowance of 18.** So the choice is not how to roof a bay; it is
-  whether one vault band exists or none does. **A band exists**, and the vault becomes an event
-  on the walk rather than a condition of the bay. That is the only form the ceiling permits and
-  it is the better read anyway: a player passes under 12 studs of stone once per lap and nowhere
-  else in the game.
+  this domain's entire per-lane allowance of 16.** So the choice is not how to roof a bay; it is
+  whether one vault band exists or none does. **A band exists**, and the vault becomes an event on
+  the walk rather than a condition of the bay — a player passes under 12 studs of stone once per
+  lap and nowhere else in the game.
 - **Why that satisfies the light requirement without touching lighting.** `theme/setting/03`:
   *"you may not solve a dim vault by moving the sun … the openings in the construction are the
   instrument, which makes it authored geometry rather than a lighting value."* A `vaultStrip` is
   6 studs deep, so **no point under any roof in this game is more than 3 studs from open sky
-  measured horizontally**, and both X sides of every band are open between the piers. The luma
-  floor is met by the roof being small, not by the sun being moved.
+  measured horizontally**, and both X sides of every band are open between the piers.
+  `lighting/02` `V9` needs half a bay's sample points to see sky; this clears it by 97.5%.
 - **Why depth 2 is roofed at all.** `theme/setting/02` asserts *"depths 2 and 3 inside vaulted
   structures"* and `theme/setting/03` requires the floor be met *"in every part, including the
   vaulted ones"*. Both are satisfied by a band; neither requires a bay-wide roof, and no sheet
   anywhere says a roof exists as geometry — that gap is what this sheet closes.
-- **Why Cistern and Vault are not the same place.** Both are roofed, so the difference has to sit
-  under the roof: the Cistern's single 6-stud span stands over a row of three dry holding basins
-  on the channel line, and the Vault's twin span stands over nothing at twice the depth. One
-  reads as covered working floor, the other as a covered walk. `[cid: decided]`, and it is the
-  call `layout`'s four families exist for.
+- **Why Cistern and Vault are not the same place.** Both are roofed, so the difference sits under
+  the roof: the Cistern's single 6-stud span stands over a row of three dry holding basins on the
+  channel line, and the Vault's twin span stands over nothing at twice the depth. One reads as
+  covered working floor, the other as a covered walk. `[cid: decided]`
 - **Why there are zero dressed variants.** `layout` owes 4 families × 16 variants and its
   consequence line says Environment owes *"32 chunk looks, 8 per depth kind, each dressing a 120
   by 30 slab"*. **That is not affordable and the arithmetic is not close.** A bay is 4 to 16
-  chunks and `chunkDressing`'s allowance is 6 parts per bay, which is **0.375 parts per chunk**.
-  Sixteen distinct dressings of 0.375 parts is not a thing that can exist. `layout` already owns
-  a per-chunk variety lever that costs zero instances — its `anchorSource`, the authored patch
-  anchor set — and that is where the variety is. I state the finding and change none of its
-  fields.
-- **Why the signature's position is a fraction of the bay and not a seed.** *"Endless via
-  shuffled authored chunks, not generation"* `[brief: binding]` ← `03-META.md`. A fraction of
+  chunks and this key's allowance is 6 parts per bay, which is **0.375 parts per chunk**. Sixteen
+  distinct dressings of 0.375 parts cannot exist. `layout` already owns a per-chunk variety lever
+  that costs zero instances — its `anchorSource`, the authored patch anchor set — and that is
+  where the variety is. I state the finding and change none of its fields.
+- **Why every signature is bay-resident, and what that costs.** Sheet `02`'s parapets and sheet
+  `03`'s kerbs and channel became lane-persistent to close the retained-bay seam, and a signature
+  cannot follow them: it is placed at a fraction of *its own* bay, so retaining it for the two
+  bays `plots.liveGeometry.torndownBeyond` keeps would cost 18 per lane against an allowance of
+  16 for everything. **A player walking two bays back sees continuous parapets, kerbs, channel and
+  paving, and no family signature.** That is the residual, it meets bar (a), and it reverses at
+  `environment.residency.tiers.liveBay.residentBays`.
+- **Why the signature's position is a fraction of the bay and not a seed.** *"Endless via shuffled
+  authored chunks, not generation"* `[brief: binding]` ← `03-META.md`. A fraction of
   `plots.bays[k].lengthStuds` is authored placement that scales to a 120-stud bay and to a
   480-stud one with no per-session variation and no coordinate anywhere.
-- **Landmark design is ruled to zero, by four separate sheets, and is recorded here so nobody
-  looks for it.** `03-META.md` declined *"restoring one hero landmark"* as an objective;
-  `theme/setting/02` forbids a summit, a final part, a vantage and anything on a skyline that is
-  not this works; `theme/setting/05` `A25` forbids a map, plan, signpost, survey mark and
-  boundary stone; `theme/setting/04` `W1` forbids a finished part gaining a marker. **The word
-  spent instead of *landmark* is *memorable*, and the memorable thing is the vault band.**
+- **Landmark design is ruled to zero by four separate sheets**, recorded here so nobody looks for
+  it: `03-META.md` declined *"restoring one hero landmark"*; `theme/setting/02` forbids a summit,
+  a final part, a vantage and anything on a skyline that is not this works; `A25` forbids a map,
+  plan, signpost, survey mark and boundary stone; `W1` forbids a finished part gaining a marker.
+  **The word spent instead of *landmark* is *memorable*, and the memorable thing is the vault
+  band.**
 
 ### The four signatures — six parts each, every position a fraction of the bay
 
 `W` is `plots.laneWidthStuds`; `L` is `plots.bays[k].lengthStuds`; `z0` is `plots.bays[k].zStart`;
 `D` is `layout.chunk.depthStuds`. A tuple's parametric axis may be rotated 90° about Y; an
-orientation is not a second tuple.
+orientation is not a second tuple. Residency is a property of the placement, so `chunkDressing`'s
+`kerb` placements are bay-resident while `groundwork`'s are lane-persistent.
 
 | family | depth | parts | placement |
 |---|---|---|---|
@@ -90,16 +95,17 @@ orientation is not a second tuple.
 | # | zero of | source |
 |---|---|---|
 | F1 | a landmark, hero part, summit, final part, vantage, overlook or skyline object | `03-META.md`; `theme/setting/02`; `A25`; `W1` |
-| F2 | a continuous roof, a ceiling over a whole bay, or any roof deeper than `layout.chunk.depthStuds` | this sheet's roofed-share table; `theme/setting/03` |
+| F2 | a continuous roof, a ceiling over a whole bay, or any roof deeper than `layout.chunk.depthStuds` | the roofed-share table; `theme/setting/03` |
 | F3 | a material, colour, wear or ornament difference between two families | `theme/lore/01` `L4`; `theme/setting/03` |
-| F4 | a twelfth class, or any class not in `environment.tuples`, introduced by a family | `theme/setting/05`, the closed present column |
+| F4 | a class not in `environment.tuples`, introduced by a family | `theme/setting/05`, the closed present column |
 | F5 | a dressed difference between two variants of one family | `chunkDressing.variation.variantsDressedDifferently` 0 |
 | F6 | a part marking which depth a player is in — no numeral, sign, marker, banner or colour band | `A25`; `vocabulary`; this domain emits no player-facing string |
 | F7 | a stair, ramp, ladder, shaft or level change implying going down | `theme/setting/02`: depth points inward, not down |
 | F8 | a restored-versus-overgrown second dressing | `theme/setting/04`: *the same stone, with and without plants on it* |
 | F9 | a seasonal, event or hour-of-day variant of any signature | `03-META.md` priority 3; `theme/setting/03` `R1`–`R3` |
 | F10 | a `PointLight`, `SpotLight` or `SurfaceLight` placed to light the roofed band | `A7`; `theme/setting/05` criterion 2 |
-| F11 | a dressing part in any bay below the live one, and any dressing on a post-terminal bay other than the Spire signature | `environment.residency`; `endgame` |
+| F11 | a signature part in any bay other than the live one, and any dressing on a post-terminal bay other than the Spire signature | `environment.residency`; `endgame` |
+| F12 | a signature part inside the 16-stud opening volume or within 2 studs of a cross-wall face | sheet `02` `E1` |
 
 ```manifest
 {
@@ -108,6 +114,9 @@ orientation is not a second tuple.
   "value": {
     "instancesPerLiveBay": 6,
     "allowanceField": "environment.allowance.perConsumerPerLane.chunkDressing",
+    "residency": "liveBay",
+    "residencyNote": "residency is a property of the placement, not of the class: this key's kerb placements are bay-resident while groundwork's are lane-persistent",
+    "retainedBaySeam": "environment.residency.retainedBaySeam — a player in bay k-1 or k-2 sees no signature; parapets, kerbs, channel and paving are continuous",
     "coordinateRule": "every position is a fraction of plots.bays[k].lengthStuds or a multiple of plots.laneWidthStuds; this key contains no world coordinate and no bay length",
     "orientationIsNotATuple": true,
     "signatures": [
@@ -149,7 +158,8 @@ orientation is not a second tuple.
       "clearHeadroomStuds": 12,
       "authoredOpenings": "the gap between two strips, and both open X sides between the piers; these are the instrument, not a Lighting value",
       "lightingValuesChanged": 0,
-      "depthReadsAsDarkerOrLater": false
+      "depthReadsAsDarkerOrLater": false,
+      "clearsLightingV9By": "V9 requires at least half a bay's sample points to see sky; at most 2.5% of a bay is roofed"
     },
     "variation": {
       "variantsPerFamilyField": "layout.variantsPerFamily",
@@ -178,26 +188,31 @@ orientation is not a second tuple.
 - **Area-layout work (`layout`)** gets an answer to its own consequence line and **no field
   change**: Environment owes four family signatures, not 32 chunk looks, because a bay's dressing
   allowance is 0.375 parts per chunk. Its `chunksPerFamily` and `variantsPerFamily` are untouched
-  and its `anchorSource` is named as the variety lever it already owns. If `layout`'s owner
-  disputes this, the input to argue with is
-  `budgets.instanceCeilings.clientStreamedInstanceCeiling`, not the signature count.
+  and its `anchorSource` is named as the variety lever it already owns. If its owner disputes
+  this, the input to argue with is `budgets.instanceCeilings.clientStreamedInstanceCeiling`.
 - **Theme and setting work (`theme/setting/02`, `/03`)** should read the roofed-share table as the
   answer to *"depths 2 and 3 inside vaulted structures"*: they are, over 6 and 12 studs, and the
-  luma floor is met by the roof being 6 studs deep rather than by any lighting change. Zero
-  `Lighting` values move and the pre-authorised per-part-hour relaxation is not taken.
-- **Lighting work (`lighting`)** is asked for **nothing**. The dim-vault question that
-  `theme/setting/03` handed to authored geometry is answered by authored geometry, so no second
-  lighting state, no `PointLight` and no ambient change is requested from this sheet, ever.
-- **Endgame work (`endgame`)** is confirmed at zero cost: a post-terminal bay is a Spire bay and
-  the Spire signature is six piers, so the endless run adds no class, no asset and no per-bay
-  growth. Its own line saying *"Art and Visuals owes nothing new"* is true and now has a number.
-- **Groundwork work (sheet `03`, this domain)** shares the channel line with the Cistern's three
-  basins; both sit at X = 0 and neither may cross the other's Z span, which the fractions above
-  already satisfy.
-- **Built-edge work (sheet `02`, this domain)** keeps the whole boundary; no family varies a wall,
-  a parapet or an opening, so `builtEdge` is depth-invariant and stays one tuple set.
-- **Whoever looks for landmark design** will not find a sheet, because there is none. Recorded
-  here as data, with the four rulings that closed it.
+  luma floor is met by the roof being 6 studs deep rather than by any lighting change.
+- **Lighting work (`lighting`)** is asked for **nothing**, and its `V9` gate is closed with
+  enormous margin. No second lighting state, no `PointLight` and no ambient change is requested
+  from this sheet, ever.
+- **Endgame work (`endgame`)** is confirmed at zero cost: a post-terminal bay is a Spire bay of
+  six piers, so the endless run adds no class, no asset and no per-bay growth.
+- **Groundwork work (sheet `03`)** shares the channel line with the Cistern's three basins; both
+  sit at X = 0 and the fractions above keep their Z spans disjoint.
+- **Built-edge work (sheet `02`)** keeps the whole boundary; no family varies a wall, a parapet or
+  an opening, so `builtEdge` is depth-invariant.
+- **Whoever looks for landmark design** will not find a sheet, because there is none. Recorded as
+  data, with the four rulings that closed it.
+
+## Flagged to the developer
+
+| decision | alternative not taken | reversing field | my recommendation |
+|---|---|---|---|
+| Four signatures of six parts | four genuinely distinct architectures, which is what "depth-themed chunk looks" reads as in the brief and needs 20–40 parts a bay | `environment.allowance.perConsumerPerLane.chunkDressing` | keep; this is the whole of the 0.375-parts-per-chunk finding and it is a `depths` question, not an art one |
+| A 30-stud vault band | roofing a whole bay, which is what a cistern actually is | `chunkDressing.roofing.roofedStudsOfZ` | keep; a bay-wide roof is ~144 piers and also risks the luma floor |
+| Zero dressed variants | 8 dressed variants per family, the *"richer authored chunk variety"* priority 2 already names | `chunkDressing.variation.variantsDressedDifferently` | keep; priority 2 is out of scope and the budget forbids it anyway |
+| Signatures vanish behind the player | retain them for the two bays `plots` keeps, at 18 per lane against an allowance of 16 | `environment.residency.tiers.liveBay.residentBays` | keep, and reopen the moment the client ceiling is measured |
 
 ## Acceptance criteria
 
@@ -205,18 +220,17 @@ orientation is not a second tuple.
    entry's `parts[].count` values sum to exactly 6.
 2. Exactly 2 signatures have `roofed: true` (`cistern`, `vault`), and for every family
    `roofedStudsOfZ / min(plots.bays[k].lengthStuds for that depth) ≤ 0.025`.
-3. `chunkDressing.variation.variantsDressedDifferently === 0`,
-   `chunkDressing.landmarks === 0`, and `chunkDressing.seasonalEventOrHourVariants === 0`.
+3. `chunkDressing.variation.variantsDressedDifferently === 0`, `chunkDressing.landmarks === 0`,
+   and `chunkDressing.seasonalEventOrHourVariants === 0`.
 4. Every `classId` in every signature appears in `environment.tuples`, and the count of distinct
    `classId` values across all four signatures is 4 (`kerb`, `pier`, `vaultStrip`, `basin`).
 
 ## Not decided here
 
 How many chunks a family holds, how many variants exist, which depth carries which set, and every
-patch anchor — `layout` and `depths`. Bay lengths and bay boundaries — `plots`. Walls, parapets
-and openings — sheet `02`. Paving, kerb runs along the lane, the channel, the basin at the bay
-end and the litter mat — sheet `03`. Anything outside the lane, and the sky above the unroofed
-97% — sheet `05`. The tuple sections and the six-instance allowance — sheet `01`, which holds
-`environment`. Every hue and the `Enum.Material` list — `styleGuide`. What a Terrace, Cistern,
-Vault or Spire *means* — `theme/setting/02`, inherited and not reopened. Every `Lighting` value —
-`lighting`, which this sheet asks for nothing.
+patch anchor — `layout` and `depths`. Bay lengths and boundaries — `plots`. Walls, parapets and
+openings — sheet `02`. Paving, the lane-persistent kerbs, the channel and the basin at the bay end
+— sheet `03`. Anything outside the lane — sheet `05`. Tuple sections, residency tiers and the
+six-instance allowance — sheet `01`. Every hue and the `Enum.Material` list — `styleGuide`. What a
+Terrace, Cistern, Vault or Spire *means* — `theme/setting/02`, inherited. Every `Lighting` value —
+`lighting`. Which module creates a pier — `RR-E1`, sheet `01`.
