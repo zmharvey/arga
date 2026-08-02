@@ -192,7 +192,7 @@ for (const f of files.filter(scoped)) {
       if (f.includes(`${ROOT}/_research/`)) continue;
       const rel = relative(ROOT, f);
       const body = await readFile(f, 'utf8');
-      for (const m of body.matchAll(/\[research:\s*(https?:\/\/[^\s\]]+)/g)) {
+      for (const m of body.matchAll(/\[research:\s*(https?:\/\/[^\s\]`]+)/g)) {
         const url = m[1].replace(/[.,;)]+$/, '');
         if (!pack.has(url)) {
           fails.push(`${rel}: cites ${url}, which is not in the research pack. Either the `
