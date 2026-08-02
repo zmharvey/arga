@@ -89,9 +89,26 @@ export async function mergeSheets(root, schema = SCHEMA) {
         continue;
       }
 
+      // An amendment is a sibling sheet adding rows to a key its domain already owns. The
+      // convention is a ```json fence (see `verify-sheets.mjs`, which counts one as a data
+      // form) precisely because a second ```manifest block claiming the same key is a merge
+      // error. But `amends` and `provides` are both "here is my data", the fence is the only
+      // thing telling them apart, and in wave 5 five of sixteen writers reached for
+      // ```manifest anyway. Five independent agents making one mistake is the convention's
+      // fault, not theirs.
+      //
+      // So the fence stops being load-bearing: an amendment is recognised by its `amends`
+      // field wherever it appears. It is still not merged — a key has one owning sheet and
+      // an amendment is a request against that owner, which is the rule this seam exists to
+      // hold. What changes is that stating it in the wrong fence is no longer a hard error.
+      if (typeof block.amends === 'string' && !('provides' in block)) {
+        found = true;
+        continue;
+      }
+
       const key = block.provides;
       if (typeof key !== 'string') {
-        problems.push(`${rel}: manifest block needs a "provides" naming the key it supplies`);
+        problems.push(`${rel}: manifest block needs a "provides" naming the key it supplies, or an "amends" naming the key it adds rows to`);
         continue;
       }
       const proposed = block.status === 'proposed';

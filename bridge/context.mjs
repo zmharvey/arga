@@ -236,7 +236,24 @@ export function renderDigest(rows) {
  *
  * The claim attached to a citation is the bullet or paragraph containing it. That is a
  * structural rule, not a judgement — the writer put the tag next to the thing it sourced.
+ *
+ * A `_lead.md` banks BARE urls too, and that is deliberate rather than lax.
+ * ---------------------------------------------------------------------------
+ * The lead is the only agent in the wave holding `WebFetch`. Its index is where a fetch
+ * gets paid for, and a writer with no fetch tools can cite nothing this file does not
+ * carry. Wave 5's sixteen leads wrote their sources the way a person writes sources — a
+ * `Sources:` line, a table column of urls — and not one reached the pack, because the
+ * collector only read the `[research: url]` tag form. The writers then cited them with
+ * tags, correctly, and `cid:verify` failed every one.
+ *
+ * That is a format mismatch presenting as a research failure, and the cost is paid twice:
+ * the fetch is thrown away, and the sheet that depended on it is blocked. So inside a lead
+ * index every url counts as banked, whatever syntax it arrived in. Leaf sheets keep the
+ * strict tag rule — a writer citing a page it did not fetch is the thing this file exists
+ * to catch, and loosening that would retire the check.
  */
+const BARE_URL = /(?<!\()\bhttps?:\/\/[^\s)\]|>"']+/g;
+
 export async function researchPack(root) {
   /** @type {Map<string, {url: string, claims: Set<string>, citedBy: Set<string>}>} */
   const byUrl = new Map();
@@ -246,19 +263,22 @@ export async function researchPack(root) {
     if (file.includes(`${join(root, '_research')}`)) continue; // never fold the pack into itself
     const rel = relative(root, file).replace(/\.md$/, '');
     const body = await readFile(file, 'utf8');
+    const isLeadIndex = file.endsWith('_lead.md');
 
     for (const m of body.matchAll(RESEARCH_ANY)) {
       if (!/^\s*https?:\/\//.test(m[1])) fileCitations += 1;
     }
 
-    // Split into blocks: a bullet, or a paragraph. A fenced block cannot hold a citation
-    // that means anything, so it is dropped rather than parsed.
+    // Split into blocks: a bullet, a table row, or a paragraph. A fenced block cannot hold
+    // a citation that means anything, so it is dropped rather than parsed.
     const blocks = body
       .replace(/```[\s\S]*?```/g, '\n\n')
-      .split(/\n(?=\s*[-*]\s)|\n\s*\n/);
+      .split(/\n(?=\s*[-*]\s)|\n(?=\s*\|)|\n\s*\n/);
 
     for (const block of blocks) {
-      const urls = [...block.matchAll(RESEARCH_URL)].map((m) => m[1].replace(/[.,;)]+$/, ''));
+      const tagged = [...block.matchAll(RESEARCH_URL)].map((m) => m[1]);
+      const bare = isLeadIndex ? [...block.matchAll(BARE_URL)].map((m) => m[0]) : [];
+      const urls = [...new Set([...tagged, ...bare])].map((u) => u.replace(/[.,;)]+$/, ''));
       if (!urls.length) continue;
       const claim = oneLine(block.replace(RESEARCH_ANY, ''), 600).replace(/^[-*]\s*/, '');
       for (const url of urls) {

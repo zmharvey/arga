@@ -512,6 +512,27 @@ test('the shipped cid/ tree merges with no problems at all', async () => {
   assert.deepEqual(missing, [], 'every contract key must have an owning sheet');
 });
 
+test('an "amends" block is data in either fence, and is never merged', async () => {
+  // The convention is a ```json fence for an amendment and ```manifest for a contribution,
+  // and the fence was the only thing distinguishing them. In wave 5, five of sixteen writers
+  // put an `amends` block in a ```manifest fence and each one hard-failed the merge with
+  // "needs a provides". Five independent agents making one mistake is a bad convention, not
+  // five bad agents, so the fence stopped being load-bearing.
+  //
+  // Both halves matter. Recognised: the wrong fence is no longer an error. Never merged: a
+  // key still has exactly one owning sheet, and an amendment is a request against that owner
+  // — which is the rule the whole seam exists to hold.
+  // `sheetDir` always writes a ```manifest fence, which is exactly the wrong-fence case.
+  const dir = await sheetDir({
+    'a/01-owner': JSON.stringify({ provides: 'tiers', value: [{ id: 't1', name: 'One', value: 1 }] }),
+    'a/02-amendment': JSON.stringify({ amends: 'tiers', value: { note: 'more rows' } }),
+  });
+  const { manifest, problems, sheetsContributing } = await mergeSheets(dir, { tiers: { owner: 'a' } });
+  assert.deepEqual(problems, [], 'an amends block is not a malformed contribution');
+  assert.deepEqual(manifest.tiers, [{ id: 't1', name: 'One', value: 1 }], 'the amendment must not merge');
+  assert.equal(sheetsContributing, 2, 'both sheets produced a data form');
+});
+
 test('a stale "proposed" on a key the sheet itself owns is tolerated, not an error', async () => {
   // Promotion happens in schema.mjs, after the sheets that earned it are written. Erroring
   // on the leftover status meant every promotion had to be followed by rewriting exactly
