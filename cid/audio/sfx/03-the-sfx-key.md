@@ -48,23 +48,26 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
   whole `clearedCount` rise in one frame `[research: game/src/client/Beats.luau]`.
 - **Stealing the oldest ringing voice of the same cue is not dropping an onset.** `response`:
   *"Overlap is the required degradation; dropping is not."* An onset that began and was audible at
-  its attack has not been dropped; refusing to start one has. Stated so Mix can reject it
-  explicitly — if it rules otherwise, the voice count is Mix's. `[cid: decided]`
+  its attack has not been dropped; refusing to start one has. The threshold below which a tail may
+  not be stolen is Mix's, not mine. `[cid: decided]`
 - **Positional, because a neighbour's clear is the second half of presence.** `social/03` `X10`
   permits *"A's own patches clearing… and the clear cue that accompanies it"* to reach a second
   client, and `social/02` requires a neighbour read as a body whose ground is visibly being
   cleared. A global 2D cue would be 128 onsets a second at full level at 16 players.
   Spatialisation is decided by parent
   `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/sound/objects.md]`.
-- **The roll-off requirement is stated against Mix, whose defaults would break it twice.**
-  `RollOffMode` defaults to `Inverse`, which *"does not use `RollOffMaxDistance`"* and therefore
-  never culls a voice
+- **Roll-off and level are both requirements here, and neither carries a value.** `RollOffMode`
+  defaults to `Inverse`, which *"does not use `RollOffMaxDistance`"* and therefore never culls a
+  voice
   `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/enums/RollOffMode.yaml]`,
   and `RollOffMinDistance` defaults to 10 while a neighbour's nearest clearing patch is about
   **5 studs** across the shared lane edge — so at engine defaults a neighbour's clear is at full
-  volume and louder than your own. **I set no curve.** I require a mode that honours
-  `RollOffMaxDistance`, a `RollOffMinDistance` at or below 2 studs, and inaudibility by the
-  122-stud plot pitch. The numbers are `mix`'s.
+  volume and louder than your own. **I set no curve and no level.** I require a mode that honours
+  `RollOffMaxDistance`, a `RollOffMinDistance` at or below 2 studs, inaudibility by the 122-stud
+  plot pitch, a level below `B4`'s, and one level identical across all four notes. Every figure is
+  `mix`'s, read by field and never copied here. *(RR-4: an earlier draft carried
+  `cues[patchClear].volume`, which was a level value in a key that does not own levels. Deleted;
+  `mix` declares `noOtherKeyMayWriteEither` and is the sole writer.)*
 - **The tool is zero because it has no event** — `tool` `T1`, it never swings, and
   `input.worldObjectsTriggeringAVerb` is 0. **The bay build is zero because its instant is already
   owned**: `plots.advance` fires in the same server decision as `areaComplete`, which is `B3` and
@@ -104,6 +107,8 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
     "guardRule": "every play site tests soundId ~= \"\" before Play(). The guard sits at the play site, never at the id, because a non-empty unresolvable id errors repeatedly in the client console.",
     "playerFacingStrings": 0,
     "movementMegabytesClaimed": 0,
+    "levelsOwnedHere": false,
+    "levelsOwnedBy": "audio/mix, which declares noOtherKeyMayWriteEither. This key carries no volume, level or decibel value anywhere; it states level requirements and reads mix's field.",
     "cues": [
       {
         "id": "patchClear",
@@ -119,12 +124,14 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
         "attackCeilingSource": "response.beats[patchClear].acknowledgmentBudgetMs, 80",
         "fileLeadingSilenceMaxMs": 5,
         "fadeInSeconds": 0,
-        "volume": 0.35,
-        "volumeTestRange": [0.15, 0.6],
-        "volumeOwner": "audio/mix/01 sets the bus; this is the per-Sound multiplier under it, and Sound.Volume defaults to 0.5 on a 0-10 range",
-        "levelSpreadAcrossTierIndexes": 1.0,
-        "levelSpreadCeiling": "2.0, from gameplay/core-loop/02; identical level across all four notes is well inside it",
-        "loudnessInvariant": "peak level below upgradePurchased (B4) in every medium, per theme/tone/03's ranking with no ties",
+        "levelRequirement": {
+          "ownedBy": "audio/mix, sole writer, noOtherKeyMayWriteEither. Read mix's field for this cue; no figure is copied here.",
+          "belowBeat": "upgradePurchased (B4), per theme/tone/03's ranking with no ties. B5 is the quietest of the five in every medium it occupies.",
+          "identicalAcrossTierIndexes": true,
+          "spreadAcrossTierIndexes": 1.0,
+          "spreadCeiling": "2.0, from gameplay/core-loop/02. A spread of 1.0 is well inside it and is what theme/tone/03's \"exactly one intensity, every time, forever\" requires.",
+          "againstPlatformLocomotion": "the platform's character sounds are created by a CoreScript and carry no SoundGroup, so no bus relation exists between them and this cue. Their relative level is a listening test with no owner in either contract."
+        },
         "positional": true,
         "parent": "an Attachment created at the cleared patch's world position, holding one Sound instance from the pool, destroyed when the onset ends. An Attachment emits from a point; a BasePart parent would emit from a whole surface.",
         "audibleToOtherPlayers": true,
@@ -135,7 +142,7 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
           "forbiddenMode": "Inverse",
           "forbiddenModeReason": "the engine default attenuates as RollOffMinDistance/distance and does not use RollOffMaxDistance, so no voice is ever culled by distance",
           "rollOffMinDistanceStudsMax": 2,
-          "rollOffMinDistanceReason": "the engine default of 10 exceeds the ~5-stud gap to a neighbour's nearest clearing patch across the shared lane edge, which would put a neighbour's clear at full volume and louder than the player's own patch at maximum clear radius",
+          "rollOffMinDistanceReason": "the engine default of 10 exceeds the ~5-stud gap to a neighbour's nearest clearing patch across the shared lane edge, which would put a neighbour's clear at full level and louder than the player's own patch at maximum clear radius",
           "inaudibleByStuds": 122,
           "inaudibleByStudsSource": "plots.pitchStuds",
           "audibleAtOwnRadiusStuds": 14.3,
@@ -145,7 +152,7 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
         "overlappingVoicesDerivation": "response.minSustainedOnsetsPerSecond is 8 and audibleSeconds is 0.30, so at most 8 onsets exist in any one second and 8 distinct Sound instances cover every distribution of them including all 8 in one frame. ceil(8 x 0.30) = 3 is the even-spacing minimum; 8 is required because Beats.luau begins a tick's whole clearedCount rise in one frame. A single Sound cannot overlap itself: Play() restarts it.",
         "overlappingVoicesNote": "[playtest unknown] as an audibility figure, not as a bound. No documented engine simultaneous-voice limit exists at any device tier, so this is a design requirement and not headroom against a known cap. The cap itself is audio/mix/02's.",
         "poolShape": "8 pre-created Sound instances per listening client, re-parented per onset, cycled oldest-first",
-        "voiceStealing": "when a 9th onset arrives inside one second, steal the oldest still-playing voice of this same cue. Stealing a ringing tail is not dropping an onset under response.onOverload \"overlap\", because the onset began and was audible at its attack; refusing to start one is. If audio/mix/02 rules otherwise, the voice count is its own.",
+        "voiceStealing": "when a 9th onset arrives inside one second, steal the oldest still-playing voice of this same cue. Stealing a ringing tail is not dropping an onset under response.onOverload \"overlap\", because the onset began and was audible at its attack; refusing to start one is. The threshold below which a tail may not be stolen is audio/mix/02's.",
         "preloadRequired": true,
         "preloadReason": "firstSession.ceilings.secondsToFirstClear is 3 s from first input, so all 12 assets must be resident before the first clear. They are the only sfx assets in the game. The budget against loadToFirstInputSeconds is audio/mix/03's.",
         "playbackSpeed": 1.0,
@@ -165,7 +172,7 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
           "variantsTestRange": [2, 4],
           "selector": "a round-robin cursor per tierIndex, advanced once per onset of that tierIndex",
           "randomness": "none, anywhere. N10 forbids a second source of randomness near layout, and a deterministic cursor is checkable.",
-          "identicalAcrossVariants": ["hz", "peak level", "audibleSeconds"],
+          "identicalAcrossVariants": ["hz", "level", "audibleSeconds"],
           "differsAcrossVariants": ["transient shape only"]
         },
         "tierIndexSource": {
@@ -226,7 +233,7 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
       { "id": "F14", "subject": "a bay-build, area-entry or area-exit cue", "ruling": "theme/tone/03 forbids entering or leaving an area from peaking; plots.advance fires in the same server decision as areaComplete, which already owns that instant as B3", "observable": "zero sfx.cues rows whose trigger is plots.advance or an area transition" },
       { "id": "F15", "subject": "a duplicate-find or consolation cue", "ruling": "discovery: the areas at one depth partition that depth's set, so no reachable duplicate exists", "observable": "zero rows whose trigger is a repeat Find" },
       { "id": "F16", "subject": "any cue caused by time passing, idling, standing still or elapsed session time", "ruling": "theme/setting/03 R4, nothing in the place is a function of time; theme/tone/03's forbidden peaks", "observable": "every trigger in this key is a player-caused patch clear" },
-      { "id": "F17", "subject": "a cue whose level, length, pitch or timbre is a function of streak, combo, count, progress, depth or elapsed time", "ruling": "theme/tone/03 B5, exactly one intensity, every time, forever", "observable": "playbackSpeedEverWritten is false; volume is a constant; audibleSeconds is a constant; the only input to variation is patch.tierIndex and a cursor" },
+      { "id": "F17", "subject": "a cue whose level, length, pitch or timbre is a function of streak, combo, count, progress, depth or elapsed time", "ruling": "theme/tone/03 B5, exactly one intensity, every time, forever", "observable": "playbackSpeedEverWritten is false; audibleSeconds is a constant; the level mix sets is one value identical across all four notes; the only input to variation is patch.tierIndex and a cursor" },
       { "id": "F18", "subject": "a regrowth, reset, refill or second-chance cue", "ruling": "01-FOUNDATION.md, cleared is permanent and overgrowth never returns", "observable": "zero rows whose trigger is a patch becoming uncleared; no such transition exists" },
       { "id": "F19", "subject": "a riser, swell, crescendo or build as an area nears completion", "ruling": "02-GAMEPLAY.md, nobody downstream should invent tension to fill the gap; theme/tone/03; theme/tone/04 D4 bans a riser or whoosh build", "observable": "no sfx value reads clearedCount, areaPatchCount or any ratio of them" },
       { "id": "F20", "subject": "a minor-key sting, a dissonant or detuned interval, a sub-bass drone, a whisper, breathing, a heartbeat or a creak", "ruling": "theme/tone/04 D3", "observable": "the four pitches form a C major pentatonic subset with no tritone and no unison pair; all four are above 500 Hz" },
@@ -248,8 +255,9 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
     ],
     "requirementsOnOtherKeys": [
       { "key": "response", "owner": "gameplay/mechanics/05", "requirement": "add the single array element \"audio\" to beats[patchClear].channels", "raisedBy": "cid/audio/sfx/01-the-clear-has-a-channel.md", "gap": "G1" },
-      { "key": "mix", "owner": "audio/mix/02", "requirement": "a RollOffMode that honours RollOffMaxDistance, RollOffMinDistance at or below 2 studs, inaudible by 122 studs, and a concurrency cap that does not steal below 8 voices per listening client for this cue" },
-      { "key": "mix", "owner": "audio/mix/03", "requirement": "an MB allowance for 12 mono one-shots of 0.30 s, all preloaded, and the SoundId sentinel ruling this key follows" },
+      { "key": "mix", "owner": "audio/mix/01", "requirement": "the level for this cue, below B4's and identical across all four notes. This key carries no level value; mix declares noOtherKeyMayWriteEither and is the sole writer." },
+      { "key": "mix", "owner": "audio/mix/02", "requirement": "a RollOffMode that honours RollOffMaxDistance, RollOffMinDistance at or below 2 studs, inaudible by 122 studs, a concurrency cap that does not steal below 8 voices per listening client for this cue, and the tail-length threshold below which a voice may not be stolen" },
+      { "key": "mix", "owner": "audio/mix/03", "requirement": "an MB allowance for 12 mono one-shots of 0.30 s, all preloaded, at source class upload, and the SoundId sentinel ruling this key follows" },
       { "key": "representation", "owner": "architect, raised by audio/mix/01 as G5", "requirement": "name a module permitted to call Instance.new(\"Sound\") and Instance.new(\"Attachment\") for this cue; no key in either contract names one today" },
       { "key": "none", "owner": "client-prediction and beat-scheduler work", "requirement": "the onset handed to cuePatchClear carries the cleared patch's tierIndex, from the client-side radius test response already requires. No new wire field." }
     ]
@@ -266,10 +274,11 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
   `Clearing.luau` sends no per-patch packet, so without it the cue runs on the stated fallback and
   every clear sounds like `tierIndex` 1. **This is the one thing that makes the brief's per-tier
   note real, and it is a client-side read of a local patch, not a new remote.**
-- **Mix work** inherits three things it can reject explicitly rather than discover: the voice count
-  of 8 with its derivation shown, the reading that stealing a ringing tail is not dropping, and the
-  roll-off requirement above. If it caps below 8 for this cue, the cap is its own and it should say
-  which onset is lost.
+- **Mix work owns every level and every curve this cue is heard through, outright**, and this key
+  carries no level value for it to collide with. It inherits three requirements it can reject
+  explicitly rather than discover — the voice count of 8 with its derivation shown, the reading
+  that stealing a ringing tail is not dropping, and the roll-off bounds. If it caps below 8 for
+  this cue, the cap is its own and it should say which onset is lost.
 - **Instance-representation work (architect)** inherits a second creator question beside G5's: an
   `Attachment` per onset, created and destroyed up to 8 times a second per player.
 - **Stinger work** is unaffected. `B1`, `B2` and `B3` keep their `audio` channels, no ranking
@@ -308,22 +317,25 @@ every id at the sentinel `""`. The tool, the bay build and every other in-world 
 3. At 8 onsets in one second, 8 distinct `Sound` instances exist and `Play()` is called at most
    once per instance in that second; no onset is queued, delayed or refused, and
    `sfx.cues[patchClear].overlappingVoices` is 8.
-4. `theme/setting/01` criterion 4 and `theme/setting/03` criterion 4 — the two whole-word greps
-   over every `manifest` string value under `cid/` — both return zero matches against this key's
-   manifest block, and `sfx.playerFacingStrings` is 0.
+4. The `sfx` manifest contains **no numeric level anywhere**: `levelsOwnedHere` is `false`, and a
+   grep of the manifest block for the field names `volume`, `db` and `decibels` returns zero hits.
+   `theme/setting/01` criterion 4 and `theme/setting/03` criterion 4 — the two whole-word greps
+   over every `manifest` string value under `cid/` — both return zero matches against this key,
+   and `sfx.playerFacingStrings` is 0.
 
 ## Not decided here
 
 Whether `patchClear` has an audio channel at all — sheet 01, mine, which is a revision request
 against `gameplay/mechanics/05`. Why the ten character-sound dispositions are what they are —
-sheet 02, mine. The `RollOffMode`, `RollOffMinDistance`, `RollOffMaxDistance`, the bus tree, the
-bus levels, the ducking rule, the concurrency cap, the 20 MB split and the `SoundId` sentinel —
-Mix, which holds `mix`; I state requirements and set no curve and no allocation. The three payoff
-stingers `B1`, `B2` and `B3` — Stingers, which holds `stingers`. `B4`, the four pressables, the
-index open and close, and the one system notice — interface-sound work, which holds `uiSound`.
-The continuous beds, and whether the granted off-edge layer is taken — Ambient, which holds
-`ambience`. Whether any music exists — Music, which holds `music`. Which module may create a
-`Sound` or an `Attachment` — instance-representation work, raised by Mix as G5. The provisioning
-gate that uploads these twelve assets — Mix, as a revision request against `tech/deploy/01`. Every
-`tiers[]` value, weight and name the `tierIndex` rows key off — `gameplay/systems/01` and Balance
-& Tuning; this key reads `patch.tierIndex` and sets nothing in it.
+sheet 02, mine. **Every level, volume and decibel figure, the bus tree, the ducking rule, the
+`RollOffMode` and its distances, the concurrency cap, the tail-stealing threshold, the 20 MB
+split and the `SoundId` sentinel — Mix, which holds `mix` and is the sole writer of all of them.**
+I state requirements and set no value. The three payoff stingers `B1`, `B2` and `B3` — Stingers,
+which holds `stingers`. `B4`, the four pressables, the index open and close, and the one system
+notice — interface-sound work, which holds `uiSound`. The continuous beds, and whether the granted
+off-edge layer is taken — Ambient, which holds `ambience`. Whether any music exists — Music, which
+holds `music`. Which module may create a `Sound` or an `Attachment` — instance-representation
+work, raised by Mix as G5. The provisioning gate that uploads these twelve assets — Mix, as a
+revision request against `tech/deploy/01`. Every `tiers[]` value, weight and name the `tierIndex`
+rows key off — `gameplay/systems/01` and Balance & Tuning; this key reads `patch.tierIndex` and
+sets nothing in it.
