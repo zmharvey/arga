@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 325 unique source(s); 187 were
+Extracted from `cid`. 325 unique source(s); 196 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -78,6 +78,17 @@ did not fetch" becomes checkable instead of trusted.
 - *Dashboard layout is declined as a design artifact, kept as a per-row placement column.** The Creator Dashboard's pages exist and are not ours to lay out ``, against 100 custom event names and ten funnel tabs ``. These rows add **no new event name**.
 - Dashboard pages and breakdowns, and the fact that Retention/Engagement/Demographics/Monetization arrive with no instrumentation; breakdowns include platform, age group, OS, gender, source, country, language, first-played date; *"Benchmarks for similar games update daily."* ``
 
+## https://create.roblox.com/docs/production/monetization/game-passes
+
+*Cited by 7: `gameplay/monetization/_lead`, `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`, `marketing/store-page/_lead`, `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`, `tech/networking/04-ownership-authority`*
+
+- **A pass is the right instrument and the platform says so in one sentence.** A pass lets a creator "charge users a one-time Robux fee to access special privileges inside your game", with "minimum price is 1 Robux, and the maximum price is 1 billion Robux", checked with `UserOwnsGamePassAsync()` and prompted with `PromptGamePassPurchase()`. ``
+- *The order is chosen to be safe under both readings of an ambiguous prerequisite.** `release.provisioning` gate 4 rests on the experience being *"published and is accessible"*, and the page does **not** say *public* `` `[unverified]`. Settling fetch: the Creator Dashboard passes surface rendered against a place whose visibility is Private, or the `creator-docs` source of `production/monetization/game-passes.md` with its prerequisite note expanded. **So the flip goes before pass creation**, which satisfies the prerequisite under either reading. The price is a window in which the page is…
+- `` — *"Before creating a pass, make sure your game has been published and is accessible on Roblox"*; no API for creating a pass.
+- *Provisioning: publish first.** A pass is created manually, there is no API to create one, and **the experience must be published and accessible first** ``. That inverts the naive order and is the whole gate list. The build runs at every gate with the id unprovisioned, which sheet `02` makes possible by replacing the null with `0`.
+- *RR-4 · `cid/gameplay/monetization/01-the-offer-ladder.md:116`.** `externalPrerequisite.what` says the pass must be *"created on the Roblox creator site"* without stating that the experience must be **published first** — pass creation requires a published, accessible experience. `` That inverts the naive order and is the whole of my `provisioning` gate. A one-clause addition, not a re-decision.
+- *180 seconds, staggered.** One product exists ``, so a poll is one web call per player. At 16 players that is 0.089 calls/s server-wide, which is negligible against any plausible `MarketplaceService` budget; and against an unbounded "several minutes" propagation window a 180-second poll adds at most 180 seconds of detection latency to a delay the platform already owns. Staggering the phase by `UserId % 180` matters more than the interval does: sixteen players joining inside the first thirty seconds would otherwise poll in a burst forever. A 10–20 minute session `[brief: binding]` gets 3 to…
+
 ## https://create.roblox.com/docs/production/publishing/accessibility
 
 *Cited by 7: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`, `art/style/01-palette-and-materials`, `art/style/_lead`, `marketing/icon/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
@@ -114,16 +125,6 @@ did not fetch" becomes checkable instead of trusted.
 - *Whether this genre ships item text at all could not be established.** Two of three source types failed (HTTP 402, HTTP 405) and the third characterises the reference rather than quoting it, offering only a *"relaxing, meditative quality"* ``. Recorded as unavailable, not as absent. `[research owed: an in-client screenshot of the reference's collection panel, or a fan wiki page in this family that reproduces item text]`
 - 1. **How the register actually reads to 8–14 year olds.** Nothing fetchable settles this; it is reception, not fact. `[playtest unknown]`, starting position whatever sheet 01 sets. What would settle it: a read-back comprehension check with players in the band against the written copy, and as a cheap proxy available before any playtest, a Flesch-Kincaid score computed on the actual copy once it exists. 2. **Whether any game in this family ships item-level flavour text at all**, which would tell sheet 02 whether the surface it needs has genre precedent. Three source types were tried and two…
 
-## https://create.roblox.com/docs/production/monetization/game-passes
-
-*Cited by 6: `gameplay/monetization/_lead`, `marketing/hype/_lead`, `marketing/store-page/_lead`, `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`, `tech/networking/04-ownership-authority`*
-
-- **A pass is the right instrument and the platform says so in one sentence.** A pass lets a creator "charge users a one-time Robux fee to access special privileges inside your game", with "minimum price is 1 Robux, and the maximum price is 1 billion Robux", checked with `UserOwnsGamePassAsync()` and prompted with `PromptGamePassPurchase()`. ``
-- `` — *"Before creating a pass, make sure your game has been published and is accessible on Roblox"*; no API for creating a pass.
-- *Provisioning: publish first.** A pass is created manually, there is no API to create one, and **the experience must be published and accessible first** ``. That inverts the naive order and is the whole gate list. The build runs at every gate with the id unprovisioned, which sheet `02` makes possible by replacing the null with `0`.
-- *RR-4 · `cid/gameplay/monetization/01-the-offer-ladder.md:116`.** `externalPrerequisite.what` says the pass must be *"created on the Roblox creator site"* without stating that the experience must be **published first** — pass creation requires a published, accessible experience. `` That inverts the naive order and is the whole of my `provisioning` gate. A one-clause addition, not a re-decision.
-- *180 seconds, staggered.** One product exists ``, so a poll is one web call per player. At 16 players that is 0.089 calls/s server-wide, which is negligible against any plausible `MarketplaceService` budget; and against an unbounded "several minutes" propagation window a 180-second poll adds at most 180 seconds of detection latency to a delay the platform already owns. Staggering the phase by `UserId % 180` matters more than the interval does: sixteen players joining inside the first thirty seconds would otherwise poll in a burst forever. A 10–20 minute session `[brief: binding]` gets 3 to…
-
 ## https://create.roblox.com/docs/reference/engine/classes/GuiService
 
 *Cited by 6: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
@@ -157,6 +158,22 @@ did not fetch" becomes checkable instead of trusted.
 - *With the close control gone the navigable set never changes size, and that is a gift to `viewport`.** The 24 slots have nothing to activate, so every slot frame, slot label and heading is `Selectable = false` — `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``. The selectable set is therefore **exactly the four pressables, open or closed**, so Platform's focus order operates on one constant set and never needs a fifth position. This holds whether or not `SelectionGroup` exists as a property: the pack's fetch of the rendered `GuiObject` reference lists…
 - `` — `Active`: *"Determines whether this UI element sinks input."* `Selectable`: *"Determine whether the GuiObject can be selected by a gamepad."* `SelectionOrder`, `NextSelectionUp` as described. These are the four properties the graph is realised in.
 
+## https://about.roblox.com/community-standards
+
+*Cited by 5: `analytics/events/02-never-logged`, `analytics/events/_lead`, `liveops/community/01-no-channel-and-the-intake-of-record`, `liveops/community/_lead`, `marketing/social/01-no-off-platform-presence`*
+
+- **`N1`–`N8` are the platform's list, not mine.** The community standards enumerate email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, and visual and audio media of a user, and state that *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"* ``. The brief states no data rule (`OPEN.md §5` #6 marks Integrity `[I assumed]`), so this is discharged as sourced platform policy rather than as an asserted policy of mine.
+- The age-band data rule, discharged as platform policy `` — the enumerated PII list (email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, visual and audio media of a user) and *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"*. This is the rule `02` complies with. **Note the shape of the compliance:** `LogCustomEvent` takes a `Player`, so identity is the platform's and the game defines no identifier at all — which is…
+- *An on-Roblox community is the same question and gets the same answer.** It is one of the seven link types under that same 16+ rule — Facebook, Twitter, YouTube, Twitch, Discord, Guilded and a Roblox community — so ruling one and leaving the other to a reader would leave the larger half open. And the in-experience form is barred outright: *"You may not link to, share, or display URLs of any external websites or services except by using the Social Links feature"* and *"You cannot share social media links directly within a game"* ``. That agrees with `products` `F15` (*"no like, favourite,…
+
+## https://about.roblox.com/newsroom/2025/11/roblox-requires-age-checks-limits-minor-and-adult-chat
+
+*Cited by 5: `liveops/community/02-moderation-ban-and-appeal`, `liveops/community/_lead`, `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`, `marketing/store-page/_lead`*
+
+- *The platform's age-check regime confirms `social.chat: false` on a second, independent ground, and overrules nothing.** A facial age check is required to access chat; users are placed in one of six groups — *"Under 9, 9-12, 13-15, 16-17, 18-20, or 21+"* — and *"chat in experiences will be turned to default off for users under nine years old, unless a parent provides consent after an age check"*, enforced in select markets from early December 2025 and globally from early January 2026 ``. This pays `social/01`'s outstanding `[research owed:]` on age-based communication defaults. **The gate…
+- *Lead on the age rule because it is the only ground a later decision cannot undo.** `00-CORE.md`'s *"Success is **shipped artifacts, not players**"* and its two declined non-goals `[brief: binding]` close every row here on purpose, but they are the project's own preference and a developer can reverse them in one line. The link rule is not the project's: *"Starting June 30, social media links on Roblox will only be viewable, shareable, and manageable by age-checked users 16 and older, raised from the current requirement of 13+"* ``, and it sits on a settlement term rather than a product…
+- Links inside an experience, independent of `F15`: *"Early next year, we will prohibit creators from sharing or posting social media links in experiences"*, with the platform's six age bands given as *"Under 9, 9-12, 13-15, 16-17, 18-20, or 21+"* — the brief's 8–14 straddles three of them and reaches none that can see a link. ``
+
 ## https://create.roblox.com/docs/production/game-design/onboarding
 
 *Cited by 5: `gameplay/onboarding/02-first-minute-beats`, `gameplay/onboarding/03-teaching-order`, `gameplay/onboarding/_lead`, `ui-ux/feedback/01-the-notice-channel`, `ui-ux/feedback/_lead`*
@@ -167,6 +184,14 @@ did not fetch" becomes checkable instead of trusted.
 - Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
 - *A correction to my own domain index, worth making because a builder would otherwise cite the wrong source.** WCAG SC 2.2.2 governs *"any moving, blinking or scrolling information"* that lasts more than five seconds ``. A static plate is outside its scope entirely, so 2.2.2 does not set my dwell. What it does settle is the **motion** ruling: `response` `R5`–`R6` forbid providing a pause or dismiss control, so a moving notice would breach 2.2.2 with no legal remedy available — which is why `motion.animated` is false rather than merely discouraged. The 5.0 s ceiling itself is the platform's…
 - **`[unverified]`** Any duration guidance from Roblox for in-experience messages. `create.roblox.com/docs/ui/notifications` returns 404 and the onboarding page *"does not offer specific guidance about on-screen messages, notifications, popups … or blocking player input"* ``. The WCAG threshold and the CoreScript constant are what 01 has; there is no platform number to defer to.
+
+## https://create.roblox.com/docs/production/monetization
+
+*Cited by 5: `gameplay/monetization/02-what-is-never-sold`, `gameplay/monetization/_lead`, `marketing/_category`, `marketing/hype/01-the-publish-moment`, `marketing/store-page/_lead`*
+
+- *`F11`, manufactured scarcity — the one prohibition no sheet has stated.** `theme/tone/04` `D9` bans the timer and the countdown, from the brief's zero-tension rule; the platform independently advises that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims ``. `D9` catches the widget; `F11` catches the sentence — *"only 3 left"*, *"1,204 players own this"*, a waitlist, a queue — which is the same manipulation with no clock attached. `[cid: decided]`, flagged below.
+- **Roblox's own monetization overview independently corroborates `theme/tone/04` `D9` from the platform side**, advising that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims. `D9` was written from the brief's zero-tension rule; it is also platform guidance. ``
+- *Countdown dies four ways, none of them mine to make.** `release.forbidden` `N2` (*no flag keyed to a date, a calendar or a season*) and `N10` (*no rollout schedule, ramp, canary or soft launch*); `products` `F10` in-game; category `T10` plus platform guidance against *"a false sense of urgency"* outward ``; and *"tension is zero by design"* `[brief: binding]` (`HANDOFF.md` #4). **Cross-promotion needs a second experience** and `release.environments.count` is **2** (Studio plus one published place) with `N7` forbidding a second place as a player-facing ring; the brief names no other game by…
 
 ## https://create.roblox.com/docs/reference/engine/classes/AnalyticsService
 
@@ -257,21 +282,6 @@ did not fetch" becomes checkable instead of trusted.
 - **`Scrap Incremental`** (third, taken for triangulation). Description: *"A relaxing magnet simulator game"* with a sunglasses glyph, then the same *"The more you rebirth and upgrade..."* sentence, with seven distinct glyphs, numbered feature brackets, *"Enjoying the game? Leave a Like and Favorite!"* and *"Join the Unequal Games group for in-game boosts!"*. ``
 - *A refinement to the brief's landscape research, from that last quote.** `research/landscape.md` attributes the shared marketing sentence to *"at least two different studios"* and lists Grass and Scrap as separate entries. Scrap Incremental's own description sends players to *"the Unequal Games group"*, which is the reference's studio, so Grass and Scrap are very likely one studio's template rather than two independent shippers. The independent same-sentence shipper is PrestigeLabs (Leaves). This does not weaken the brief's conclusion, it sharpens it: the genre's register norm is more…
 
-## https://about.roblox.com/community-standards
-
-*Cited by 4: `analytics/events/02-never-logged`, `analytics/events/_lead`, `liveops/community/01-no-channel-and-the-intake-of-record`, `liveops/community/_lead`*
-
-- **`N1`–`N8` are the platform's list, not mine.** The community standards enumerate email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, and visual and audio media of a user, and state that *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"* ``. The brief states no data rule (`OPEN.md §5` #6 marks Integrity `[I assumed]`), so this is discharged as sourced platform policy rather than as an asserted policy of mine.
-- The age-band data rule, discharged as platform policy `` — the enumerated PII list (email, passwords or access tokens, home address, financial information, medical information, telephone number, off-platform internet identifiers, sensitive credentials, visual and audio media of a user) and *"users may be prohibited from sharing or requesting personal information on Roblox depending on their age"*. This is the rule `02` complies with. **Note the shape of the compliance:** `LogCustomEvent` takes a `Player`, so identity is the platform's and the game defines no identifier at all — which is…
-- *An on-Roblox community is the same question and gets the same answer.** It is one of the seven link types under that same 16+ rule — Facebook, Twitter, YouTube, Twitch, Discord, Guilded and a Roblox community — so ruling one and leaving the other to a reader would leave the larger half open. And the in-experience form is barred outright: *"You may not link to, share, or display URLs of any external websites or services except by using the Social Links feature"* and *"You cannot share social media links directly within a game"* ``. That agrees with `products` `F15` (*"no like, favourite,…
-
-## https://about.roblox.com/newsroom/2025/11/roblox-requires-age-checks-limits-minor-and-adult-chat
-
-*Cited by 4: `liveops/community/02-moderation-ban-and-appeal`, `liveops/community/_lead`, `marketing/social/_lead`, `marketing/store-page/_lead`*
-
-- *The platform's age-check regime confirms `social.chat: false` on a second, independent ground, and overrules nothing.** A facial age check is required to access chat; users are placed in one of six groups — *"Under 9, 9-12, 13-15, 16-17, 18-20, or 21+"* — and *"chat in experiences will be turned to default off for users under nine years old, unless a parent provides consent after an age check"*, enforced in select markets from early December 2025 and globally from early January 2026 ``. This pays `social/01`'s outstanding `[research owed:]` on age-based communication defaults. **The gate…
-- Links inside an experience, independent of `F15`: *"Early next year, we will prohibit creators from sharing or posting social media links in experiences"*, with the platform's six age bands given as *"Under 9, 9-12, 13-15, 16-17, 18-20, or 21+"* — the brief's 8–14 straddles three of them and reaches none that can see a link. ``
-
 ## https://create.roblox.com/docs/audio/assets
 
 *Cited by 4: `audio/ambient/01-the-continuous-layers`, `audio/ambient/_lead`, `audio/stingers/01-the-three-payoff-cues`, `audio/stingers/_lead`*
@@ -354,13 +364,6 @@ did not fetch" becomes checkable instead of trusted.
 - **The monetization half, from the platform side.** Revenue split by developer products and passes, conversion rate (*"Percent of daily active users who are also paying users"*), paying users, ARPPU and ARPDAU are all supplied with **no game-side instrumentation** `` — and gated: *"Any game with more than 10 daily active users (DAU) and 10 play hours for 7 consecutive days is eligible for accessing all KPIs on the dashboard"*, with sales-data files updated every 48 hours. ``
 - *One gate could make every free reading read nothing, and it is sourced.** *"Any game with more than 10 daily active users (DAU) and 10 play hours for 7 consecutive days is eligible for accessing all KPIs on the dashboard"* ``. For a game whose stated success is *"shipped artifacts, not players"* `[brief: binding]`, that threshold is not guaranteed. Whether the Engagement and Retention pages are gated identically is `[unverified]` — settling fetch: the same eligibility sentence located on the analytics-dashboard or retention page.
 - *The gate applies here too and is not restated.** `engagement.eligibilityGate` — more than 10 DAU and 10 play hours for 7 consecutive days `` — governs these readings as well. Below it, this key returns nothing.
-
-## https://create.roblox.com/docs/production/monetization
-
-*Cited by 4: `gameplay/monetization/02-what-is-never-sold`, `gameplay/monetization/_lead`, `marketing/_category`, `marketing/store-page/_lead`*
-
-- *`F11`, manufactured scarcity — the one prohibition no sheet has stated.** `theme/tone/04` `D9` bans the timer and the countdown, from the brief's zero-tension rule; the platform independently advises that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims ``. `D9` catches the widget; `F11` catches the sentence — *"only 3 left"*, *"1,204 players own this"*, a waitlist, a queue — which is the same manipulation with no clock attached. `[cid: decided]`, flagged below.
-- **Roblox's own monetization overview independently corroborates `theme/tone/04` `D9` from the platform side**, advising that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims. `D9` was written from the brief's zero-tension rule; it is also platform guidance. ``
 
 ## https://create.roblox.com/docs/reference/engine/classes/GuiObject
 
@@ -679,6 +682,13 @@ did not fetch" becomes checkable instead of trusted.
 - **The monetization half, from the platform side.** Revenue split by developer products and passes, conversion rate (*"Percent of daily active users who are also paying users"*), paying users, ARPPU and ARPDAU are all supplied with **no game-side instrumentation** `` — and gated: *"Any game with more than 10 daily active users (DAU) and 10 play hours for 7 consecutive days is eligible for accessing all KPIs on the dashboard"*, with sales-data files updated every 48 hours. ``
 - *`K2` exists because the standard shortlist reads zero here structurally, not empirically.** Every `products.items[].gamePassId` is `null`, so `UserOwnsGamePassAsync` cannot return true; ARPDAU, payer share and conversion rate are constants no play moves. The platform will not show them below 10 DAU and 10 play hours for seven consecutive days ``, which a project whose success is artifacts may never clear. A shortlist reading zero forever tells nobody anything, and a reviewer cannot tell refusal from omission unless refusal is a rule. `[cid: decided]` — the brief states no pass mark for any…
 
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/thumbnails.md
+
+*Cited by 3: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`, `marketing/icon/_lead`*
+
+- *The trailer is dormant, and what closes it is capture, not taste.** `game/src/shared/Theme.luau` ships `archetype = "cartoon-vibrant"`, `sourceTitle = "Pet Ascend Simulator"`, surface `#2B1B4D` against a brief naming `fantasy-ornate` three times (`T8`, `G2`) ``. A trailer is captures in sequence, so it inherits that wholesale: `trailerVideoCount: 0` with `captureSource: "none"`. Platform-side it is otherwise cheap and the facts matter to the Thumbnails lead more than to me — an approved video *"will appear first on your game's detail page"*, a detail page holds up to **10** images or…
+- `` — up to 10 images or videos per detail page; an approved video *"will appear first on your game's detail page"*; monthly quota of 3 uploads with rejections counted; *"Video thumbnails should be authentic and accurately portray in-game content without misleading alterations"*; all videos reviewed.
+
 ## https://investgame.net/news/pdf/the-2025-roblox-benchmark-report/
 
 *Cited by 3: `analytics/engagement/03-retention-readout`, `analytics/engagement/_lead`, `analytics/kpis/_lead`*
@@ -882,6 +892,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - *New gap `G-C1`, filed and not filled.** The Maturity & Compliance questionnaire is a publish *condition*: *"If an experience does not have accurate or all content maturity information, Roblox restricts the playability of the experience on the platform for all players"*, and the labels map to age bands including 5–8 and 9–15 ``. It fits `release`'s own routing test exactly — a settings surface, no file, no diff, no build step — and `release.publishChecklist` has four rows and this is not one of them. **I file `RR-C1` and add no row myself**, because a Community sheet writing a publish row…
 
+## https://create.roblox.com/docs/production/promotion/experience-notifications
+
+*Cited by 2: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`*
+
+- *Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by name — *"Beating the genre's retention curve. Offered and declined"* `[brief: binding]`, upheld by ruling **R-3**. But the mechanism exists, so asserting a zero without touching it would be a bluff: Experience Notifications reach **opted-in users 13+ only**, against an audience bound at **8–14** `[brief: binding]`; require a **minimum of 100 visits since launch**, which is 0 at the publish moment; are capped at one per user per day ``; and are sent by `POST…
+- `` — opted-in users 13+; *"Minimum 100 visits since launch"*; not under moderation; one notification per user per day from a given experience.
+
 ## https://create.roblox.com/docs/production/promotion/social-media-links
 
 *Cited by 2: `liveops/community/01-no-channel-and-the-intake-of-record`, `liveops/community/_lead`*
@@ -907,6 +924,13 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 2: `marketing/name/_lead`, `marketing/store-page/_lead`*
 
 - *Platform naming and discovery**, all from ``:
+
+## https://create.roblox.com/docs/production/publishing/publishing-experiences-and-places
+
+*Cited by 2: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`*
+
+- *What survives is real and nobody else has it.** A new place is **private by default**, and public means *"available and discoverable to the general public"* ``. Until that setting moves, no stranger can reach this game at all. That state change is the whole of the outward launch, and `release` — which claims *"every publish-time platform setting and its read-back"* — has no checklist row for it (below).
+- `` — new games are private by default; public means *"available and discoverable to the general public"*; publish first, then set visibility.
 
 ## https://create.roblox.com/docs/reference/engine/classes/CaptureService
 
@@ -1027,6 +1051,13 @@ did not fetch" becomes checkable instead of trusted.
 - *Its codes half is falsified by its own subject.** The reference's experience description advertises *"Join the Unequal Games group for in-game boosts!"* and a like/favourite prompt and **never mentions codes or redeeming anything** ``. The same studio's Scrap Incremental ships a byte-identical description template with the same group boost and no codes ``. A codes aggregator maintains a page for the reference and lists **no active codes as of March 2026** ``. Against 38.2M visits and a 96.2% like ratio at the brief's read ``. **If absence read as unfinished, the reference would be reading…
 - A codes aggregator maintaining a page *for this exact game* and reporting **no active codes as of March 2026** — a codes site with an empty list for a 38M-visit incremental ``
 
+## https://devforum.roblox.com/t/allow-users-age-checked-13-15-with-parental-consent-to-see-profile-social-media-links-not-in-regions-where-social-media-is-banned-for-under-16/4693383
+
+*Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
+
+- *Lead on the age rule because it is the only ground a later decision cannot undo.** `00-CORE.md`'s *"Success is **shipped artifacts, not players**"* and its two declined non-goals `[brief: binding]` close every row here on purpose, but they are the project's own preference and a developer can reverse them in one line. The link rule is not the project's: *"Starting June 30, social media links on Roblox will only be viewable, shareable, and manageable by age-checked users 16 and older, raised from the current requirement of 13+"* ``, and it sits on a settlement term rather than a product…
+- The underlying obligation, quoted in the same forum from the April 2026 Alabama settlement: *"By default, Roblox shall not allow U16 Users to see or share profile links to other approved sites. Roblox may permit Users aged 16 or older to share profile links to other approved sites only with other Users of a similar age."* **This is why the closure is durable: it is a settlement term, not a product preference.** ``
+
 ## https://devforum.roblox.com/t/analytics-for-percentile-session-length/2061715
 
 *Cited by 2: `analytics/engagement/01-session-shape`, `analytics/engagement/_lead`*
@@ -1090,6 +1121,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Version needs both halves because neither derives from the other.** The publish returns `versionNumber` ``; `game.PlaceVersion` returns it live and `0` in Studio `` ``. The emit runs *before* the publish, and nothing writes a stamp into the place file — so both, joined by a ledger. The stamp reaches the build for free once `release` is promoted, with no emitter change ``.
 
+## https://devforum.roblox.com/t/proposal-parental-consent-for-13-15-users-to-view-social-media-links-on-roblox/4686207
+
+*Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
+
+- *Lead on the age rule because it is the only ground a later decision cannot undo.** `00-CORE.md`'s *"Success is **shipped artifacts, not players**"* and its two declined non-goals `[brief: binding]` close every row here on purpose, but they are the project's own preference and a developer can reverse them in one line. The link rule is not the project's: *"Starting June 30, social media links on Roblox will only be viewable, shareable, and manageable by age-checked users 16 and older, raised from the current requirement of 13+"* ``, and it sits on a settlement term rather than a product…
+- The 16+ threshold's effective date and that it was **raised** from 13+: *"Starting June 30, social media links on Roblox will only be viewable, shareable, and manageable by age-checked users 16 and older, raised from the current requirement of 13+"*, applying across profiles, game detail pages, Community pages and Creator Hub. Today is past it. ``
+
 ## https://devforum.roblox.com/t/psa-removing-legacy-touch-controls/361681
 
 *Cited by 2: `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
@@ -1145,6 +1183,12 @@ did not fetch" becomes checkable instead of trusted.
 - **The measured genre asymmetry says even that is thin, and it is why I take the largest legal area count rather than the smallest.** DIG ships two islands against a 601-item logbook ``, and finishing one *area's* journal there is a 0.4% event across 60,426 and 78,433 earners `` ``. Few areas, a very large collection, and completion is rare. This game is on the wrong side of that on both axes and the partition equality only lets me fix one. See `## Flagged to the developer`.
 - **DIG** (DIG Development, 28 June 2025): *"Uncover and collect hidden treasures, explore a massive open world..."* **56,030,218 visits, 89.3% likes (101,475 up / 12,115 down), all-time peak 119,871 CCU.** Its Collection is *"a detailed in-game logbook"* of 601 items, and **completing a zone unlocks Mounts** — structurally the brief's set-completion bonus. `` `` ``
 
+## https://discord.com/terms
+
+*Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
+
+- Discord's own floor: *"By accessing our services, you confirm that you're at least 13 years old and meet the minimum age required by the laws in your country"*, and *"Our services are not designed for nor directed towards users under the age of 13"*. ``
+
 ## https://en.help.roblox.com/hc/en-us/articles/360000927163-Using-Licensed-Music-on-Roblox
 
 *Cited by 2: `audio/music/01-whether-music-exists`, `audio/music/_lead`*
@@ -1179,6 +1223,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - **The retry schedule is set by the join deadline, not by taste.** `firstSession` requires the first reveal within 10 s of join, so `load` gets 3 attempts and 3 s of backoff and nothing more. `leave` gets the most (4 attempts) because no next pass exists. `shutdown` gets a 20-second burst deadline against `BindToClose`'s "30 seconds total, shared across all bound callbacks" ``, leaving 10 s of margin. Roblox's own instruction is `pcall` plus "exponential backoff" ``.
 
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud/guides/experience-notifications.md
+
+*Cited by 2: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`*
+
+- *Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by name — *"Beating the genre's retention curve. Offered and declined"* `[brief: binding]`, upheld by ruling **R-3**. But the mechanism exists, so asserting a zero without touching it would be a bluff: Experience Notifications reach **opted-in users 13+ only**, against an audience bound at **8–14** `[brief: binding]`; require a **minimum of 100 visits since launch**, which is 0 at the publish moment; are capped at one per user per day ``; and are sent by `POST…
+- `` — sent by `POST https://apis.roblox.com/cloud/v2/users/${UserId}/notifications` with an `x-api-key` header; the one-per-day limit restated.
+
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud/guides/usage-place-publishing.md
 
 *Cited by 2: `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`*
@@ -1207,11 +1258,11 @@ did not fetch" becomes checkable instead of trusted.
 - *The three custom fields are spent on the dimensions that make Balance's predictions separable and on nothing else.** `areaOrdinal` because every prediction in `solvency.areaLedger[]` and `tierMix.byDepth[]` is indexed by it; `entitlement` because every wall-clock and lap figure in `pacing` is published in a base and a purchaser population; and the third field is the multiplier confound — `valueLevel` on the source, `heldLevelAfter` on the sink. Without `valueLevel`, `amount / N` is not comparable to `tierMix.byDepth[*].expectedValuePerPatch` at all, because…
 - **The custom-field budget**, which is the whole dimensioning constraint on sheet `01`: three fields, **values must be strings**, **up to 8,000 unique value combinations across all three**, and anything past `CustomField03.Name` is ignored rather than erroring. ``
 
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/thumbnails.md
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/promotion/social-media-links.md
 
-*Cited by 2: `marketing/hype/_lead`, `marketing/icon/_lead`*
+*Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
 
-- `` — up to 10 images or videos per detail page; an approved video *"will appear first on your game's detail page"*; monthly quota of 3 uploads with rejections counted; *"Video thumbnails should be authentic and accurately portray in-game content without misleading alterations"*; all videos reviewed.
+- Social media links on an experience page or community: *"you can add up to three links to social media sites on your game details pages"*, across *"seven different social media types … Facebook, Twitter, YouTube, Twitch, **Discord**, Guilded, and a Roblox community"*, and *"Social media links are only visible to users who have verified their age as at least 16 years old"*, with adding requiring the same 16+ check by facial age estimation or government ID. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/studio/avatar-settings.md
 
@@ -1448,6 +1499,12 @@ did not fetch" becomes checkable instead of trusted.
 - **The measured genre asymmetry says even that is thin, and it is why I take the largest legal area count rather than the smallest.** DIG ships two islands against a 601-item logbook ``, and finishing one *area's* journal there is a 0.4% event across 60,426 and 78,433 earners `` ``. Few areas, a very large collection, and completion is rare. This game is on the wrong side of that on both axes and the partition equality only lets me fix one. See `## Flagged to the developer`.
 - **Finishing one area's collection is a 0.4% event in a shipping game.** DIG's badge "Journal Complete: Cinder Shores" — "You have discovered 100% of the items in Cinder Shores!" — has 60,426 earners at a 0.4% win rate, and "Journal Complete: Mount Cinder" has 78,433 at 0.4%. These are per-*area* completions, not the full 601-item index.
 
+## https://www.tiktok.com/legal/page/us/terms-of-service/en
+
+*Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
+
+- TikTok's own floor: *"If you are under 13 years of age, or under 14 years of age in Florida, you may not use the Platform"*. ``
+
 ## https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html
 
 *Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
@@ -1467,6 +1524,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - *A correction to my own domain index, worth making because a builder would otherwise cite the wrong source.** WCAG SC 2.2.2 governs *"any moving, blinking or scrolling information"* that lasts more than five seconds ``. A static plate is outside its scope entirely, so 2.2.2 does not set my dwell. What it does settle is the **motion** ruling: `response` `R5`–`R6` forbid providing a pause or dismiss control, so a moving notice would breach 2.2.2 with no legal remedy available — which is why `motion.animated` is false rather than merely discouraged. The 5.0 s ceiling itself is the platform's…
 - `` — SC 2.2.2: *"any moving, blinking or scrolling information that (1) starts automatically, (2) lasts more than five seconds, and (3) is presented in parallel with other content"* needs a pause/stop/hide mechanism. `response` `R6` forbids providing one. **So a notice is static and its dwell has a five-second ceiling, derived rather than chosen** — this is 01's and 02's anchor.
+
+## https://www.youtube.com/t/terms
+
+*Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
+
+- YouTube's own floor: *"You must be at least 13 years old to use the Service"*. ``
 
 ## https://apis.roblox.com/cloud/v2/users/${UserId}/notifications
 
@@ -1569,12 +1632,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - `` — *"If an experience does not have accurate or all content maturity information, Roblox restricts the playability of the experience on the platform for all players."* Label tiers and age eligibility are quoted there; **the label value itself is Store Page's row 7, not mine.**
 
-## https://create.roblox.com/docs/production/promotion/experience-notifications
-
-*Cited by 1: `marketing/hype/_lead`*
-
-- `` — opted-in users 13+; *"Minimum 100 visits since launch"*; not under moderation; one notification per user per day from a given experience.
-
 ## https://create.roblox.com/docs/production/promotion/social-links
 
 *Cited by 1: `marketing/social/_lead`*
@@ -1586,12 +1643,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `liveops/community/_lead`*
 
 - **Whether a creator can see reports filed inside their own experience (G-C2).** `[unverified]` — three official pages describe the report flow and none mentions a creator role, which supports the weak form (*no creator report queue is documented*) and not the strong form (*none exists*). **Settling fetch:** `https://create.roblox.com/docs/production/publishing` and the Creator Hub moderation documentation rendered with its left-hand navigation; failing that, the open developer feature request *"Roblox should give developers access to the in-game reporting system"* checked for a staff…
-
-## https://create.roblox.com/docs/production/publishing/publishing-experiences-and-places
-
-*Cited by 1: `marketing/hype/_lead`*
-
-- `` — new games are private by default; public means *"available and discoverable to the general public"*; publish first, then set visibility.
 
 ## https://create.roblox.com/docs/production/publishing/thumbnails
 
@@ -1693,12 +1744,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - Audio privacy: since 22 March 2022 uploaded audio over 6 seconds is private to its uploader, with per-experience permissions grantable; only audio of 6 seconds or less can be made public. **Consequence the category has not stated: a Creator Store music or long-form asset already has a live id, so it does not pass through an upload gate at all** — which bears directly on `G2` (Mix's missing provisioning gate) and on whether a sentinel is needed for a long asset. ``
 
-## https://devforum.roblox.com/t/allow-users-age-checked-13-15-with-parental-consent-to-see-profile-social-media-links-not-in-regions-where-social-media-is-banned-for-under-16/4693383
-
-*Cited by 1: `marketing/social/_lead`*
-
-- The underlying obligation, quoted in the same forum from the April 2026 Alabama settlement: *"By default, Roblox shall not allow U16 Users to see or share profile links to other approved sites. Roblox may permit Users aged 16 or older to share profile links to other approved sites only with other Users of a similar age."* **This is why the closure is durable: it is a settlement term, not a product preference.** ``
-
 ## https://devforum.roblox.com/t/are-you-able-to-ab-test-game-icons/3339468
 
 *Cited by 1: `marketing/icon/_lead`*
@@ -1775,12 +1820,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - *That pair is the whole of their tag set**, and the negative result is the finding: the platform's current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense, not shipped `` ``. The full 17-genre / 40-subgenre vocabulary is fetched and banked at the first URL above, and it contains **no `restoration`**.
 
-## https://devforum.roblox.com/t/proposal-parental-consent-for-13-15-users-to-view-social-media-links-on-roblox/4686207
-
-*Cited by 1: `marketing/social/_lead`*
-
-- The 16+ threshold's effective date and that it was **raised** from 13+: *"Starting June 30, social media links on Roblox will only be viewable, shareable, and manageable by age-checked users 16 and older, raised from the current requirement of 13+"*, applying across profiles, game detail pages, Community pages and Creator Hub. Today is past it. ``
-
 ## https://devforum.roblox.com/t/roblox-audio-api-exits-beta-enhanced-sound-controls-now-available/3153454
 
 *Cited by 1: `audio/ambient/_lead`*
@@ -1813,12 +1852,6 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `tech/networking/_lead`*
 
-
-## https://discord.com/terms
-
-*Cited by 1: `marketing/social/_lead`*
-
-- Discord's own floor: *"By accessing our services, you confirm that you're at least 13 years old and meet the minimum age required by the laws in your country"*, and *"Our services are not designed for nor directed towards users under the age of 13"*. ``
 
 ## https://en.help.roblox.com/hc/en-us/articles/203313410
 
@@ -1942,18 +1975,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/identity/_lead`*
 
 - **Names display above heads by default and default to the account Display Name.** *"Roblox displays a name and/or health bar above that part"*; *"By default, a humanoid's display name matches the user's Roblox account Display Name which is unique and separate from their account Username."* Suppressible entirely with `DisplayDistanceType = None`. ``
-
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud/guides/experience-notifications.md
-
-*Cited by 1: `marketing/hype/_lead`*
-
-- `` — sent by `POST https://apis.roblox.com/cloud/v2/users/${UserId}/notifications` with an `x-api-key` header; the one-per-day limit restated.
-
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/promotion/social-media-links.md
-
-*Cited by 1: `marketing/social/_lead`*
-
-- Social media links on an experience page or community: *"you can add up to three links to social media sites on your game details pages"*, across *"seven different social media types … Facebook, Twitter, YouTube, Twitch, **Discord**, Guilded, and a Roblox community"*, and *"Social media links are only visible to users who have verified their age as at least 16 years old"*, with adding requiring the same 16+ check by facial age estimation or government ID. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/experience-icons.md
 
@@ -2227,12 +2248,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **`Pressure Wash Simulator`**, cleaning-and-restoration shaped and the largest game sampled at 141,055,601 visits, ships **7 passes with a floor of 199**: 199 (Extra Jump Height), 199 (Double Speed), 299 (Ultra Circle Nozzle), 399 (Double Money), 399 (Jetski), 699 (The ONE), 799 (Infinity Tank). ``
 
-## https://www.tiktok.com/legal/page/us/terms-of-service/en
-
-*Cited by 1: `marketing/social/_lead`*
-
-- TikTok's own floor: *"If you are under 13 years of age, or under 14 years of age in Florida, you may not use the Platform"*. ``
-
 ## https://www.treyexgaming.com/bring-back-the-sun-ancient-ruins-walkthrough-guide/
 
 *Cited by 1: `theme/fantasy/_lead`*
@@ -2242,12 +2257,6 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `theme/fantasy/_lead`*
 
-
-## https://www.youtube.com/t/terms
-
-*Cited by 1: `marketing/social/_lead`*
-
-- YouTube's own floor: *"You must be at least 13 years old to use the Service"*. ``
 
 ## https://x.com/en/tos
 

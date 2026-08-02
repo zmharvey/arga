@@ -7,7 +7,7 @@
 Ten world part classes exist and no eleventh may be added; each is bound to exactly one
 `(classId, Size, Material, colourRole)` tuple, so `environment.distinctDrawClasses` is **10**,
 statically countable, and is the whole density strategy. The allowance is **16 resident instances
-per lane and 24 shared place-wide, of which at most 6 stream at once**, leaving **35 streamed
+per lane and 20 shared place-wide, of which at most 6 stream at once**, leaving **35 streamed
 instances reserved for `effects`** — its own worst case, not its realistic figure. Dressing is
 **lane-persistent where it runs along the lane and bay-resident where it does not**, so the built
 edge grows with the slab instead of vanishing behind the player.
@@ -28,29 +28,35 @@ edge grows with the slab instead of vanishing behind the player.
   left `effects` nothing: `vfx/01` `budget.clientInstancesAdded` 8 plus
   `concurrentRevealObjectsOnOneScreen` 27 is 35 streamed instances, and at 18 + 24 the client
   landed at 6,035 `[research: cid/art/vfx/01-the-clear-and-the-reveal.md]`. **The re-cut is
-  `9 × 16 + 6 + 35 = 185`**, one spare at Effects' worst case and nineteen at its realistic
-  figure of 17. **The two given up are `groundwork`'s litter mat and the reserve**, both named
-  below; every other consumer keeps its count.
-- **Why `effects` gets its worst case and not its realistic figure.** A budget that is solvent
-  only at the realistic figure is a budget that overruns on the day the design works — nine lanes
-  each holding a reveal is exactly what a full server doing well looks like. Reserving 35 means
-  no third key can be surprised by a second sum. `[cid: decided]`
+  `9 × 16 + 6 + 35 = 185`**, one spare at Effects' worst case and nineteen at its realistic figure
+  of 17. **The two given up are `groundwork`'s litter mat and the reserve**, both named below;
+  every other consumer keeps its count.
+- **Why `effects` gets its worst case and not its realistic figure.** A budget solvent only at the
+  realistic figure overruns on the day the design works — nine lanes each holding a reveal is what
+  a full server doing well looks like. Reserving 35 means no third key can be surprised by a
+  second sum. `[cid: decided]`
+- **Why the shared column counts what streams, not what exists.** 20 backdrop parts exist
+  place-wide but at most 6 are inside `budgets.streaming.StreamingTargetRadius` of any one client
+  (sheet `05`), so the client ceiling takes 6 and the server ceiling takes 20. Counting a part
+  that never streams against a streamed-instance ceiling would be double-charging.
 - **Instances and parts are different quantities and `budgets` conflates them.** Draw calls take
   `lanePartFormula` (645); instance ceilings take `laneInstanceFormula` (646), which counts the
   spawn `Attachment`. So the correct statement is **5,805 parts**, not 5,814 draw calls, and this
-  key's own floor is `(9 × (645 + 16) + 6 + 35) / 1000` = **5.990**, not 6.0. `budgets`'
+  key's floor is `(9 × (645 + 16) + 6 + 35) / 1000` = **5.990**, not 6.0. `budgets`'
   `batchingFactor.escalationIfBelow10` carries the same conflation and should be corrected once
   rather than twice `[research: cid/art/style/_lead.md]`.
 - **At `batchingFactor` 1 there is no art budget at any size.** Nine lanes of 645 parts are 5,805
   draw calls against a `drawCalls` ceiling of 1,000 before Environment places one stone. Below
   5.990 the lever is `depths.areas[].patchCount` and `budgets` itself says so `[brief: soft]`.
-- **Why residency is two-tiered.** `plots.liveGeometry.torndownBeyond` keeps bays k−1 and k−2 as
-  walkable geometry, so live-bay-only dressing made the works disappear behind a player who could
-  still stand in it. The fix costs **zero instances**: the parapets, kerbs and channel are one
-  part each **for the whole lane**, resized at each bay advance exactly as `Plots.luau`'s
-  `applyLaneExtent` already resizes the slab `[research: game/src/server/Plots.luau]`. Two parts
-  per lane is what two parts per live bay cost, because only one bay was ever dressed. `N12`'s
-  no-resize rule is scoped to a patch and does not reach a lane-persistent part.
+- **Why residency is two-tiered, and why it is a property of the placement.**
+  `plots.liveGeometry.torndownBeyond` keeps bays k−1 and k−2 walkable, so live-bay-only dressing
+  made the works disappear behind a player still standing in it. The fix costs **zero instances**:
+  parapets, kerbs and the channel are one part each **for the whole lane**, resized at each bay
+  advance exactly as `applyLaneExtent` already resizes the slab
+  `[research: game/src/server/Plots.luau]`. Two per lane is what two per live bay cost, because
+  only one bay was ever dressed. `N12`'s no-resize rule is scoped to a patch and does not reach a
+  lane-persistent part. **`kerb` appears in both tiers**: `groundwork`'s edge courses run along
+  the lane, `chunkDressing`'s Terrace lips cross one bay.
 - **Why bay-resident dressing survives at all.** A family signature is a fraction of *its* bay's
   length, and `endgame` adds bays without bound, so retaining it has no upper limit
   `[brief: binding]` ← *"Endless via shuffled authored chunks"* (`03-META.md`). The residual is
@@ -73,8 +79,8 @@ edge grows with the slab instead of vanishing behind the player.
   vocabulary a later token group binds to in one edit. `[cid: decided]` on the shape.
 - **Nothing in either contract can create these parts.** `representation` has nine subjects and
   none is dressing; `Plots.luau` builds a slab, patches, four boundary parts and one `Attachment`.
-  `RR-E1` below files the same request `vfx/02` `RR-V2` filed for effect hosts, so the two are
-  answered together.
+  `RR-E1` files the same request `vfx/02` `RR-V2` filed for effect hosts, so the two are answered
+  together.
 
 ### The tuple vocabulary — ten entries; an eleventh is a revision against this sheet
 
@@ -85,7 +91,7 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
 | # | classId | roster | Size (studs) | Material | row | colourRole | collides | shadow | residency | spent by |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | `paving` | `P1` | `laneWidthStuds` × 1 × `*` | `Limestone` | `M1` | `stone.cleared` | yes | yes | lane (the existing slab; 0 new) | 03 |
-| 2 | `kerb` | `P1` | 1.5 × 0.4 × `*` | `Limestone` | `M2` | `stone.built` | yes | no | lane | 03, 04 |
+| 2 | `kerb` | `P1` | 1.5 × 0.4 × `*` | `Limestone` | `M2` | `stone.built` | yes | no | lane in 03, live bay in 04 | 03, 04 |
 | 3 | `parapet` | `P1` | 1.5 × 2.5 × `*` | `Limestone` | `M2` | `stone.built` | yes | yes | lane | 02 |
 | 4 | `crossWall` | `P1` | `*` × 4 × 2 | `Limestone` | `M2` | `stone.built` | yes | yes | live bay | 02 |
 | 5 | `pier` | `P1` | 4 × 12 × 4 | `Limestone` | `M2` | `stone.built` | yes | yes | live bay | 04 |
@@ -141,23 +147,24 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
     "tupleRule": "one classId, one tuple, forever. A parametric axis is a length rule, never a second tuple, and a 90-degree rotation about Y is an orientation, not a second tuple. An eleventh tuple is a revision against this sheet.",
     "parametricAxisMayRotate90AboutY": true,
     "tuples": [
-      { "classId": "paving",     "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 1, "the summed lengths of plots.bays[1..live]"], "material": "Limestone", "styleGuideRow": "M1", "colourRole": "stone.cleared", "canCollide": true,  "canTouch": false, "canQuery": true,  "castShadow": true,  "residency": "lane", "newInstances": 0 },
-      { "classId": "kerb",       "roster": "P1", "sizeStuds": [1.5, 0.4, "parametric"],  "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": false, "residency": "lane" },
-      { "classId": "parapet",    "roster": "P1", "sizeStuds": [1.5, 2.5, "parametric"],  "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true,  "residency": "lane" },
-      { "classId": "crossWall",  "roster": "P1", "sizeStuds": ["parametric", 4, 2],      "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true,  "residency": "liveBay" },
-      { "classId": "pier",       "roster": "P1", "sizeStuds": [4, 12, 4],                "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true,  "residency": "liveBay" },
-      { "classId": "vaultStrip", "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 2, 6], "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built", "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true, "residency": "liveBay" },
-      { "classId": "channel",    "roster": "P2", "sizeStuds": [6, 0.2, "parametric"],    "material": "Sandstone", "styleGuideRow": "M3", "colourRole": "stone.built",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": false, "residency": "lane" },
-      { "classId": "basin",      "roster": "P2", "sizeStuds": [10, 0.8, 10],             "material": "Sandstone", "styleGuideRow": "M3", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": false, "residency": "liveBay" },
-      { "classId": "canopy",     "roster": "P9", "sizeStuds": ["parametric", 60, 40],    "material": "Grass",     "styleGuideRow": "M9", "colourRole": "canopy.leaf",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true,  "residency": "place" },
-      { "classId": "trunk",      "roster": "P9", "sizeStuds": [5, 44, 5],                "material": "Wood",      "styleGuideRow": "M10", "colourRole": "canopy.trunk", "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true,  "residency": "place" }
+      { "classId": "paving",     "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 1, "the summed lengths of plots.bays[1..live]"], "material": "Limestone", "styleGuideRow": "M1", "colourRole": "stone.cleared", "canCollide": true,  "canTouch": false, "canQuery": true,  "castShadow": true,  "residency": ["lane"], "newInstances": 0 },
+      { "classId": "kerb",       "roster": "P1", "sizeStuds": [1.5, 0.4, "parametric"],  "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": false, "residency": ["lane", "liveBay"] },
+      { "classId": "parapet",    "roster": "P1", "sizeStuds": [1.5, 2.5, "parametric"],  "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true,  "residency": ["lane"] },
+      { "classId": "crossWall",  "roster": "P1", "sizeStuds": ["parametric", 4, 2],      "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true,  "residency": ["liveBay"] },
+      { "classId": "pier",       "roster": "P1", "sizeStuds": [4, 12, 4],                "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true,  "residency": ["liveBay"] },
+      { "classId": "vaultStrip", "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 2, 6], "material": "Limestone", "styleGuideRow": "M2", "colourRole": "stone.built", "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true, "residency": ["liveBay"] },
+      { "classId": "channel",    "roster": "P2", "sizeStuds": [6, 0.2, "parametric"],    "material": "Sandstone", "styleGuideRow": "M3", "colourRole": "stone.built",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": false, "residency": ["lane"] },
+      { "classId": "basin",      "roster": "P2", "sizeStuds": [10, 0.8, 10],             "material": "Sandstone", "styleGuideRow": "M3", "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": false, "residency": ["liveBay"] },
+      { "classId": "canopy",     "roster": "P9", "sizeStuds": ["parametric", 60, 40],    "material": "Grass",     "styleGuideRow": "M9", "colourRole": "canopy.leaf",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true,  "residency": ["place"] },
+      { "classId": "trunk",      "roster": "P9", "sizeStuds": [5, 44, 5],                "material": "Wood",      "styleGuideRow": "M10", "colourRole": "canopy.trunk", "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true,  "residency": ["place"] }
     ],
     "commonPartProperties": { "anchored": true, "reflectance": 0, "transparency": 0, "canTouch": false },
     "residency": {
+      "tierIsAPropertyOfThePlacementNotTheClass": true,
       "tiers": {
-        "lane": { "classes": ["paving", "kerb", "parapet", "channel"], "rule": "one part per lane per side, spanning bay 1 to the live bay, resized at each bay advance exactly as Plots.luau applyLaneExtent already resizes the slab", "destroyedAt": "lane teardown only", "instanceCostIsIndependentOfBayCount": true },
-        "liveBay": { "classes": ["crossWall", "pier", "vaultStrip", "basin"], "rule": "created at plots.liveGeometry.bayBuiltAt, destroyed with the bay it dressed", "residentBays": 1 },
-        "place": { "classes": ["canopy", "trunk"], "rule": "built once at place start, never rebuilt" }
+        "lane": { "placements": ["groundwork paving", "groundwork kerb", "groundwork channel", "builtEdge parapet"], "rule": "one part per lane per side, spanning bay 1 to the live bay, resized at each bay advance by the same call that resizes the slab (Plots.luau applyLaneExtent)", "destroyedAt": "lane teardown only", "instanceCostIsIndependentOfBayCount": true },
+        "liveBay": { "placements": ["builtEdge crossWall", "groundwork basin", "every chunkDressing signature part"], "rule": "created at plots.liveGeometry.bayBuiltAt, destroyed with the bay it dressed", "residentBays": 1 },
+        "place": { "placements": ["backdrop canopy", "backdrop trunk"], "rule": "built once at place start, never rebuilt" }
       },
       "endgameCost": 0,
       "endgameSafeBecause": "no tier's count grows with the number of bays; the lane tier grows one part's Size, not its count",
@@ -165,26 +172,27 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
         "field": "plots.liveGeometry.torndownBeyond",
         "retains": "bays more than two outward of the live one are destroyed; k-1 and k-2 persist as walkable geometry",
         "closedByLaneTier": ["paving", "kerb", "parapet", "channel"],
-        "residual": "a player standing in bay k-1 or k-2 sees no cross-wall at that bay's outward boundary and no family signature; the parapets, kerbs, channel and paving are continuous",
+        "residual": "a player standing in bay k-1 or k-2 sees no cross-wall at that bay's outward boundary, no basin and no family signature; the parapets, kerbs, channel and paving are continuous",
         "residualBarStatus": "bar (a): a player can see it. Judged acceptable because nothing is removed within view at the instant it changes - the outward wall of bay k-1 sits 210 to 480 studs behind a player who has just reached bay k, at or beyond budgets.streaming.StreamingTargetRadius 512 for the deeper bays",
         "reversingField": "residency.tiers.liveBay.residentBays, raised to 3",
-        "reversalCost": "crossWall 4 -> 8 and chunkDressing 6 -> 18 per lane, i.e. 16 -> 32 per lane, which is 9 x 32 + 6 + 35 = 329 against 186 of headroom and does not fit"
+        "reversalCost": "crossWall 4 -> 8, basin 1 -> 3 and chunkDressing 6 -> 18 per lane, i.e. 16 -> 32, which is 9 x 32 + 6 + 35 = 329 against 186 of headroom and does not fit"
       }
     },
     "allowance": {
       "residentInstancesPerLane": 16,
-      "sharedPlaceInstances": 24,
+      "sharedPlaceInstances": 20,
       "sharedMaxStreamedConcurrently": 6,
       "perConsumerPerLane": { "builtEdge": 6, "groundwork": 4, "chunkDressing": 6, "reserve": 0 },
-      "perConsumerShared": { "backdrop": 24 },
+      "perConsumerShared": { "backdrop": 20 },
       "perClientReservation": { "effects": { "worstCase": 35, "realistic": 17, "derivation": "vfx/01 budget.clientInstancesAdded 8 + concurrentRevealObjectsOnOneScreen 27 (9 realistic)", "reservedAt": "worstCase" } },
       "whatGaveUpTheTwo": ["groundwork's litter mat, struck under styleGuide's zero-instance ruling on P6", "the one-instance reserve"],
       "spendingRule": "a consumer that wants a part it cannot afford files against this sheet. There is no reserve to take and no consumer may take another's."
     },
     "derivation": {
-      "clientHeadroom": "budgets.instanceCeilings.clientStreamedInstanceCeiling - budgets.instanceCeilings.clientStreamedInstancesWorstCase",
+      "clientHeadroom": "budgets.instanceCeilings.clientStreamedInstanceCeiling - budgets.instanceCeilings.clientStreamedInstancesWorstCase = 186",
       "clientIdentity": "9 * residentInstancesPerLane + sharedMaxStreamedConcurrently + perClientReservation.effects.worstCase <= clientHeadroom, i.e. 144 + 6 + 35 = 185 of 186",
-      "serverCost": "runtime.maxPlayers * (max(depths.areas[].patchCount) + 6 + residentInstancesPerLane) + sharedPlaceInstances = 16 * 662 + 24 = 10616",
+      "whySharedCountsWhatStreams": "20 backdrop parts exist but at most 6 are inside budgets.streaming.StreamingTargetRadius of any one client (backdrop.maxStreamedConcurrently); charging a part that never streams against a streamed-instance ceiling would double-count",
+      "serverCost": "runtime.maxPlayers * (max(depths.areas[].patchCount) + 6 + residentInstancesPerLane) + sharedPlaceInstances = 16 * 662 + 20 = 10612",
       "serverCeilingField": "budgets.instanceCeilings.serverWorldInstanceCeiling",
       "instancesVersusParts": "instance ceilings take budgets.instanceCeilings.laneInstanceFormula (646, including the spawn Attachment); draw calls take lanePartFormula (645). budgets' own batchingFactor.escalationIfBelow10 states 5814 draw calls where the parts figure is 5805, and should be corrected there rather than in two art keys.",
       "allCeilingsStatus": "playtest unknown"
@@ -208,7 +216,7 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
       {
         "id": "RR-E1",
         "against": ["architect/sheets/06-representation.md", "architect/sheets/02-modules.md"],
-        "change": "add a representation subject 'lane-dressing' whose creator is the plots module, covering every classId in environment.tuples whose residency is lane or liveBay",
+        "change": "add a representation subject 'lane-dressing' whose creator is the plots module, covering every classId in environment.tuples whose residency includes lane or liveBay",
         "creatorProposed": "Plots.spawn and the bay-advance path in game/src/server/Plots.luau, which already create the slab, four boundary parts and the spawn Attachment and already hold the lane record",
         "parentProposed": "the lane slab Part, so one Destroy tears the lane down and N11's single-Destroy teardown is unchanged",
         "why": "representation has nine subjects and none is dressing; no module in the build order would create a parapet, so environment, builtEdge, groundwork and chunkDressing merge as data nothing can build",
@@ -228,24 +236,25 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
 
 ## Consequences for other work
 
-- **VFX work (`effects`)** is funded rather than assumed: 35 streamed instances are reserved at
-  its stated worst case, so its budget is solvent without changing one of its figures. It should
-  cite `environment.allowance.perClientReservation.effects` rather than restate 8 and 27.
+- **VFX work (`effects`)** is funded rather than assumed: 35 streamed instances are reserved at its
+  stated worst case, so its budget is solvent without changing one of its figures. It should cite
+  `environment.allowance.perClientReservation.effects` rather than restate 8 and 27.
 - **Detail-budget work (`style/03`)** takes `perLane.total` and `shared.total` from
   `environment.allowance.residentInstancesPerLane` and `.sharedPlaceInstances` by field, and adds
   the effects reservation to its envelope. Its minimum batching factor is recomputable from
   `batchingFactorFloor` 5.990 and no longer needs its own derivation.
 - **Device-ceiling work (`budgets`)** owes one correction inside its own key —
-  `batchingFactor.escalationIfBelow10` says 5,814 draw calls where the parts figure is 5,805 —
-  and gains a two-column `environmentInstancesPerLane` plus a shared column and a per-client
-  effects reservation.
+  `batchingFactor.escalationIfBelow10` says 5,814 draw calls where the parts figure is 5,805 — and
+  gains an `environmentInstancesPerLane` field, a shared column counted at what streams, and a
+  per-client effects reservation.
 - **Plot-and-lane work (`plots`)** gains the teardown subject `representation.plot` predicted, and
-  a second fact: four classes are lane-persistent and are resized by the same call that resizes
-  the slab, so a bay advance is one `Size` write on five parts rather than a rebuild.
+  a second fact: four placements are lane-persistent and are resized by the same call that resizes
+  the slab, so a bay advance is five `Size` writes rather than a rebuild.
 - **Module and representation work** holds `RR-E1`, which is `vfx/02` `RR-V2`'s request for a
   different subject. Answering one without the other leaves half the world uncreatable.
 - **Style Guide work (`styleGuide`)** is asked for **nothing**. Its material list and role set are
-  closed and I resolved inside them; `Cobblestone` and `litter.leaf` are withdrawn.
+  closed and I resolved inside them; `Cobblestone` and `litter.leaf` are withdrawn, and the slab
+  request is `RR-A1`'s alone.
 - **Optimisation-limit work (`N1`–`N17`)** gets savings pre-taken: `CanTouch` false on all ten
   classes, `CanQuery` false on nine, `CastShadow` false on three. None is an LOD, a merge, a pool
   or a height collapse.
@@ -259,7 +268,7 @@ below are mine, and each reverses with one field.
 | decision | alternative not taken | reversing field | my recommendation |
 |---|---|---|---|
 | Ten part classes, one tuple each | a richer roster with per-class size variants, which reads better and costs one draw class per variant | `environment.tuples` | keep ten until a device reading exists; the ceiling is unmeasured and this is the cheap end |
-| 16 + 24 with effects reserved at worst case | reserve effects at its realistic 17 and take two more parts per lane | `allowance.perClientReservation.effects.reservedAt` | keep worst case; a budget that fails when the game goes well is the wrong budget |
+| 16 + 20 with effects reserved at worst case | reserve effects at its realistic 17 and take two more parts per lane | `allowance.perClientReservation.effects.reservedAt` | keep worst case; a budget that fails when the game goes well is the wrong budget |
 | Lane-persistent edge, bay-resident signature | retain everything for three bays, which needs 32 per lane and does not fit | `residency.tiers.liveBay.residentBays` | keep, and reopen the moment `clientStreamedInstanceCeiling` is measured |
 | `P3` and `P6` at zero parts | one fitting and one litter mat per bay, at 2 of 16 | the zero-parts table | keep; they are the two cheapest things to add back first if headroom appears |
 
@@ -273,10 +282,10 @@ below are mine, and each reverses with one field.
    environment.allowance.perClientReservation.effects.worstCase ≤
    budgets.instanceCeilings.clientStreamedInstanceCeiling −
    budgets.instanceCeilings.clientStreamedInstancesWorstCase` (185 ≤ 186); and
-   `runtime.maxPlayers × (max(depths.areas[].patchCount) + 6 + 16) + 24 ≤
-   budgets.instanceCeilings.serverWorldInstanceCeiling`.
-3. `environment.allowance.perConsumerPerLane` sums to `residentInstancesPerLane`, and every class
-   whose `residency` is `lane` is created once per lane, not once per bay.
+   `runtime.maxPlayers × (max(depths.areas[].patchCount) + 6 + 16) + 20 ≤
+   budgets.instanceCeilings.serverWorldInstanceCeiling` (10,612 ≤ 12,000).
+3. `environment.allowance.perConsumerPerLane` sums to `residentInstancesPerLane`, and every
+   placement listed under `residency.tiers.lane` is created once per lane, not once per bay.
 4. A grep for `rbxassetid|MaterialVariant|SurfaceAppearance|Decal|Texture|Cobblestone|litter\.leaf`
    over every value in the five keys this domain supplies returns zero matches, and
    `environment.weathering.channels` is exactly `["material"]`.
@@ -287,5 +296,6 @@ Which zones exist, their counts, footprints, patch counts and bay lengths — `d
 and `plots`. Every hue, hex, rgb and the closed `Enum.Material` list itself — `styleGuide`;
 minimum feature size and ornament count — `formLanguage`. Where each part stands — sheets `02` to
 `05`. Whether `representation` accepts `RR-E1`, and which module creates a parapet — the
-architect. Whether a device reading is ever taken — **unowned in both contracts**. Whether these
-five keys are promoted or collapsed into one — the schema maintainer.
+architect. `StreamingTargetRadius`, `runtime.maxPlayers` and whether a device reading is ever
+taken — `budgets` and **unowned**. Whether these five keys are promoted or collapsed into one —
+the schema maintainer.
