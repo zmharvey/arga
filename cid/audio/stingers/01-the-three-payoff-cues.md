@@ -26,6 +26,14 @@ level. `theme/tone/04` `D3` and `D4` remove the genre's whole fanfare vocabulary
 or minor sting is available and none is wanted. **Two voices across three cues is what makes
 them one game rather than three assets.**
 
+**The 300 Hz fundamental floor is `[unverified]` and I say so rather than dress it as sourced.**
+The settling fetch is a published measured speaker response for the floor device —
+`audiokinetic.com/en/community/blog/loudness-and-frequency-response-on-popular-smart-phones/`,
+which returned 403 on two hosts, or any measurement of an iPhone SE (2nd gen). What it would
+settle is whether `theme/tone/04` `D3`'s sub-bass ban is taste or device fact, and how low a
+resolving chord may rest and still exist on the floor device. **The ban itself does not depend
+on the answer** — `D3` is an approved exclusion either way; only the exact floor moves.
+
 ### The rank carrier — S5, and it is not loudness
 
 `theme/tone/03` says `B1` is *"the loudest single moment in the game in every channel"* and
@@ -51,9 +59,10 @@ the object at the patch always outlives its sound and `B2` can be longer than it
 `theme/tone/03` permits. All three are inside the 10-second ceiling the platform puts on a
 publicly distributed sound effect, so nothing in the design is bounded by it
 `[research: https://devforum.roblox.com/t/public-sound-effects-upload-are-now-available-for-creators/2980704]`.
-All three figures are `[playtest unknown]`; nothing in this pipeline has ever heard this game
-and `notices` carries the same `[research owed:]` its dwells inherit — a reading or attention
-rate for an 8–11 band would let a length be derived rather than picked.
+All three figures are `[playtest unknown]` with the test ranges in the block below; nothing in
+this pipeline has ever heard this game, and `notices` carries the same
+`[research owed: a words-per-minute reading or attention rate for an 8-11 age band, which would let a cue length be derived from its plate's dwell rather than picked]`
+that its own dwells inherit — my lengths sit under an underived number.
 
 ### The coincident case, and the arithmetic that sizes it
 
@@ -64,9 +73,9 @@ Balance's 0.35 s floor the onsets compress to 0.0 / 0.35 / 0.70 and three voices
 0.5 s; at 0.9 s nothing overlaps but `B2` and `B3`, for 1.1 s. **What tells `B2` and `B3` apart
 through that overlap is contour direction, not level or timbre**: `B2` rises and `B3` falls,
 they share one voice and one mode, and `B3`'s two pitches are members of `B2`'s chord so the
-overlap is consonant. A cue pair told apart by level would be told apart by nothing on a phone
-speaker; a cue pair told apart by direction is told apart at any volume, including the one an
-eight-year-old's device actually produces.
+overlap is consonant rather than accidentally dissonant, which `D3` forbids. A cue pair told
+apart by level would be told apart by nothing on a phone speaker; a cue pair told apart by
+direction is told apart at any volume, including the one an eight-year-old's device produces.
 
 ### Global, not positional — S3
 
@@ -110,15 +119,17 @@ upload and without an ID-verification gate
 `[research: https://create.roblox.com/docs/audio/assets]`. All three are **mono** — the floor
 device has one speaker, and stereo doubles the memory cost against a 20 MB ceiling shared by
 six domains for nothing audible. `B2`'s width is carried by register span (root to octave), not
-by stereo image.
+by stereo image. Whether the three are preloaded is Mix's, and the mechanism exists
+`[research: https://create.roblox.com/docs/reference/engine/classes/ContentProvider]`.
 
 ### No beat becomes audio-only
 
 `B1` shares `atPatch` with reveal-visual work; `B2` and `B3` share `notice` with the `Set
 Complete` and `Area Complete` plates. `notices.forbidden.noticeSound` bans a sound authored by
 that key *precisely because* audio is these beats' second channel and is mine, so each
-completion has exactly one plate and exactly one stinger, begun from one cue body at one onset.
-A muted player keeps the plate; a player not reading the screen keeps the sound.
+completion has exactly one plate and exactly one stinger, begun from one cue body at one onset
+`[research: game/src/client/Beats.luau]`. A muted player keeps the plate; a player not reading
+the screen keeps the sound.
 
 ```manifest
 {

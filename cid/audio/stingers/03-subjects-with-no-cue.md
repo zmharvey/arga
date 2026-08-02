@@ -4,10 +4,11 @@
 
 ## Decision
 
-**Five of the six subjects this domain is assigned do not exist in this game, each closed by an
-approved rule rather than by taste, and all five are recorded as data with a grep-runnable
-observable.** Beside them sits a closed list of **27 stingers this genre reaches for that this
-game may not have.** The empty set is the output; silence about it would not be.
+**Four of the five subjects this domain is assigned do not exist in this game at all, and the
+fifth exists only in half — there is no unlock.** Six absent rows, each closed by an approved
+rule rather than by taste and each carrying a grep-runnable observable, sit beside a closed
+list of **27 stingers this genre reaches for that this game may not have.** The empty set is
+the output; silence about it would not be.
 
 ## Why
 
@@ -44,9 +45,9 @@ exists, and `analytics/economy/02` treats one occurrence as a correctness alarm 
 design case — a cue for it would be a cue for a bug. **A crescendo as an area nears
 completion**: `theme/tone/03` calls this *"the load-bearing one. A ramp is tension"*, and
 `HANDOFF.md`'s *"nobody downstream should invent tension to fill the gap"* is relayed at
-binding strength. **A reserved cue slot, bus or empty `SoundGroup`**: the scope gate fails a
-sheet that *"reserves space for, stubs, describes or specifies"* a priority-3 item, and an empty
-bus named for a future feature is exactly that in structural form.
+binding strength `[brief: binding]`. **A reserved cue slot, bus or empty `SoundGroup`**: the
+scope gate fails a sheet that *"reserves space for, stubs, describes or specifies"* a
+priority-3 item, and an empty bus named for a future feature is exactly that in structural form.
 
 ### This domain authors no strings
 
@@ -67,6 +68,9 @@ is owed.** The two completion plates' strings are `notices`', already coined at 
       { "id": "failureSting", "assignedAs": "failure stings", "verdict": "absent", "ruling": "response.negativeBeats is 0 and R10; input.rejectionCueOnFailedPrecondition is none with buy.onPreconditionFail silentNoOp; theme/tone/04 D12; 02-GAMEPLAY.md — there is no failure state", "observable": "no cue has class negative and no stinger cue body is reachable from a failed BuyUpgrade; Beats.luau's cue-seam header states the same rule independently" }
     ],
     "absentSubjectCount": 6,
+    "assignedSubjectCount": 5,
+    "assignedSubjectsWhollyAbsent": 4,
+    "assignedSubjectsPartlyReal": ["reward and unlock jingles — the reward half is stingers.cues, the unlock half is absent"],
     "forbidden": [
       "duplicateCue",
       "consolationCue",
@@ -148,8 +152,8 @@ is owed.** The two completion plates' strings are `notices`', already coined at 
   `emptySoundGroup` mean the `SoundGroup` tree it designs may hold no member with no cue in it.
   Three stinger assets, three bus memberships, no fourth slot.
 - **Music and Ambient work** inherit `crescendo`, `riser`, `swell` and `intensityRamp` as this
-  domain's copy of a rule they also hold. Where two domains state one prohibition, the observable
-  differs: mine is per cue row, theirs is per continuous layer.
+  domain's copy of a rule they also hold. Where two domains state one prohibition, the
+  observable differs: mine is per cue row, theirs is per continuous layer.
 - **Cross-category verification** gets 33 greps — 6 absent-subject observables and 27 forbidden
   names — every one of which is a search or a count rather than a judgment, and each of which
   fails a build that added the sound by reflex.

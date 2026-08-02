@@ -39,7 +39,11 @@ const MANIFEST = /```manifest\s*\n([\s\S]*?)\n```/g;
  *
  * Counting both together is what produced this module's first, wrong estimate.
  */
-const RESEARCH_URL = /\[research:\s*(https?:\/\/[^\s\]]+)/g;
+// A backtick terminates a url here for the same reason it does in BARE_URL below: a wave-1 sheet
+// wrote `[research: https://…`, fetched this run`]`, which banked the url with a backtick glued
+// on. `cid:verify` then fails any later sheet citing the clean form — the fetch is paid for and
+// unusable, which is the opposite of what this pack is for.
+const RESEARCH_URL = /\[research:\s*(https?:\/\/[^\s\]`]+)/g;
 const RESEARCH_ANY = /\[research:\s*([^\]]+)\]/g;
 
 /** Sheets are `NN-slug.md`; `_lead.md` and `_category.md` are indexes, not sheets. */
@@ -252,7 +256,12 @@ export function renderDigest(rows) {
  * strict tag rule — a writer citing a page it did not fetch is the thing this file exists
  * to catch, and loosening that would retire the check.
  */
-const BARE_URL = /(?<!\()\bhttps?:\/\/[^\s)\]|>"']+/g;
+// A lead writes a url the way a person does, which includes inside a `code span` and inside a
+// table cell ending in ` |`. Both leave a trailing character on the match, and a banked url with
+// a stray backtick is worse than an unbanked one: `cid:verify` fails the writer that cites the
+// clean form, so the fetch is paid for and still unusable. Reported by the wave-6 Characters
+// writer, which hit four of them and had to cite a repo path instead.
+const BARE_URL = /(?<!\()\bhttps?:\/\/[^\s)\]|>"'`]+/g;
 
 export async function researchPack(root) {
   /** @type {Map<string, {url: string, claims: Set<string>, citedBy: Set<string>}>} */

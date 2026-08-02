@@ -90,6 +90,11 @@ server rather than letting them play a whole session that will be discarded.
   point at one key rather than two. At 1,680 the payload is ~19,700 characters, 0.47% of the cap,
   and it still does not grow with progress.
   `[research: cid/gameplay/balance/03-ladder-solvency.md]`
+- **This key now asks the architect to widen nothing.** The round-1 request for an eighth persisted
+  field is withdrawn: Funnels and Engagement settled it on the ground that a brand-new save is
+  byte-equal to `defaultState()`, so "run 1" is a predicate over the seven fields already persisted.
+  **No run ordinal is derivable from persisted state and none should be restated as available.**
+  Every remaining request below corrects a contract statement rather than adding to one.
 - **No link between the tick and the save.** `runtime.clearTickRate` and `saveIntervalSeconds` are
   independent; the withdrawn 0.12 → 0.04 tick request moved no figure in the budget block. Stated
   because a builder reading both sheets will look for one.
@@ -217,7 +222,7 @@ server rather than letting them play a whole session that will be discarded.
       "clearTickRateLink": "none. runtime.clearTickRate and runtime.saveIntervalSeconds are independent and the withdrawn 0.12 to 0.04 tick request moved no figure in this block."
     },
     "payload": {
-      "fields": "exactly the seven stateShape fields marked persisted, plus the envelope fields sessionLock.record declares and nothing else",
+      "fields": "exactly the seven stateShape fields marked persisted, plus the envelope fields sessionLock.record declares and nothing else. No eighth persisted field is requested by this domain.",
       "clearedMaxKeysSource": "max(solvency.areaLedger[].patchCount, solvency.postTerminalBay.patchCount) — read from that key, never copied. Both halves sit in one manifest block, which is why this points at one key rather than two.",
       "clearedMaxKeysAtSource": 1680,
       "sourceStatus": "RELEASED — cid/gameplay/_verified-wave4.md line 3, 'Final verdict: PASS (round 3).'",
@@ -233,7 +238,9 @@ server rather than letting them play a whole session that will be discarded.
       "worstCasePercentOfValueCap": 0.47,
       "integerKeysReturnAsStrings": true,
       "integerKeyRule": "every reader of cleared uses tonumber(key) and never a type test, because the JSON round trip returns integer keys as strings",
-      "growsWithProgress": false
+      "growsWithProgress": false,
+      "runOrdinalDerivable": false,
+      "runOrdinalNote": "no persisted field carries a session count, a join count or a clock. Funnels derives run-1 membership as a predicate over these seven fields; nothing here should be read as an ordinal."
     },
     "forbidden": [
       { "id": "D1",  "rule": "no entitlement or purchase-derived value is written or cached — products.F20",                          "observable": "grep -rn 'state.owned' game/src/server/Persistence.luau returns nothing" },
@@ -244,7 +251,7 @@ server rather than letting them play a whole session that will be discarded.
       { "id": "D6",  "rule": "no nullable field: every field has a non-nil value in defaultState(), and absence is never meaningful", "observable": "Luau drops a nil-valued field from a table constructor, so a nullable key here would be unreadable at runtime — see GameConfig.Economy.balanceCap" },
       { "id": "D7",  "rule": "no math.random, Random.new, os.time, os.clock or tick in this module",                                  "observable": "grep -rn 'math.random\\|Random.new\\|os.time\\|os.clock\\|tick()' game/src/server/Persistence.luau returns nothing" },
       { "id": "D8",  "rule": "no per-area boolean and no per-post-terminal-bay flag; areasFinished is the one integer",               "observable": "grep -rn 'areaComplete' game/src returns nothing" },
-      { "id": "D9",  "rule": "no lastSeen, no streak, no daily-grant field, no promo-code field",                                     "observable": "the payload literal in save() has exactly the declared field names" },
+      { "id": "D9",  "rule": "no lastSeen, no streak, no daily-grant field, no promo-code field, and no session or join counter",     "observable": "the payload literal in save() has exactly the seven stateShape field names plus lock" },
       { "id": "D10", "rule": "no second DataStore, no second key per player, no scope argument",                                      "observable": "grep -rn 'GetDataStore' game/src/server/Persistence.luau returns exactly one match" },
       { "id": "D11", "rule": "no GetVersionAsync, ListVersionsAsync or RemoveAsync in game code",                                     "observable": "grep -rn 'GetVersionAsync\\|ListVersionsAsync\\|RemoveAsync' game/src returns nothing" },
       { "id": "D12", "rule": "no remote reads or writes a save; the snapshot is protocol's and carries no payload field",             "observable": "grep -rn 'Persistence' game/src/client returns nothing" },
@@ -266,15 +273,16 @@ server rather than letting them play a whole session that will be discarded.
 
 ## Revision requests issued
 
-I do not edit `architect/`. Each of these names a field.
+I do not edit `architect/`. Each names a field, and **every live one corrects a contract statement
+rather than widening a shape.**
 
 | id | target | request |
 |---|---|---|
-| **RR-P1** *(narrowed r1, tightened r2)* | `architect/03-state-shape` — `fields` | Add an eighth persisted field **`runOrdinal: integer`** (`sessions` in round 1; renamed to the spelling Engagement uses), `writtenBy: "persistence"`. **Engagement's three conditions are adopted verbatim and are what make it acceptable:** (1) a **monotonic integer incremented at join**, never a clock and never a duration; (2) **no path converts it to currency, progress, a grant or a modifier**; (3) it counts **saved** sessions, so it is a **lower bound** rather than an exact count — which falls out of my own design, since a `writesBlocked` session increments in memory and never persists. A first-ever load yields `1`. The gap it closes is the run-ordinal half only: Event Logging has since closed session identity with no schema change, holding one in a module-local `UserId` map. What remains underivable anywhere in the game is **which run this is** — `load` returns `readable`, which is `true` for a fresh save, so nothing can tell a returning player from a new one or order two sessions, and Engagement and Funnels both need that. It is **not a streak** (no date component, cannot express consecutiveness). Cost: one integer, `log10` digits of payload. **Adding it fires my own sheet-03 trigger `B3` and bumps the store.** |
+| **RR-P1** | `architect/03-state-shape` — `fields` | **WITHDRAWN, round 3.** Asked for an eighth persisted field (`sessions`, then `runOrdinal`) because three domains needed a run ordinal. Funnels and Engagement have since settled it between them: **a brand-new save is byte-equal to `defaultState()`**, so "run 1" is a predicate over the seven fields already persisted, not a new field. Funnels carries it as a `saveState ["pristine","progressed","unknown"]` custom field and Event Logging holds the join clock module-locally. `stateShape` gains nothing, no store bump is owed, and the id is retained withdrawn so the numbering below stays stable. **The stated bias is Funnels' to carry: a zero-progress rejoin reads `pristine`, so run-1 populations over-count.** Nothing in `persistence` restates a run ordinal as available — see `payload.runOrdinalDerivable`. |
 | **RR-P2** | `architect/03-state-shape` — acceptance criterion 2 | Narrow to: "The persisted payload contains exactly the seven fields marked `persisted: true`, **plus any envelope field declared in `sessionLock.record` and declared nowhere else**. `patches`, `spawnPivot`, `owned`, `armState` and `player` never reach a DataStore." The criterion's purpose is that no *live* field reaches the store; a lock field is `persistence`'s envelope and is not a `PlayerState` field at all. |
 | **RR-P3** | `architect/02-modules` — `persistence.exposes` | `save(player, state): boolean` → `save(player, state): (boolean, string?)`. `server-main` cannot distinguish an ordinary write failure from a stale session from a Studio suppression without it, and both the release counter and `studioWriteGuard.countsTowardRelease` turn on exactly that distinction. Backward compatible: an existing caller ignoring the second return still compiles. |
 | **RR-P4** | `architect/02-modules` — `entitlements` criterion 3 | `grep -rn 'owned' game/src/server/Persistence.luau returns nothing` is **unsatisfiable** — it returns two matches (a comment and `owned = {}`) and it must, because `07-wiring.constructs` requires `defaultState()` to set `owned {}` there. Narrow it to `grep -rn 'state.owned'`, which is what `03-state-shape` criterion 8 already greps and which passes. |
-| **RR-P5** *(path verified r2)* | `architect/03-state-shape` — the `cleared` note, and `02-modules` `persistence` criterion 1 | Replace the literal "at most 640 keys" with **`max(solvency.areaLedger[].patchCount, solvency.postTerminalBay.patchCount)`**, which is **1,680** against released wave 4. I checked all four candidate paths against the released manifests rather than against anybody's prose: `depths` carries **no** `postTerminalBay` field and **no** `postTerminalArea` field, so my own round-1 spelling and Performance's both fail to resolve; `depths.areas[].patchCount` and `endgame.postTerminalArea.patchCount` do resolve but were not re-emitted after wave 4 and still read 640. `solvency` is the only key whose block holds both the eight-area ledger and the bay, which is why the pointer names one key rather than two. **Agreed with Performance as the single spelling.** |
+| **RR-P5** *(path verified r3)* | `architect/03-state-shape` — the `cleared` note, and `02-modules` `persistence` criterion 1 | Replace the literal "at most 640 keys" with **`max(solvency.areaLedger[].patchCount, solvency.postTerminalBay.patchCount)`**, which is **1,680** against released wave 4. I checked all four candidate paths against the released manifests rather than against anybody's prose: `depths` carries **no** `postTerminalBay` field and **no** `postTerminalArea` field, so my own round-1 spelling and Performance's both fail to resolve; `depths.areas[].patchCount` and `endgame.postTerminalArea.patchCount` do resolve but were not re-emitted after wave 4 and still read 640. `solvency` is the only key whose block holds both the eight-area ledger and the bay, which is why the pointer names one key rather than two. **Agreed with Performance as the single spelling.** |
 | **RR-P6** | `architect/07-wiring` — `onSave` step 1 | Its description reads "a failure warns and the loop continues; the next pass retries by existing", which is true of a *write* failure and silent on the read-failure latch. Add that for a `writesBlocked` player the pass performs a re-read rather than a write, that a re-read returning a payload is still a failed pass, and that three consecutive `readFailed` returns release the player. |
 
 ## Consequences for other work
@@ -291,11 +299,13 @@ I do not edit `architect/`. Each of these names a field.
 - **Build & Deploy work** owns `release.environments.studioWriteRule` and now has the field its AC3
   greps for: `persistence.studioWriteGuard`. It also inherits `D6` as the concrete case of its own
   emitted-null hazard — no value in any of my three keys is null.
-- **Engagement and Funnels work** get RR-P1 written to Engagement's three conditions, including that
-  `runOrdinal` is a **lower bound** on sessions played and may never be reported as an exact count.
+- **Engagement, Funnels and Event Logging work** get no field from the save. `payload
+  .runOrdinalDerivable` is `false` and `D9` now bans a session or join counter by name, so nobody
+  reopens this by adding one quietly. The `pristine` over-count bias is Funnels' to carry.
 - **Whoever executes `solvency`'s revision table** should note that `endgame.postTerminalArea
   .patchCount` and `depths.areas[].patchCount` both still read 640 and are now named by three keys
-  as unsafe pointers. Landing that table retires `pointersThatDoNotResolve` rows 3 and 4.
+  as unsafe pointers. Landing that table retires `pointersThatDoNotResolve` rows 3 and 4 — and it is
+  a **save migration**, per sheet 03's `W1`.
 - **Security work** inherits that a save is never client-reachable (`D12`).
 
 ## Pushing back
@@ -327,8 +337,9 @@ Whether a session lock exists, its record, its cadence and its steal timeout —
 `sessionLock` and supplies the envelope field this payload carries. What forces a store bump,
 whether a prior version is read, and the migration and per-bump rollback — sheet 03, which holds
 `storeMigration`. The persisted field list, the store name and the 45-second interval —
-`architect`'s `stateShape`, `runtime` and `wiring`; every change I need is a revision request above.
-Every patch count, footprint and bay length — `solvency` and `depths`; I read one field and set
-none. The **rule** that no write runs in Studio — `cid/tech/deploy`'s `release`; I own only where
-the guard sits. The exact string a released player reads — `notices` (`ui-ux/feedback` 03). Where
-the warning pipe writes — nobody's; named in `observability.pipe`.
+`architect`'s `stateShape`, `runtime` and `wiring`; this domain asks for no eighth field. How a run
+ordinal or a session boundary is obtained — Funnels' `saveState` predicate and Event Logging's
+module-local clock; the save supplies neither. Every patch count, footprint and bay length —
+`solvency` and `depths`; I read one field and set none. The **rule** that no write runs in Studio —
+`cid/tech/deploy`'s `release`; I own only where the guard sits. The exact string a released player
+reads — `notices` (`ui-ux/feedback` 03). Where the warning pipe writes — nobody's.
