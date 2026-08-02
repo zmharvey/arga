@@ -4,7 +4,7 @@
 
 ## Decision
 
-**Ducking, roll-off and voice-stealing are the only three legal degradations, and none of them may refuse an onset.** A `Stingers` voice ducks `World` to 0.45 and `Beds` to 0.35 of default over 0.08 s in and 0.35 s out; `World` uses `InverseTapered` 8→72 studs and `WorldNeighbour` `LinearSquare` 2→26 studs at a third of `World`'s level; and the cap is **24 concurrent voices** `[playtest unknown]`, reserved per bus, enforced by stealing a tail that has already been audible for 0.08 s and never by declining to start.
+**Ducking, roll-off and voice-stealing are the only three legal degradations, and no onset of this client's own five beats may ever be refused.** A `Stingers` voice ducks `World` to 0.45 and `Beds` to 0.35 of default over 0.08 s in and 0.35 s out; `World` uses `InverseTapered` 8→72 studs and `WorldNeighbour` `LinearSquare` 2→26 studs at a third of `World`'s level; and the cap is **24 concurrent voices** `[playtest unknown]`, reserved per bus, enforced by stealing a tail that has already been audible for 0.08 s — with exactly one enumerated refusal, on the one bus that carries no beat of this client's.
 
 ## Why
 
@@ -22,11 +22,13 @@
 
 **Stealing is legal and refusing is not, and the line between them is 0.08 s.** `response.beats[patchClear]` acknowledges in 80 ms. A voice that has been audible for its own acknowledgment budget has *happened*; taking its ringing tail removes no acknowledgment. Refusing to start one removes the acknowledgment entirely, which is `N14`'s prohibition wearing a mixer's name. So `minAudibleBeforeStealSeconds` equals the budget exactly, and when no voice qualifies the new onset plays anyway and the bus exceeds its reservation.
 
-**One `Sound` cannot overlap itself** — `Play()` restarts it `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/Sound.yaml]` `[research: https://devforum.roblox.com/t/how-do-you-play-a-sound-without-restarting-it/1101216]` — so every cue row carries a `poolSize` and a play site acquires from a pool. Without that, `onOverload: "overlap"` at 8 onsets a second builds a machine-gun restart, and two builders would not converge on the fix.
+**There is exactly one exception and it is enumerated rather than implied.** A `WorldNeighbour` onset arriving when all five of that bus's voices are younger than 0.08 s is **refused**. It is legal on the merits — it is not one of this client's five beats, so `N14` does not reach it, and `social/02` makes a neighbour a **sight** requirement, which is the same judgement the stealing order already makes by taking that class first. What it was not, until now, was *stated*: `M11` banned refusal unscoped while this sheet performed one. `refusalCases` has one entry, `M11` names the same bus, and a build can be failed against the pair.
+
+**One `Sound` cannot overlap itself** — `Play()` restarts it `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/Sound.yaml]` `[research: https://devforum.roblox.com/t/how-do-you-play-a-sound-without-restarting-it/1101216]` — so every cue row carries a `poolSize` and a play site acquires from a pool. **Pool depth tracks the reservation for a class that is stolen from first, and the burst for a class that is not.** That is why the own-work clear is 8 and its neighbour twin is 5, and it is now a stated rule rather than a discrepancy a reader has to reconstruct.
 
 **The bed is never stolen, and that was implicit until now.** `Beds` receives exactly one onset per session, so the stealing trigger — *a bus is at its reservation and a new onset arrives for it* — can never fire on it. But a builder implementing a naive global "steal the oldest voice at 24" silences the layer for the whole session, which a player would notice. `neverStolen: ["Beds"]` makes the structural fact a field.
 
-**The ducked window reads the cues, not the caps.** My first figure took `notices`' 2.5 s and 3.0 s **ceilings** and then added a release term it did not include, so it disagreed with its own derivation. The real hold is over `stingers.cues[*].audibleSeconds` — the last stinger voice ends 3.2 s after `B1`'s onset, and the duck releases 0.35 s later. Both terms are now read by field so the figure re-derives if either owner moves a number.
+**The ducked window reads the cues, not the caps.** My first figure took `notices`' 2.5 s and 3.0 s **ceilings** and then added a release term they did not include, so it disagreed with its own derivation. The real hold is over `stingers.cues[*].audibleSeconds` — the last stinger voice ends 3.2 s after `B1`'s onset, and the duck releases 0.35 s later. Both terms are read by field so the figure re-derives if either owner moves a number.
 
 **The coincidence trim is a headroom rule and `theme/tone/03` does not reach it.** That sheet forbids a cue whose *intensity is a function of progress, streak, count, elapsed time, or depth*. A trim keyed to how many `Stingers` voices are live moves **only downward**, is **one step and never a ladder**, applies to the bus so all three cues scale together and the `B1 > B2 > B3` ranking is preserved exactly, and never varies by *which* beats are coincident. It cannot make any cue louder than its row in `levelLadder`, which is the property that makes it a limiter rather than an escalation. `forbidden` `M9` makes the boundary checkable.
 
@@ -38,7 +40,7 @@
   "authoritativeIn": "cid/audio/mix/01-bus-tree-and-levels.md",
   "value": {
     "ducking": {
-      "principle": "a level change on a bus, never a suppression of a voice. Nothing in this key drops, refuses, queues, delays, shortens or fades out an onset.",
+      "principle": "a level change on a bus, never a suppression of a voice. Nothing in this key drops, queues, delays, shortens or fades out an onset of one of this client's five beats.",
       "crossBus": [
         { "cause": "any audible Stingers voice", "ducked": "World", "toFractionOfDefault": 0.45, "duckedBusVolume": 0.2475, "realisedCueLevelWhileDucked": 0.1485 },
         { "cause": "any audible Stingers voice", "ducked": "WorldNeighbour", "toFractionOfDefault": 0.45, "note": "inherits World's duck through the bus chain and is never ducked twice" },
@@ -122,27 +124,40 @@
         "afterRollOffOnsetsPerSecond": 24,
         "afterRollOffConcurrentVoices": 10,
         "whatActuallyPaysForTheCap": "the roll-off profile removes 19 of the 29 worst-case voices, not the cap. A cap set against the unattenuated 29 would sit above the one phone-adjacent failure report.",
-        "theBurstIsNotSpread": "these rates are a per-second average. Beats.luau:554-563 begins a tick's whole clearedCount rise inside one frame, so the instantaneous demand is the rise itself. That is a pool-depth question, answered in mix.assets.rows[].poolSize, and it does not move any figure above: a rise of 8 is 8 voices against World's 15."
+        "theBurstIsNotSpread": "these rates are a per-second average. Beats.luau:554-563 begins a tick's whole clearedCount rise inside one frame, so the instantaneous demand is the rise itself. That is a pool-depth question, answered in mix.assets.rows[].poolSize, and it moves no figure above: a rise of 8 is 8 voices against World's 15."
       },
       "reservations": [
         { "bus": "Stingers", "voices": 4, "why": "three cues plus one spare for the coincident chain's overlapping tails" },
-        { "bus": "Interface", "voices": 3, "why": "three cue classes; input.debounceSeconds 0.35 caps the rate at 2.9 per second" },
+        { "bus": "Interface", "voices": 3, "why": "three cue classes — upgradePurchased, indexOpen, indexClose — and input.debounceSeconds 0.35 caps the rate at 2.9 per second" },
         { "bus": "World", "voices": 15, "ofWhichWorldNeighbour": 5, "ownWorkHeadroom": 10, "why": "10 own-work voices against an 8-voice simultaneous burst" },
         { "bus": "Beds", "voices": 2, "why": "ambience.layerCount is at most 2" }
       ],
       "reservationsSum": 24,
       "stealing": {
         "trigger": "a bus is at its reservation and a new onset arrives for it",
-        "neverRefuses": "an onset is never refused, delayed, batched, shortened or faded. response.onOverload is \"overlap\" and performance/03 N14 forbids every alternative.",
+        "neverRefuses": "no onset of one of this client's five beats is ever refused, delayed, batched, shortened or faded. response.onOverload is \"overlap\" and performance/03 N14 forbids every alternative. The one exception is enumerated in refusalCases and carries no beat of this client's.",
         "neverStolen": ["Beds"],
         "neverStolenReason": "Beds receives exactly one onset per session, so the trigger can never fire on it. The field exists because a naive global 'steal the oldest voice at 24' silences the layer for the whole session, which a player would notice. ambience asked for this exemption or a stated restart; this is the exemption.",
         "minAudibleBeforeStealSeconds": 0.08,
         "minAudibleReason": "equals response.beats[patchClear].budgetMs 80. A voice audible for its own acknowledgment budget has happened; taking its ringing tail removes no acknowledgment, and refusing to start one removes the whole of it.",
+        "poolDepthRule": "pool depth tracks the RESERVATION for a class this order steals from first, and the BURST for a class it does not. cue.patchClear is 8 because nothing steals from World before it; cue.patchClear.neighbour is 5 because step 1 empties WorldNeighbour first and instances beyond the reservation could never sound.",
         "order": [
           { "n": 1, "steal": "any WorldNeighbour voice past minAudibleBeforeStealSeconds, longest-elapsed first", "why": "social/02 makes a neighbour a SIGHT requirement, so this is the only voice class whose loss costs no stated requirement" },
           { "n": 2, "steal": "any voice on the requesting bus past minAudibleBeforeStealSeconds, longest-elapsed first" },
-          { "n": 3, "steal": "nothing. Play the new onset and exceed the reservation.", "why": "if every voice on the bus is under 0.08 s, stealing one would take an onset rather than a tail" }
+          { "n": 3, "steal": "nothing. Play the new onset and exceed the reservation — on every bus except WorldNeighbour, which refuses instead. See refusalCases.", "why": "if every voice on the bus is under 0.08 s, stealing one would take an onset rather than a tail" }
         ],
+        "refusalCases": [
+          {
+            "bus": "WorldNeighbour",
+            "case": "an onset arrives when all five of that bus's reserved voices are younger than minAudibleBeforeStealSeconds",
+            "outcome": "the onset is refused. No voice is taken and no reservation is exceeded.",
+            "whyItIsLegal": "it is not one of response's five beats fired for this client, so performance/03 N14 does not reach it; social/02 makes a neighbour a SIGHT requirement rather than an audible one; and stealing.order step 1 already makes the same judgement by emptying this class first. The alternatives are worse: exceeding a reservation this key set at 5 for a class it steals from first, or taking an onset rather than a tail.",
+            "whatItCosts": "one neighbour clear is unheard. Nothing this client did, and nothing this client is told, changes.",
+            "howOftenItArises": "it needs five neighbour onsets inside 0.08 s from lanes within 26 studs, which needs the player standing at a lane boundary while a neighbour's whole tick rise lands.",
+            "scopedBy": "mix.forbidden M11.onePermittedRefusal names this bus. It is the only refusal in the game."
+          }
+        ],
+        "refusalCaseCount": 1,
         "neverStealsAcrossBuses": "except step 1, which releases WorldNeighbour to its own parent World",
         "stealMethod": "fade the stolen voice out over 0.06 s rather than Stop(), so a tail removal is not a click",
         "hardVoiceCeiling": 32,
@@ -157,11 +172,11 @@
 
 ## Consequences for other work
 
-- **In-world-sound work (`sfx`).** Your simultaneous-burst reading is adopted and is now the ledger's derivation: `Beats.luau:554-563` fires a whole tick's rise in one frame, so `cue.patchClear.poolSize` is **8**, not 6, and it fits inside `World`'s 10 own-work voices. The neighbour row stays at **5** and is explicitly exempted from the same reasoning, because `WorldNeighbour`'s reservation is 5 and a deeper pool would allocate instances the cap forbids sounding. Your reading that stealing a same-cue tail is not dropping an onset is adopted, and 0.08 s is where I put the line.
+- **In-world-sound work (`sfx`).** Your simultaneous-burst reading is the ledger's derivation: `Beats.luau:554-563` fires a whole tick's rise in one frame, so `cue.patchClear.poolSize` is **8** and fits inside `World`'s 10 own-work voices. The neighbour twin is **5** under `stealing.poolDepthRule` — depth tracks the reservation for a class stolen from first — and the one consequence of that, a refused neighbour onset when all five voices are under 0.08 s old, is now enumerated rather than left to a reader to infer. Your reading that stealing a same-cue tail is not dropping an onset is adopted, and 0.08 s is where I put the line.
 - **Reward-hit work (`stingers`).** Your three cues are the only duck cause in the game. `heldAtDuckedLevelSeconds` 3.2 and `worstCaseDuckedWindowSeconds` 3.55 are read off `cues[*].audibleSeconds` **by field**, so if you move a length or take `notices`' offered dwell revision, both figures re-derive and nothing else in this key moves.
-- **Continuous-layer work (`ambience`).** Two things you asked for. `Beds` ducks to 0.35 under any stinger, so a bed sits at a realised 0.0578 for up to 3.55 s per completing lap — audible, and the deepest duck in the game. And `neverStolen: ["Beds"]` is now a field rather than a structural accident, which is the exemption your `concurrencyRequirementOnMix` asked for.
-- **Interface-sound work (`uiSound`).** Your bus is never ducked and never trimmed, and its 3 voices are never stolen by anything else. A press cue and `B4` landing inside 200 ms on one control both fit.
-- **Instance-representation work (`architect/06`).** A voice pool is instances, created once by the boot module and reused. The stealing order needs a per-voice elapsed-playback read, which is `TimePosition`, and a 0.06 s fade, which is a `Volume` write on the `Sound` and not on the bus. `Beds` members are never touched by either.
+- **Continuous-layer work (`ambience`).** Two things you asked for. `Beds` ducks to 0.35 under any stinger, so a bed sits at a realised 0.0578 for up to 3.55 s per completing lap — audible, and the deepest duck in the game. And `neverStolen: ["Beds"]` is a field rather than a structural accident, which is the exemption your `concurrencyRequirementOnMix` asked for.
+- **Interface-sound work (`uiSound`).** Your bus is never ducked, never trimmed and never refused, and its 3 voices — one per cue class you ship — are never stolen by anything else.
+- **Instance-representation work (`architect/06`).** A voice pool is instances, created once by the boot module and reused. The stealing order needs a per-voice elapsed-playback read, which is `TimePosition`, and a 0.06 s fade, which is a `Volume` write on the `Sound` and not on the bus. `Beds` members are never touched by either, and a `WorldNeighbour` acquire may legitimately return nothing.
 - **Device-budget work (`budgets`).** Nothing here asks for a tick, a frame or an instance change. The cap is a client-side count over `Sound` instances the boot module already owns.
 
 ## Acceptance criteria
@@ -169,8 +184,8 @@
 1. `sum(mix.concurrency.reservations[].voices) == mix.concurrency.maxConcurrentVoices` (4 + 3 + 15 + 2 = 24); `reservations[World].ofWhichWorldNeighbour` (5) plus `ownWorkHeadroom` (10) equals `voices` (15); and `ownWorkHeadroom` is at least `mix.assets.rows[cue.patchClear].poolSize` (10 ≥ 8).
 2. Neither `mix.attenuation.profiles[World].rollOffMode` nor `[WorldNeighbour].rollOffMode` is `Inverse`, and both are modes that use `RollOffMaxDistance`.
 3. `mix.ducking.worstCaseDuckedWindowSeconds` equals `heldAtDuckedLevelSeconds` plus `envelope.releaseSeconds` (3.2 + 0.35 = 3.55), and no ducking or trim figure anywhere in `mix.ducking` is below `minimumDuckedFraction` 0.30.
-4. `mix.concurrency.stealing.order` contains exactly one step whose action plays the onset regardless, `neverStolen` contains `Beds`, and no field in `mix.concurrency` or `mix.ducking` names a queue, a delay, a drop or a refusal.
+4. `mix.concurrency.stealing.refusalCaseCount` is 1, its one entry's `bus` is `WorldNeighbour` and matches the bus named in `mix.forbidden` `M11.onePermittedRefusal`, `neverStolen` contains `Beds`, and no bus carrying a `response` beat appears in `refusalCases`.
 
 ## Not decided here
 
-Whether `patchClear` has an `audio` channel at all, and whether a neighbour's clear is authored as a positional cue — **G1** and **G7**'s content half, both in-world-sound work's, and this sheet is written so either answer is legal. What any cue is made of, its audible length and its variation rule — the owning key; I read `stingers.cues[*].audibleSeconds` by field and set none of it. `response.minOnsetGapSeconds`' figure inside its 0.35–0.9 range — Balance and Tuning. `notices`' `dwellSeconds` — feedback work, whose 5.0 s ceiling I neither reach nor ask to move. The bus tree, every bus level and the `SoundService` writes — sheet `01`, which carries `mix`. Every `poolSize` figure and the asset rows they sit in — sheet `03`. Whether the loss of a stolen neighbour tail is perceptible — `[playtest unknown]`, and the listening test joins `tech/performance/01`'s unowned measurement list.
+Whether `patchClear` has an `audio` channel at all, and whether a neighbour's clear is authored as a positional cue — **G1** and **G7**'s content half, both in-world-sound work's, and this sheet is written so either answer is legal. What any cue is made of, its audible length and its variation rule — the owning key; I read `stingers.cues[*].audibleSeconds` by field and set none of it. `response.minOnsetGapSeconds`' figure inside its 0.35–0.9 range — Balance and Tuning. `notices`' `dwellSeconds` — feedback work, whose 5.0 s ceiling I neither reach nor ask to move. The bus tree, every bus level and the `SoundService` writes — sheet `01`, which carries `mix`. Every `poolSize` figure and the asset rows they sit in — sheet `03`. Whether the loss of a stolen neighbour tail, or of the one refused neighbour onset, is perceptible — `[playtest unknown]`, and the listening test joins `tech/performance/01`'s unowned measurement list.

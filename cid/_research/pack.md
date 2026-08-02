@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 325 unique source(s); 196 were
+Extracted from `cid`. 325 unique source(s); 225 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -45,15 +45,28 @@ did not fetch" becomes checkable instead of trusted.
 
 ## https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator
 
-*Cited by 8: `gameplay/onboarding/_lead`, `liveops/codes/01-no-redemption-path`, `liveops/codes/_lead`, `liveops/events/01-whether-an-event-exists`, `liveops/events/_lead`, `marketing/store-page/_lead`, `theme/tone/01-register`, `theme/tone/_lead`*
+*Cited by 9: `gameplay/onboarding/_lead`, `liveops/codes/01-no-redemption-path`, `liveops/codes/_lead`, `liveops/events/01-whether-an-event-exists`, `liveops/events/_lead`, `marketing/store-page/01-the-claim-ledger-and-the-description`, `marketing/store-page/_lead`, `theme/tone/01-register`, `theme/tone/_lead`*
 
 - **The reference has no discovery layer, so it never teaches one.** Its store page describes it as "A relaxing lawn-trimming simulator game 🌿 The more you rebirth and upgrade, the more fun the game becomes!" `` **This is the finding that matters: the reference's teaching order is exactly the economy-first, finds-later alternative `02-GAMEPLAY.md` explicitly declined.** It is not a model to copy in order, only in shape, and the item at position 2 is the entire divergence.
 - *Its codes half is falsified by its own subject.** The reference's experience description advertises *"Join the Unequal Games group for in-game boosts!"* and a like/favourite prompt and **never mentions codes or redeeming anything** ``. The same studio's Scrap Incremental ships a byte-identical description template with the same group boost and no codes ``. A codes aggregator maintains a page for the reference and lists **no active codes as of March 2026** ``. Against 38.2M visits and a 96.2% like ratio at the brief's read ``. **If absence read as unfinished, the reference would be reading…
 - The reference's own experience description, primary source: *"👍 Enjoying the game? Leave a Like and Favorite! ❤️ Join the Unequal Games group for in-game boosts!"* — **a group-join boost and a like/favourite prompt, and no mention of codes or of redeeming anything** ``
 - *The reference is the counterweight and its asymmetry is the useful part.** `research/grass-incremental.md` says the absence of *codes and a group-join reward* *"reads as an unfinished game"* `` — it names those two and **not events**. The reference's page carries a group-join boost and a like/favourite ask and lists **no event** `` `[unverified: whether it has ever run one — an experience page shows only active and upcoming events, so today's empty listing is not a history. Settled by that experience's Events & Updates listing including its Finished tab, or an archive of its event pages.]`…
 - 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
+- *The register is the decision, and it is a differentiation argument.** Four fetched competitor descriptions open with *relaxing*: Grass Incremental *"A relaxing lawn-trimming simulator game"* ``, Leaves Incremental *"A relaxing leaf-gathering simulator"* ``, plus Scrap and Lumber ``. The platform states the first sentence is where genre and content are read ``, so spending it on the family's most-shared adjective spends the highest-value real estate on a signal that says *one of these*. `theme/tone/01` released the word to me with recommendation (a); I decline the freedom rather than…
 - The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
 - **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
+
+## https://create.roblox.com/docs/production/publishing/accessibility
+
+*Cited by 8: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`, `art/style/01-palette-and-materials`, `art/style/_lead`, `marketing/icon/02-legible-at-150`, `marketing/icon/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
+
+- *That does not fail the brief, and no sheet may pretend the floor is what satisfies it.** The requirement is *"rarity tiers must differ by shape or silhouette, not only hue … a requirement, not a nicety"* `[brief: soft]`, read as binding by `architect/06`, and it is carried by `tiers` shipping four distinct shapes at four heights, checked by `tiers` criterion 4. The platform lands in the same place: Roblox publishes **no contrast ratio at all** and recommends *"different symbols alongside colors"* ``. **The luma floor buys one thing — cleared ground never reads darker than the plants on it…
+- *The luma floor is not the legibility guarantee, and no sheet may claim it as one.** It is Rec.601 luma; WCAG 1.4.11's 3:1 is sRGB relative luminance, a different quantity, computing to roughly **1.5:1** against `tiers[0]` — a 3:1 ratio would need a stone at about **231** luma, above `C1`'s cap and therefore unreachable by any legal stone. That does not fail the brief: the guarantee is `tiers`' four shapes and four heights under *"rarity tiers must differ by shape or silhouette, not only hue"* `[brief: soft]`, treated as effectively binding. But a sheet citing the luma floor as an…
+- *Which leaves separation, region count and silhouette — the same three channels the platform itself points at.** Roblox publishes **no contrast ratio at all** and prescribes *"different symbols alongside colors"* ``, and its icon page asks only that you *"express your game's theme through color and contrast"* ``. Neither gives a number, so importing one from WCAG would be importing a number the platform does not ask for onto a palette that cannot meet it.
+- > *"Warmth nearly halves the shortfall and still does not close it. Reaching 3:1 needs an authored > Rec.601 luma near **231** — 66 above the floor, reading as near-white, which `theme/setting/01` > forbids by name."* and `V13`: *"**No sheet may state the Rec.601 floor as the legibility > guarantee.** … Legibility is carried by shape and silhouette."* — `art/lighting/02` → approved. > Roblox *"publishes no contrast ratio at all"* and prescribes *"different symbols alongside > colors"* ``, banked.
+- *Fetched additionally, because sheet 02 will need it and the writer cannot fetch:** the accessibility position is already banked by `art/style/01` — Roblox publishes **no contrast ratio** and recommends *"different symbols alongside colors"* ``. Sheet 02 should lean on that rather than importing a WCAG number the platform does not ask for.
+- *`TextScaled` is banned outright, and the reason is accessibility rather than taste.** Labels with `TextScaled` *"bypass the `PreferredTextSize` value entirely"*, while `AutomaticSize` objects *"resize their bounds as text size changes"* and wrapped text *"flows to additional lines as `PreferredTextSize` increases"* ``. A player who raises Text Size in the Roblox menu must get larger text, and `TextScaled` silently removes that. `Enum.PreferredTextSize` has four members, `Medium` (default), `Large`, `Larger`, `Largest` ``.
+- `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
 
 ## https://create.roblox.com/docs/parts/materials
 
@@ -83,22 +96,11 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 7: `gameplay/monetization/_lead`, `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`, `marketing/store-page/_lead`, `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`, `tech/networking/04-ownership-authority`*
 
 - **A pass is the right instrument and the platform says so in one sentence.** A pass lets a creator "charge users a one-time Robux fee to access special privileges inside your game", with "minimum price is 1 Robux, and the maximum price is 1 billion Robux", checked with `UserOwnsGamePassAsync()` and prompted with `PromptGamePassPurchase()`. ``
-- *The order is chosen to be safe under both readings of an ambiguous prerequisite.** `release.provisioning` gate 4 rests on the experience being *"published and is accessible"*, and the page does **not** say *public* `` `[unverified]`. Settling fetch: the Creator Dashboard passes surface rendered against a place whose visibility is Private, or the `creator-docs` source of `production/monetization/game-passes.md` with its prerequisite note expanded. **So the flip goes before pass creation**, which satisfies the prerequisite under either reading. The price is a window in which the page is…
+- *The order is safe under both readings of an ambiguous prerequisite.** `release.provisioning` gate 4 rests on the experience being *"published and is accessible"*, and the page does **not** say *public* `` `[unverified]` — settled by the Creator Dashboard passes surface rendered against a Private place, or the `creator-docs` source of `production/monetization/game-passes.md` with its prerequisite expanded. **So the flip goes before pass creation**, satisfying it either way; the reverse order is legal only under the weaker reading. The price is a window in which the page is public while…
 - `` — *"Before creating a pass, make sure your game has been published and is accessible on Roblox"*; no API for creating a pass.
 - *Provisioning: publish first.** A pass is created manually, there is no API to create one, and **the experience must be published and accessible first** ``. That inverts the naive order and is the whole gate list. The build runs at every gate with the id unprovisioned, which sheet `02` makes possible by replacing the null with `0`.
 - *RR-4 · `cid/gameplay/monetization/01-the-offer-ladder.md:116`.** `externalPrerequisite.what` says the pass must be *"created on the Roblox creator site"* without stating that the experience must be **published first** — pass creation requires a published, accessible experience. `` That inverts the naive order and is the whole of my `provisioning` gate. A one-clause addition, not a re-decision.
 - *180 seconds, staggered.** One product exists ``, so a poll is one web call per player. At 16 players that is 0.089 calls/s server-wide, which is negligible against any plausible `MarketplaceService` budget; and against an unbounded "several minutes" propagation window a 180-second poll adds at most 180 seconds of detection latency to a delay the platform already owns. Staggering the phase by `UserId % 180` matters more than the interval does: sixteen players joining inside the first thirty seconds would otherwise poll in a burst forever. A 10–20 minute session `[brief: binding]` gets 3 to…
-
-## https://create.roblox.com/docs/production/publishing/accessibility
-
-*Cited by 7: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`, `art/style/01-palette-and-materials`, `art/style/_lead`, `marketing/icon/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
-
-- *That does not fail the brief, and no sheet may pretend the floor is what satisfies it.** The requirement is *"rarity tiers must differ by shape or silhouette, not only hue … a requirement, not a nicety"* `[brief: soft]`, read as binding by `architect/06`, and it is carried by `tiers` shipping four distinct shapes at four heights, checked by `tiers` criterion 4. The platform lands in the same place: Roblox publishes **no contrast ratio at all** and recommends *"different symbols alongside colors"* ``. **The luma floor buys one thing — cleared ground never reads darker than the plants on it…
-- *The luma floor is not the legibility guarantee, and no sheet may claim it as one.** It is Rec.601 luma; WCAG 1.4.11's 3:1 is sRGB relative luminance, a different quantity, computing to roughly **1.5:1** against `tiers[0]` — a 3:1 ratio would need a stone at about **231** luma, above `C1`'s cap and therefore unreachable by any legal stone. That does not fail the brief: the guarantee is `tiers`' four shapes and four heights under *"rarity tiers must differ by shape or silhouette, not only hue"* `[brief: soft]`, treated as effectively binding. But a sheet citing the luma floor as an…
-- > *"Warmth nearly halves the shortfall and still does not close it. Reaching 3:1 needs an authored > Rec.601 luma near **231** — 66 above the floor, reading as near-white, which `theme/setting/01` > forbids by name."* and `V13`: *"**No sheet may state the Rec.601 floor as the legibility > guarantee.** … Legibility is carried by shape and silhouette."* — `art/lighting/02` → approved. > Roblox *"publishes no contrast ratio at all"* and prescribes *"different symbols alongside > colors"* ``, banked.
-- *Fetched additionally, because sheet 02 will need it and the writer cannot fetch:** the accessibility position is already banked by `art/style/01` — Roblox publishes **no contrast ratio** and recommends *"different symbols alongside colors"* ``. Sheet 02 should lean on that rather than importing a WCAG number the platform does not ask for.
-- *`TextScaled` is banned outright, and the reason is accessibility rather than taste.** Labels with `TextScaled` *"bypass the `PreferredTextSize` value entirely"*, while `AutomaticSize` objects *"resize their bounds as text size changes"* and wrapped text *"flows to additional lines as `PreferredTextSize` increases"* ``. A player who raises Text Size in the Roblox menu must get larger text, and `TextScaled` silently removes that. `Enum.PreferredTextSize` has four members, `Medium` (default), `Large`, `Larger`, `Largest` ``.
-- `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
 
 ## https://devforum.roblox.com/t/do-not-cache-results-of-userownsgamepassasync/3639404
 
@@ -158,6 +160,22 @@ did not fetch" becomes checkable instead of trusted.
 - *With the close control gone the navigable set never changes size, and that is a gift to `viewport`.** The 24 slots have nothing to activate, so every slot frame, slot label and heading is `Selectable = false` — `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``. The selectable set is therefore **exactly the four pressables, open or closed**, so Platform's focus order operates on one constant set and never needs a fifth position. This holds whether or not `SelectionGroup` exists as a property: the pack's fetch of the rendered `GuiObject` reference lists…
 - `` — `Active`: *"Determines whether this UI element sinks input."* `Selectable`: *"Determine whether the GuiObject can be selected by a gamepad."* `SelectionOrder`, `NextSelectionUp` as described. These are the four properties the graph is realised in.
 
+## https://www.roblox.com/games/113380129609386/Leaves-Incremental
+
+*Cited by 6: `gameplay/meta/_lead`, `marketing/store-page/01-the-claim-ledger-and-the-description`, `marketing/store-page/_lead`, `theme/tone/01-register`, `theme/tone/04-do-nots`, `theme/tone/_lead`*
+
+- **Two sibling incrementals advertise area unlocking and publish no counts.** Pressure Wash Incremental: "[🌎] Unlock New Islands". Leaves Incremental: "Unlock new areas and discover rare leaf types" — and its Roblox page reported "There are currently no running experiences", i.e. zero live servers at fetch time. Content volume in this family is not publicly stated by its own store listings.
+- *The register is the decision, and it is a differentiation argument.** Four fetched competitor descriptions open with *relaxing*: Grass Incremental *"A relaxing lawn-trimming simulator game"* ``, Leaves Incremental *"A relaxing leaf-gathering simulator"* ``, plus Scrap and Lumber ``. The platform states the first sentence is where genre and content are read ``, so spending it on the family's most-shared adjective spends the highest-value real estate on a signal that says *one of these*. `theme/tone/01` released the word to me with recommendation (a); I decline the freedom rather than…
+- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
+- **`Leaves Incremental`** (PrestigeLabs Studios, a different studio, and the one game in the family that ships without rebirth). Description: *"A relaxing leaf-gathering simulator! Collect, upgrade, and explore colorful autumn worlds!"* plus *"Gather fallen leaves!"*, *"Unlock new areas and discover rare leaf types!"*, *"USE CODE: RELEASE"* and *"Enjoying the game?"*. Register: glyph-dense including an update badge and a leaf glyph inside the title itself, every feature line exclamatory, engagement prompts and a code promo in the description. ``
+
+## https://www.roblox.com/games/87179205054038/reStore
+
+*Cited by 6: `marketing/name/01-the-title`, `marketing/name/02-the-name-field`, `marketing/name/_lead`, `theme/fantasy/_lead`, `theme/vocabulary/02-banned-words`, `theme/vocabulary/_lead`*
+
+- *Casing is a listing decision and I make it.** `theme/vocabulary/01`: *"Uppercase in a store listing is a listing decision."* Title case, no all-caps word, no all-lowercase stylisation. `reStore`'s intercapped stylisation is a shipping competitor's signature ``, which is a second reason beyond legibility.
+- **Substitutes were checked and are also occupied.** `artifact` is a shipping Roblox title with *"70+ artifacts to collect"*; `antique` belongs to `reStore`.
+
 ## https://about.roblox.com/community-standards
 
 *Cited by 5: `analytics/events/02-never-logged`, `analytics/events/_lead`, `liveops/community/01-no-channel-and-the-intake-of-record`, `liveops/community/_lead`, `marketing/social/01-no-off-platform-presence`*
@@ -191,7 +209,17 @@ did not fetch" becomes checkable instead of trusted.
 
 - *`F11`, manufactured scarcity — the one prohibition no sheet has stated.** `theme/tone/04` `D9` bans the timer and the countdown, from the brief's zero-tension rule; the platform independently advises that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims ``. `D9` catches the widget; `F11` catches the sentence — *"only 3 left"*, *"1,204 players own this"*, a waitlist, a queue — which is the same manipulation with no clock attached. `[cid: decided]`, flagged below.
 - **Roblox's own monetization overview independently corroborates `theme/tone/04` `D9` from the platform side**, advising that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims. `D9` was written from the brief's zero-tension rule; it is also platform guidance. ``
-- *Countdown dies four ways, none of them mine to make.** `release.forbidden` `N2` (*no flag keyed to a date, a calendar or a season*) and `N10` (*no rollout schedule, ramp, canary or soft launch*); `products` `F10` in-game; category `T10` plus platform guidance against *"a false sense of urgency"* outward ``; and *"tension is zero by design"* `[brief: binding]` (`HANDOFF.md` #4). **Cross-promotion needs a second experience** and `release.environments.count` is **2** (Studio plus one published place) with `N7` forbidding a second place as a player-facing ring; the brief names no other game by…
+- *Countdown dies four ways and cross-promotion has nothing to promote.** `release.forbidden` `N2` and `N10`; `products` `F10` in-game; `T10` plus platform guidance against *"a false sense of urgency"* ``; and *"tension is zero by design"* `[brief: binding]`. `release.environments.count` is **2** with `N7` forbidding a second place, and the brief names no other game by this developer (**H4**).
+
+## https://create.roblox.com/docs/production/publishing/publish-experiences-and-places
+
+*Cited by 5: `marketing/name/02-the-name-field`, `marketing/name/_lead`, `marketing/store-page/01-the-claim-ledger-and-the-description`, `marketing/store-page/02-genre-and-where-keywords-live`, `marketing/store-page/_lead`*
+
+- *The glyph ruling is the opposite of the prior this domain started with, and the reason is worth stating plainly.** The platform permits it: *"Decorating the name with one or two well-placed emojis isn't harmful, but misplaced or excessive decorations can confuse players who quickly want to identify the game"* ``. So permission is granted and the ruling cannot rest on it. What rules it out is that **the glyph is this family's uniform.** `[🌱] Grass Incremental Simulator`, `Scrap Incremental 🧲` and `[UPDT🍂] Leaves Incremental 🍂` all wear one, across at least two studios shipping a shared…
+- *Title tags are absent, permanently, and named in order to forbid them.** `[UPDATE]`, `[NEW]`, `[X2]`, `[2X]`, `[UPD]`, `[CODES]`, `[🎃]` and every sibling: zero, forever. Four independent closures. *"Ships and settles. No seasons or events"* `[brief: soft]` leaves nothing to tag. `03-META.md` priority 3 forbids seasons and events as a hard gate, and `theme/setting/03`'s consequence is that *"there is no hour, weather or season channel to run anything through"* — so a seasonal tag has nothing to attach to. `[X2]` and `[CODES]` are additionally false claims under `T10` and `T4`. And the…
+- *Platform naming and discovery**, all from ``:
+- *The register is the decision, and it is a differentiation argument.** Four fetched competitor descriptions open with *relaxing*: Grass Incremental *"A relaxing lawn-trimming simulator game"* ``, Leaves Incremental *"A relaxing leaf-gathering simulator"* ``, plus Scrap and Lumber ``. The platform states the first sentence is where genre and content are read ``, so spending it on the family's most-shared adjective spends the highest-value real estate on a signal that says *one of these*. `theme/tone/01` released the word to me with recommendation (a); I decline the freedom rather than…
+- *P2 closed: there is no tag or keyword field, so keywords live in the first block.** The current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense ``. The platform's own metadata guidance is that the first sentence is where genre and content are read, to include relevant keywords, and that *"Don't repeat keywords or add irrelevant ones, as this may result in game demotion"* ``; discovery ranking independently advises against irrelevant…
 
 ## https://create.roblox.com/docs/reference/engine/classes/AnalyticsService
 
@@ -228,7 +256,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 5: `audio/mix/02-degradation-under-load`, `audio/mix/_lead`, `audio/sfx/_lead`, `audio/ui/01-press-acknowledgment`, `audio/ui/_lead`*
 
-- *One `Sound` cannot overlap itself** — `Play()` restarts it `` `` — so every cue row carries a `poolSize` and a play site acquires from a pool. Without that, `onOverload: "overlap"` at 8 onsets a second builds a machine-gun restart, and two builders would not converge on the fix.
+- *One `Sound` cannot overlap itself** — `Play()` restarts it `` `` — so every cue row carries a `poolSize` and a play site acquires from a pool. **Pool depth tracks the reservation for a class that is stolen from first, and the burst for a class that is not.** That is why the own-work clear is 8 and its neighbour twin is 5, and it is now a stated rule rather than a discrepancy a reader has to reconstruct.
 - `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
 - **`Volume` default is 0.5, range 0 to 10** ``.
 - **One `Sound` cannot overlap itself.** `Play()` *"sets TimePosition to the last value set by a script (or 0 …), then sets Playing to true"* ``, and the community reading is unambiguous — *"doing this restarts the sound if it was already playing"*, overlap requires multiple instances ``. **This is why `response`'s `onOverload: "overlap"` at 8/s is a data requirement and not a note:** a builder handed one row with one id builds a machine-gun restart, which two builders would not converge on.
@@ -263,14 +291,6 @@ did not fetch" becomes checkable instead of trusted.
 - Mobile muted-play figures, cited above with their limits. ``
 - *Muted play, honestly.** `B4` carries `readout` as well as `audio`, so `audioOnlyBeats: 0` survives on `response`'s own channel arrays and needs no motive from me. The category's *"a large share of sessions run muted"* premise is **unsourced**; the one survey available reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile, neither Roblox-specific nor 8–14 ``. The invariant holds on the channel arrays; the motive is not restated as fact.
 - *Not decided on the muted-player premise, in either direction.** The category's *"a large share of sessions run muted"* line is unsourced; the one available survey reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile and neither Roblox-specific nor 8–14 ``. That figure would be an argument *for* a sound as often as against one, and the ruling rests on `D3`/`D6` and on unactionability instead. `audioOnlyBeats: 0` is unaffected either way: this is not a beat and the plate is its only channel, so a sound could only ever have been a…
-
-## https://www.roblox.com/games/113380129609386/Leaves-Incremental
-
-*Cited by 5: `gameplay/meta/_lead`, `marketing/store-page/_lead`, `theme/tone/01-register`, `theme/tone/04-do-nots`, `theme/tone/_lead`*
-
-- **Two sibling incrementals advertise area unlocking and publish no counts.** Pressure Wash Incremental: "[🌎] Unlock New Islands". Leaves Incremental: "Unlock new areas and discover rare leaf types" — and its Roblox page reported "There are currently no running experiences", i.e. zero live servers at fetch time. Content volume in this family is not publicly stated by its own store listings.
-- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
-- **`Leaves Incremental`** (PrestigeLabs Studios, a different studio, and the one game in the family that ships without rebirth). Description: *"A relaxing leaf-gathering simulator! Collect, upgrade, and explore colorful autumn worlds!"* plus *"Gather fallen leaves!"*, *"Unlock new areas and discover rare leaf types!"*, *"USE CODE: RELEASE"* and *"Enjoying the game?"*. Register: glyph-dense including an update badge and a leaf glyph inside the title itself, every feature line exclamatory, engagement prompts and a code promo in the description. ``
 
 ## https://www.roblox.com/games/92876036717311/Scrap-Incremental
 
@@ -365,6 +385,14 @@ did not fetch" becomes checkable instead of trusted.
 - *One gate could make every free reading read nothing, and it is sourced.** *"Any game with more than 10 daily active users (DAU) and 10 play hours for 7 consecutive days is eligible for accessing all KPIs on the dashboard"* ``. For a game whose stated success is *"shipped artifacts, not players"* `[brief: binding]`, that threshold is not guaranteed. Whether the Engagement and Retention pages are gated identically is `[unverified]` — settling fetch: the same eligibility sentence located on the analytics-dashboard or retention page.
 - *The gate applies here too and is not restated.** `engagement.eligibilityGate` — more than 10 DAU and 10 play hours for 7 consecutive days `` — governs these readings as well. Below it, this key returns nothing.
 
+## https://create.roblox.com/docs/production/promotion/discovery
+
+*Cited by 4: `marketing/name/01-the-title`, `marketing/name/_lead`, `marketing/store-page/02-genre-and-where-keywords-live`, `marketing/store-page/_lead`*
+
+- *Its stated weakness, so nobody discovers it later:** the title carries **no discovery keyword** — no verb, no genre word, no family noun. That is survivable and not free. Primary discovery is the *"Recommended for You"* sort, a retrieval-then-ranking system on engagement signals and not keywords, and search *"can now use semantic search … to find games through natural language queries"* where it historically *"relied on … exact search queries and limited metadata such as titles"* ``. **That is the substitute `05-OUTWARD.md` could not name** for the cost it priced when it moved this game…
+- *Search behaviour**, ``:
+- *P2 closed: there is no tag or keyword field, so keywords live in the first block.** The current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense ``. The platform's own metadata guidance is that the first sentence is where genre and content are read, to include relevant keywords, and that *"Don't repeat keywords or add irrelevant ones, as this may result in game demotion"* ``; discovery ranking independently advises against irrelevant…
+
 ## https://create.roblox.com/docs/reference/engine/classes/GuiObject
 
 *Cited by 4: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
@@ -437,12 +465,20 @@ did not fetch" becomes checkable instead of trusted.
 - `01-FOUNDATION.md` concedes lap length was unsourceable across three source types and rules the reference's number non-transferable, so this is the first stated number rather than a contradiction of a researched one. The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its smallest early lap is 1.5x this game's entire bound session and it survives that only on long desktop sittings. **It…
 - The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
 
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/thumbnails.md
+
+*Cited by 4: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`, `marketing/icon/01-the-one-icon`, `marketing/icon/_lead`*
+
+- *The trailer is dormant, and capture closes it, not taste.** `Theme.luau` ships `archetype = "cartoon-vibrant"`, `sourceTitle = "Pet Ascend Simulator"`, surface `#2B1B4D` against a brief naming `fantasy-ornate` three times (`T8`, `G2`) ``. A trailer is captures in sequence, so it inherits that wholesale. Platform-side it is otherwise cheap, and the facts belong to Thumbnails more than to me: an approved video *"will appear first on your game's detail page"*, a detail page holds up to **10** images or videos, uploads run against a **monthly quota of 3** with rejections counted, and all are…
+- `` — up to 10 images or videos per detail page; an approved video *"will appear first on your game's detail page"*; monthly quota of 3 uploads with rejections counted; *"Video thumbnails should be authentic and accurately portray in-game content without misleading alterations"*; all videos reviewed.
+- *The production route is a capture, and the ground is the platform's own words rather than house taste.** The thumbnails page carries *"Graphics shown must be representative of the actual in-game visuals. Avoid artificially enhancing graphics beyond what a player will experience"* and *"Do not display gameplay mechanics, UI elements, or interactions that are not actually available in your game"* ``. **That is `T0` and `T8` as platform policy rather than as a house rule** — the strongest external backing this category's truthfulness rule has. Two halves, and both are said: it is published on…
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/audio/assets.md
 
 *Cited by 4: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`, `audio/sfx/03-the-sfx-key`, `audio/sfx/_lead`*
 
-- *One coincidence worth stating: a single audio upload may itself be 20 MB.** Uploads are `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo ``. **One maximum-size file is 100% of this whole category's runtime ceiling.** That is why every row carries a per-row length cap and a mono requirement rather than a note.
-- *Creator Store is the default, and the clear is the stated exception.** The store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use by asset id ``, and a store asset already has a live id, so it passes through no upload gate, no moderation queue and no permission grant. But in-world-sound work needs four files pitched to named scale degrees at one fixed length and one fixed peak, and the store does not sell those. **So the clear and its neighbour twin are `upload`**, with the reason carried in `whyNotCreatorStore`. Marking them `creatorStore` —…
+- *One coincidence worth stating: a single audio upload may itself be 20 MB.** Uploads are `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo ``. **One maximum-size file is 100% of this category's runtime ceiling.** That is why every row carries a length cap and a mono requirement rather than a note.
+- *Creator Store is the default, and the clear is the stated exception.** The store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use by asset id ``, and a store asset already has a live id, so it passes through no upload gate, no moderation queue and no permission grant. But in-world-sound work needs four files pitched to named scale degrees at one fixed length and one fixed peak, and the store does not sell those. **So the clear and its neighbour twin are `upload`**, with the reason in `whyNotCreatorStore`. Marking them `creatorStore` — which…
 - Audio upload limits: `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo; import caps 2,000 per 30 days ID-verified, 100 unverified; the Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use ``. **Note the coincidence worth stating in sheet 03:** one file's upload ceiling is the whole category's runtime memory budget.
 - **`upload`, not `creatorStore`, for all twelve.** The Creator Store's *"more than 100,000 professionally-produced sound effects"* are free to use but do not come pitched to a named scale degree at a fixed length, and imported audio is private until permission is granted per experience ``. Twelve uploads at 0.30 s are far inside the 20 MB per-file ceiling and the 100-import cap.
 - **Audio provisioning.** Imported audio is private by default; *"The asset privacy system automatically ensures that the IDs of your imported audio can't be accessed by users without proper permissions"*, and permission is granted per experience. The Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* that are free-to-use. Formats `.mp3`, `.ogg`, `.wav`, `.flac`; under 20 MB and 7 minutes; sample rate ≤ 48 kHz; 2,000 imports per 30 days if ID-verified, 100 if not; uploads enter moderation and are visible only to the uploader until approved ``.…
@@ -486,12 +522,6 @@ did not fetch" becomes checkable instead of trusted.
 - The same order restated as the game's own loop: "Cut Grass – Walk through grass blocks to collect them, Earn Currency – Each grass block gives you grass currency, Purchase Upgrades – Spend grass on improvements, Unlock Rebirths – Reset for permanent multipliers, Access New Islands – Discover new upgrade paths" ``
 - **Structurally, immediately, and that part is sourced.** The player "spawn[s] on a small grassy platform with a basic saw blade attached to your character", and grass appears "as green blocks that you can walk through to cut and collect" ``; the action is "Simply walk through grass blocks to cut them automatically", with no animation or interaction ``. Tool equipped at spawn, standing in the resource, proximity harvest: **the first payoff is the first blade touched.** Our design inherits that shape and adds a Find to the same instant.
 - **In wall-clock seconds, `[unverified]`.** No source I reached states a measured time to first currency or to first upgrade. The two milestone figures I did get are thresholds, not durations: a first rebirth "usually around 1,000 grass" and Island 2 after "5 rebirths" ``, and they disagree with the other guide's advice to grind "approximately 10-15 rebirths before seriously pursuing the second island" ``, which is a strategy claim rather than a gate. **The specific fetch that would settle it:** a transcript or timestamped capture of the first 120 seconds of game id 133086043677134 — the…
-
-## https://www.roblox.com/games/87179205054038/reStore
-
-*Cited by 4: `marketing/name/_lead`, `theme/fantasy/_lead`, `theme/vocabulary/02-banned-words`, `theme/vocabulary/_lead`*
-
-- **Substitutes were checked and are also occupied.** `artifact` is a shipping Roblox title with *"70+ artifacts to collect"*; `antique` belongs to `reStore`.
 
 ## https://create.roblox.com/docs/cloud-services/data-stores/versioning-listing-and-caching
 
@@ -541,6 +571,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Rollback is a republish.** A restore creates a new version and does **not** publish it ``; publishing does not evict players, and a restart takes a 1–60 minute delay ``. **15 minutes** `[playtest unknown]`, range 5–30, sized for disruption not data: `wiring.onShutdown` saves before teardown, and 15 sits inside the 10–20 minute session `[brief: binding]`. The data half is platform-bounded — successive writes inside one UTC hour overwrite permanently, so **rollback granularity is one hour per key, not one save** ``.
 - **The bump-to-revert window is bounded by the restart procedure, not by this key.** Publishing does not evict players; outdated servers drain naturally or are restarted with a **1–60 minute** delay ``, and restoring a place version does not publish it ``. That is Build & Deploy's `rollback` block; I state the data consequence and set none of its timings.
+
+## https://create.roblox.com/docs/reference/engine/classes/CaptureService
+
+*Cited by 3: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`, `marketing/icon/02-legible-at-150`*
+
+- *The static gate has to stand alone, because the rendered one may never run.** An in-engine screenshot-to-pixel route is blocked: `CaptureService` is client-only, gated on the Capture capability, and returns ids that are *"temporary and must be uploaded or saved to persist"* ``; `EditableImage` does expose `ReadPixelsBuffer` at 4 bytes RGBA ``, but the only creation path is `AssetService:CreateEditableImageAsync`, which a secondary source reports will not accept an `rbxtemp://` id and is restricted to creator-owned assets — **`[unverified]`, and load-bearing** `[research owed: the…
+- *The rendered half of the check has no owner, and this sheet says so rather than pretending.** `L2`–`L5` and `L10` run **today**, on the merged manifest, with no image and no device. `L6`–`L9` need a captured image, and sheet `01` records that no legitimate capture exists from any build that ships. Beyond that, `art/lighting/02` `V12` already recorded that **no sheet in either contract owns taking a reading**, and the in-engine pixel route is separately blocked: `CaptureService` is client-only and returns temporary ids ``. So `L12` states the instrument's owner as **absent** and the static…
 
 ## https://create.roblox.com/docs/reference/engine/classes/ContentProvider
 
@@ -614,7 +651,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 3: `audio/mix/02-degradation-under-load`, `audio/sfx/03-the-sfx-key`, `audio/sfx/_lead`*
 
-- *One `Sound` cannot overlap itself** — `Play()` restarts it `` `` — so every cue row carries a `poolSize` and a play site acquires from a pool. Without that, `onOverload: "overlap"` at 8 onsets a second builds a machine-gun restart, and two builders would not converge on the fix.
+- *One `Sound` cannot overlap itself** — `Play()` restarts it `` `` — so every cue row carries a `poolSize` and a play site acquires from a pool. **Pool depth tracks the reservation for a class that is stolen from first, and the burst for a class that is not.** That is why the own-work clear is 8 and its neighbour twin is 5, and it is now a stated rule rather than a discrepancy a reader has to reconstruct.
 - **The variation rule and the tier note are one mechanism, which is why twelve assets are affordable.** `Play()` restarts a `Sound` rather than layering it ``, so eight onsets a second from one id is a machine-gun restart. Variation comes from the ground's own tier mix and a three-step round-robin cursor per `tierIndex`. **No randomness anywhere** — `N10` forbids a second source of it near `layout`, and a deterministic cursor is checkable while an RNG is not. Three is the smallest cycle that does not read as alternation `[playtest unknown]`, test range 2 to 4 variants per `tierIndex`.
 - **One `Sound` cannot overlap itself.** `Play()` *"sets TimePosition to the last value set by a script (or 0 …), then sets Playing to true"* ``, and the community reading is unambiguous — *"doing this restarts the sound if it was already playing"*, overlap requires multiple instances ``. **This is why `response`'s `onOverload: "overlap"` at 8/s is a data requirement and not a note:** a builder handed one row with one id builds a machine-gun restart, which two builders would not converge on.
 
@@ -682,12 +719,13 @@ did not fetch" becomes checkable instead of trusted.
 - **The monetization half, from the platform side.** Revenue split by developer products and passes, conversion rate (*"Percent of daily active users who are also paying users"*), paying users, ARPPU and ARPDAU are all supplied with **no game-side instrumentation** `` — and gated: *"Any game with more than 10 daily active users (DAU) and 10 play hours for 7 consecutive days is eligible for accessing all KPIs on the dashboard"*, with sales-data files updated every 48 hours. ``
 - *`K2` exists because the standard shortlist reads zero here structurally, not empirically.** Every `products.items[].gamePassId` is `null`, so `UserOwnsGamePassAsync` cannot return true; ARPDAU, payer share and conversion rate are constants no play moves. The platform will not show them below 10 DAU and 10 play hours for seven consecutive days ``, which a project whose success is artifacts may never clear. A shortlist reading zero forever tells nobody anything, and a reviewer cannot tell refusal from omission unless refusal is a rule. `[cid: decided]` — the brief states no pass mark for any…
 
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/thumbnails.md
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/experience-icons.md
 
-*Cited by 3: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`, `marketing/icon/_lead`*
+*Cited by 3: `marketing/icon/01-the-one-icon`, `marketing/icon/02-legible-at-150`, `marketing/icon/_lead`*
 
-- *The trailer is dormant, and what closes it is capture, not taste.** `game/src/shared/Theme.luau` ships `archetype = "cartoon-vibrant"`, `sourceTitle = "Pet Ascend Simulator"`, surface `#2B1B4D` against a brief naming `fantasy-ornate` three times (`T8`, `G2`) ``. A trailer is captures in sequence, so it inherits that wholesale: `trailerVideoCount: 0` with `captureSource: "none"`. Platform-side it is otherwise cheap and the facts matter to the Thumbnails lead more than to me — an approved video *"will appear first on your game's detail page"*, a detail page holds up to **10** images or…
-- `` — up to 10 images or videos per detail page; an approved video *"will appear first on your game's detail page"*; monthly quota of 3 uploads with rejections counted; *"Video thumbnails should be authentic and accurately portray in-game content without misleading alterations"*; all videos reviewed.
+- *The platform not requiring an icon is the reason this domain exists.** *"An icon is automatically generated from a collection of default images"* on first publish ``, so `count: 0` does not ship a blank tile — it ships stock art the platform picked, which is `sourceTitle = "Pet Ascend Simulator"` arriving on a second surface. `count: 1` `[cid: decided]`, and it is the cheapest possible reading of *"the smallest game that still gives every creative area real work"* `[brief: binding]` `00-CORE.md`.
+- *Zero characters of text on the image, and the genre convention is ruled on rather than inherited.** The platform's icon page has exactly three best-practice subsections — quality and aspect ratio, relevant content, colour and contrast — and **no text rule** ``, so nothing external requires or forbids it. The genre's tic is glyphs in the **title** (`[🌱]`, `🧲`, `[UPDT🍂]`, `research/landscape.md`); the survey recorded titles and **not tiles**, so I have no evidence about text on a competitor's tile and will not infer one `[research owed: the tile images of the four competitor pages already…
+- *Which leaves separation, region count and silhouette — the same three channels the platform itself points at.** Roblox publishes **no contrast ratio at all** and prescribes *"different symbols alongside colors"* ``, and its icon page asks only that you *"express your game's theme through color and contrast"* ``. Neither gives a number, so importing one from WCAG would be importing a number the platform does not ask for onto a palette that cannot meet it.
 
 ## https://investgame.net/news/pdf/the-2025-roblox-benchmark-report/
 
@@ -755,6 +793,17 @@ did not fetch" becomes checkable instead of trusted.
 - *The zeros are the substance of this sheet.** `theme/tone/04` `D6` bans any pulsing or blinking element; `theme/tone/03` `B5` fixes exactly one intensity forever with *"no crescendo near completion"*; `firstSession` `S6`/`S7` make a lift silent and still and `suppressionForbidden` bans reflow; `screens/01`'s `forbiddenNodes` already names `fillAnimation`, `liftAnimation`, `tween`, `pulse` and `blink`; `notices.motion.animated` is `false`. None of that is re-derived below. What the table adds is the emitter-level mechanisms those rules do not name, which are the ones a builder reaches for:…
 - `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/appearance-modifiers.md` — `UIStroke` on a `Frame` is a border with `LineJoinMode` Round/Bevel/Miter; on a `TextLabel` `ApplyStrokeMode` Contextual outlines the glyphs and Border the bounds, and two `UIStroke`s may be parented to control both; *"Both the parent object and `UIStroke` can have child `UIGradient` instances, letting you set gradients on the stroke and fill independently"*; `UICorner` at *"a scale of 0.5 or higher deforms the parent into a pill shape"*; and the warning *"Avoid tweening the `Thickness`…
 
+## https://www.roblox.com/games/126244816328678/DIG
+
+*Cited by 3: `marketing/name/01-the-title`, `marketing/name/_lead`, `theme/fantasy/_lead`*
+
+- **DIG** (DIG Development, 28 June 2025): *"Uncover and collect hidden treasures, explore a massive open world..."* **56,030,218 visits, 89.3% likes (101,475 up / 12,115 down), all-time peak 119,871 CCU.** Its Collection is *"a detailed in-game logbook"* of 601 items, and **completing a zone unlocks Mounts** — structurally the brief's set-completion bonus. `` `` ``
+
+## https://www.roblox.com/games/1345139196/Treasure-Hunt-Simulator
+
+*Cited by 3: `marketing/name/01-the-title`, `marketing/name/_lead`, `theme/fantasy/_lead`*
+
+
 ## https://www.rolimons.com/game/126244816328678
 
 *Cited by 3: `gameplay/monetization/01-the-offer-ladder`, `gameplay/monetization/_lead`, `theme/fantasy/_lead`*
@@ -778,6 +827,13 @@ did not fetch" becomes checkable instead of trusted.
 - *In wall-clock seconds the reference is unmeasured**, so no number here is sourced from it. `[research owed: a timestamped capture of the first 120 seconds of Roblox place 133086043677134 — time to first currency and to first upgrade. Three source types returned HTTP 405; a transcript API or a stopwatch would settle it.]` Roblox's FTUE guidance **states no time threshold at all** ``; the brief's ten-second window, chosen without a source, is independently corroborated ``.
 - *Teaching is visual because nothing else is left.** Roblox's FTUE guidance offers a guided arrow as an alternative to dialogue `` and both are closed here — an arrow is row `T3`, dialogue needs a speaker and no entity class exists `[cid: decided — theme/identity/04]`. Advice to show a mechanic visually and reinforce it repeatedly before assuming it landed `` meets one recurring event here — the patch clear — which is why rank 1 is the only required rank.
 - "The most decisive moment in a player's journey is the first 10 seconds" and "50% of your traffic is gone within the first two minutes", with advice to show mechanics visually rather than in text and to reinforce a new mechanic at least three times with rewards before assuming it landed. The ten-second figure independently corroborates the brief's own choice of window, which was made without a source ``
+
+## https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html
+
+*Cited by 3: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`, `marketing/icon/02-legible-at-150`*
+
+- *The metric ruling, and the finding it exposes.** The approved floor is **Rec.601 luma**, `Y = 0.299R + 0.587G + 0.114B` on gamma-encoded sRGB, and it stays authoritative. WCAG 1.4.11 asks a graphical object for *"a contrast ratio of at least 3:1 against adjacent color(s)"* on sRGB **relative luminance**, `L = 0.2126R + 0.7152G + 0.0722B`, over **linearised** channels ``. **Different quantities; one does not imply the other.** Redone against real hues, including the stone as merged:
+- *Contrast here cannot be bought with brightness, and that is the whole reason this is a separate decision rather than a field.** WCAG 1.4.11 asks a graphical object for *"a contrast ratio of at least 3:1 against adjacent color(s)"* on sRGB relative luminance over linearised channels ``. `art/lighting/02` computed what that costs on this palette: the merged stone `[216,201,169]` reaches **2.31 : 1** against `tiers[0]`, and reaching 3:1 needs an authored Rec.601 luma near **231** — near-white, which `theme/setting/01` forbids **by name** and `styleGuide` `C1`'s `[195, 210]` band excludes by…
 
 ## https://about.roblox.com/newsroom/2026/02/moving-beyond-self-reported-age
 
@@ -840,6 +896,13 @@ did not fetch" becomes checkable instead of trusted.
 - *Zero game-defined events, verified rather than assumed.** D1/D7/D30 arrive from the Retention page with daily and weekly cohorts and no developer setup ``, broken down by acquisition source and comparable against a selectable benchmark set covering average playtime and D1/D7/D30 ``, with the standard filter dimensions available ``. **This half of the domain asks logging-pipeline work for nothing at all.**
 - Roblox creator-docs, retention — D1/D7/D30 definitions verbatim, daily and weekly cohorts, and the statement that the core metrics require no developer setup. ``
 
+## https://create.roblox.com/docs/production/experiments
+
+*Cited by 2: `marketing/icon/01-the-one-icon`, `marketing/icon/_lead`*
+
+- *Both zeros are closed by the platform before this project closes them.** Roblox Experiments cover in-game *"different config values"* and *"custom matchmaking configurations"*; **icons are not a testable element**, and *"Games with fewer than 1,000 daily active users might struggle to get useful data"* ``, corroborated secondarily by *"No, unfortunately it is not possible"* ``. Against `engagement.eligibilityGate` and a brief that declines players, there is no count above 1 to justify. **Seasonal and event variants are 0** by `03-META.md` priority 3, `theme/setting/03` `R1` (*"in any…
+- *The other three subjects in my `owns` list are values, not sheets, and both of the zeros are values with a ruling attached.** Seasonal and event variants are **forbidden** (`03-META.md` priority 3; category row 17; `theme/setting/03` `R1`), so `variants` is an empty array with the ruling in it. The A/B test set is **0** and the platform closes it before the project does: Roblox Experiments cover *"different config values"* in-game and *"custom matchmaking configurations"*, and **icons are not a testable element**, with a stated *"Games with fewer than 1,000 daily active users might…
+
 ## https://create.roblox.com/docs/production/game-design/content-updates
 
 *Cited by 2: `liveops/roadmap/01-what-ships-after-v1`, `liveops/roadmap/_lead`*
@@ -873,12 +936,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **A redemption path that needs no text entry exists, and it is documented.** Deep-link launch data: *"the LaunchData key contains the string that you specified in the launchData parameter"*, read via `Player:GetJoinData()`, *"can't exceed 200 bytes"*, and *"Users can modify the URL, so the data might not be authentic"* ``
 
-## https://create.roblox.com/docs/production/promotion/discovery
-
-*Cited by 2: `marketing/name/_lead`, `marketing/store-page/_lead`*
-
-- *Search behaviour**, ``:
-
 ## https://create.roblox.com/docs/production/promotion/experience-events
 
 *Cited by 2: `liveops/events/01-whether-an-event-exists`, `liveops/events/_lead`*
@@ -896,7 +953,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`*
 
-- *Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by name — *"Beating the genre's retention curve. Offered and declined"* `[brief: binding]`, upheld by ruling **R-3**. But the mechanism exists, so asserting a zero without touching it would be a bluff: Experience Notifications reach **opted-in users 13+ only**, against an audience bound at **8–14** `[brief: binding]`; require a **minimum of 100 visits since launch**, which is 0 at the publish moment; are capped at one per user per day ``; and are sent by `POST…
+- *Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by name `[brief: binding]`, upheld by **R-3**. But the mechanism exists, so a bare assertion would be a bluff: Experience Notifications reach **opted-in users 13+ only** against an **8–14** audience `[brief: binding]`, require **≥100 visits since launch** (0 at publish), and cap at one per user per day ``; they are sent by `POST .../cloud/v2/users/{id}/notifications` with an `x-api-key` `` — an outbound path `release` `N5` forbids and no module has: `grep -rn "HttpService" game/src` returns…
 - `` — opted-in users 13+; *"Minimum 100 visits since launch"*; not under moderation; one notification per user per day from a given experience.
 
 ## https://create.roblox.com/docs/production/promotion/social-media-links
@@ -919,24 +976,19 @@ did not fetch" becomes checkable instead of trusted.
 - *Nothing rests on the 70/25/5 split.** It is `[brief: soft]` and uncorroborated; every rule here is per class and none is weighted by share. The *band* — *"8–14, mobile-heavy, short sessions"* `[brief: binding]` (`00-CORE.md`) — is what the floors serve. `[research owed: the experience's own Creator Dashboard platform breakdown, which cannot exist before launch]` Roblox publishes no minimum touch-target figure: `adaptive-design` and `console-guidelines` carry principles only `` ``. That is why the rule names a measurement, and why the two classes with nothing to measure need the ruling…
 - **Roblox publishes no minimum touch-target pixel figure.** `create.roblox.com/docs/production/ publishing/adaptive-design` was fetched and carries principles only, no numbers. The console guidelines page likewise gives no TV-safe percentage and no minimum text size. This is *why* `minTouchTargetRule` names a measurement, and it vindicates that choice. `` ``
 
-## https://create.roblox.com/docs/production/publishing/publish-experiences-and-places
-
-*Cited by 2: `marketing/name/_lead`, `marketing/store-page/_lead`*
-
-- *Platform naming and discovery**, all from ``:
-
 ## https://create.roblox.com/docs/production/publishing/publishing-experiences-and-places
 
 *Cited by 2: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`*
 
-- *What survives is real and nobody else has it.** A new place is **private by default**, and public means *"available and discoverable to the general public"* ``. Until that setting moves, no stranger can reach this game at all. That state change is the whole of the outward launch, and `release` — which claims *"every publish-time platform setting and its read-back"* — has no checklist row for it (below).
+- *What survives is real.** A new place is **private by default**, and public means *"available and discoverable to the general public"* ``. Until that setting moves no stranger can reach this game at all, which makes it the whole outward launch — and `release`, which claims *"every publish-time platform setting and its read-back"*, has no checklist row for it.
 - `` — new games are private by default; public means *"available and discoverable to the general public"*; publish first, then set visibility.
 
-## https://create.roblox.com/docs/reference/engine/classes/CaptureService
+## https://create.roblox.com/docs/production/publishing/thumbnails
 
-*Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
+*Cited by 2: `marketing/thumbnails/02-the-capture-gate`, `marketing/thumbnails/_lead`*
 
-- *The static gate has to stand alone, because the rendered one may never run.** An in-engine screenshot-to-pixel route is blocked: `CaptureService` is client-only, gated on the Capture capability, and returns ids that are *"temporary and must be uploaded or saved to persist"* ``; `EditableImage` does expose `ReadPixelsBuffer` at 4 bytes RGBA ``, but the only creation path is `AssetService:CreateEditableImageAsync`, which a secondary source reports will not accept an `rbxtemp://` id and is restricted to creator-owned assets — **`[unverified]`, and load-bearing** `[research owed: the…
+- *The strongest ground for this gate is not this project's house rule, and that is worth stating first.** The platform's own thumbnail guidance says *"Graphics shown must be representative of the actual in-game visuals. Avoid artificially enhancing graphics beyond what a player will experience"* ``, and its personalisation guidance repeats *"accurate representation remains crucial"* ``. **So `T8` is a platform rule before it is ours**, all uploads are moderated against it, and a sheet that treated the capture source as taste would be wrong twice.
+- *The platform's own rules, fetched, and three of them are load-bearing.** ``
 
 ## https://create.roblox.com/docs/reference/engine/classes/DataModel
 
@@ -1051,6 +1103,13 @@ did not fetch" becomes checkable instead of trusted.
 - *Its codes half is falsified by its own subject.** The reference's experience description advertises *"Join the Unequal Games group for in-game boosts!"* and a like/favourite prompt and **never mentions codes or redeeming anything** ``. The same studio's Scrap Incremental ships a byte-identical description template with the same group boost and no codes ``. A codes aggregator maintains a page for the reference and lists **no active codes as of March 2026** ``. Against 38.2M visits and a 96.2% like ratio at the brief's read ``. **If absence read as unfinished, the reference would be reading…
 - A codes aggregator maintaining a page *for this exact game* and reporting **no active codes as of March 2026** — a codes site with an empty list for a 38M-visit incremental ``
 
+## https://devforum.roblox.com/t/5-tips-from-roblox-staff-to-get-the-most-out-of-thumbnail-personalization/3471689
+
+*Cited by 2: `marketing/thumbnails/02-the-capture-gate`, `marketing/thumbnails/_lead`*
+
+- *The strongest ground for this gate is not this project's house rule, and that is worth stating first.** The platform's own thumbnail guidance says *"Graphics shown must be representative of the actual in-game visuals. Avoid artificially enhancing graphics beyond what a player will experience"* ``, and its personalisation guidance repeats *"accurate representation remains crucial"* ``. **So `T8` is a platform rule before it is ours**, all uploads are moderated against it, and a sheet that treated the capture source as taste would be wrong twice.
+- *Thumbnail personalisation, and why the A/B question is not free.** `` — *"Setting 2 or more thumbnails to active will turn personalization on"*, up to five active; traffic starts split evenly and then *"thumbnails with higher qualified play through rates (qPTR) for specific user groups will automatically receive more traffic from that group"*, targeted by *"factors like age and genre."* `` — *"Keep multiple thumbnails active for optimal performance"*, *"Avoid testing thumbnails that are too similar"*, *"Monitor qPTR over time"*, and *"accurate representation remains crucial."*
+
 ## https://devforum.roblox.com/t/allow-users-age-checked-13-15-with-parental-consent-to-see-profile-social-media-links-not-in-regions-where-social-media-is-banned-for-under-16/4693383
 
 *Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
@@ -1064,6 +1123,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Whether the dashboard exposes a full session-length distribution is `[unverified]`.** Only the average is documented, plus a P50/P90 percentile toggle on charts ``; a standing community request for percentile session length carries no staff reply ``, so the absence is **inferred from the request, not stated by Roblox**. Settling fetch: a current capture of a live Engagement page showing its complete chart list, which needs an account.
 - 1. **Feature adoption rates — not assigned.** The surface is four things: three upgrade rows and one index panel (`input` is closed at five verbs and four pressables). Two of the three upgrade readings are `economyHealth`'s sink volume read from the other side, and assigning them here guarantees a collision on one number. What is left is the index panel's open rate, and it fails both stopping-rule bars: no player would notice the figure, and no two builders would diverge on anything because of it. Decisively, there is nothing to do with the answer — *"Ships and settles. No seasons or…
+
+## https://devforum.roblox.com/t/are-you-able-to-ab-test-game-icons/3339468
+
+*Cited by 2: `marketing/icon/01-the-one-icon`, `marketing/icon/_lead`*
+
+- *Both zeros are closed by the platform before this project closes them.** Roblox Experiments cover in-game *"different config values"* and *"custom matchmaking configurations"*; **icons are not a testable element**, and *"Games with fewer than 1,000 daily active users might struggle to get useful data"* ``, corroborated secondarily by *"No, unfortunately it is not possible"* ``. Against `engagement.eligibilityGate` and a brief that declines players, there is no count above 1 to justify. **Seasonal and event variants are 0** by `03-META.md` priority 3, `theme/setting/03` `R1` (*"in any…
+- *The other three subjects in my `owns` list are values, not sheets, and both of the zeros are values with a ruling attached.** Seasonal and event variants are **forbidden** (`03-META.md` priority 3; category row 17; `theme/setting/03` `R1`), so `variants` is an empty array with the ruling in it. The A/B test set is **0** and the platform closes it before the project does: Roblox Experiments cover *"different config values"* in-game and *"custom matchmaking configurations"*, and **icons are not a testable element**, with a stated *"Games with fewer than 1,000 daily active users might…
 
 ## https://devforum.roblox.com/t/bypassing-uilistlayout-filling-invisible-elements/2496680
 
@@ -1094,6 +1160,20 @@ did not fetch" becomes checkable instead of trusted.
 - **They are created client-side, not by the place.** *"those sounds in the humanoidrootpart are created on the player client, not on the server"*, so a server script cannot silence another player's footsteps ``.
 - **The override is a name collision, not an API.** *"create a new LocalScript inside StarterPlayerScripts, rename it to RbxCharacterSounds"*, which supersedes the CoreScript ``. Corroborated: the recommended method is copying the default script into `StarterPlayerScripts` and editing ids there rather than reaching into character descendants ``.
 
+## https://devforum.roblox.com/t/experience-title-and-description-too-long-in-studio-game-settings-but-not-on-the-website/2499228
+
+*Cited by 2: `marketing/name/02-the-name-field`, `marketing/name/_lead`*
+
+- *The character bound, and what I refuse to invent.** The Roblox experience name field's own character limit is **`[unverified]`**. Four fetches carried no figure — the publishing page, the discovery page and two Open Cloud endpoint indexes — and a devforum thread reports a Studio-versus-website discrepancy **with no numbers** ``. **The settling fetch, named exactly:** the Open Cloud v2 request-body reference for `PATCH /cloud/v2/universes/{universeId}`, which is where a `displayName` `maxLength` would be documented if one is; failing that, the Creator Dashboard Basic Settings form's own…
+- Four fetches: the creator-docs publishing page (states naming best practices, **no limit**), the discovery page (no limit), `create.roblox.com/docs/cloud/legacy/games/v1` and `create.roblox.com/docs/cloud/reference/Universe` (endpoint indexes, no field schema), plus a devforum thread reporting a Studio-versus-website discrepancy **with no numbers** ``. Two general web searches returned only unrelated 50-character limits (usernames, `Tool` names, DataStore scopes) and no experience-name figure.
+
+## https://devforum.roblox.com/t/get-your-thumbnails-ready-for-thumbnail-personalization/3226599
+
+*Cited by 2: `marketing/thumbnails/01-the-slot-set`, `marketing/thumbnails/_lead`*
+
+- *One, because two switches on an optimiser this project has declined by name.** The platform is explicit: *"Setting 2 or more thumbnails to active will turn personalization on"*, up to five active, traffic split evenly and then reweighted so that *"thumbnails with higher qualified play through rates (qPTR) for specific user groups will automatically receive more traffic"* ``. qPTR is a play-through rate. `00-CORE.md` lists *"Beating the genre's retention curve. Offered and declined"* and *"Revenue. Offered and declined"* `[brief: binding]`, and `analytics` `E5` forbids acting on a retention…
+- *Thumbnail personalisation, and why the A/B question is not free.** `` — *"Setting 2 or more thumbnails to active will turn personalization on"*, up to five active; traffic starts split evenly and then *"thumbnails with higher qualified play through rates (qPTR) for specific user groups will automatically receive more traffic from that group"*, targeted by *"factors like age and genre."* `` — *"Keep multiple thumbnails active for optimal performance"*, *"Avoid testing thumbnails that are too similar"*, *"Monitor qPTR over time"*, and *"accurate representation remains crucial."*
+
 ## https://devforum.roblox.com/t/let-developers-temporarily-override-the-escape-key-using-contextactionservice/2021335
 
 *Cited by 2: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
@@ -1114,6 +1194,14 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Audio needs two gates, not one, and only for upload rows.** Uploaded audio is private — *"only you can view and use it"* — and usage permission is granted per experience through Creator Hub → Creations → Asset Details → Permissions ``. A restricted asset without that grant *"cannot load in Studio or at runtime"* ``. **Granting an experience permission requires the experience to exist**, the identical publish-first inversion `gamePassId` has, and `release.provisioning.gates` runs publish → checklist → re-resolution → pass creation → id write → republish with nothing that uploads a sound.…
 - Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
+
+## https://devforum.roblox.com/t/now-live-update-your-genre-and-subgenre/3265896
+
+*Cited by 2: `marketing/store-page/02-genre-and-where-keywords-live`, `marketing/store-page/_lead`*
+
+- *This is the least reversible value in the whole category. Genre changes once every three months** ``. Two triggers would spend the one change, and neither is a visit count, because a discovery argument from traffic is a retention argument and `00-CORE.md` closes it:
+- *P2 closed: there is no tag or keyword field, so keywords live in the first block.** The current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense ``. The platform's own metadata guidance is that the first sentence is where genre and content are read, to include relevant keywords, and that *"Don't repeat keywords or add irrelevant ones, as this may result in game demotion"* ``; discovery ranking independently advises against irrelevant…
+- *That pair is the whole of their tag set**, and the negative result is the finding: the platform's current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense, not shipped `` ``. The full 17-genre / 40-subgenre vocabulary is fetched and banked at the first URL above, and it contains **no `restoration`**.
 
 ## https://devforum.roblox.com/t/placeversion-only-returning-0/239154
 
@@ -1209,6 +1297,48 @@ did not fetch" becomes checkable instead of trusted.
 - *What the project accepts, priced honestly.** It accepts the audience of the third title, the one that does ship codes: Garden Incremental's redemption path is *"click on the Shop button… click the Codes button… Enter the promo code… Click on the Redeem button"* ``, and a player arriving from a codes aggregator finds nothing here. That is a retention cost, and retention is `00-CORE.md`'s stated non-goal at `[brief: binding]`, with success defined as *"shipped artifacts, not players"*. **Three titles is not a survey and the claim's word was "near-universal."** `[research owed: the…
 - The contrary case, and it is the useful one because it prices the reversal: a shipping incremental that **does** have codes, redeemed by *"click on the Shop button… Scroll down until you see the line where you can enter codes, or click the Codes button… Enter the promo code… Click on the Redeem button"* — **four surfaces this game does not have**: a store node (`navigation.notNodes[shop]`, R-4), a fifth pressable (`input.gameDrawnPressables: 4`), a text field (`screens.elementTree` has none), and a submit control (a sixth) ``
 
+## https://games.roblox.com/v1/games?universeIds=3478678937,7699580568,8974089723,9719511378
+
+*Cited by 2: `marketing/thumbnails/01-the-slot-set`, `marketing/thumbnails/_lead`*
+
+- `` `` `` `` ``
+- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
+
+## https://games.roblox.com/v1/games?universeIds=7699580568,8974089723
+
+*Cited by 2: `marketing/store-page/02-genre-and-where-keywords-live`, `marketing/store-page/_lead`*
+
+- *Both competitors' entire tag set is one pair, verbatim from the platform's own API.** Grass Incremental (universe 7699580568) and Leaves Incremental (8974089723) are each `genre: All`, `genre_l1: Simulation`, `genre_l2: Incremental Simulator` ``. That is the category the brief moved out of, and it already paid the price in its own words: *"at the cost of the incremental audience's built-in search behaviour."* **I may not re-take that decision, only implement it**, so no candidate under `Simulation` is live.
+- `` `` ``
+
+## https://games.roblox.com/v1/games/3478678937/media
+
+*Cited by 2: `marketing/thumbnails/01-the-slot-set`, `marketing/thumbnails/_lead`*
+
+- `` `` `` `` ``
+- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
+
+## https://games.roblox.com/v1/games/7699580568/media
+
+*Cited by 2: `marketing/thumbnails/01-the-slot-set`, `marketing/thumbnails/_lead`*
+
+- `` `` `` `` ``
+- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
+
+## https://games.roblox.com/v1/games/8974089723/media
+
+*Cited by 2: `marketing/thumbnails/01-the-slot-set`, `marketing/thumbnails/_lead`*
+
+- `` `` `` `` ``
+- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
+
+## https://games.roblox.com/v1/games/9719511378/media
+
+*Cited by 2: `marketing/thumbnails/01-the-slot-set`, `marketing/thumbnails/_lead`*
+
+- `` `` `` `` ``
+- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
+
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/audio/assets.md
 
 *Cited by 2: `audio/music/01-whether-music-exists`, `audio/music/_lead`*
@@ -1227,7 +1357,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`*
 
-- *Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by name — *"Beating the genre's retention curve. Offered and declined"* `[brief: binding]`, upheld by ruling **R-3**. But the mechanism exists, so asserting a zero without touching it would be a bluff: Experience Notifications reach **opted-in users 13+ only**, against an audience bound at **8–14** `[brief: binding]`; require a **minimum of 100 visits since launch**, which is 0 at the publish moment; are capped at one per user per day ``; and are sent by `POST…
+- *Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by name `[brief: binding]`, upheld by **R-3**. But the mechanism exists, so a bare assertion would be a bluff: Experience Notifications reach **opted-in users 13+ only** against an **8–14** audience `[brief: binding]`, require **≥100 visits since launch** (0 at publish), and cap at one per user per day ``; they are sent by `POST .../cloud/v2/users/{id}/notifications` with an `x-api-key` `` — an outbound path `release` `N5` forbids and no module has: `grep -rn "HttpService" game/src` returns…
 - `` — sent by `POST https://apis.roblox.com/cloud/v2/users/${UserId}/notifications` with an `x-api-key` header; the one-per-day limit restated.
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud/guides/usage-place-publishing.md
@@ -1308,7 +1438,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
 
-- *The 20 MB ceiling is a PlaceMemory figure and a creator controls file bytes, so the ledger budgets files and states the conversion it assumes.** `budgets.memoryCeilingsByCategory.Sounds` is 20 MB on a 3 GB phone, `[playtest unknown]` at ±60%, and the platform publishes no conversion from an audio file's bytes to its resident cost. Its only guidance on the subject is a sentence: *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once"* ``. So the ledger sets `assumedExpansionFactor` **2.0**, budgets **10.0 MB of files**,…
+- *The 20 MB ceiling is a PlaceMemory figure and a creator controls file bytes, so the ledger budgets files and states the conversion it assumes.** `budgets.memoryCeilingsByCategory.Sounds` is 20 MB on a 3 GB phone, `[playtest unknown]` at ±60%, and the platform publishes no conversion from an audio file's bytes to its resident cost. Its only guidance is a sentence: *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once"* ``. So the ledger sets `assumedExpansionFactor` **2.0**, budgets **10.0 MB of files**, and marks the…
 - *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once rather than only loading what you need for a portion of the game"* — the platform's only guidance on audio memory, and it is a sentence, not a number ``. The same page also supplies the `CanTouch`/`CanQuery` guidance `tech/performance/01` recorded as owed.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/funnel-events.md
@@ -1338,6 +1468,13 @@ did not fetch" becomes checkable instead of trusted.
 - *Growth is uncapped except where the layout physically cannot give.** Sheet 01 rules the index panel has no scroll region, so at `Largest` the 24 slots cannot grow without overflowing. The platform sanctions the cap it needs: a `UITextSizeConstraint` element *"won't expand beyond `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"* ``. So the 24 slot labels and the 4 headings are capped at their computed fit size; everything else in the game, including all prose, is uncapped and grows.
 - `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/publishing/experience-genres.md
+
+*Cited by 2: `marketing/store-page/02-genre-and-where-keywords-live`, `marketing/store-page/_lead`*
+
+- *`restoration` is not a value the platform offers.** The genre vocabulary holds **17 genres and 40 subgenres** and contains no `restoration` ``. `uiTheme.genre: "restoration"` is a ui-forge archetype-resolution string and `art/ui-art/01` says so; it is not a platform value and never was. **That is gap P1, and it means the binding line *"marketed as a restoration game, not an incremental"* `[brief: binding]` ← `[you chose: R4 Q2]` (`05-OUTWARD.md`) has no platform value to land on.** I implement its second half exactly — the game is not filed as an incremental — and its first half as closely…
+- *That pair is the whole of their tag set**, and the negative result is the finding: the platform's current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense, not shipped `` ``. The full 17-genre / 40-subgenre vocabulary is fetched and banked at the first URL above, and it contains **no `restoration`**.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/projects/assets/index.md
 
 *Cited by 2: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/_lead`*
@@ -1349,7 +1486,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
 
-- *Preload two cue classes, thirteen files, and nothing else.** `ContentProvider:PreloadAsync` *"yields until all of the assets… have loaded"*, and the platform's advice is *"only preload essential assets… You might get occasional pop-in, but it decreases load times"* ``. The essential set is what can fire inside `firstSession.beats[firstReveal].bySecond` 10.0: the clear's twelve files and the reveal's one. The call runs **after** the character is controllable, which is where `budgets.loadTargetDerivation` stops the load-to-first-input clock, so preloading contributes 0 s to the 6.0 s target…
+- *Preload two cue classes, thirteen files, and nothing else.** `ContentProvider:PreloadAsync` *"yields until all of the assets… have loaded"*, and the platform's advice is *"only preload essential assets… You might get occasional pop-in, but it decreases load times"* ``. The essential set is what can fire inside `firstSession.beats[firstReveal].bySecond` 10.0: the clear's twelve files and the reveal's one. Interface-sound work asked for all of its cues to join the set on the ground that a purchase and an index open are both reachable in minute 1 — **declined**, because minute 1 is not ten…
 - `ContentProvider:PreloadAsync` *"yields until all of the assets associated with the given Instances have loaded"* and handles instances with content links *"such as `Decal` and `Sound`"*; best practice is *"only preload essential assets, not the entire Workspace… You might get occasional pop-in, but it decreases load times"* ``.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiButton.yaml
@@ -1441,17 +1578,26 @@ did not fetch" becomes checkable instead of trusted.
 - *P9 is decided against the one piece of evidence that contradicts it.** For glanceable isolated words, *"Lowercase lettering required 26% more time for accurate reading than uppercase"*, though character size dominates case ``. P9 still forbids stored all-caps, because `theme/vocabulary/01-naming-form` (pack §4) already fixed Title Case, uppercase is lossy, and rendered case is typography that UI/UX can apply to a whole class of label at draw time. `[cid: decided]`
 - *Rendered case equals stored case.** The evidence against says lowercase costs *"26% more time for accurate reading than uppercase"* for glanceable isolated words ``. Overruled: these labels are static furniture read once, so label read-time is not the binding cost, while a second spelling is permanent and is what `theme/vocabulary/03`'s one-spelling invariant catches. `[cid: decided]`
 
+## https://www.roblox.com/catalog/11415599271/Overgrowth-Cape
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
 ## https://www.roblox.com/games/123639373205511/Pressure-Wash-Incremental
 
 *Cited by 2: `gameplay/meta/_lead`, `theme/fantasy/_lead`*
 
 - **Two sibling incrementals advertise area unlocking and publish no counts.** Pressure Wash Incremental: "[🌎] Unlock New Islands". Leaves Incremental: "Unlock new areas and discover rare leaf types" — and its Roblox page reported "There are currently no running experiences", i.e. zero live servers at fetch time. Content volume in this family is not publicly stated by its own store listings.
 
-## https://www.roblox.com/games/126244816328678/DIG
+## https://www.roblox.com/games/127310837609892/CONTENT-UPDATE-FNaF-The-Ruins-Pre-Alpha
 
-*Cited by 2: `marketing/name/_lead`, `theme/fantasy/_lead`*
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
 
-- **DIG** (DIG Development, 28 June 2025): *"Uncover and collect hidden treasures, explore a massive open world..."* **56,030,218 visits, 89.3% likes (101,475 up / 12,115 down), all-time peak 119,871 CCU.** Its Collection is *"a detailed in-game logbook"* of 601 items, and **completing a zone unlocks Mounts** — structurally the brief's set-completion bonus. `` `` ``
+
+## https://www.roblox.com/games/127763554649245/Find-the-Objects
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
 
 ## https://www.roblox.com/games/129774084106862/Scrap-Incremental
 
@@ -1460,9 +1606,24 @@ did not fetch" becomes checkable instead of trusted.
 - **`relic` is another game's word for a different thing.** `Scrap Incremental` ships *"Roll rare Relics to power up your journey!"* and a *"unique 'Relic' system"*; `Faith Incremental` ships *"✨ Relics"* as a named collectible beside Faith and Souls. In both, a relic is a **rolled multiplier item**. This game's is a discovered, non-rolled, set-structured collectible. Using the word imports the wrong mental model and reads as a clone in the store listing.
 - `tier` is `Scrap Incremental`'s named progression system, so it is banned as a player-facing label while remaining fine as an internal field name.
 
-## https://www.roblox.com/games/1345139196/Treasure-Hunt-Simulator
+## https://www.roblox.com/games/129955223489508/Star-Ruins-Spirit-Forest
 
-*Cited by 2: `marketing/name/_lead`, `theme/fantasy/_lead`*
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/136066894181626/Clean-the-Restaurant
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/138485603458691/Dig-for-Dinos
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/4508787172/Lush-Overgrown-Showcase
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
 
 
 ## https://www.roblox.com/games/70698000296435/Artifacts
@@ -1471,11 +1632,46 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Substitutes were checked and are also occupied.** `artifact` is a shipping Roblox title with *"70+ artifacts to collect"*; `antique` belongs to `reStore`.
 
+## https://www.roblox.com/games/72417782950794/Clean-the-Backyard
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/76455837887178/Dig-it
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/7892152397/Ruins-Realm
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/80000420704526/Clean-The-Superstore
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/80310980024153/Clean-Your-Room
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
+## https://www.roblox.com/games/81440632616906/Dig-to-Earths-CORE
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
+
 ## https://www.roblox.com/games/94264573845314/Faith-Incremental
 
 *Cited by 2: `theme/vocabulary/02-banned-words`, `theme/vocabulary/_lead`*
 
 - **`relic` is another game's word for a different thing.** `Scrap Incremental` ships *"Roll rare Relics to power up your journey!"* and a *"unique 'Relic' system"*; `Faith Incremental` ships *"✨ Relics"* as a named collectible beside Faith and Souls. In both, a relic is a **rolled multiplier item**. This game's is a discovered, non-rolled, set-structured collectible. Using the word imports the wrong mental model and reads as a clone in the store listing.
+
+## https://www.roblox.com/games/94672857541034/Clean-the-Museum
+
+*Cited by 2: `marketing/name/01-the-title`, `marketing/name/_lead`*
+
 
 ## https://www.rolimons.com/game/124374448373637
 
@@ -1504,12 +1700,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
 
 - TikTok's own floor: *"If you are under 13 years of age, or under 14 years of age in Florida, you may not use the Platform"*. ``
-
-## https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html
-
-*Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
-
-- *The metric ruling, and the finding it exposes.** The approved floor is **Rec.601 luma**, `Y = 0.299R + 0.587G + 0.114B` on gamma-encoded sRGB, and it stays authoritative. WCAG 1.4.11 asks a graphical object for *"a contrast ratio of at least 3:1 against adjacent color(s)"* on sRGB **relative luminance**, `L = 0.2126R + 0.7152G + 0.0722B`, over **linearised** channels ``. **Different quantities; one does not imply the other.** Redone against real hues, including the stone as merged:
 
 ## https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html
 
@@ -1614,12 +1804,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Recorded once so nobody re-derives it, and used for nothing:** "Creators generally earn 70% of anything they sell in Robux in their game", and DevEx converts 10,000 Robux to $38 USD. Revenue is a declined non-goal, so no sheet in this domain may turn a price into an earnings argument. ``
 
-## https://create.roblox.com/docs/production/experiments
-
-*Cited by 1: `marketing/icon/_lead`*
-
-- *The other three subjects in my `owns` list are values, not sheets, and both of the zeros are values with a ruling attached.** Seasonal and event variants are **forbidden** (`03-META.md` priority 3; category row 17; `theme/setting/03` `R1`), so `variants` is an empty array with the ruling in it. The A/B test set is **0** and the platform closes it before the project does: Roblox Experiments cover *"different config values"* in-game and *"custom matchmaking configurations"*, and **icons are not a testable element**, with a stated *"Games with fewer than 1,000 daily active users might…
-
 ## https://create.roblox.com/docs/production/promotion/chat-settings
 
 *Cited by 1: `gameplay/social/_lead`*
@@ -1643,12 +1827,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `liveops/community/_lead`*
 
 - **Whether a creator can see reports filed inside their own experience (G-C2).** `[unverified]` — three official pages describe the report flow and none mentions a creator role, which supports the weak form (*no creator report queue is documented*) and not the strong form (*none exists*). **Settling fetch:** `https://create.roblox.com/docs/production/publishing` and the Creator Hub moderation documentation rendered with its left-hand navigation; failing that, the open developer feature request *"Roblox should give developers access to the in-game reporting system"* checked for a staff…
-
-## https://create.roblox.com/docs/production/publishing/thumbnails
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- *The platform's own rules, fetched, and three of them are load-bearing.** ``
 
 ## https://create.roblox.com/docs/projects/server-authority
 
@@ -1732,23 +1910,11 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Could not fetch:** `https://create.roblox.com/docs/ui/selection` returned 404, and the rendered `GuiObject` and `GuiService/SelectedObject` reference pages returned member lists without their descriptions. Routed around via the creator-docs YAML and the API announcement above.
 
-## https://devforum.roblox.com/t/5-tips-from-roblox-staff-to-get-the-most-out-of-thumbnail-personalization/3471689
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- *Thumbnail personalisation, and why the A/B question is not free.** `` — *"Setting 2 or more thumbnails to active will turn personalization on"*, up to five active; traffic starts split evenly and then *"thumbnails with higher qualified play through rates (qPTR) for specific user groups will automatically receive more traffic from that group"*, targeted by *"factors like age and genre."* `` — *"Keep multiple thumbnails active for optimal performance"*, *"Avoid testing thumbnails that are too similar"*, *"Monitor qPTR over time"*, and *"accurate representation remains crucial."*
-
 ## https://devforum.roblox.com/t/action-needed-upcoming-changes-to-asset-privacy-for-audio/1701697
 
 *Cited by 1: `audio/music/_lead`*
 
 - Audio privacy: since 22 March 2022 uploaded audio over 6 seconds is private to its uploader, with per-experience permissions grantable; only audio of 6 seconds or less can be made public. **Consequence the category has not stated: a Creator Store music or long-form asset already has a live id, so it does not pass through an upload gate at all** — which bears directly on `G2` (Mix's missing provisioning gate) and on whether a sentinel is needed for a long asset. ``
-
-## https://devforum.roblox.com/t/are-you-able-to-ab-test-game-icons/3339468
-
-*Cited by 1: `marketing/icon/_lead`*
-
-- *The other three subjects in my `owns` list are values, not sheets, and both of the zeros are values with a ruling attached.** Seasonal and event variants are **forbidden** (`03-META.md` priority 3; category row 17; `theme/setting/03` `R1`), so `variants` is an empty array with the ruling in it. The A/B test set is **0** and the platform closes it before the project does: Roblox Experiments cover *"different config values"* in-game and *"custom matchmaking configurations"*, and **icons are not a testable element**, with a stated *"Games with fewer than 1,000 daily active users might…
 
 ## https://devforum.roblox.com/t/balancing-exponential-upgrade-progression/2434950
 
@@ -1762,23 +1928,11 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Could not verify, marked `[unverified]` for the writer:** whether `TextChatService.ChatVersion` can be *read* from a server script post-migration. The deprecation notice confirms the property still exists on the class but no page I retrieved states its runtime read behaviour under compatibility mode, and the architect's "no reliable read" is an assertion I could neither confirm nor overturn. The fetch that would settle it is the full property detail on `https://create.roblox.com/docs/reference/engine/classes/TextChatService#ChatVersion` with the deprecation panel expanded, or a devforum…
 
-## https://devforum.roblox.com/t/experience-title-and-description-too-long-in-studio-game-settings-but-not-on-the-website/2499228
-
-*Cited by 1: `marketing/name/_lead`*
-
-- Four fetches: the creator-docs publishing page (states naming best practices, **no limit**), the discovery page (no limit), `create.roblox.com/docs/cloud/legacy/games/v1` and `create.roblox.com/docs/cloud/reference/Universe` (endpoint indexes, no field schema), plus a devforum thread reporting a Studio-versus-website discrepancy **with no numbers** ``. Two general web searches returned only unrelated 50-character limits (usernames, `Tool` names, DataStore scopes) and no experience-name figure.
-
 ## https://devforum.roblox.com/t/full-release-build-cross-platform-ui-with-the-viewportdisplaysize-api/3880384
 
 *Cited by 1: `ui-ux/platform/_lead`*
 
 - `GuiService.ViewportDisplaySize` (`Small`/`Medium`/`Large`) exists and is the platform's own device-class instrument. ``
-
-## https://devforum.roblox.com/t/get-your-thumbnails-ready-for-thumbnail-personalization/3226599
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- *Thumbnail personalisation, and why the A/B question is not free.** `` — *"Setting 2 or more thumbnails to active will turn personalization on"*, up to five active; traffic starts split evenly and then *"thumbnails with higher qualified play through rates (qPTR) for specific user groups will automatically receive more traffic from that group"*, targeted by *"factors like age and genre."* `` — *"Keep multiple thumbnails active for optimal performance"*, *"Avoid testing thumbnails that are too similar"*, *"Monitor qPTR over time"*, and *"accurate representation remains crucial."*
 
 ## https://devforum.roblox.com/t/how-would-i-go-about-making-a-index-like-find-the-markers/1715824
 
@@ -1813,12 +1967,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `art/ui-art/_lead`*
 
 - 1. **Whether `(Enum.Font :: any)["MerriweatherBold"]` throws or returns `nil`.** The creator docs are silent; forum evidence shows the error form *"X is not a valid member of Enum"* (`https://devforum.roblox.com/t/mousebutton2-is-not-a-valid-member-of-enumkeycode/2888739`, `https://devforum.roblox.com/t/uitheme-is-not-a-valid-member-of-enum/2472340`), which implies an error and therefore that `UIBuilder.luau:482`'s `or Enum.Font.Gotham` fallback never runs. **`[unverified]`.** Settled by one line in Studio: `print(pcall(function() return (Enum.Font :: any).MerriweatherBold end))`. **Sheet 03…
-
-## https://devforum.roblox.com/t/now-live-update-your-genre-and-subgenre/3265896
-
-*Cited by 1: `marketing/store-page/_lead`*
-
-- *That pair is the whole of their tag set**, and the negative result is the finding: the platform's current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense, not shipped `` ``. The full 17-genre / 40-subgenre vocabulary is fetched and banked at the first URL above, and it contains **no `restoration`**.
 
 ## https://devforum.roblox.com/t/roblox-audio-api-exits-beta-enhanced-sound-controls-now-available/3153454
 
@@ -1916,42 +2064,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Fisch** (~4.5bn visits, ~90%, 1.2M+ peak CCU): the Bestiary is *"a detailed, in-game logbook that records the different types of fish and items fishers have caught"*, with per-page completion rewards and thresholds at 70% and 100%. `` ``
 
-## https://games.roblox.com/v1/games?universeIds=3478678937,7699580568,8974089723,9719511378
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
-
-## https://games.roblox.com/v1/games?universeIds=7699580568,8974089723
-
-*Cited by 1: `marketing/store-page/_lead`*
-
-- `` `` ``
-
-## https://games.roblox.com/v1/games/3478678937/media
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
-
-## https://games.roblox.com/v1/games/7699580568/media
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
-
-## https://games.roblox.com/v1/games/8974089723/media
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
-
-## https://games.roblox.com/v1/games/9719511378/media
-
-*Cited by 1: `marketing/thumbnails/_lead`*
-
-- `` `` `` `` `` Universe ids resolved from place ids via `` and the three siblings.
-
 ## https://generalistprogrammer.com/tutorials/roblox-game-pass-pricing-guide
 
 *Cited by 1: `gameplay/monetization/_lead`*
@@ -1975,11 +2087,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/identity/_lead`*
 
 - **Names display above heads by default and default to the account Display Name.** *"Roblox displays a name and/or health bar above that part"*; *"By default, a humanoid's display name matches the user's Roblox account Display Name which is unique and separate from their account Username."* Suppressible entirely with `DisplayDistanceType = None`. ``
-
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/experience-icons.md
-
-*Cited by 1: `marketing/icon/_lead`*
-
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/scripting/events/remote.md
 
@@ -2042,12 +2149,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `liveops/events/_lead`*
 
 - 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/publishing/experience-genres.md
-
-*Cited by 1: `marketing/store-page/_lead`*
-
-- *That pair is the whole of their tag set**, and the negative result is the finding: the platform's current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense, not shipped `` ``. The full 17-genre / 40-subgenre vocabulary is fetched and banked at the first URL above, and it contains **no `restoration`**.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/AnalyticsService.yaml
 
@@ -2135,74 +2236,9 @@ did not fetch" becomes checkable instead of trusted.
 
 - *The settling fetch, named specifically:** render `https://www.roblox.com/asset-thumbnail/image?assetId=105218777592191&width=768&height=432&format=png` (the reference's single thumbnail; the other five image ids are in the JSON above) in any vision-capable reader, or open the four detail pages in a browser. That is one pass and it closes the composition half of `must_verify` completely.
 
-## https://www.roblox.com/catalog/11415599271/Overgrowth-Cape
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/127310837609892/CONTENT-UPDATE-FNaF-The-Ruins-Pre-Alpha
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/127763554649245/Find-the-Objects
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/129955223489508/Star-Ruins-Spirit-Forest
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/136066894181626/Clean-the-Restaurant
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/138485603458691/Dig-for-Dinos
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/4508787172/Lush-Overgrown-Showcase
-
-*Cited by 1: `marketing/name/_lead`*
-
-
 ## https://www.roblox.com/games/7009799230/Pressure-Wash-Simulator
 
 *Cited by 1: `theme/fantasy/_lead`*
-
-
-## https://www.roblox.com/games/72417782950794/Clean-the-Backyard
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/76455837887178/Dig-it
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/7892152397/Ruins-Realm
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/80000420704526/Clean-The-Superstore
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/80310980024153/Clean-Your-Room
-
-*Cited by 1: `marketing/name/_lead`*
-
-
-## https://www.roblox.com/games/81440632616906/Dig-to-Earths-CORE
-
-*Cited by 1: `marketing/name/_lead`*
 
 
 ## https://www.roblox.com/games/93445850351820/Ore-Incremental
@@ -2210,11 +2246,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/vocabulary/_lead`*
 
 - **`Ore Incremental`'s relic wording** — `[unverified]`, search summaries only (a pass granting *"2x luck when opening relics"*). `robipedia.com/game/ore-incremental-6722298074` returned **HTTP 403**. **The fetch that would settle it:** the description and pass list at `https://www.roblox.com/games/93445850351820/Ore-Incremental`, or its pass list on `rolimons.com`. Two family games are already confirmed by direct fetch, so this is redundancy, not the basis of the finding.
-
-## https://www.roblox.com/games/94672857541034/Clean-the-Museum
-
-*Cited by 1: `marketing/name/_lead`*
-
 
 ## https://www.roblox.com/games/99397872893294/Concrete-Cleaning-Simulator
 
