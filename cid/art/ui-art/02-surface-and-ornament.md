@@ -21,27 +21,30 @@ says there is none. Every token this game actually resolves is either already co
 approved constraint or is unreferenced by any pattern.
 
 **The figure-and-ground arithmetic, which is the whole case for the archetype.** Rec.601 luma of
-the surfaces, computed not asserted: `surface.base` `#2E2419` = **37.7**, `sunken` `#211A12` =
-**27.2**, `raised` `#3D3123` = **51.0**, `overlay` `#150F0A` = **16.2**, `content.primary`
-`#F5E9D0` = **233.7**, `border.subtle` `#54432E` = **69.7**, `accent.primary` `#D4A34A` =
-**167.5**. Cleared stone is floored at **165** by `theme/setting/01` `[research: cid/art/style/_lead.md]`.
-So every HUD plate sits 115 to 150 luma points below the world behind it, which is the brief's
-own surviving reason for the archetype: *"green overgrowth on warm stone is naturally
-high-contrast"* `[brief: soft]`. **One element is not:** `accent.primary` at 167.5 is within 3
-points of the cleared-stone floor, and it is the bar fill. It never touches the world (the fill
-sits inside a `surface.sunken` track carrying a `border.subtle` hairline
-`[research: ui-forge/src/compose/patterns/hud-overlay.mjs]`), so I keep it and mark the case
-`[playtest unknown]`, test range: accept as-is, or darken `accent.primary` by 20 to 40 luma
-points. **Settled by one render**, named in the criteria.
+the surfaces, computed not asserted: `surface.base` `#2E2419` = **37.74**, `sunken` `#211A12` =
+**27.18**, `raised` `#3D3123` = **50.99**, `overlay` `#150F0A` = **16.22**, `content.primary`
+`#F5E9D0` = **233.73**, `content.muted` `#8A7856` = **121.50**, `border.subtle` `#54432E` =
+**69.69**, `accent.primary` `#D4A34A` = **167.51**. `styleGuide.roles["stone.cleared"]` computes
+to **201.84** `[research: cid/art/_verified.md]`. So every HUD plate sits 150 to 186 luma points
+below the world behind it, which is the brief's own surviving reason for the archetype: *"green
+overgrowth on warm stone is naturally high-contrast"* `[brief: soft]`.
+
+**Where the separation is thin, it is closed by an edge rather than by a colour change**, and
+that is what the adjacency table below is for. Two fills that share a rendered edge are 10.6
+apart in exactly one place, the index panel against its 24 slots, and a hairline stroke at 69.69
+resolves it. The pair a reviewer will reach for first, `accent.primary` against cleared stone at
+**34.3**, is **not an adjacent pair**: the bar fill never shares an edge with the world, because
+the `surface.sunken` track and its `border.subtle` hairline always sit between them. My first
+draft of criterion 4 measured that pair and asked for a judgment; the table measures the pairs
+that actually touch and asks for arithmetic. Same decision, checkable.
 
 **Does `theme/lore/01`'s *"no gold, gilding or gemstones"* reach `color.accent.primary`
 `#D4A34A`? No.** That overrule was written about world dressing and about the 24 Finds, in a
-`## Pushing back` against *"relics must read as treasure"*, and it is restated by
-`theme/setting/01` as *"carving, casting, dressed joints and pattern in the paving"*. Gilding is
-a **material** claim: a metallic response to light on a modelled object. A flat hex fill on a
-2D plate has no material, no reflectance and no object to gild. Nothing on the interface depicts
-gold; one interface accent is a warm ochre. **The boundary I add rather than the reach I refuse:**
-no UI element may depict metal as a material (no metallic multi-stop gradient, no bevel, no
+`## Pushing back` against *"relics must read as treasure"*, and `theme/setting/01` restates it as
+*"carving, casting, dressed joints and pattern in the paving"*. Gilding is a **material** claim:
+a metallic response to light on a modelled object. A flat hex fill on a 2D plate has no material,
+no reflectance and no object to gild. **The boundary I add rather than the reach I refuse:** no
+UI element may depict metal as a material (no metallic multi-stop gradient, no bevel, no
 specular highlight, no gem or facet shape), and no world surface may adopt `#D4A34A`. That keeps
 both sheets true and needs no revision against either. `[cid: decided]`
 
@@ -77,12 +80,22 @@ round join and nothing else in this key changes. The visible size of the differe
 **Zero additive `tokens` groups here.** A group nothing reads is a value with no consumer; the
 only group this domain adds is sheet `06`'s `ui.motion`, which names its readers.
 
+| adjacent fill pair | Δ luma | arm it passes on | passes |
+|---|---|---|---|
+| bar fill `accent.primary` / bar track `surface.sunken` | 140.33 | (i) ≥ 40 | yes |
+| readout chip `surface.overlay` / cleared stone | 185.61 | (i) ≥ 40 | yes |
+| index panel `surface.base` / cleared stone | 164.10 | (i) ≥ 40 | yes |
+| index panel `surface.base` / slot `surface.sunken` | 10.56 | (ii) a `UIStroke` between them, added by this sheet | yes |
+| control `surface.raised` / chip `surface.overlay`, affordable and unaffordable | 34.77 | (ii) the state edge, 4 px or 1 px, sheet `05` | yes |
+| control `surface.sunken` (maxed) / chip `surface.overlay` | 10.96 | (iii) carries `content.muted` text at 94.32 from its own fill | yes |
+| bar fill `accent.primary` / cleared stone | 34.33 | **not adjacent**: the track and its hairline always sit between them | n/a |
+
 | token ref | verdict | reason |
 |---|---|---|
-| `surface.base`, `sunken`, `raised`, `overlay` | ship unmodified | 115 to 150 luma below the cleared-stone floor of 165 |
-| `content.primary`, `secondary`, `muted` | ship unmodified | `muted` at 121.5 on `overlay` at 16.2 is a 105-point separation inside a filled chip |
-| `accent.primary` | ship unmodified, `[playtest unknown]` | bar fill at 167.5 versus a world floor of 165; never adjacent to the world |
-| `border.subtle`, `border.strong` | ship unmodified | `subtle` at 69.7 is 32 above `surface.base`; visible as an edge |
+| `surface.base`, `sunken`, `raised`, `overlay` | ship unmodified | 150 to 186 luma below the cleared-stone role |
+| `content.primary`, `secondary`, `muted` | ship unmodified | `muted` at 121.50 on `overlay` at 16.22 is a 105-point separation inside a filled chip |
+| `accent.primary` | ship unmodified | its only adjacency is its own track at 140.33; the 34.33 against stone is not an adjacent pair |
+| `border.subtle`, `border.strong` | ship unmodified | `subtle` at 69.69 is 31.95 above `surface.base`, which is what makes an added edge read |
 | `accent.secondary` `#7A9E6B` | **forbidden to reference** | a sage green on a green world blurs figure and ground; its only consumer is `Trim`, which `composition` sets to `none` |
 | `accent.tertiary` `#9B6BC4` | **forbidden to reference** | a violet, and the playtest's words were *"big purple boxes"*; its only consumer is `modal-grid`'s `cardBadge`, and there is no badge in this game |
 | `status.danger` `#B85450` | **forbidden to reference** | `theme/tone/04` `D6` bans a red alert state; `D12` removes every "you cannot do that" signal |
@@ -95,8 +108,8 @@ only group this domain adds is sheet `06`'s `ui.motion`, which names its readers
 
 | node | added property | value | reason |
 |---|---|---|---|
-| `IndexSurface` | `UIStroke` | `color: border.strong`, `thickness: stroke.base` (2), `transparency: 0`, `lineJoinMode: Miter` | the only frame this game has; separates a 37.7-luma panel from a world floored at 165 without adding an instance per slot |
-| `Slot_<setId>_<i>` (×24) | `UIStroke` | `color: border.subtle`, `thickness: stroke.hairline` (1), `transparency: 0`, `lineJoinMode: Miter` | `screens/01` requires 24 slots visible and identical when empty; panel-to-slot separation is only 10.6 luma (37.7 versus 27.2), and a 69.7-luma edge is what makes an empty slot countable |
+| `IndexSurface` | `UIStroke` | `color: border.strong`, `thickness: stroke.base` (2), `transparency: 0`, `lineJoinMode: Miter` | the only frame this game has; the panel fill already clears the world by 164.10, so this edge is ornament and is not load-bearing for separation |
+| `Slot_<setId>_<i>` (×24) | `UIStroke` | `color: border.subtle`, `thickness: stroke.hairline` (1), `transparency: 0`, `lineJoinMode: Miter` | `screens/01` requires 24 slots visible and identical when empty, and panel-to-slot separation is only 10.56; this edge is the arm that pair passes on |
 | `Group_<setId>`, `Row_<setId>` | **none** | no fill, no stroke, no corner | grouping is carried by proximity, the same source `hud/01` rests on; a box around a box is the "pile of rectangles" failure |
 | `Heading_<setId>` | **none** | — | `screens.tree` assigns its `typeRole` and `color`; identical for all four sets, per `screens/01` |
 | `Trim` | **not emitted** | `ornament.readoutTrim: "none"` | agreed with `composition`: a 3 px full-width `accent.secondary` line has no meaning and is the wrong green |
@@ -112,9 +125,26 @@ only group this domain adds is sheet `06`'s `ui.motion`, which names its readers
     "tokenOverridesNote": "deliberately empty. Sheet 03 is the only sheet in this domain that writes a token override, and it writes exactly one.",
     "tokens": {},
     "tokensNote": "deliberately empty here. Sheet 06 adds the single group ui.motion and names its readers.",
+    "adjacency": {
+      "rule": "two fills that share a rendered edge with no third surface between them must satisfy at least one arm: (i) |luma601(a) - luma601(b)| >= 40; (ii) a UIStroke sits between them; (iii) the inner fill carries text at >= 40 luma from itself",
+      "floorSource": "theme/setting/01's stated 'at least 40' separation for cleared stone above the lightest tier green; this key states no floor of its own",
+      "lumaFormula": "Y = 0.299R + 0.587G + 0.114B",
+      "clearedStoneRef": "styleGuide.roles[\"stone.cleared\"]",
+      "pairs": [
+        { "a": "accent.primary", "b": "surface.sunken", "delta": 140.33, "arm": "i" },
+        { "a": "surface.overlay", "b": "styleGuide.roles[\"stone.cleared\"]", "delta": 185.61, "arm": "i" },
+        { "a": "surface.base", "b": "styleGuide.roles[\"stone.cleared\"]", "delta": 164.10, "arm": "i" },
+        { "a": "surface.base", "b": "surface.sunken", "delta": 10.56, "arm": "ii", "stroke": "border.subtle at stroke.hairline, added by this sheet" },
+        { "a": "surface.raised", "b": "surface.overlay", "delta": 34.77, "arm": "ii", "stroke": "the affordability edge, sheet 05" },
+        { "a": "surface.sunken", "b": "surface.overlay", "delta": 10.96, "arm": "iii", "text": "content.muted at 94.32 from its own fill", "note": "the maxed control; the weakest arm and the only row using it" }
+      ],
+      "notAdjacent": [
+        { "a": "accent.primary", "b": "styleGuide.roles[\"stone.cleared\"]", "delta": 34.33, "why": "the surface.sunken track and its border.subtle hairline always sit between the bar fill and the world, so no floor applies", "recordedBecause": "34.3 is the number a reviewer will compute first" }
+      ]
+    },
     "surfaceEdge": [
-      { "node": "IndexSurface", "stroke": { "color": "border.strong", "thickness": "stroke.base", "transparency": 0, "lineJoinMode": "Miter" }, "writtenBy": "index-screen", "dependsOn": "A5 for lineJoinMode only; Color and Thickness ship today" },
-      { "node": "Slot_<setId>_<i>", "count": 24, "stroke": { "color": "border.subtle", "thickness": "stroke.hairline", "transparency": 0, "lineJoinMode": "Miter" }, "writtenBy": "index-screen", "dependsOn": "A5 for lineJoinMode only" }
+      { "node": "IndexSurface", "stroke": { "color": "border.strong", "thickness": "stroke.base", "transparency": 0, "lineJoinMode": "Miter" }, "writtenBy": "index-screen", "loadBearing": false, "dependsOn": "A5 for lineJoinMode only; Color and Thickness ship today" },
+      { "node": "Slot_<setId>_<i>", "count": 24, "stroke": { "color": "border.subtle", "thickness": "stroke.hairline", "transparency": 0, "lineJoinMode": "Miter" }, "writtenBy": "index-screen", "loadBearing": true, "dependsOn": "A5 for lineJoinMode only" }
     ],
     "forbiddenTokenRefs": ["accent.secondary", "accent.tertiary", "status.success", "status.danger", "status.warning", "status.info", "onColor.secondary", "onColor.tertiary", "onColor.success", "onColor.danger", "onColor.warning", "onColor.info"],
     "tokenReadRules": [
@@ -155,8 +185,12 @@ only group this domain adds is sheet `06`'s `ui.motion`, which names its readers
   field is written twice.
 - **`index-screen` build work** gains two `UIStroke` instances it does not create today, both
   sourced from `Theme.luau` and never from a literal.
-- **Style-guide work** inherits one prohibition it can check: `#D4A34A` may not appear in a world
-  palette, and no world colour role may be named after a UI token.
+- **Style-guide work** owns `styleGuide.roles["stone.cleared"]`, which the adjacency table reads
+  by field. If that role's value moves, three rows recompute and the arms are what must still
+  hold, not the deltas.
+- **Sheet `05` of this domain** inherits two adjacency rows: the affordability edge is the arm the
+  `surface.raised` control passes on, and the maxed control is the one row in the whole table
+  resting on arm (iii).
 - **VFX work** inherits the `forbiddenTokenRefs` list as a colour blacklist by proxy: a cue tinted
   `status.danger` or `accent.tertiary` would reintroduce the two hues this key removed.
 - **`ui-forge` pattern work** takes `A5` and nothing else from this sheet. `A6` is a recorded
@@ -171,11 +205,11 @@ only group this domain adds is sheet `06`'s `ui.motion`, which names its readers
    character in a `text` field.
 3. The built `IndexSurface` has exactly 25 `UIStroke` descendants: one on the panel and one on
    each of the 24 slots.
-4. `npm run render -- --brief ui-forge/briefs/hud.brief.json --viewport all` against a
-   `fantasy-ornate` context produces a phone-viewport frame in which the progress-bar fill is
-   distinguishable from cleared stone behind it in a greyscale copy of the image.
-   `[playtest unknown]` on the outcome; a failure moves `accent.primary` by 20 to 40 luma points
-   and nothing else.
+4. Every row of `uiTheme.adjacency.pairs` passes its stated arm, computed with
+   `Y = 0.299R + 0.587G + 0.114B` over the merged token values and
+   `styleGuide.roles["stone.cleared"]`: arm (i) is `Δ ≥ 40`, arm (ii) is the presence of a
+   `UIStroke` between the two fills, arm (iii) is text at `Δ ≥ 40` from its own fill. No row may
+   change arms without a revision against this sheet.
 
 ## Not decided here
 
@@ -185,6 +219,7 @@ is made of in any state, and the affordability channel: sheet `05`. Motion, easi
 `ui.motion` group: sheet `06`. `variant` and `ornament` values, cluster geometry, grouping, every
 label and every number format: `composition`. The index panel's extent, element tree, fills,
 corners, padding and text colours: `screens`. Touch floors, safe areas and keepout rects:
-`viewport`. Every world colour, material, luma value and the world-token question (`G3`):
-style-guide work. Whether a `MaterialVariant` or `SurfaceAppearance` may exist anywhere: the same,
-already refused there on an uploaded-texture ground.
+`viewport`. Every world colour, material and luma value, including
+`styleGuide.roles["stone.cleared"]`, which this sheet reads and does not set: style-guide work.
+Whether a `MaterialVariant` or `SurfaceAppearance` may exist anywhere: the same, already refused
+there on an uploaded-texture ground.

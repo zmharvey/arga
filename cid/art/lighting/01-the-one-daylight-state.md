@@ -24,14 +24,15 @@ API reference lists types, not values
 `[research: https://create.roblox.com/docs/reference/engine/classes/Lighting]`, so *"leave it at the
 default"* is not a statable value and every row below is absolute. `[cid: decided]` on all thirteen;
 the brief contains no hour, sky, light or shadow anywhere in eight sheets, which `theme/setting/03`
-already flagged upward and which I do not reopen.
+already flagged upward. They are listed again under **Flagged to the developer** with the
+alternative not taken and the field that reverses each.
 
 **One state covers eight areas and four depths, argued on geometry plus the engine, not on budget.**
-Depth already reads through three non-light channels: `layout`'s four disjoint chunk families at
-35/37/39/40 anchors per chunk, `depths`' 140 → 640 patches, and rising green quantity by
-`theme/setting/01`. On top of that the engine renders the terrace/vault difference from one state
-for free — `Ambient` *"affects the lighting for both outdoor and indoor environments"* while
-`OutdoorAmbient` *"applies specifically to outdoor areas"*, decided by surface exposure
+Depth already reads through three non-light channels: `layout.families[]`' four disjoint chunk
+families at 35/37/39/40 anchors per chunk, `depths.areas[].patchCount` 140 → 640, and rising green
+quantity by `theme/setting/01`. On top of that the engine renders the terrace/vault difference from
+one state for free — `Ambient` *"affects the lighting for both outdoor and indoor environments"*
+while `OutdoorAmbient` *"applies specifically to outdoor areas"*, decided by surface exposure
 `[research: https://create.roblox.com/docs/environment/lighting]`. **I do not rest this on
 `budgets`**, whose every ceiling is `[playtest unknown]`. **So the risk runs the opposite way to the
 obvious one:** depths 2–3 falling *below* the floor, not looking identical — and the reflex fix is
@@ -64,20 +65,18 @@ stone is a local luma trough `02`'s minimum rule catches. The migration's timeli
 default are `[unverified]` secondary claims which I do not write as sourced; the key names both the
 new field and the deprecated one, so a rename does not strand the value.
 
-**Fog is stated as values, and nothing here emits Luau.** `N7`'s check is a grep over `game/src`,
-which proves no script writes fog and proves nothing about the place file — so `FogStart` 99000 and
-`FogEnd` 100000 make the absence countable. 99000 clears
+**Fog is stated as values, and nothing here emits Luau.** `N7`'s check greps `game/src`, which
+proves no script writes fog and proves nothing about the place file — so `FogStart` 99000 and
+`FogEnd` 100000 make the absence countable, and 99000 clears
 `budgets.streaming.StreamingTargetRadius` 512 and `social.maxCoPresenceSeparationStuds` 128 by three
-orders of magnitude, so the sightline `N7` protects is untouched. Every value here is place
-configuration, which keeps `theme/setting/03` criterion 1 (*"0 code paths write any `Lighting`
-property after initialisation"*) satisfied by construction — and is exactly why the key has no
-writer today.
+orders of magnitude. Every value here is place configuration, which keeps `theme/setting/03`
+criterion 1 (*"0 code paths write any `Lighting` property after initialisation"*) satisfied by
+construction — and is exactly why the key has no writer today.
 
 **The per-part constant hour is available, unspent, and priced.** `theme/setting/03` pre-authorised
 it as escalation step 3; taking it revises that sheet's criterion 1. **This sheet does not take
 it**, and reserves no field, enum value or hook for it — nor for any seasonal, weather or
-time-of-day channel, which `03-META.md` places in priority 3 `[brief: soft]` and which is a hard
-scope gate.
+time-of-day channel, which `03-META.md` places in priority 3 `[brief: soft]`, a hard scope gate.
 
 ## The eighteen properties
 
@@ -112,8 +111,8 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
 | code paths writing any `Lighting` property after init | **0** | `theme/setting/03` criterion 1; `grep -rn "Lighting\|ClockTime\|OutdoorAmbient" game/src` returns nothing, verified this run `[research: repo — game/src]` |
 | `Atmosphere` | **0** | `theme/setting/03` `R3`; `N7` |
 | `Clouds` | **0** | `theme/setting/03` `R3` |
-| `Sky` | **0** | `theme/setting/03` `R3` — the sky is a backdrop, not a system. Environment owns whether a zero-asset `Sky` is ever added |
-| `PointLight`, `SpotLight`, `SurfaceLight` | **0** each | `theme/setting/05` `A7` — no light source but daylight |
+| `Sky` | **0** | `theme/setting/03` `R3` — the sky is a backdrop, not a system. `styleGuide.roles["sky"]` sets `instances: 0` and routes its read to this key |
+| `PointLight`, `SpotLight`, `SurfaceLight` | **0** each | `theme/setting/05` `A7`; `chunkDressing` `F10` independently forbids one placed to light a roofed band |
 | `ColorCorrectionEffect`, `BloomEffect`, `SunRaysEffect`, `BlurEffect`, `DepthOfFieldEffect` | **0** each | `theme/tone/04` `D2`; `art/_category.md` row 27. **The colour grade in this game is `Ambient`, `OutdoorAmbient`, the two `ColorShift` fields and `ExposureCompensation` — not a post-effect** |
 | fog volumes | **0** | expressed by `FogStart` 99000 / `FogEnd` 100000 above |
 
@@ -186,23 +185,29 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
       "renderedFloorSource": "theme/setting/01 criterion 3",
       "minRenderedRetention": 0.85,
       "minAuthoredLuma": 195,
-      "authoredColourField": "styleGuide.roles.clearedStone.rgb",
+      "authoredColourField": "styleGuide.roles[\"stone.cleared\"].rgb",
+      "authoredLumaAsMerged": 201.84,
+      "headroomOverStaticGate": 6.84,
+      "chainHolds": "201.84 >= 195 (V6) >= 188 (objectArt.clearedStoneLumaRequiredAtLeast) >= 165 (theme/setting/01 criterion 3); and 195 * 0.85 = 165.75 >= 165, which is V8",
       "passRule": "minimum",
       "samplePointsPerBay": 28,
-      "sampleSelection": "24 patch anchors, every ceil(N/24)-th in layout order, plus the 4 slab corners inset by layout.edgeKeepoutStuds",
+      "sampleSelection": "24 patch anchors, every ceil(N/24)-th in layout order, plus the 4 slab corners inset by layout.chunk.edgeKeepoutStuds",
       "sampleSurfaceTest": "an upward-facing face with normal dot Y >= 0.7, within 3 studs vertically of the sample position",
       "sampledState": "finished, all patches destroyed",
       "excludedFromSampling": ["patch parts", "plot-boundary parts", "tool parts", "player characters"],
+      "chunkFamiliesSampledField": "layout.families[].setId",
       "chunkFamiliesSampled": ["terrace", "cistern", "vault", "spire"],
       "minSkySeeingSampleFraction": 0.5,
       "skyRayCount": 5,
       "skyRayPassThreshold": 2,
       "skyRayLengthStuds": 2000,
+      "enclosureCheckStatus": "CLOSED against chunkDressing as merged. chunkDressing.roofedStudsOfZ is {1:0, 2:6, 3:12, 4:0}, at most 2.5 percent of a bay, and chunkDressing.maxHorizontalDistanceToOpenSkyUnderARoofStuds is 3, so every sample point sees sky and the realised fraction is 1.0 against a required 0.5. V9 stays as a standing check on any future roof rather than as an open risk.",
       "renderedGateDevice": "budgets.deviceFloor",
       "renderedGateScreenBrightness": "100 percent device brightness, indoors, default graphics quality",
       "renderedGateHasOwner": false,
       "wcagRatioAchromaticAtFloor": 1.53,
       "wcagRatioAtWorkedWarmStone": 2.26,
+      "wcagRatioAtMergedStone": 2.31,
       "wcagReferenceRatio": 3.0,
       "wcagReferenceMet": false,
       "legibilityCarriedBy": "shape and silhouette; tiers ships four distinct shapes and four heights",
@@ -227,6 +232,7 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
         "against": "architect/sheets/01-runtime.md",
         "addField": "runtime.placeConfiguration.lighting",
         "precedent": "RR-P2, which added workspaceStreaming to the same block",
+        "scopeNote": "art/_verified.md predicted conflict 2 groups this with RR-P2 and characters/01's StarterPlayer.HealthDisplayDistance entry as one job. Land them together; I ask for nothing separate.",
         "why": "no key, module or emitter in either contract owns a Lighting property; architect/04-tree forbids the build editing game/default.project.json; theme/setting/03 criterion 1 requires zero code paths writing Lighting after init. Without this entry the lighting key has no writer and its eighteen values reach nothing.",
         "entry": {
           "value": "every field of lighting.properties",
@@ -238,7 +244,7 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
       }
     ],
     "citedNotDuplicated": {
-      "slabColour": "Plots.luau:534 sets slab.Material and never slab.Color, so the ground renders at Roblox default [163,162,165], Rec.601 luma 162.64, already below the 165 floor. art/style/01 files that revision request; this key does not duplicate it."
+      "slabColour": "Plots.luau:534 sets slab.Material and never slab.Color, so the ground renders at Roblox default [163,162,165], Rec.601 luma 162.64, already below the 165 floor. art/style/01 RR-A1 files it; this key does not duplicate it and takes no position on the material half that art/_verified.md RR-5 is adjudicating between style/01 and environment/03."
     }
   }
 }
@@ -253,28 +259,44 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
 | G13 | **Thirteen of eighteen `Lighting` properties were at defaults by accident, and the platform documents no defaults**, so nobody could have known what they were | named; `[research owed: the Lighting reference rendered with its property-default column, or a defaults reading off a fresh baseline place]` |
 | G14 | **Nobody owns the lighting-style property while the platform migrates `Enum.Technology` → `Enum.LightingStyle`**, and `ShadowSoftness` depends on which is live. This key states both fields; it cannot state which the engine will honour next year | `[research owed: the unified-lighting announcement, and the lighting-style default on create.roblox.com/docs/environment/lighting]` |
 
+## Flagged to the developer
+
+Every row is `[cid: decided]` against a brief that contains no hour, sky, light or shadow anywhere in
+eight sheets, and `OPEN.md §1` has no audit row for any of it.
+
+| decision | alternative not taken | field that reverses it | recommendation |
+|---|---|---|---|
+| **`GlobalShadows` true** | false, giving up every shadow in the game on a 3 GB phone | `lighting.properties.GlobalShadows` | keep true. It is the only thing making a vault read as a vault under one state; if `budgets` refuses it, the terrace/vault difference goes with it and `02`'s gates are re-run |
+| **`EnvironmentDiffuseScale` 0** | 1, the richer environment-derived ambient | `lighting.properties.EnvironmentDiffuseScale` | keep 0 until a device reading exists. `[playtest unknown]`, range 0–1: at 1 the static gate loses its only computable form |
+| **`ExposureCompensation` 0** | any nonzero stop offset, the cheapest global brightness lever there is | `lighting.properties.ExposureCompensation` | keep 0. Nonzero is *moving the sun* under another name, which `theme/setting/03` forbids |
+| **`LightingStyle` `Realistic` with `Technology` `Future`** | `Soft` / `ShadowMap`, cheaper, with `ShadowSoftness` inert | `lighting.properties.LightingStyle` | keep `Realistic`. The mapping between the two enums is `[unverified]`, so the boot assertion must accept either field |
+| **`ShadowSoftness` 0.2** | 0, a hard edge; or 1, soft to the point of haze | `lighting.properties.ShadowSoftness` | 0.2, `[playtest unknown]`, range 0–0.5 |
+| **`FogStart` 99000, `FogEnd` 100000, `FogColor` warm** | leaving all three unstated, as they were | the three fog fields | keep. Stated values make "no fog" countable; unstated ones made it an assumption |
+| **The other seven** — `TimeOfDay`, both `ColorShift` fields, `EnvironmentSpecularScale`, and the four post-effect and light-class counts | leaving them at undocumented engine defaults | the named field in `lighting.properties` / `lighting.counts` | keep. A default nobody can read is not a decision |
+| **One lighting state, not two** | a second, brighter state for depths 2–3 | `lighting.stateCount`, plus a revision to `theme/setting/03` criterion 1 | keep one. That sheet spent four arguments on it and pre-authorised the escalation order; the per-part constant hour is step 3 and is unspent |
+
 ## Consequences for other work
 
 - **Runtime work (`architect/01-runtime`)** gains `RR-L1`: a fourth `placeConfiguration` entry with
   eighteen values, a `setVia`, an `ownedBy` and a `world.configure()` boot assertion that **reads and
-  never writes**. Missed, the game ships with thirteen properties at undocumented defaults.
+  never writes**. `art/_verified.md` predicted conflict 2 asks that it land with `RR-P2` and
+  `characters/01`'s `StarterPlayer` entry as one job; I agree and ask for nothing separate.
 - **Set-dressing work (`environment`)** inherits `GlobalShadows` true: every part it authors casts,
   and the vault/terrace difference this domain declines to buy with a second state is now its
-  geometry's job. It also inherits sheet `02`'s sky-exposure requirement.
-- **Palette work (`styleGuide`)** inherits a hard authored floor: `styleGuide.roles.clearedStone`
-  must compute Rec.601 luma **≥ 195**, 30 above `theme/setting/01`'s 165, because
-  `minRenderedRetention` is 0.85 and 195 × 0.85 = 165.75. It also gains a free guarantee —
-  `EnvironmentSpecularScale` 0 means no surface can pick up environment sheen, so `A6` no longer
-  depends on a per-part `Reflectance`.
+  geometry's job. Its `chunkDressing` roofed share already clears sheet `02`'s `V9` — closed there,
+  with the arithmetic.
+- **Palette work (`styleGuide`)** — **satisfied as merged, no action.** `roles["stone.cleared"]` is
+  `[216, 201, 169]` at Rec.601 luma **201.84**, clearing `V6`'s 195 by 6.84, and 195 × 0.85 = 165.75
+  ≥ 165 holds `V8`. It also gains a free guarantee: `EnvironmentSpecularScale` 0 means no surface can
+  pick up environment sheen, so `A6` no longer depends on a per-part `Reflectance`.
 - **VFX work (`effects`)** may not build a cue out of a light or a post-process instance: eleven
   classes are counted at zero here, so a reveal that brightens the scene has no legal mechanism.
 - **Budget work (`budgets`)** is told two things and asked for nothing: `GlobalShadows` true plus
   `Realistic` is the most expensive combination in this key, and if a reading on
-  `budgets.deviceFloor` refuses it the fallback is `Soft` with `GlobalShadows` false — which costs
-  the terrace/vault read and forces `02`'s gates to be re-run. **I set no ceiling.**
-- **Store-art work (Discovery & Marketing, wave 7)** gets one hour and no second: every promotional
-  image is at `ClockTime` 15.5. **Audio work** is asked for nothing — there is no hour, weather or
-  season channel to sound.
+  `budgets.deviceFloor` refuses it the fallback is `Soft` with `GlobalShadows` false. **I set no
+  ceiling.**
+- **Store-art work (Discovery & Marketing, wave 7)** gets one hour and no second. **Audio work** is
+  asked for nothing — there is no hour, weather or season channel to sound.
 
 ## Acceptance criteria
 
@@ -282,24 +304,30 @@ Colour values are Roblox `Color3` 0–1 floats, as `game/default.project.json` w
    `lighting.properties` with equal values, and
    `grep -rn "Lighting\|ClockTime\|OutdoorAmbient\|Atmosphere\|FogStart\|FogEnd" game/src` returns
    nothing.
-2. A count over the whole DataModel returns **0** for each of `Atmosphere`, `Clouds`, `Sky`,
+2. `luma601(styleGuide.roles["stone.cleared"].rgb) ≥ lighting.readability.minAuthoredLuma`
+   (201.84 ≥ 195 as merged), and **every field path either sheet in this domain cites into another
+   key resolves in the merged manifest** — `styleGuide.roles["stone.cleared"]`,
+   `layout.chunk.edgeKeepoutStuds`, `layout.families[].setId`, `depths.areas[].patchCount`,
+   `budgets.streaming.StreamingTargetRadius`, `budgets.deviceFloor`, `budgets.renderCeilings`,
+   `social.maxCoPresenceSeparationStuds`, `tiers[0].rgb`, `representation.plot`,
+   `runtime.placeConfiguration`, `chunkDressing.roofedStudsOfZ`.
+3. A count over the whole DataModel returns **0** for each of `Atmosphere`, `Clouds`, `Sky`,
    `PointLight`, `SpotLight`, `SurfaceLight`, `ColorCorrectionEffect`, `BloomEffect`,
    `SunRaysEffect`, `BlurEffect`, `DepthOfFieldEffect`, and `lighting.counts.lightingStates` is 1.
-3. `lighting.properties.ExposureCompensation` is 0, `ColorShift_Top` and `ColorShift_Bottom` are
-   `[0,0,0]`, and `FogStart` > `budgets.streaming.StreamingTargetRadius`.
 4. `architect/sheets/01-runtime.md` carries a `runtime.placeConfiguration.lighting` entry with
    `setVia`, `ownedBy` and `assertedBy` — **or** the build report records `RR-L1` as open and states
    that `lighting` has no writer.
 
 ## Not decided here
 
-**How the luma floor is verified, sampled, gated and failed** — sheet `02`, which carries no
-manifest and enforces `lighting.readability` above. **The stone's hue, its rgb triple and the closed
-material list** — `styleGuide` (`art/style/01`), which also files the `Plots.luau:534` slab-colour
-revision request; I cite it and do not duplicate it. **Where the openings that light a vaulted bay
-sit and what they are made of, and whether a `Sky` instance is ever added** — `environment`. **Every
-performance ceiling this key is measured against** — `budgets`, Tech & Data. **Whether `lighting` is
-promoted into `bridge/schema.mjs`, and what to do about the name collision with `ui-forge`'s
-`assetContract.lighting` prompt field** — whoever maintains the contract and the seam. **The
-per-part constant hour** — nobody, until `theme/setting/03` criterion 1 is revised; it is available,
-unspent, and no field here is held open for it.
+**How the luma floor is verified, sampled, gated and failed** — sheet `02`, which carries no manifest
+and enforces `lighting.readability` above. **The stone's hue, its rgb triple and the closed material
+list** — `styleGuide` (`art/style/01`); I read `roles["stone.cleared"]` by field, choose no colour,
+and take no position on the `Limestone`-versus-`Cobblestone` slab material `art/_verified.md` `RR-5`
+is adjudicating. **Where the openings that light a vaulted bay sit and what they are made of, and
+whether a `Sky` instance is ever added** — `environment`. **Every performance ceiling this key is
+measured against** — `budgets`, Tech & Data. **Whether `lighting` is promoted into
+`bridge/schema.mjs`, and what to do about the name collision with `ui-forge`'s
+`assetContract.lighting` prompt field** — whoever maintains the contract and the seam. **The per-part
+constant hour** — nobody, until `theme/setting/03` criterion 1 is revised; it is available, unspent,
+and no field here is held open for it.

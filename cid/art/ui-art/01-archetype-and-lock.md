@@ -37,20 +37,33 @@ key. One thing is **detected, not prevented**: the Node test fails a wave *after
 emission, which is worth having and is not the same as impossibility. And one thing is **not
 enforced at all today**: every `tokenOverride` and every additive group this key holds, because
 `deriveGameContext` does not carry them (`A3`) from a `concept.json` that does not exist
-(`A4`), and both requests are refusable. **If `A3` and `A4` land, the whole key reaches
-`generateTheme` and the test compares against values that actually shaped the artifact. If both
-are refused, the archetype is enforced and every token value in sheets `02`, `03` and `06` is
-advisory.** That is the residual risk, and it is now data in `emission.enforcementToday` rather
-than a sentence in a paragraph.
+(`A4`), and `A4` is refusable. **If `A3` and `A4` land, the whole key reaches `generateTheme`
+and the test compares against values that actually shaped the artifact. If `A4` is refused, the
+archetype is still enforced and every token value in sheets `02`, `03` and `06` is advisory.**
+That is the residual risk, and it is data in `emission.enforcementToday` rather than a sentence
+in a paragraph.
 
-**Two things stand between this key and the build, and neither is mine to fix.**
-`deriveGameContext(concept)` emits `artDirection` with exactly `vibe`, `mood`, `paletteHints`
-and `referenceNote` `[research: concept/src/derive/game-context.mjs]`: **the key would merge and
-change nothing.** And `deriveGameContext` consumes a `concept.json` that does not exist anywhere
-in the repo, so the only producer of a consumable context cannot be run for this brief at all.
-`A4` is the **third** petition against the same `ok && --emit` gate owner, after `hud/03`'s
-`bridge/emit-hud-brief.mjs` and `theme/vocabulary/03`'s `bridge/emit-terms.mjs`. **Scope it as
-one job, not three.**
+**`A3` is a two-field change, and stating it larger than it is invites a refusal it does not
+deserve.** `deriveGameContext` already emits `title`, `genre`, `subgenre`, `inspiration`,
+`audience.ageBand` and `audience.platformMix` (`game-context.mjs:136-143`)
+`[research: concept/src/derive/game-context.mjs]`. The only fields genuinely absent are
+`artDirection.tokenOverrides` and `artDirection.tokens`, because the `artDirection` block it
+builds carries exactly `vibe`, `mood`, `paletteHints` and `referenceNote`. **Two fields, one
+object literal.** Until they are carried, the key merges and changes nothing beyond the
+archetype. Separately, `deriveGameContext` consumes a `concept.json` that does not exist
+anywhere in the repo, so the only producer of a consumable context cannot be run for this brief
+at all: that is `A4`, the **third** petition against the same `ok && --emit` gate owner, after
+`hud/03`'s `bridge/emit-hud-brief.mjs` and `theme/vocabulary/03`'s `bridge/emit-terms.mjs`.
+**Scope it as one job, not three.**
+
+**One string is now held by two keys, so the seam is stated here rather than discovered at build
+time.** `title.value` → `ctx.title` → `generate.mjs:116` → `Theme.luau`'s `meta.sourceTitle` is a
+real path. Wave 7's proposed `title` **decides** the value; `uiTheme.sourceTitle` **emits and
+checks** it. So `title` is authoritative, `uiTheme.sourceTitle` mirrors it, and the check reads
+`title.value` when that key is merged and falls back to my field while wave 7 has not run.
+**If the Name lead recommends something other than `"Ruin Restoration"`, that revision against
+this approved key is accepted in advance**, it moves one field and criterion 1's literal, and it
+requires no new round.
 
 **The archetype cannot legally be emitted until sheet `03` closes `A1`.** `fantasy-ornate`
 resolves `fontStack: 'serif-ui'`, whose `numeric.roblox` is `'MerriweatherBold'`, which is not
@@ -71,6 +84,13 @@ fix.**
     "archetype": "fantasy-ornate",
     "archetypeLabel": "Fantasy Ornate",
     "sourceTitle": "Ruin Restoration",
+    "sourceTitleAuthority": {
+      "decidedBy": "title (Discovery and Marketing, wave 7, proposed)",
+      "emittedBy": "uiTheme, through ctx.title at generate.mjs:116 into Theme.luau meta.sourceTitle",
+      "rule": "uiTheme.sourceTitle must equal title.value; the check reads title.value when that key is merged and this field only until then",
+      "revisionAcceptedInAdvance": true,
+      "movesOnRevision": ["uiTheme.sourceTitle", "acceptance criterion 1's literal"]
+    },
     "genre": "restoration",
     "resolutionRule": "artDirection.vibe must be a literal key of ARCHETYPES; resolveArchetype returns an exact key before consulting VIBE_ALIASES or GENRE_DEFAULTS, so no alias and no genre value may be load-bearing",
     "artDirection": {
@@ -86,8 +106,10 @@ fix.**
       "producer": "concept/src/derive/game-context.mjs",
       "producerRunnable": false,
       "producerBlockedBy": "no concept.json exists anywhere in the repo; the stage-0 spec is markdown",
-      "carriesToday": ["vibe", "mood", "paletteHints", "referenceNote"],
-      "mustAlsoCarry": ["artDirection.tokenOverrides", "artDirection.tokens", "title", "genre", "audience.ageBand", "audience.platformMix"]
+      "alreadyCarried": ["title", "genre", "subgenre", "inspiration", "audience.ageBand", "audience.platformMix", "artDirection.vibe", "artDirection.mood", "artDirection.paletteHints", "artDirection.referenceNote", "economy", "coreLoop", "screens"],
+      "alreadyCarriedEvidence": "concept/src/derive/game-context.mjs:130-159",
+      "mustAlsoCarry": ["artDirection.tokenOverrides", "artDirection.tokens"],
+      "gapSize": "two fields on one object literal"
     },
     "emission": {
       "artifact": "game/src/shared/Theme.luau",
@@ -99,7 +121,7 @@ fix.**
         "runner": "node --test, via npm test",
         "assertions": [
           "Theme.luau meta.archetype === uiTheme.archetype",
-          "Theme.luau meta.sourceTitle === uiTheme.sourceTitle",
+          "Theme.luau meta.sourceTitle === title.value, or === uiTheme.sourceTitle while title is unmerged",
           "Theme.luau meta.genre === uiTheme.genre",
           "Theme.luau contains no occurrence of MerriweatherBold",
           "game/src/ contains no occurrence of rbxassetid"
@@ -117,18 +139,18 @@ fix.**
           { "what": "a wrong archetype, sourceTitle or genre in the emitted artifact", "by": "the npm test check", "timing": "after emission, before a wave may advance" }
         ],
         "notEnforcedAtAll": [
-          { "what": "every tokenOverride and every additive group in sheets 02, 03 and 06", "why": "deriveGameContext carries neither artDirection.tokenOverrides nor artDirection.tokens (A3), from a concept.json that does not exist (A4)", "status": "advisory until both land" }
+          { "what": "every tokenOverride and every additive group in sheets 02, 03 and 06", "why": "deriveGameContext carries neither artDirection.tokenOverrides nor artDirection.tokens (A3), and there is no concept.json to run it against (A4)", "status": "advisory until both land" }
         ]
       },
       "enforcementIfA3AndA4Land": {
         "gains": "the whole key reaches generateTheme, so the emitted artifact becomes a function of uiTheme and the npm test check compares against values that actually shaped it",
         "stillOnlyDetection": "nothing makes a hand-edited Theme.luau impossible; what makes it harmless is that it is regenerated"
       },
-      "residualRisk": "A3 and A4 are both refusable. If both are refused, the context stays hand-authored and unowned, the archetype is still enforced, and every token value this domain sets is a recommendation."
+      "residualRisk": "A4 is refusable. If it is refused, the context stays hand-authored and unowned, the archetype is still enforced, and every token value this domain sets is a recommendation."
     },
     "uiForgeChanges": [
       { "id": "A2", "file": "ui-forge/src/cli.mjs", "at": "main(), line 121", "change": "delete the ?? 'examples/game-context.json' default; exit non-zero naming --context when it is absent", "refusable": false, "ifRefused": "any run without --context re-themes this game after Pet Ascend Simulator, which is the defect" },
-      { "id": "A3", "file": "concept/src/derive/game-context.mjs", "at": "deriveGameContext(concept)", "change": "carry artDirection.tokenOverrides and artDirection.tokens through to the emitted context unchanged", "refusable": true, "ifRefused": "uiTheme merges and changes nothing beyond the archetype key; every override in sheets 03 and 06 is inert" },
+      { "id": "A3", "file": "concept/src/derive/game-context.mjs", "at": "deriveGameContext(concept), the artDirection object literal at lines 144-149", "change": "add artDirection.tokenOverrides and artDirection.tokens, carried through unchanged", "scope": "two fields; title, genre, audience.ageBand and audience.platformMix are already emitted at lines 136-143 and are not part of this request", "refusable": false, "ifRefused": "uiTheme merges and changes nothing beyond the archetype key; every override in sheets 03 and 06 is inert" },
       { "id": "A4", "owner": "contract-and-seam work (bridge/schema.mjs, bridge/merge.mjs)", "change": "write the game-context.json for this brief on the ok && --emit gate", "isThirdRequestAgainst": ["bridge/emit-hud-brief.mjs (hud/03)", "bridge/emit-terms.mjs (theme/vocabulary/03)"], "refusable": true, "ifRefused": "the context is hand-authored and unowned; say so out loud rather than leaving it implied" }
     ]
   }
@@ -137,9 +159,12 @@ fix.**
 
 ## Consequences for other work
 
-- **Contract-and-seam work** takes `A4` as the third request against one gate and `A3` as a
-  two-field change to one function. Until both land, this key's archetype is enforced and its
-  token values are advisory, which `emission.enforcementToday` states as data.
+- **Contract-and-seam work** takes `A4` as the third request against one gate. `A3` is two fields
+  on one object literal and is not refusable, because without it this key's token values reach
+  nothing.
+- **Naming work (`title`, wave 7)** decides the string this key emits. It should know that
+  `title.value` is not an orphan: it reaches `Theme.luau` through `ctx.title`. A recommendation
+  other than `"Ruin Restoration"` is accepted here in advance and moves one field.
 - **`ui-forge` pattern and CLI work** takes `A2`. It is the only change on this sheet that
   makes the defect impossible rather than detected.
 - **Build work** must not hand-edit `Theme.luau` to close this. The artifact is generated; a
@@ -153,11 +178,11 @@ fix.**
 
 ## Acceptance criteria
 
-1. `game/src/shared/Theme.luau` contains `archetype = "fantasy-ornate"` and
-   `sourceTitle = "Ruin Restoration"`, and `grep -rn "cartoon-vibrant\|Pet Ascend Simulator" game/src`
-   returns nothing.
+1. `game/src/shared/Theme.luau` contains `archetype = "fantasy-ornate"` and a `sourceTitle`
+   equal to `title.value`, or to `uiTheme.sourceTitle` while `title` is unmerged; and
+   `grep -rn "cartoon-vibrant\|Pet Ascend Simulator" game/src` returns nothing.
 2. `bridge/test/theme-archetype.test.mjs` exists, runs under `npm test`, and exits non-zero when
-   `meta.archetype`, `meta.sourceTitle` or `meta.genre` differs from `uiTheme`.
+   `meta.archetype`, `meta.sourceTitle` or `meta.genre` differs from its source key.
 3. `ui-forge/src/cli.mjs` contains no string literal `examples/game-context.json`; running any
    `cli.mjs` command with no `--context` exits non-zero and names the flag.
 
@@ -165,22 +190,24 @@ fix.**
 
 **`sourceTitle` needs the game's name and the game has none.** `OPEN.md §3` records *"the
 working name is a placeholder"* and reserves the name for you; `05-OUTWARD.md` routes naming to
-Discovery & Marketing in wave 7. `meta.sourceTitle` is never rendered, so `vocabulary`'s
-14-character ceiling and casing rule do not bind it, but it is stamped into a generated file and
-into every screenshot review. Live alternatives: **(a)** `"Ruin Restoration"`, the brief's own
-first line, which I have set as the starting value; **(b)** the slug
-`"incremental-spinoff-v2"`, honest and ugly; **(c)** leave the field until wave 7, which means
-the check in criterion 2 has nothing to compare. **I recommend (a)** and a one-field revision
-when you name the game.
+Discovery & Marketing in wave 7, which is now running and holds the proposed key `title`.
+`meta.sourceTitle` is never rendered, so `vocabulary`'s 14-character ceiling and casing rule do
+not bind it, but it is stamped into a generated file and into every screenshot review. Live
+alternatives: **(a)** `"Ruin Restoration"`, the brief's own first line, which I have set as the
+starting value and as the fallback until `title` merges; **(b)** whatever the Name lead
+recommends, which supersedes (a) with no round here; **(c)** the slug
+`"incremental-spinoff-v2"`, honest and ugly. **I recommend (b) over (a)** now that a key exists
+to hold the answer.
 
 ## Not decided here
 
-Every token value and every panel, plate, chip and frame treatment: sheet `02`. The whole type
-ramp, the `type.numeric.font` override and the `A1` font-stack correction: sheet `03`. Whether
-any icon exists: sheet `04`. Pressable states and the affordability channel: sheet `05`. Motion
-and the one additive token group: sheet `06`. What is on screen, where it sits, how it groups
-and what it says: `composition`, `screens`, `viewport`, `notices`. Every world colour, material
-and luma value: style-guide work, which holds `styleGuide`. Whether `uiTheme` is promoted into
+The game's name itself: naming work, which holds `title`; this key emits and checks it. Every
+token value and every panel, plate, chip and frame treatment: sheet `02`. The whole type ramp,
+the `type.numeric.font` override and the `A1` font-stack correction: sheet `03`. Whether any icon
+exists: sheet `04`. Pressable states and the affordability channel: sheet `05`. Motion and the
+one additive token group: sheet `06`. What is on screen, where it sits, how it groups and what it
+says: `composition`, `screens`, `viewport`, `notices`. Every world colour, material and luma
+value: style-guide work, which holds `styleGuide`. Whether `uiTheme` is promoted into
 `bridge/schema.mjs`, and whether `Theme.luau` gains a module owner in the build order:
 contract-and-seam work and the architect, per `architect/06`'s note that no module owns
 `ui-forge`'s briefs.

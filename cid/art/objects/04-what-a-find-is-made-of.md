@@ -60,6 +60,15 @@ Two consequences of the ruling, stated rather than left to be discovered.
   place — the price table below — so a later reader reopens it on the argument rather than by
   re-deriving it. `[cid: decided]`.
 
+**One citation defect found while checking that my own paths resolve, filed rather than worked
+around.** `screens.screens[id=index].tree[node=Name].textFrom` reads
+*"`collection.sets[g].relics[i].name`, or the empty string"* — but `collection.sets[].relics[]` is
+an array of **bare strings**, so `.name` does not resolve. `screens` needs
+`collection.sets[g].relics[i]`. I cite the field by path and copy no value, so this key is
+unaffected either way; it is filed below so `screens` fixes it rather than a builder inventing an
+accessor. **It also strengthens the ruling:** the one field a builder would use to hang art on a
+Find does not exist even as a name.
+
 ### The Find, as fields a builder can read
 
 | subject | value | source |
@@ -67,11 +76,11 @@ Two consequences of the ruling, stated rather than left to be discovered.
 | world Instance | **0**, at any point in its life | `representation.find` |
 | Instance class | `null` | `representation.find` |
 | icons | **0** | this sheet |
-| image assets | **0** | this sheet; `budgets.uploadedImageAssetsInWorldGeometry` 0 |
-| meshes | **0** | `budgets.uploadedMeshAssetsInWorldGeometry` 0; `N17` |
+| image assets | **0** | this sheet; `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry` 0 |
+| meshes | **0** | `budgets.textureCeilings.uploadedMeshAssetsInWorldGeometry` 0; `N17` |
 | marks, letters, figures | **0** | `theme/setting/05`; `theme/setting/01`; `D13` |
-| rarity treatment of any kind | **0** | `rarity.forbidden`; `rarity.perObjectVisualGrade` false |
-| the one place a Find is rendered | `screens.screens[id=index].tree[node="Name"]`, a `TextLabel`, `textFrom` `collection.sets[g].relics[i].name` | `screens` — **cited, not copied**, because `ui-ux/screens` is mid-revision on how a slot renders |
+| rarity treatment of any kind | **0** | `rarity.forbidden`; `rarity.ladders[id=find-set].perObjectVisualGrade` is `false` |
+| the one place a Find is rendered | `screens.screens[id=index].tree[node="Name"]`, a `TextLabel` whose `textFrom` reads `collection` | `screens` — **cited, not copied**, because `ui-ux/screens` is mid-revision on how a slot renders |
 | the one mutable property | `screens.screens[id=index].mutableProperties[0]` — `Slot_<setId>_<i>/Name.Text` | `screens` |
 | unfound state | the same node holding the empty string; the slot subtree otherwise identical to a held one | `screens`; `representation.index-surface` |
 
@@ -96,19 +105,16 @@ Two consequences of the ruling, stated rather than left to be discovered.
 | uploads | **24** image assets, one per name in `collection.sets[].relics[]` |
 | contract revision | `collection.sets[].relics[]` must change from bare strings to objects with an `art` field — a key **`gameplay/meta` owns**, not this domain |
 | build | **blocks** until all 24 exist; `representation`'s *"no asset needs to be produced to build this game"* becomes false |
-| keys broken | `representation.find`, `budgets.uploadedImageAssetsInWorldGeometry`, `theme/tone/04` `D11`, `rarity.forbidden` |
+| keys broken | `representation.find`, `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry`, `theme/tone/04` `D11`, `rarity.forbidden` |
 | brief line contradicted | *"content design is the primary creative work on this project, **not art**"* `[brief: binding]` |
 | what would justify it | a measured render of the index at phone viewport showing a name-only slot is illegible — `[research owed: a screenshot or GetTextBoundsAsync reading of the index at 375 pt width]`. That number is UI Art's and `screens`', not mine |
 
-### Revision request — filed, not applied
+### Two revision requests — filed, not applied
 
-| field | value |
-|---|---|
-| against | `cid/gameplay/meta/02-the-collection.md` |
-| the line | *"Art — Objects owes 24 models, and each must read at icon size in a grid"* |
-| status | **stale** — written in wave 3, before `architect/06` ruled `representation.find` |
-| what it moves if accepted | nothing in any manifest; it is a `## Consequences` prose line, not a value |
-| what happens if declined | **nothing in this sheet changes.** `representation.find` still governs |
+| # | against | the line | status | if declined |
+|---|---|---|---|---|
+| 1 | `cid/gameplay/meta/02-the-collection.md` | *"Art — Objects owes 24 models, and each must read at icon size in a grid"* | **stale** — written in wave 3, before `architect/06` ruled `representation.find`. Moves no manifest value; it is a `## Consequences` prose line | **nothing in this sheet changes.** `representation.find` still governs |
+| 2 | `cid/ui-ux/screens/01-collection-index.md` | `tree[node=Name].textFrom` = *"`collection.sets[g].relics[i].name`"* | **unresolvable** — `collection.sets[].relics[]` is bare strings, so `.name` is not a field. Should read `collection.sets[g].relics[i]` | this key is unaffected — it cites the path, not the value — but a builder is handed an accessor that does not exist |
 
 ```json
 {
@@ -125,11 +131,12 @@ Two consequences of the ruling, stated rather than left to be discovered.
     "uploadedAssetCount": 0,
     "marksAndFiguresCount": 0,
     "rarityTreatmentCount": 0,
+    "rarityFieldsRead": ["rarity.findRarityField", "rarity.ladders[id=find-set].perObjectVisualGrade", "rarity.forbidden"],
     "panelForm": {
       "citedNotCopied": true,
       "citedNotCopiedReason": "ui-ux/screens is mid-revision on how a slot renders; copying a node list here would create a second source of truth",
       "node": "screens.screens[id=index].tree[node=Name]",
-      "textFrom": "screens.screens[id=index].tree[node=Name].textFrom",
+      "textFromField": "screens.screens[id=index].tree[node=Name].textFrom",
       "mutableProperty": "screens.screens[id=index].mutableProperties[0]",
       "unfoundState": "the same node holding the empty string; the slot subtree is otherwise identical to a held one"
     },
@@ -143,17 +150,29 @@ Two consequences of the ruling, stated rather than left to be discovered.
       "uploads": 24,
       "contractRevision": "collection.sets[].relics[] must become objects with an art field, and gameplay/meta owns that key",
       "buildBlocksUntilAssetsExist": true,
-      "keysBroken": ["representation.find", "budgets.uploadedImageAssetsInWorldGeometry", "theme/tone/04 D11", "rarity.forbidden"],
+      "keysBroken": ["representation.find", "budgets.textureCeilings.uploadedImageAssetsInWorldGeometry", "theme/tone/04 D11", "rarity.forbidden"],
       "briefLineContradicted": "content design is the primary creative work on this project, not art",
       "whatWouldJustifyIt": "a measured render of the index at phone viewport showing a name-only slot is illegible at the shipped type size"
     },
-    "revisionRequest": {
-      "against": "cid/gameplay/meta/02-the-collection.md",
-      "line": "Art — Objects owes 24 models, and each must read at icon size in a grid",
-      "status": "stale, written before architect/06 ruled representation.find",
-      "manifestValuesMoved": 0,
-      "ifDeclined": "nothing in this sheet changes"
-    },
+    "revisionRequests": [
+      {
+        "id": "RQ1",
+        "against": "cid/gameplay/meta/02-the-collection.md",
+        "line": "Art — Objects owes 24 models, and each must read at icon size in a grid",
+        "status": "stale, written before architect/06 ruled representation.find",
+        "manifestValuesMoved": 0,
+        "ifDeclined": "nothing in this sheet changes"
+      },
+      {
+        "id": "RQ2",
+        "against": "cid/ui-ux/screens/01-collection-index.md",
+        "field": "screens.screens[id=index].tree[node=Name].textFrom",
+        "problem": "reads collection.sets[g].relics[i].name, but collection.sets[].relics[] is an array of bare strings so .name does not resolve",
+        "fix": "collection.sets[g].relics[i]",
+        "affectsThisKey": false,
+        "affectsThisKeyReason": "this key cites the field by path and copies no value"
+      }
+    ],
     "unverified": [
       { "claim": "an ImageLabel requires an uploaded rbxassetid", "status": "settled as practice, not as a page quotation", "settlingFetch": "create.roblox.com/docs/ui/labels or the ImageLabel property YAML in creator-docs" },
       { "claim": "the genre draws unfound entries as silhouettes", "status": "search-snippet synthesis; three fetches of a shipping collection panel failed with 402, 403 and an off-topic page", "rulingDependsOnIt": false }
@@ -167,12 +186,13 @@ Two consequences of the ruling, stated rather than left to be discovered.
 - **Meta and content work (`collection`)** receives one revision request and **no requirement**.
   What it must not do is add an `art`, `icon` or `model` field to `collection.sets[].relics[]` on
   the strength of the stale line, because four keys break.
+- **Screens work** owns the slot node and every state of it; this sheet cites two field paths and
+  copies neither. It also receives `RQ2`: its `textFrom` names an accessor `collection` does not
+  have. One-word fix, and it costs this key nothing either way.
 - **UI Art work (`uiTheme`)** inherits the load this ruling shed: the 24 names carry their entire
   visual weight as **type in a slot**. It also gets `G10` shrunk — with object icons at zero, the
   unset image-asset ceiling now covers exactly two icons, `find` and `shard`, which it can propose
   and **performance work** can ratify in one line.
-- **Screens work** owns the slot node and every state of it; this sheet cites two field paths and
-  copies neither, so its in-flight revision costs this key nothing.
 - **VFX work** gets a boundary it may not cross: whatever `response.findReveal` is made of during
   its 2.5-second dwell **may not be the Find**. A reveal that leaves a modelled object at the patch
   position creates the Instance this ruling forbids.
@@ -189,17 +209,18 @@ Two consequences of the ruling, stated rather than left to be discovered.
    one node — `Slot_<setId>_<i>/Name.Text` — and through no `ImageLabel`, `Decal`, `MeshPart` or
    world `Instance` anywhere in `game/src`.
 3. `objectArt.find.panelForm` contains only field references into `screens` and zero copied node
-   definitions, sizes or colours.
+   definitions, sizes or colours, and every path it names resolves against `screens`' merged shape.
 4. With zero Finds held, all 24 slots render and no slot carries a silhouette, blurred model, greyed
    name, padlock or question mark (`D11`).
 
 ## Not decided here
 
 How a slot renders, its size, its states and its copy — **screens work**, which holds `screens`; I
-cite two of its fields and copy none. The typeface, weight, tracking and panel treatment that now
-carry the whole visual load — **UI Art work**, which holds `uiTheme`. Whether
-`collection.sets[].relics[]` gains any field — **meta and content work**, which owns that key; I
-file a strike against one prose line and request no field. The ceiling on the two UI icons (`G10`)
-— **UI Art work** to propose, **performance work** to ratify. What the reveal is made of inside its
-2.5-second dwell — **VFX work**, which holds `effects`. The 24 names themselves and any string about
-them — `collection` and **vocabulary work**; this sheet produces no player-facing string.
+cite two of its fields, copy none, and file one path defect against it. The typeface, weight,
+tracking and panel treatment that now carry the whole visual load — **UI Art work**, which holds
+`uiTheme`. Whether `collection.sets[].relics[]` gains any field — **meta and content work**, which
+owns that key; I file a strike against one prose line and request no field. The ceiling on the two
+UI icons (`G10`) — **UI Art work** to propose, **performance work** to ratify. What the reveal is
+made of inside its 2.5-second dwell — **VFX work**, which holds `effects`. The 24 names themselves
+and any string about them — `collection` and **vocabulary work**; this sheet produces no
+player-facing string.

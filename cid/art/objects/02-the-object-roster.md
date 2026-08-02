@@ -9,8 +9,8 @@ the module that creates it and the domain that decides how it looks. **Zero loos
 — `theme/setting/05` `P4`'s whole membership is `Find`s and a `Find` has no Instance, so `P4` is a
 present class that builds nothing (`looseObjectInstanceCount: 0`). Fourteen further subjects are
 explicit zeros with a reason and a check each. Every colour-and-material value this domain emits
-takes one shape: **a named role plus the value it resolves to today**, so `styleGuide` can take the
-role later without a rewrite.
+takes one shape: **a `styleGuide` role path plus the value it resolves to today**, so no sheet of
+mine holds a literal that `styleGuide` also holds.
 
 ## Why
 
@@ -32,12 +32,12 @@ role later without a rewrite.
   `theme/identity/04` (*"nine classes of entity: none of them"*) and by there being no system to
   attach one to — `input`'s verb roster has no equip or summon and `response.controlEverAffected`
   is false. Per-item rarity is zero because `rarity.findRarityField` is `null` and
-  `perObjectVisualGrade` is `false`, so no object in this game carries a rank of its own.
-- **Role-plus-resolved-value is forced by G3.** No token layer exists for anything rendered in the
-  world, `cid/art/style/_lead.md` is on disk but **none of its three sheets is**, and `CLAUDE.md`
-  binds *"arbitrary values enter through tokens, never as literals in a spec."* A bare literal
-  would have to be rewritten when `styleGuide` lands; a role carrying its current resolution would
-  not. `[cid: decided]` on the shape.
+  `rarity.ladders[id=find-set].perObjectVisualGrade` is `false`, so no object carries a rank.
+- **Role-plus-resolved-value is what closes G3 without duplicating `styleGuide`.** No token layer
+  exists for anything rendered in the world, and `CLAUDE.md` binds *"arbitrary values enter through
+  tokens, never as literals in a spec."* Where `styleGuide` has a role, my sheets **cite it and
+  adopt its value verbatim**; where it does not, they resolve the value here and file a role
+  addition. Sheet 03 does both, once each. `[cid: decided]` on the shape.
 - **Every value in this domain answers a question the brief never asked.** O1: no material, colour,
   finish or proportion word appears for any object in the eight brief sheets, and
   `theme/setting/05` `G9` records the same silence for the place. Tagged `[cid: decided]`
@@ -48,8 +48,8 @@ role later without a rewrite.
 | # | class | Instance | created by | look decided by | per lane | fixed / loose |
 |---|---|---|---|---|---|---|
 | R1 | patch | `Part`, `WedgePart` for Heartvine | `plots` | Objects, sheet **05** | ≤ `depths.areas[].patchCount` (max 640) | fixed |
-| R2 | lane slab | `Part` | `plots` | Style Guide (`styleGuide`), dressed by Environment | 1 | fixed |
-| R3 | plot boundary | `Part` × 4, `Transparency` 1, `CanQuery` false | `plots` | nobody — invisible by ruling, `N7` | 4 | fixed |
+| R2 | lane slab | `Part` | `plots` | `styleGuide.roles["stone.cleared"]`, `materials.rows[id=M1]` | 1 | fixed |
+| R3 | plot boundary | `Part` × 4, `Transparency` 1, `CanQuery` false | `plots` | nobody — invisible by ruling, `N7`; `styleGuide` `M11` renders no colour | 4 | fixed |
 | R4 | spawn anchor | `Attachment` | `plots` | nobody — no geometry | 1 | fixed |
 | R5 | tool | `Model` + 2 `Part` + 2 `WeldConstraint` | `tool` | Objects, sheet **03** | 1 per living character | held — `theme/setting/05`'s carve-out, neither |
 | R6 | player character | platform avatar | Roblox | Characters (`characterArt`, all zeros) | 1 per player | neither |
@@ -71,7 +71,7 @@ as a zero, decided in sheet 04.
 | F3 | A `Find` has no Instance at any point in its life | `representation.find` |
 | F4 | Therefore `looseObjectInstanceCount` = **0**, permanently, and `P4` renders nothing | F2 ∧ F3 |
 | F5 | A tool in a player's hand is not place matter and is exempt from F1–F4 | `theme/setting/05`'s stated carve-out |
-| F6 | Nothing may be added *to make an object read as fixed* — no bolt, bracket, mortar seam or setting bed as a separate Instance. Fixedness is a placement fact, not a decoration | `budgets` instance ceiling; F1 |
+| F6 | Nothing may be added *to make an object read as fixed* — no bolt, bracket, mortar seam or setting bed as a separate Instance. Fixedness is a placement fact, not a decoration | `budgets.instanceCeilings`; F1 |
 
 **Check anyone can run:** every Instance `game/src` parents at or below a lane slab is named
 `Patch<n>` or appears in `environment`'s roster; and **no Instance anywhere in the built place
@@ -86,9 +86,9 @@ carries any of the 24 strings in `collection.sets[].relics[]`.**
 | Z3 | props | 0 | `theme/setting/05` — *"props of any kind"* is a stated absence; F2 makes any loose object a `Find` | roster has 11 entries and none is a prop |
 | Z4 | clutter, rubble, debris | 0 | `theme/lore/01` `L5` *"intact and weathered, never rubble"*; `theme/tone/04` `D14` staged rubble | zero Instances named `Rubble`, `Debris`, `Clutter`, `Remains` |
 | Z5 | loose objects (`P4`) | 0 | F4 | zero Instances carrying a `collection.sets[].relics[]` name |
-| Z6 | per-item rarity read on any object | 0 | `rarity.findRarityField` is `null`; `perObjectVisualGrade` is `false`; `rarity.forbidden` bans rarity colour, frame, border, sparkle and badge on a `Find` | no property of any Instance is a function of a set, a rank or a `Find` identity |
-| Z7 | uploaded mesh assets in world geometry | 0 | `budgets.uploadedMeshAssetsInWorldGeometry` 0; `N17` | `grep -rn "MeshPart\|SpecialMesh\|MeshId" game/src` returns nothing |
-| Z8 | uploaded image assets in world geometry | 0 | `budgets.uploadedImageAssetsInWorldGeometry` 0; both PBR routes require an upload `[research: https://create.roblox.com/docs/parts/materials]` | zero `Decal`, `Texture`, `MaterialVariant`, `SurfaceAppearance` in `game/src` |
+| Z6 | per-item rarity read on any object | 0 | `rarity.findRarityField` is `null`; `rarity.ladders[id=find-set].perObjectVisualGrade` is `false`; `rarity.forbidden` bans rarity colour, frame, border, sparkle and badge on a `Find` | no property of any Instance is a function of a set, a rank or a `Find` identity |
+| Z7 | uploaded mesh assets in world geometry | 0 | `budgets.textureCeilings.uploadedMeshAssetsInWorldGeometry` 0; `N17` | `grep -rn "MeshPart\|SpecialMesh\|MeshId" game/src` returns nothing |
+| Z8 | uploaded image assets in world geometry | 0 | `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry` 0; both PBR routes require an upload `[research: https://create.roblox.com/docs/parts/materials]` | zero `Decal`, `Texture`, `MaterialVariant`, `SurfaceAppearance` in `game/src` |
 | Z9 | icon renders of any object | 0 | sheet 04's ruling; `representation`'s *"no asset needs to be produced to build this game"* | `grep -rn "rbxassetid" game/src` returns nothing |
 | Z10 | cobwebs, skulls, bones, graves, chains, blood, scorch | 0 | `theme/tone/04` `D1` | zero Instances so named; zero materials from sheet 03's banned list |
 | Z11 | a face, eyes or mouth on any object; a mascot | 0 | `theme/tone/04` `D13`; `theme/identity/04` row 9 | no roster entry carries a facial feature |
@@ -98,17 +98,15 @@ carries any of the 24 strings in `collection.sets[].relics[]`.**
 
 ### The expression shape every sheet in this domain uses
 
-One shape, so a builder never has to guess where a colour lives and `styleGuide` can adopt the role
-without touching the value:
+One shape, so a builder never has to guess where a colour lives and no value is held twice:
 
 | field | meaning |
 |---|---|
-| `role` | kebab-case role name. **Not player-facing** — it is never rendered, so `vocabulary` does not bind it |
-| `material` | one `Enum.Material` member, built-in only. 47 exist `[research: https://create.roblox.com/docs/reference/engine/enums/Material]` |
-| `rgb` | the `Color3.fromRGB` triple this role resolves to **today** |
-| `luma601` | `0.299R + 0.587G + 0.114B`, so `theme/setting/01`'s contrast rules are arithmetic |
+| `paletteRole` | a resolvable path — `styleGuide.roles["<id>"]`. `null` only when `styleGuide` has no such role, and then `paletteRoleRequested` names the addition being asked for |
+| `material` | read from `styleGuide.materials.rows[id=<Mn>].enum`, never chosen independently |
+| `rgb`, `luma601` | **adopted verbatim** from the cited role. Resolved locally only where `paletteRole` is `null` |
 | `reflectance`, `transparency` | both stated, never left at engine default |
-| `roleOwnerWhenStyleGuideExists` | the path in `styleGuide` that supersedes `rgb` and `material` once that key ships |
+| `resolvedHereUntilTheRoleExists` | `true` marks the one value this domain holds that `styleGuide` does not |
 
 ```manifest
 {
@@ -116,17 +114,22 @@ without touching the value:
   "status": "proposed",
   "value": {
     "expressionShape": {
-      "fields": ["role", "material", "rgb", "luma601", "reflectance", "transparency", "roleOwnerWhenStyleGuideExists"],
+      "fields": ["paletteRole", "paletteRoleRequested", "material", "rgb", "luma601", "reflectance", "transparency", "resolvedHereUntilTheRoleExists"],
+      "paletteRolePathForm": "styleGuide.roles[\"<id>\"]",
+      "materialPathForm": "styleGuide.materials.rows[id=<Mn>].enum",
+      "valuesAreAdoptedVerbatimNotAuthored": true,
+      "localValueCount": 1,
+      "localValue": "the tool grip, pending the wood.worked.dark role addition requested by sheet 03",
       "materialSource": "built-in Enum.Material members only, 47 of them",
       "customMaterialsForbidden": ["MaterialVariant", "SurfaceAppearance", "Texture", "Decal"],
       "customMaterialReason": "every custom-material route requires an uploaded texture asset, and budgets.textureCeilings.uploadedImageAssetsInWorldGeometry is 0",
       "roleNamesArePlayerFacing": false,
-      "gapClosed": "G3 — no world token layer exists, so a role carries its resolved value until styleGuide ships"
+      "gapAddressed": "G3 — no world token layer exists; styleGuide.roles is the nearest thing to one and this key cites it rather than duplicating it"
     },
     "roster": [
       { "id": "R1", "class": "patch", "instanceClass": "Part, WedgePart for Heartvine", "createdBy": "plots", "lookDecidedBy": "art/objects sheet 05", "perLane": "depths.areas[].patchCount, max 640", "fixture": "fixed" },
-      { "id": "R2", "class": "lane-slab", "instanceClass": "Part", "createdBy": "plots", "lookDecidedBy": "styleGuide", "perLane": 1, "fixture": "fixed" },
-      { "id": "R3", "class": "plot-boundary", "instanceClass": "Part", "createdBy": "plots", "lookDecidedBy": "nobody, invisible by ruling", "perLane": 4, "fixture": "fixed" },
+      { "id": "R2", "class": "lane-slab", "instanceClass": "Part", "createdBy": "plots", "lookDecidedBy": "styleGuide.roles[\"stone.cleared\"] and styleGuide.materials.rows[id=M1]", "perLane": 1, "fixture": "fixed" },
+      { "id": "R3", "class": "plot-boundary", "instanceClass": "Part", "createdBy": "plots", "lookDecidedBy": "nobody, invisible by ruling; styleGuide.materials.rows[id=M11] renders no colour", "perLane": 4, "fixture": "fixed" },
       { "id": "R4", "class": "spawn-anchor", "instanceClass": "Attachment", "createdBy": "plots", "lookDecidedBy": "nobody, no geometry", "perLane": 1, "fixture": "fixed" },
       { "id": "R5", "class": "tool", "instanceClass": "Model with two Part children", "createdBy": "tool", "lookDecidedBy": "art/objects sheet 03", "perLane": "1 per living character", "fixture": "held" },
       { "id": "R6", "class": "player-character", "instanceClass": "platform avatar", "createdBy": "Roblox", "lookDecidedBy": "characterArt", "perLane": "1 per player", "fixture": "neither" },
@@ -155,9 +158,9 @@ without touching the value:
       { "id": "Z3", "subject": "props", "count": 0, "reason": "props of any kind are a stated absence in theme/setting/05, and F2 makes any loose object a Find", "check": "objectArt.roster has 11 entries and none is a prop" },
       { "id": "Z4", "subject": "clutter, rubble, debris", "count": 0, "reason": "theme/lore/01 L5 intact and weathered never rubble; theme/tone/04 D14 staged rubble", "check": "zero Instances named Rubble, Debris, Clutter or Remains" },
       { "id": "Z5", "subject": "loose objects, theme/setting/05 P4", "count": 0, "reason": "F4", "check": "zero Instances carrying a collection.sets[].relics[] name" },
-      { "id": "Z6", "subject": "per-item rarity read", "count": 0, "reason": "rarity.findRarityField is null and perObjectVisualGrade is false; rarity.forbidden bans colour, frame, border, sparkle and badge on a Find", "check": "no property of any Instance is a function of a set, a rank or a Find identity" },
-      { "id": "Z7", "subject": "uploaded mesh assets in world geometry", "count": 0, "reason": "budgets.uploadedMeshAssetsInWorldGeometry is 0 and N17 forbids adding one", "check": "grep -rn MeshPart|SpecialMesh|MeshId game/src returns nothing" },
-      { "id": "Z8", "subject": "uploaded image assets in world geometry", "count": 0, "reason": "budgets.uploadedImageAssetsInWorldGeometry is 0 and both PBR material routes require an uploaded texture", "check": "zero Decal, Texture, MaterialVariant or SurfaceAppearance instances in game/src" },
+      { "id": "Z6", "subject": "per-item rarity read", "count": 0, "reason": "rarity.findRarityField is null and rarity.ladders[id=find-set].perObjectVisualGrade is false; rarity.forbidden bans colour, frame, border, sparkle and badge on a Find", "check": "no property of any Instance is a function of a set, a rank or a Find identity" },
+      { "id": "Z7", "subject": "uploaded mesh assets in world geometry", "count": 0, "reason": "budgets.textureCeilings.uploadedMeshAssetsInWorldGeometry is 0 and N17 forbids adding one", "check": "grep -rn MeshPart|SpecialMesh|MeshId game/src returns nothing" },
+      { "id": "Z8", "subject": "uploaded image assets in world geometry", "count": 0, "reason": "budgets.textureCeilings.uploadedImageAssetsInWorldGeometry is 0 and both PBR material routes require an uploaded texture", "check": "zero Decal, Texture, MaterialVariant or SurfaceAppearance instances in game/src" },
       { "id": "Z9", "subject": "icon renders of any object", "count": 0, "reason": "sheet 04's ruling, and representation states no asset needs to be produced to build this game", "check": "grep -rn rbxassetid game/src returns nothing" },
       { "id": "Z10", "subject": "cobwebs, skulls, bones, graves, chains, blood, scorch", "count": 0, "reason": "theme/tone/04 D1", "check": "zero Instances so named and zero materials from sheet 03's banned list" },
       { "id": "Z11", "subject": "a face, eyes or mouth on any object; a mascot", "count": 0, "reason": "theme/tone/04 D13 and theme/identity/04 row 9", "check": "no roster entry carries a facial feature" },
@@ -173,22 +176,25 @@ without touching the value:
       "partCount": 2,
       "sizesAreShippedAndNotReopened": "representation.tool — handle 0.3 x 0.3 x 1.4, head headWidth x 0.2 x 0.6",
       "allowedMaterials": ["Wood"],
+      "materialFieldSource": "styleGuide.materials.rows[id=M7].enum",
       "parts": [
-        { "part": "Handle", "role": "tool-grip-timber", "material": "Wood", "rgb": [118, 88, 66], "luma601": 94.5, "blueOverRed": 0.559, "reflectance": 0, "transparency": 0, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-dark]" },
-        { "part": "Head", "role": "tool-head-timber-pale", "material": "Wood", "rgb": [190, 158, 118], "luma601": 163.0, "blueOverRed": 0.621, "reflectance": 0, "transparency": 0, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-pale]" }
+        { "part": "Handle", "paletteRole": null, "paletteRoleRequested": "styleGuide.roles[\"wood.worked.dark\"]", "material": "Wood", "rgb": [118, 88, 66], "luma601": 94.46, "blueOverRed": 0.559, "reflectance": 0, "transparency": 0, "resolvedHereUntilTheRoleExists": true },
+        { "part": "Head", "paletteRole": "styleGuide.roles[\"wood.worked\"]", "paletteRoleAdoptedVerbatim": true, "material": "Wood", "rgb": [178, 160, 133], "luma601": 162.30, "blueOverRed": 0.747, "reflectance": 0, "transparency": 0, "resolvedHereUntilTheRoleExists": false }
       ],
       "invariants": {
         "headLumaMinusGripLumaAtLeast": 60,
-        "headLumaMinusGripLumaActual": 68.5,
+        "headLumaMinusGripLumaActual": 67.84,
         "headIsPalerThanGrip": true,
         "headLumaVsEveryTierGreenAtLeast": 20,
         "headLumaVsClearedStoneAtLeast": 25,
-        "clearedStoneLumaRequiredAtLeast": 188,
+        "headLumaVsClearedStoneActual": 39.54,
+        "clearedStoneRoleRead": "styleGuide.roles[\"stone.cleared\"].luma = 201.84",
         "noGildingTest": "reflectance is 0 and blue divided by red is at least 0.55 on every part",
         "singleColourPerPart": true
       },
       "bannedMaterials": ["Neon", "ForceField", "Foil", "Metal", "DiamondPlate", "CorrodedMetal", "Glass", "Ice", "Glacier", "Marble", "Basalt", "CrackedLava", "Plastic", "SmoothPlastic", "Grass", "LeafyGrass", "Fabric", "Leather"],
       "bannedMaterialCount": 18,
+      "roleAdditionRequested": "styleGuide.roles[\"wood.worked.dark\"], rgb [118,88,66], luma 94.46, family register",
       "findingO6": {
         "rule": "tool T9 forbids a blade edge longer than the grip",
         "gripLengthStuds": 1.4,
@@ -213,7 +219,7 @@ without touching the value:
       "uploadedAssetCount": 0,
       "marksAndFiguresCount": 0,
       "rarityTreatmentCount": 0,
-      "panelFormFieldReference": "screens.screens[id=index].tree[node=Name].textFrom, rendered into screens.screens[id=index].mutableProperties[0]",
+      "panelFormFieldReference": "screens.screens[id=index].tree[node=Name], rendered through screens.screens[id=index].mutableProperties[0]",
       "panelFormIsCitedNotCopied": true,
       "materialRegisterIsAuthoringConstraintOnly": true,
       "materialRegister": ["dressed stone", "fired clay", "cast bronze", "worked wood", "cut gearwork"],
@@ -222,7 +228,7 @@ without touching the value:
         "uploads": 24,
         "contractRevision": "collection.sets[].relics[] must become objects with an art field, and gameplay/meta owns that key",
         "buildBlocksUntilAssetsExist": true,
-        "keysBroken": ["representation.find", "budgets.uploadedImageAssetsInWorldGeometry", "theme/tone/04 D11", "rarity.forbidden"]
+        "keysBroken": ["representation.find", "budgets.textureCeilings.uploadedImageAssetsInWorldGeometry", "theme/tone/04 D11", "rarity.forbidden"]
       }
     },
     "foliage": {
@@ -234,6 +240,7 @@ without touching the value:
       "reflectance": 0,
       "transparency": 0,
       "materialIsGrassForAllFour": true,
+      "materialFieldSource": "styleGuide.materials.rows[id=M8].enum, which reads patch.material by field",
       "botanicalReadability": "silhouette-distinct, not species-distinct",
       "secondVisualChannelAdded": 0,
       "trianglesKnownSubtotal": 20,
@@ -249,17 +256,18 @@ without touching the value:
 - **Environment work** owns rows `R7` and `R8` and inherits `F1`, `F6` and the closed roster: every
   part it adds must be fixed to the building, and it may not add a twelfth class. It also inherits
   the negative half — **`P4` is not work waiting for it either.** Nobody builds `P4`.
-- **Style-guide work** inherits the expression shape. When `styleGuide.materials` exists it takes
-  the four `roleOwnerWhenStyleGuideExists` paths above, and the values here become its fallback
-  rather than its competitor. Two keys describing one `Part` is the failure that seam must avoid.
+- **Style-guide work** is cited, not duplicated: every colour and material in this key is a path
+  into `styleGuide.roles` or `styleGuide.materials.rows`, with exactly **one** locally resolved
+  value (the tool grip) and one role addition requested for it. If it adds `wood.worked.dark`, this
+  domain holds no literal at all.
 - **Meta and content work (`collection`)** gets the check that keeps `Z5` honest: the 24 names must
   stay strings in a slot label and must never become an Instance name.
 - **Tone and setting work (`theme/setting/05`)** should note `P4` is recorded here as a present
   class with zero rendered members. That is a consequence, not a revision request: the class is
   correctly described and correctly renders nothing.
 - **Performance work** gets an instance figure it can hold to: this domain adds **zero** Instances
-  beyond what `plots` and `tool` already create. All growth against
-  `budgets.instanceCeilings.serverWorldInstanceCeiling` comes from Environment.
+  beyond what `plots` and `tool` already create, on both
+  `budgets.instanceCeilings.serverWorldInstanceCeiling` and `clientStreamedInstanceCeiling`.
 - **Verification** gets fourteen greps and one roster arithmetic, all mechanical. A prohibition with
   no check reaches a build only if someone remembers it.
 
@@ -269,8 +277,10 @@ without touching the value:
    entry in `zeros` carries a non-empty `reason` and a non-empty `check`.
 2. `objectArt.looseObjectInstanceCount` is `0`, and no Instance created anywhere in `game/src` is
    named with, or has a property set to, any of the 24 strings in `collection.sets[].relics[]`.
-3. Zero Instances in `game/src` are parented to a character other than the one `Tool` `Model`
-   (`Z1`, `Z2`).
+3. Every path this key cites into another key resolves against that key's merged shape — including
+   `styleGuide.roles[...]`, `styleGuide.materials.rows[id=...]`,
+   `budgets.textureCeilings.*`, `budgets.instanceCeilings.*`, `rarity.ladders[id=find-set].*` and
+   `screens.screens[id=index].*` — and `objectArt` holds exactly **one** locally resolved colour.
 4. Every `Instance.new` call in `game/src` creates a class that appears in
    `objectArt.roster[].instanceClass`.
 
@@ -278,10 +288,10 @@ without touching the value:
 
 What built stone is made of, how it is composed, and how it is distributed across `layout`'s
 families — **Environment work**, which holds `environment`; rows `R7` and `R8` are named, not
-specified. The world palette, the closed `Enum.Material` list for the whole game, and whether a
-world token layer exists — **style-guide work**, which holds `styleGuide`; I state the expression
-shape and resolve four values inside it. What the clear and the reveal are made of — **VFX work**,
-which holds `effects`. The two UI icons and every ceiling on them (`G10`) — **UI Art work**, which
-holds `uiTheme`, and **performance work** to ratify. Patch count, spacing, chunk footprint and lane
-geometry — `depths`, `layout` and `plots`; I resize nothing. The tool's, the Find's and the patch's
-own values — this domain's sheets **03**, **04** and **05**, folded above.
+specified. Every palette role value, the closed `Enum.Material` list, and whether
+`wood.worked.dark` is added — **style-guide work**, which holds `styleGuide`; I cite its paths and
+author no palette. What the clear and the reveal are made of — **VFX work**, which holds `effects`.
+The two UI icons and every ceiling on them (`G10`) — **UI Art work**, and **performance work** to
+ratify. Patch count, spacing, chunk footprint and lane geometry — `depths`, `layout` and `plots`;
+I resize nothing. The tool's, the Find's and the patch's own values — this domain's sheets **03**,
+**04** and **05**, folded above.

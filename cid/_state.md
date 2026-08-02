@@ -173,6 +173,41 @@ R-2 already doubles content from four areas to eight, which is as far as a *corr
 carries it. Going further would be growing the game to answer a question the brief declined to
 ask — the exact failure `CLAUDE.md`'s stopping rule names.
 
+### R-4 · There is no in-game store. The one product is sold on the experience page or nowhere.
+
+**Recorded 2026-08-02, decided during wave 3.** This ruling was made, applied, and cited by at
+least six sheets across four categories — and its text was never written down. Wave 7's Store
+Page lead found the gap while checking what backs its own key: *"four approved sheets lean on
+R-4 and its text exists nowhere in the rulings file."* That is a defect in this file, not in
+the ruling, and the lesson is the same one the sheets keep teaching each other — **a decision
+that only exists as a citation is a decision nobody can check.**
+
+**The finding it resolved:** `products` had no purchase trigger and `input` forbade one.
+Monetization needed a surface to sell `Span` from; `input`'s verb list is closed, and ruling
+R-1 had already contained its own overrule to *"one input class, two verbs, four controls"*
+with an explicit bar on widening it. A store screen needs a fifth control and a sixth verb.
+
+**The ruling:** the in-game store does not exist. `products.storeExists` is `false`,
+`promptGamePassPurchaseCalls` is `0`, and the only surface on which the one product is
+discoverable at all is the **Roblox experience page**, which this game does not draw and
+cannot instrument. `F13` and `F19` hold: the game names, shows and prices nothing.
+
+**The costs, stated because two of them were only discovered later:**
+
+- **Discovery.** `monetization/01` recorded it at the time: a product nobody can see in-game
+  converts worse than one they can.
+- **Application latency.** Found in wave 5 by the Store UI lead. The in-experience prompt is
+  the one mechanism the platform documents as updating the ownership cache *immediately*, so
+  removing it converts an instant application into a several-minute one.
+- **An unmeasurable funnel.** Found in wave 5 by Funnels. All six conventional purchase steps
+  become unobservable — `storeExists: false`, `promptGamePassPurchaseCalls: 0`, F13, F19, F20
+  — leaving only the join-time `state.owned` boolean, which is a structural constant while
+  every `gamePassId` is `null`.
+
+**Still true:** no sheet has argued the ruling is wrong. Three waves have built on it and each
+found a further cost rather than a contradiction, which is the right shape for a ruling that
+trades a known good for a known bad.
+
 ## Escalations that were resolved by the rulings above
 
 Both are at the point the skill calls a design disagreement rather than a defect: the sheets
