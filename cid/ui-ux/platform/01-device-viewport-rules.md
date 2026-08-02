@@ -9,8 +9,9 @@ short-axis pixels**, on the platform's own `minAxis <= 500` predicate, so the cl
 the touch-target floor are one derivation and not two. The game runs **landscape**; portrait is
 a legal fallback, not a supported orientation. The one HUD `ScreenGui` carries
 `ScreenInsets = CoreUISafeInsets` and `IgnoreGuiInset = false`. **Gamepad focus is an explicit
-cyclic link graph over the four pressables, built from `Selectable`, `SelectionOrder` and
-`NextSelection*` alone — no `SelectionGroup`, no common parent node, no new `ui-forge` node.**
+cyclic link graph over the four interactive groups' `controlNode`s, built from `Selectable`,
+`SelectionOrder` and `NextSelection*` alone — no `SelectionGroup`, no common parent node, no new
+`ui-forge` node.**
 
 **The project's largest known gap is still open, and this sheet is what closes it.** `CLAUDE.md`
 records the mobile purchase path as the biggest remaining item and R-1 made `buy` a pressable to
@@ -93,8 +94,18 @@ is **not** on that page — it appears only in a release thread
 `[research: https://create.roblox.com/docs/reference/engine/classes/GuiService/AddSelectionParent]`.
 Building the contract from the documented three costs nothing and removes an `[unverified]`
 dependency from the one path a console player has to spend currency. **Explicit links also beat
-a group on the merits here:** the four pressables sit in two opposite corners, so any spatial
+a group on the merits here:** the four controls sit in two opposite corners, so any spatial
 fallback is guesswork, while an explicit chain is deterministic wherever `composition` puts them.
+
+**The order is `10 × groupIndex` over the interactive groups alone, and there is no second
+term.** `composition` makes `interactive` a property of a **group**, `groups[].members` an array
+of element **id strings**, and the per-element index `elements[].memberIndexWithinGroup`
+`[research: cid/ui-ux/hud/01-persistent-surface-composition.md]`. Over the four interactive
+groups `groupIndex` is **1, 4, 5, 6**, so `10 × groupIndex` gives **10 / 40 / 50 / 60** — total
+and tie-free. A second term is not merely redundant, it is unsatisfiable: the collection control
+is a group's `controlNode` and not an element, so it has no member index at all, and a two-term
+rule would yield three positions and leave the collection control out of the cycle entirely.
+**The selectable Instance is `groups[].controlNode`, never `groups[].node`.**
 
 **The `1`/`2`/`3` accelerator is rendered on no class.** `keyboardAcceleratorAllowed` is `true`,
 `keyboardAcceleratorRequired` is `false`; I decline the allowance `[cid: decided]`. A digit glyph
@@ -111,7 +122,12 @@ is an instruction, which `onboarding/03` `T5`/`T6` ban, and it advertises a path
       "widthCeiling": "viewport.classes.<class>.pressableMaxWidthScale",
       "surfaceBudget": "viewport.classes.<class>.persistentSurfaceShortAxisShareMax",
       "focusOrder": "viewport.gamepad.focusList.selectionOrderRule",
-      "notFields": ["touchTargetFloorPx", "minTouchTargetPx", "safeAreaInset", "groupParentNode"]
+      "notFields": [
+        "viewport.touchTargetFloorPx — the field is classes.<class>.minTargetPx",
+        "viewport.minTouchTargetPx",
+        "viewport.safeAreaInset",
+        "viewport.gamepad.groupParentNode — withdrawn; no common parent is required"
+      ]
     },
     "classify": {
       "minAxisPx": "math.min(workspace.CurrentCamera.ViewportSize.X, workspace.CurrentCamera.ViewportSize.Y)",
@@ -190,21 +206,31 @@ is an instruction, which `onboarding/03` `T5`/`T6` ban, and it advertises a path
       "propertiesUsed": ["Selectable", "SelectionOrder", "NextSelectionUp", "NextSelectionDown", "NextSelectionLeft", "NextSelectionRight"],
       "focusList": {
         "source": "composition",
-        "rule": "every composition member with interactive true, sorted by (groups[].groupIndex, members[].memberIndex) ascending, filtered to Selectable true",
-        "selectionOrderRule": "10 * composition.groups[].groupIndex + composition.groups[].members[].memberIndex",
+        "rule": "every composition.groups entry with interactive true, sorted by composition.groups[].groupIndex ascending",
+        "selectableInstance": "composition.groups[].controlNode",
+        "selectableInstanceIsNeverGroupNode": true,
+        "selectionOrderRule": "10 * composition.groups[].groupIndex",
+        "noSecondTerm": "the collection control is a group's controlNode and not an element, so it has no elements[].memberIndexWithinGroup; a second term would yield three positions and drop it from the cycle",
+        "realisedOrder": [
+          { "groupIndex": 1, "group": "collection",   "controlNode": "Pressable_INDEX", "selectionOrder": 10 },
+          { "groupIndex": 4, "group": "upgradeValue", "controlNode": "Pressable_BUY1",  "selectionOrder": 40 },
+          { "groupIndex": 5, "group": "upgradeReach", "controlNode": "Pressable_BUY2",  "selectionOrder": 50 },
+          { "groupIndex": 6, "group": "upgradePace",  "controlNode": "Pressable_BUY3",  "selectionOrder": 60 }
+        ],
         "selectionOrderIsNotRenumberedOnSuppression": true
       },
       "links": {
         "shape": "cycle",
+        "appliedTo": "composition.groups[].controlNode",
         "nextSelectionDown": "the next entry in focusList, wrapping from last to first",
         "nextSelectionUp": "the previous entry in focusList, wrapping from first to last",
-        "nextSelectionLeft": "the element itself",
-        "nextSelectionRight": "the element itself",
+        "nextSelectionLeft": "the control itself",
+        "nextSelectionRight": "the control itself",
         "spatialFallbackNeverUsed": true,
-        "rebuiltOn": "any change to any member's Selectable",
+        "rebuiltOn": "any change to any controlNode's Selectable",
         "suppressedMember": { "selectable": false, "omittedFromCycle": true, "selectionOrderRetained": true }
       },
-      "initialSelectedObject": "lowest SelectionOrder in focusList",
+      "initialSelectedObject": "the controlNode with the lowest SelectionOrder in focusList",
       "panelOpenEntryAndExit": "ownedByNavigation"
     },
     "retiresLiterals": [
@@ -235,35 +261,19 @@ is an instruction, which `onboarding/03` `T5`/`T6` ban, and it advertises a path
 {
   "amends": "composition",
   "requestedBy": "cid/ui-ux/platform/01-device-viewport-rules.md",
-  "closes": "RR-9, and RR-8 items (c) and (d)",
-  "withdrawn": {
-    "groupParentNode": "WITHDRAWN. Platform no longer requires a common parent node for the four pressables. RR-8 (c) needs no field, no arbitration and no ui-forge change."
+  "status": "satisfied — nothing further is asked of composition",
+  "history": "revision 2 requested four fields. hud/01 revision 2 published the correct three and named the other two as notFields; this sheet adopts hud/01's spelling verbatim rather than restating it.",
+  "adopted": {
+    "groupIndex": "composition.groups[].groupIndex",
+    "interactive": "composition.groups[].interactive — a property of a GROUP, never of an element",
+    "selectableInstance": "composition.groups[].controlNode — never groups[].node"
   },
-  "required": [
-    {
-      "path": "groups[].groupIndex",
-      "type": "integer",
-      "rule": "unique and stable across the WHOLE persistent surface, not scoped per cluster; ascending in the order a gamepad should reach the groups",
-      "why": "orderInCluster repeats across the four clusters, so it cannot order a focus cycle that spans two of them"
-    },
-    {
-      "path": "groups[].members[].memberIndex",
-      "type": "integer",
-      "rule": "unique within its group, ascending, stable across a presence change"
-    },
-    {
-      "path": "groups[].members[].interactive",
-      "type": "boolean",
-      "rule": "true for exactly the members whose id maps to an entry in input.pressable.roles; 4 in total, no fifth"
-    },
-    {
-      "path": "groups[].members[].instanceName",
-      "type": "string",
-      "rule": "the Instance name a builder resolves: Pressable_BUY1, Pressable_BUY2, Pressable_BUY3, Pressable_INDEX",
-      "why": "the link graph points at Instances, so the focus contract needs a name and not a position"
-    }
+  "withdrawn": [
+    "composition.groups[].instanceName — the field is node; the selectable one is controlNode",
+    "composition.groups[].members[].memberIndex — members holds id strings; the per-element index is elements[].memberIndexWithinGroup and the focus rule does not read it",
+    "composition.groups[].groupParentNode — no common parent is required; RR-8 (c) needs no field and no ui-forge change"
   ],
-  "invariant": "the four interactive members, sorted by (groupIndex, memberIndex), form a total order with no ties. Two groups sharing a groupIndex makes the focus cycle undefined and fails the build."
+  "invariant": "over the groups with interactive true, groupIndex is a total order with no ties, so 10 * groupIndex is injective. At hud/01's published values that is 10, 40, 50, 60 over four controlNodes, and count(interactive) equals input.gameDrawnPressables."
 }
 ```
 
@@ -284,7 +294,7 @@ computed from the same `minAxis <= 500` predicate a television is far above.
 
 **Two — *"one navigable selection group"* is unsatisfiable by any tree the compiler can emit,
 so I replace the mechanism and keep the requirement.** `composition` puts the four interactive
-members in **two** clusters, `hud-overlay` emits clusters as siblings under `Root`
+groups in **two** clusters, `hud-overlay` emits clusters as siblings under `Root`
 (`hud-overlay.mjs:288`), so their only common ancestor is `Root`, which also holds every readout
 and the notice slot. Grouping at `Root` puts non-interactive nodes inside the navigable group;
 grouping lower is impossible. The shipped build fails from the other side —
@@ -323,16 +333,16 @@ occupies 258 px of 414 and leaves ~30 px above the inset, so **any increase to t
 
 | subject | what it inherits |
 |---|---|
-| **Persistent-surface composition** (owner of `composition`) | The four fields in the `amends` block, and the **withdrawal** of the group-parent node. The bottom-right group must fit `persistentSurfaceShortAxisShareMax` at every class, and **where the budget and a group disagree the budget wins, because a group that does not fit is not a composition.** It owns the realised width; I publish a floor and a ceiling, so `HUD_CLUSTER_MAX_WIDTH_SCALE` and `HUD_CLUSTER_FALLBACK_WIDTH_SCALE` (`Pressables.luau:151,171`) are its to retire. |
+| **Persistent-surface composition** (owner of `composition`) | **Nothing further.** The `amends` block is satisfied by `hud/01` as published: I adopt `groups[].groupIndex`, `groups[].interactive` and `groups[].controlNode`, and withdraw every other field I once asked for, including the group-parent node. The bottom-right group must fit `persistentSurfaceShortAxisShareMax` at every class, and **where the budget and a group disagree the budget wins, because a group that does not fit is not a composition.** It owns the realised width; I publish a floor and a ceiling, so `HUD_CLUSTER_MAX_WIDTH_SCALE` and `HUD_CLUSTER_FALLBACK_WIDTH_SCALE` (`Pressables.luau:151,171`) are its to retire. |
 | **`representation` and `client-main`** | Only `client-main` creates the HUD `ScreenGui` (`init.client.luau:220-223`), so three property writes land there and nowhere else: `ScreenInsets = CoreUISafeInsets`, `IgnoreGuiInset = false`, `SafeAreaCompatibility = None`. This **overrules `docs/hand-written-control/init.client.luau:37`**. |
-| **Purchase-surface build work** (`Pressables.luau`) | Six literals retired by name, including the per-button `SelectionGroup` at `:423`. Height becomes `minTargetPx` **exactly**: `math.max(BUTTON_HEIGHT_PX, minTouchPx)` is what turned a 70 px floor into a 96 px row. The module also gains the link-graph rebuild — four assignments per presence change. |
-| **Navigation work** | I own the cycle *within* the four pressables while the panel is closed and nothing else. Focus entry, focus exit and what the cycle becomes when the index opens are yours. Because there is no `SelectionGroup` there is also no `SelectionBehavior*` to override: the escape route you design is a `NextSelection*` reassignment, which is one mechanism rather than two. |
+| **Purchase-control work** (`pressables`) | Six literals retired by name, including the per-button `SelectionGroup` at `:423`. Height becomes `minTargetPx` **exactly**: `math.max(BUTTON_HEIGHT_PX, minTouchPx)` is what turned a 70 px floor into a 96 px row. It also writes the cycle — four `SelectionOrder` values and eight `NextSelection*` links, on `groups[].controlNode` and never on `groups[].node`, rebuilt on any `Selectable` change. |
+| **Navigation work** | I own the cycle *within* the four controls while the panel is closed and nothing else. Focus entry, focus exit and what the cycle becomes when the index opens are yours. Because there is no `SelectionGroup` there is also no `SelectionBehavior*` to override: the escape route you design is a `NextSelection*` reassignment, which is one mechanism rather than two. |
 | **Feedback-UI work** | A notice may not be placed inside any published keepout rect, on any class, in either orientation, and must not be `Selectable` — a selectable notice would enter the cycle and change its length. |
 | **Screens work** | The index panel obeys the same safe area — same `ScreenGui` — but not the persistent-surface budget, which bounds only what is drawn over live play. |
 
-**The five `ui-forge` edits, unchanged by RR-9 — this sheet adds no sixth.** None blocks the
-purchase path *today*, because `pressables` draws the four buttons itself; all five block the
-migration `representation` anticipates. Edits 3 and 4 overlap `hud/03`'s `U3`/`U4` and should be
+**The five `ui-forge` edits — this sheet adds no sixth.** None blocks the purchase path *today*,
+because `pressables` draws the four controls itself; all five block the migration
+`representation` anticipates. Edits 3 and 4 overlap `hud/03`'s `U3`/`U4` and should be
 deduplicated into one list rather than counted twice.
 
 | # | file · function | change |
@@ -363,7 +373,7 @@ deduplicated into one list rather than counted twice.
 
 - **Where any element sits, its cluster, its group and its order** — `composition`
   (`ui-ux/hud/01`). I publish a floor, a ceiling, keepouts and a focus rule *that reads its
-  indices*; I restate none of its positions. The four fields I need are in the `amends` block.
+  `groupIndex` and its `controlNode`*; I restate none of its positions and ask it for no field.
 - **The realised width of a pressable, and the two cluster-width literals** — `composition`.
 - **Gamepad focus entry and exit across the HUD and the index panel, what the cycle becomes
   while the panel is open, and back behaviour on any device** — `navigation` (`ui-ux/navigation`).
