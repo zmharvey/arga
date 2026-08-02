@@ -1,6 +1,7 @@
 # 01 — No in-game offer surface
 
-**Domain:** ui-ux/store · **Category:** UI/UX · **Wave:** 5
+**Domain:** ui-ux/store · **Category:** UI/UX · **Wave:** 5 · **Revised:** UI/UX verification
+round 1, RR-14
 
 ## Decision
 
@@ -40,8 +41,19 @@ lists `| shop | 2 | the multiplier SKUs |`. Untagged makes it `[brief: soft]`; R
 Recorded as `deleted`, with `deferred: false` stated separately, because "priority 2" and "deleted"
 are different instructions to a builder and the difference is whether space gets reserved.
 
-**One finding that meets the two-builders bar, from reading the shipped tree.** `default.project.json`
-syncs `src/shared` wholesale into `ReplicatedStorage.UIForge` `[research: game/default.project.json]`,
+**RR-14, closed: the two lift rows test transparency and interactability, not visibility.** My
+first draft wrote the `moment.rowLift` observable against the `Visible` property. HUD's `S2`/`S12`
+ruling settles that a withheld element is never absent — it is present at full reserved extent with
+every authored transparency at 1 and `Active` / `Selectable` / `Interactable` false, driven by
+`HudBinding.luau`'s `collectFade` over background, text, stroke, image and `UIStroke`
+`[research: game/src/client/HudBinding.luau]`. My rows sit downstream of that mechanism and had no
+business naming a different one. The restatement is strictly stronger for my purpose: under a
+presence mechanism a builder could satisfy me by *hiding* an offer element, and under a
+transparency mechanism a hidden element is still an element in the tree, which `C5` then catches.
+Scope matters — the index panel's own `Visible` is `representation`'s and is untouched here.
+
+**One finding that meets the two-builders bar, and its root cause.** `default.project.json` syncs
+`src/shared` wholesale into `ReplicatedStorage.UIForge` `[research: game/default.project.json]`,
 and `src/shared/Screens/` holds **eight** generated screen modules of which `init.client.luau`
 requires exactly one, `hud`. The other seven ship inside the place and replicate to every client.
 `shop.luau` and `shop-galaxy.luau` render `"SHOP"`, `"Cosmic Egg"`, `"Void Egg"`, `"Luck Boost"`,
@@ -51,8 +63,18 @@ price pills `"25,000"` / `"90,000"` / `"1,500"` and `"OPEN 3 EGGS"`; `crates.lua
 paid-random-items storefront sitting in the replicated tree of a game whose `F19` forbids naming a
 product is exactly the thing two builders would treat differently, and the platform regulates that
 category specifically `[research: https://create.roblox.com/docs/production/monetization/paid-random-items]`.
-They are ui-forge demo output, not this game's, and the fix is a deletion or a Rojo exclusion, not
-a design. Recorded as `artifactHygiene` with a check. `[cid: decided]`
+
+**Naming seven files is a rule the next emit re-breaks, so the rule is not about the seven files.**
+Wave 6's Art lead found the same root cause on the other half of the same artifact: the theme was
+emitted from `ui-forge/examples/game-context.json`, the Pet Ascend Simulator demo, so `Theme.luau`
+ships `archetype = "cartoon-vibrant"` against a brief naming `fantasy-ornate` in three places and
+arguing against `cartoon-vibrant` by name `[research: cid/ui-ux/_verified.md]`. **The UI half of
+this place was emitted against an example context and never re-derived from the brief**, and seven
+storefronts are what that leaves behind when the example is a pet simulator. The rule is therefore
+a whitelist with a provenance clause: **the place may contain no screen the brief did not ask for
+through a contract key, and every screen module in the tree must trace to a `ui-forge` brief
+derived from this game's context.** Deleting seven files satisfies today's instance; the whitelist
+survives the next `npm run emit`, and a delete list does not. `[cid: decided]`
 
 **Zero player-facing strings, stated as a field.** This domain writes none. `vocabulary`'s casing,
 14-character ceiling, `allowedPattern` and eight banned words therefore bind nothing here, and the
@@ -115,26 +137,31 @@ the value of `pendingPurchase` below and it carries no manifest of its own.
       { "id": "transient.findReveal", "kind": "transient", "surface": "Find reveal, beat B1", "drawnBy": "the world channel, per response", "closedBy": ["R-4", "products.F14", "response"], "observable": "the reveal path creates no GuiObject and references no product; F14's check holds by construction because no purchase-related instance exists to reach it" },
       { "id": "transient.areaCompleteNotice", "kind": "transient", "surface": "Area completion notice, beat B3", "drawnBy": "the notice channel", "closedBy": ["R-4", "products.F14", "products.F19"], "observable": "the notice's content is fixed copy owned by notices work; grep it for the products[] label and for any Robux figure -> 0 matches" },
       { "id": "transient.setCompleteNotice", "kind": "transient", "surface": "Set completion notice, beat B2", "drawnBy": "the notice channel", "closedBy": ["R-4", "products.F14", "products.F19", "setBonus"], "observable": "same check as transient.areaCompleteNotice, and no variant of it names the axis a purchase also multiplies" },
-      { "id": "moment.rowLift", "kind": "state-change", "surface": "An upgrade row lifting when its level-1 cost becomes affordable", "drawnBy": "hud-binding", "closedBy": ["R-4", "products.F14", "firstSession S6/S7"], "observable": "a lift changes one readout's Visible property and nothing else; it is silent and still, and no purchase-related element may appear on the same frame because none exists" },
-      { "id": "moment.denominatorLift", "kind": "state-change", "surface": "The / 24 denominator lifting at the first Find", "drawnBy": "hud-binding", "closedBy": ["R-4", "products.F19"], "observable": "same check as moment.rowLift" },
-      { "id": "state.preFirstSnapshot", "kind": "state", "surface": "The HUD between join and the first StateChanged snapshot", "drawnBy": "client-main", "closedBy": ["R-4", "products.F19", "onboarding/03 T6"], "observable": "no element that is absent in the steady state is present in this one; specifically no offer, no upsell, no loading-screen promotion and no unrequested panel of any kind" },
+      { "id": "moment.rowLift", "kind": "state-change", "surface": "An upgrade row lifting when its level-1 cost becomes affordable", "drawnBy": "hud-binding", "closedBy": ["R-4", "products.F14", "firstSession S6/S7", "ui-ux/hud S2/S12"], "observable": "a lift moves only the element's authored transparency set — background, text, stroke, image and UIStroke, per HudBinding's collectFade — together with its Active, Selectable and Interactable flags. The element and its full reserved extent are present in both states and the element set is identical on both sides of the lift, so a lift can introduce nothing; no Visible property is written on any persistent HUD element. No purchase-related element can appear on that frame because none exists in the tree at all." },
+      { "id": "moment.denominatorLift", "kind": "state-change", "surface": "The / 24 denominator lifting at the first Find", "drawnBy": "hud-binding", "closedBy": ["R-4", "products.F19", "ui-ux/hud S2/S12"], "observable": "same check as moment.rowLift: transparency and interactability only, identical element set on both sides of the lift" },
+      { "id": "state.preFirstSnapshot", "kind": "state", "surface": "The HUD between join and the first StateChanged snapshot", "drawnBy": "client-main", "closedBy": ["R-4", "products.F19", "onboarding/03 T6"], "observable": "the join state's element set is identical to the steady state's and every difference between them is a transparency or interactability value; no element in either state names, prices or points at a product, and no offer, upsell, loading-screen promotion or unrequested panel exists to be faded in" },
       { "id": "state.errorSystemCopy", "kind": "state", "surface": "Error and system copy, wherever it lands (gap G2)", "drawnBy": "unowned; nearest holder is notices work", "closedBy": ["R-4", "products.F19", "theme/tone/01 P1-P9"], "observable": "zero rendered strings in any error or system path match /robux|r\\$|pass|store|shop|offer|purchase|rejoin/i. The rejoin token is included deliberately: sheet 02 forbids the instruction and the register forbids the sentence independently" }
     ],
     "artifactHygiene": {
-      "finding": "src/shared is synced wholesale into ReplicatedStorage.UIForge, so seven unreferenced ui-forge demo screens ship inside the place and replicate to every client. Three of them are storefronts: shop, shop-v2 and shop-galaxy render SHOP, Cosmic Egg, Void Egg, Luck Boost and price pills 25,000 / 90,000 / 1,500; crates renders COSMIC CRATES, 199 GEMS, 899 GEMS and BEST / VALUE badges.",
+      "rule": "The place may contain no screen the brief did not ask for. A screen module may sit in the synced tree only if a contract key names it (screens or composition) AND it traces to a ui-forge brief derived from this game's context. A module satisfying neither is deleted, not hidden.",
+      "rootCause": "The UI half of this place was emitted against ui-forge/examples/game-context.json — the Pet Ascend Simulator demo — and never re-derived from this brief. The seven unreferenced storefronts and the cartoon-vibrant Theme.luau found by Art & Visuals are two instances of one cause, which is why the rule is a whitelist with a provenance clause: a rule naming seven files is re-broken by the next emit and this one is not.",
+      "instanceToday": "src/shared is synced wholesale into ReplicatedStorage.UIForge, so seven unreferenced ui-forge demo screens ship inside the place and replicate to every client. Three are storefronts: shop, shop-v2 and shop-galaxy render SHOP, Cosmic Egg, Void Egg, Luck Boost and price pills 25,000 / 90,000 / 1,500; crates renders COSMIC CRATES, 199 GEMS, 899 GEMS and BEST / VALUE badges.",
       "requiredByAnyModule": false,
       "onlyRequiredScreen": "hud",
+      "allowedScreenModules": ["hud"],
       "mustNotBePresent": ["crates", "inventory", "quests", "roster", "shop", "shop-v2", "shop-galaxy"],
-      "fix": "delete the seven files or exclude them from the Rojo tree; this is an artifact change, not a design change",
+      "fix": "delete the seven files or exclude them from the Rojo tree, and re-emit from a context derived from this brief rather than from the example; this is an artifact change, not a design change",
+      "notMine": "the emitted theme itself — archetype, colours and sourceTitle — is Art & Visuals' half of the same root cause and is not decided here",
       "ruledBy": ["R-4", "products.F19", "products.F11", "platform paid-random-items guidance"],
       "bar": "two builders would diverge (b); no player sees it today, so not (a)"
     },
     "checks": [
       { "id": "C1", "check": "rg -i 'PromptGamePassPurchase|PromptProductPurchase|PromptPurchase|ProcessReceipt' game/src -> 0 matches" },
       { "id": "C2", "check": "rg -l 'MarketplaceService' game/src -> exactly one file, game/src/server/Entitlements.luau" },
-      { "id": "C3", "check": "ls game/src/shared/Screens/*.luau -> exactly one file, hud.luau" },
+      { "id": "C3", "check": "every ModuleScript under the synced Screens folder is in artifactHygiene.allowedScreenModules; today that set is exactly {hud}, so ls game/src/shared/Screens/*.luau returns one file" },
       { "id": "C4", "check": "the client tree creates exactly four TextButtons, named Pressable_BUY1/2/3 and Pressable_INDEX" },
-      { "id": "C5", "check": "zero rendered strings anywhere in the build match /robux|r\\$|game ?pass|store|shop|offer|sale|bundle/i" }
+      { "id": "C5", "check": "zero rendered strings anywhere in the build match /robux|r\\$|game ?pass|store|shop|offer|sale|bundle/i" },
+      { "id": "C6", "check": "zero writes to the Visible property of any persistent HUD readout or pressable; withholding is transparency plus Active/Selectable/Interactable. Cited from ui-ux/hud S2/S12, not decided here; the index panel's own Visible is representation's and is out of scope" }
     ],
     "pendingPurchase": {
       "decidedIn": "cid/ui-ux/store/02-when-a-purchase-applies.md",
@@ -143,7 +170,7 @@ the value of `pendingPurchase` below and it carries no manifest of its own.
       "shownOnFailedOwnershipRead": [],
       "emptySetReason": "products.F19 leaves no surface that may refer to a product; theme/tone/04 D12 removes every way of signalling a thing has not happened; input.pressable.rejectionCueOnFailedPrecondition is none. The three jointly force silence, so the empty set is a build instruction and not an oversight.",
       "forbidden": [
-        { "id": "P1", "thing": "A purchase-pending state on any readout, pressable or panel", "closedBy": ["products.F19", "R-4"], "observable": "no readout has a third visual state beyond present and withheld" },
+        { "id": "P1", "thing": "A purchase-pending state on any readout, pressable or panel", "closedBy": ["products.F19", "R-4"], "observable": "no readout has a third authored state beyond present and withheld" },
         { "id": "P2", "thing": "A rejoin instruction, in any words", "closedBy": ["products.F19", "theme/tone/01 P1/P2/P6"], "observable": "zero rendered strings match /rejoin|restart|log ?out|come back|try again/i" },
         { "id": "P3", "thing": "A notice, toast, banner or modal when ownership resolves true mid-session", "closedBy": ["theme/tone/03 B4", "response.notice channel"], "observable": "the notice channel carries exactly two members, both completions; an ownership change enqueues nothing" },
         { "id": "P4", "thing": "A cue distinguishing not-yet-propagated from not-owned", "closedBy": ["theme/tone/04 D12", "input.rejectionCueOnFailedPrecondition: none"], "observable": "the two states are byte-identical on every surface; a diff of the rendered HUD across them is empty" },
@@ -201,30 +228,32 @@ the value of `pendingPurchase` below and it carries no manifest of its own.
 
 | subject | what this forces or forbids |
 |---|---|
-| HUD composition work (owner of `composition`) | Six of your elements and all four pressables are rows here. Nothing in a cluster, a group or a lift may be an offer, and a fifth pressable fails `input` before it fails me. You inherit no store row to lay out and must not reserve width for one. |
-| Screen-inventory work (owner of `screens`) | The index panel is row `index.surface`: no locked slot, no price on an empty slot, no padlock, no paywalled set heading. Your screen inventory has no `shop` node and the reason is a deletion, not a deferral. |
+| HUD composition work (owner of `composition`) | Six of your elements and all four pressables are rows here. Nothing in a cluster, a group or a lift may be an offer, and a fifth pressable fails `input` before it fails me. You inherit no store row to lay out and must not reserve width for one. My two lift rows now cite your `S2`/`S12` mechanism rather than a competing one, and `C6` is yours restated, not re-decided. |
+| Screen-inventory work (owner of `screens`) | The index panel is row `index.surface`: no locked slot, no price on an empty slot, no padlock, no paywalled set heading. Your screen inventory has no `shop` node, and it is now also the whitelist `artifactHygiene.rule` tests the place against — a screen module in the tree that your key does not name is deleted. |
 | Navigation work (owner of `navigation`) | Your graph has two nodes. There is no store node to route to, no back edge from one, and `deletedScreenTableRow` is the citation for saying so rather than deciding it yourself. |
 | Notice and transient-message work (owner of `notices`) | Three of your surfaces are rows here, and `state.errorSystemCopy`'s observable includes the token `rejoin` — if you rule that an error surface exists, it inherits that grep. |
 | Ownership-resolution and build work (`products.ownershipCheck`, `entitlements`) | `pendingPurchase.resolution` is a requirement on you, with a bound on the interval and the quota arithmetic. Sheet 02 states it and pushes back on one clause of `products`. |
-| Build and repo work | `artifactHygiene`: seven unreferenced generated screens, three of them storefronts with prices, ship inside the place today. Delete them or exclude them from the Rojo tree. |
+| Build, emit and repo work | `artifactHygiene` is a whitelist with a provenance clause, not a delete list: no screen module may sit in the synced tree unless a contract key names it and it traces to a brief derived from this game's context. Today that means deleting seven files; the point is that the next `npm run emit` cannot reintroduce an eighth. |
+| Art & Visuals — UI Art | The emitted theme is the other half of the same root cause and is yours, not mine. My rule covers which screen modules may exist; it says nothing about what the surviving one looks like. |
 | Store-listing work (wave 7) | You are the whole of the offer path. Nothing in the game points at you, names the pass or says one exists, so the pass listing and the description carry it alone. |
 
 ## Acceptance criteria
 
 1. `rg -i 'PromptGamePassPurchase|PromptProductPurchase|PromptPurchase|ProcessReceipt' game/src` returns 0 matches, and `rg -l 'MarketplaceService' game/src` returns exactly one path, `game/src/server/Entitlements.luau`.
-2. `game/src/shared/Screens/` contains exactly one `.luau` file, `hud.luau`.
-3. The built client creates exactly four `TextButton` instances and their names are the set `{Pressable_BUY1, Pressable_BUY2, Pressable_BUY3, Pressable_INDEX}`.
+2. Every `.luau` file under `game/src/shared/Screens/` is named in `offerSurface.artifactHygiene.allowedScreenModules`; the directory listing today is exactly one file, `hud.luau`.
+3. The built client creates exactly four `TextButton` instances and their names are the set `{Pressable_BUY1, Pressable_BUY2, Pressable_BUY3, Pressable_INDEX}`, and no `Visible` property is written on any of them or on any persistent HUD readout.
 4. Zero strings rendered anywhere in the build match `/robux|r\$|game ?pass|store|shop|offer|sale|bundle|rejoin/i`, and `offerSurface.playerFacingStrings.count` is 0.
 
 ## Not decided here
 
 What is sold, at what factor and at what price — `products`, Monetization. What a player sees in the
 gap between paying and the factor applying, and the failed-ownership-read case — sheet `02`, this
-domain, whose rows are `pendingPurchase` above. The re-read interval, retry shape and rate-limit
-budget — ownership-resolution work behind `products.ownershipCheck`; I state a bound and set no
-value. Where each surface sits, how large it is and what it says — `composition`, `screens`,
-`viewport`. Whether an error surface exists at all — `notices` (gap G2). The experience page's own
-copy, the pass listing and the description — store-listing work, wave 7. A spend guard for the
-under-13 share of an 8-14 audience — the developer and the experience page, not an in-game
-surface, since R-4 leaves nothing in the game to guard (gap S5). Whether monetization gets a
-priority slot at all — scope-ordering work (gap S6).
+domain, whose rows are `pendingPurchase` above. The withholding mechanism itself — `composition`,
+`ui-ux/hud` `S2`/`S12`; I cite it and set none of it. The re-read interval, its retry shape and its
+rate-limit budget — ownership-resolution work behind `products.ownershipCheck`; I state a bound and
+set no value. Where each surface sits, how large it is and what it says — `composition`, `screens`,
+`viewport`. Whether an error surface exists at all — `notices` (gap G2). The emitted theme, its
+archetype and its colours — Art & Visuals, the sibling instance of `artifactHygiene`'s root cause.
+The experience page's own copy — store-listing work, wave 7. A spend guard for the under-13 share
+of an 8-14 audience — the developer and the experience page, since R-4 leaves nothing in the game
+to guard (gap S5). Whether monetization gets a priority slot at all — scope-ordering work (S6).

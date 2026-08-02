@@ -1,41 +1,47 @@
 # 01 — The screen graph
 
-**Domain:** ui-ux/navigation · **Category:** UI/UX · **Wave:** 5
+**Domain:** ui-ux/navigation · **Category:** UI/UX · **Wave:** 5 · **Revised round 1** (RR-1, RR-2)
 
 ## Decision
 
 **Two nodes, two edges, and both lists are closed.** `hud` is persistent and is never entered or
-exited; `index` is an overlay opened and closed by one control, `Pressable_INDEX`, which toggles.
-**That control does not exist before the first reveal** — it is withheld with the panel, latched
-by the same condition, so `onboarding/04`'s *"absent together and lift together"* is satisfied
-literally rather than by an inert button. The graph is identical at every area ordinal, including
-past area 8.
+exited; `index` is an overlay opened and closed by one control, `Pressable_INDEX`, which toggles
+and is the **only** way in or out. That control is **present from join and inert until the first
+reveal** — it is `composition.groups[collection].node`, so it is a readout carrying the collection
+count with `Active`, `Selectable` and `AutoButtonColor` all false, and it becomes interactive on
+the first snapshot holding a Find. The graph is identical at every area ordinal, including past
+area 8.
 
 ## Why
 
 The brief contains **no sentence behind any edge in this graph** (index gap N1): its screen table
 is untagged, three of its four rows are void, and it names no entry point for anything. The one
 line that reaches this sheet is *"how the index is first surfaced"*, left open to **UI/UX +
-Onboarding** `[brief: soft]` ← `02-GAMEPLAY.md`. Onboarding has already handed its half back —
-*"which surface offers it is not mine; that it does not exist before the first Find is"*. So the
-entry point is decided here, and the presence rule is inherited.
+Onboarding** `[brief: soft]` ← `02-GAMEPLAY.md`. Onboarding handed its half back — *"which surface
+offers it is not mine; that it does not exist before the first Find is."*
 
-**The inert-button reconciliation (index contradiction 3), ruled.** Three approved statements
-collide: `firstSession.withheld.collectionPanel` is `presentAtJoin: false`,
-`input.verbs[openIndex].precondition` is `"none"`, and `representation` draws `Pressable_INDEX`
-from join. `IndexScreen.luau:27-44` reconciles them by drawing the button and making `toggle()`
-do nothing until the first Find `[research: game/src/client/IndexScreen.luau]`. **That is not
-"absent".** It is also a player-noticeable defect at bar (a): `rejectionCueOnFailedPrecondition`
-is `"none"` and `suppressionForbidden` bans an explanatory tooltip, so an eight-year-old presses
-a visible button in the first minute of play and **nothing at all happens**, with no cue, no
-sound and no text permitted to explain it `[brief: binding]` ← `00-CORE.md` audience.
+**Round 1 reversed my first ruling, and the reversal is right.** I ruled the entry control
+*absent* before the first reveal. `composition.groups[collection]` fuses the collection count into
+`Pressable_INDEX` — one node, one box — which is the half of the reported playtest defect closed
+by deletion (`Pressables.luau:480` writes the find noun onto the index button while
+`hud.brief.json` puts a `FINDS` readout in the same cluster, so the developer saw two boxes both
+reading *Finds* `[research: cid/_playtest.md]`). Under that fusion my ruling deletes a readout
+`firstSession` requires **present at join with value `0`**. Absence loses.
 
-The ruling costs `input` nothing, and this is the part worth stating precisely: **a precondition
-is a property of an edge, presence is a property of a node.** `verbs[openIndex].precondition`
-stays `"none"` — every press of the control opens the panel, unconditionally, from the first
-frame the control exists. What changes is that the control is not drawn yet. Nothing in `input`
-is overruled and no field of it moves. What moves is `firstSession` (one new `withheld` entry)
-and `representation` (the button is created hidden), both issued as revision requests below.
+**But the defect I ruled against is still real, and the fusion closes it by a better mechanism.**
+My objection was never to the node existing; it was that an eight-year-old presses a visible
+button in the first minute and **nothing at all happens**, with `rejectionCueOnFailedPrecondition`
+at `"none"` and an explanatory tooltip banned `[brief: binding]` ← `00-CORE.md` audience. Under
+`hud/02.presence.byGroup[collection]` the node before the lift *"is a readout: `Active` false,
+`Selectable` false, no press states, no fill distinct from any other readout"*. **There is nothing
+that affords a press, so there is no press that fails.** That satisfies `onboarding/04`'s intent —
+no way in exists — without deleting a required readout, and it is the answer I should have found.
+
+**Presence and interactivity are two different fields, and that is the whole reconciliation.**
+`input.verbs[openIndex].precondition` stays `"none"`: every activation of the control opens the
+panel. What is withheld is the control's *interactivity*, not the verb's precondition and not the
+node's presence. Three keys now say three non-overlapping things about one instance —
+`composition` says where it is, `firstSession` says what it reads, `navigation` says what it does.
 
 **The `areas` node is dead, and it is dead three times over** `[brief: soft]` ← `04-PRESENTATION.md`
 row 3, which category gap G3 requires a ruling on rather than a skip. `depths.areas[].unlock` is
@@ -43,19 +49,18 @@ row 3, which category gap G3 requires a ruling on rather than a skip. `depths.ar
 `studsBetweenParts: 0`; `meta/04` makes the next area *"enterable at the instant one completes,
 with no threshold, no cooldown and no travel worth measuring"*. There is no destination to pick,
 no gate to satisfy and no distance to skip. `theme/setting/02` adds that **no view of the whole
-works exists**, so a map would have to invent a survey the fiction forbids. A travel screen here
-would be a surface built to fill a row in a table `[brief: binding]` ← `00-CORE.md`, *"the
-smallest game that still gives every creative area real work"*.
+works exists**, so a map would have to invent a survey the fiction forbids `[brief: binding]` ←
+`00-CORE.md`, *"the smallest game that still gives every creative area real work"*.
 
 **Ordinal invariance.** `endgame` forbids an end screen, a congratulation and a completion
 percentage, and a post-terminal bay is a depth-4 bay drawn from the same chunk family. So no node
 appears, disappears or changes kind at any ordinal, and `navigation` holds no field keyed by one.
 Stated as a field so a builder cannot infer a "you finished" surface from silence `[cid: decided]`.
 
-**Zero player-facing strings are coined here**, so there is no ` ```coinage ` block. The index
-control's label belongs to `composition` (*"the sheet that decides an element names it"*); the
-panel's contents belong to `screens`. Naming either from a navigation sheet would give one string
-two owners.
+**Zero player-facing strings are coined here**, so there is no ` ```coinage ` block. The fused
+node's label and value formats are `composition`'s (`Finds`, `Parts`, `{found} / {total}`); the
+panel's contents are `screens`'. Naming either from a navigation sheet would give one string two
+owners.
 
 ### The closed non-node list
 
@@ -66,7 +71,7 @@ is closed, and adding a node is a revision against this sheet.
 |---|---|
 | `areas` / map / travel / fast-travel | `depths.areas[].unlock: "previousAreaComplete"`; `plots.openings.alwaysOpen: true`, `barrierInOpening: false`, `studsBetweenParts: 0`; `meta/04` — the player walks in, so there is nothing to navigate. `theme/setting/02` forbids a view of the whole works. |
 | `shop` / store / offer surface | ruling R-4 removed the in-game store; `products.F19` forbids naming, showing or pricing a product on any in-game surface. |
-| `upgrades` screen | it is the HUD's bottom-right group (`composition` surfaces 4–5), drawn over live play, never opened or closed. |
+| `upgrades` screen | it is the HUD's `bottomRight` cluster (`composition.groups` upgradeValue / upgradeReach / upgradePace), drawn over live play, never opened or closed. |
 | hub / lobby / title / main menu | the game opens into play; `firstSession` puts exactly three readouts on screen at join and nothing else. |
 | pause | the platform menu is the only one and it is `does_not_own` (category row 16). There is no failure state to pause out of `[brief: soft]` ← `02-GAMEPLAY.md`. |
 | settings / options | `04-PRESENTATION.md` declined the accessibility options pass explicitly; no key holds a setting to change. |
@@ -84,10 +89,9 @@ is closed, and adding a node is a revision against this sheet.
 
 ### If a node is ever added
 
-Category gap G2 (error and system copy) is the one live candidate, and it lands on Feedback UI
-and Screens, not here. Inventing it now would decide another domain's subject, so instead this
-sheet states what an added node must satisfy — carried in the key as `addNodeRule`, so a new
-surface is checked rather than argued about.
+Category gap G2 (error and system copy) resolved to a notice rather than a screen (`feedback/03`),
+so no node is added this wave. The rule below stays in the key so the next candidate is checked
+rather than argued about.
 
 ```manifest
 {
@@ -125,12 +129,13 @@ surface is checked rather than argued about.
         "presence": {
           "presentAtJoin": false,
           "latched": true,
-          "latchSource": "atLeastOneEntryOfTheSnapshotFoundMapIsTrue",
+          "latchSource": "countFound(snapshot.found) > 0",
           "latchSourceIsNot": "theFoundMapHasKeys",
           "liftedBy": "beat:firstReveal",
           "reSuppressible": false,
           "liftIsSilentAndStill": true,
-          "newSaveFields": 0
+          "newSaveFields": 0,
+          "visibilityMechanism": "IndexSurface.Visible, permitted because IndexSurface is not a composition.groups[].node nor a descendant of one"
         },
         "compositionOwnedBy": "screens"
       }
@@ -138,15 +143,18 @@ surface is checked rather than argued about.
     "entryControl": {
       "forNode": "index",
       "instance": "Pressable_INDEX",
+      "isAlso": "composition.groups[collection].node",
       "inputRole": "index",
       "cluster": "topLeft",
       "geometryOwnedBy": "composition",
       "labelOwnedBy": "composition",
       "toggles": true,
-      "separateCloseControlExists": true,
-      "separateCloseControlOwnedBy": "screens",
-      "presenceFollowsNode": "index",
-      "presenceRule": "drawn only once nodes[index].presence has lifted; before the lift no instance named Pressable_INDEX is visible in the PlayerGui",
+      "isTheOnlyExit": true,
+      "separateCloseControlExists": false,
+      "separateCloseControlWithdrawnBecause": "input.gameDrawnPressables is 4 and screens/01 refused the node; screens[index].geometry.mustNotIntersect keeps this control clear on every viewport, so one drawn exit is guaranteed reachable",
+      "presenceRule": "present from join in composition.presence state 'present'; never 'absent'; no module writes Visible on it or on any descendant",
+      "interactivityRule": "Active false, Selectable false, AutoButtonColor false, acceptsActivated false until the first snapshot in which countFound(snapshot.found) > 0; latched, never re-suppressed",
+      "beforeTheLiftItReadsAs": "a readout with no press states and no fill distinct from any other readout",
       "extentReservedFromFrameOne": true
     },
     "edges": [
@@ -163,7 +171,7 @@ surface is checked rather than argued about.
         "rejectionCue": "none",
         "debounceSeconds": "input.pressable.debounceSeconds",
         "reachableBeforeFirstReveal": false,
-        "reachableBeforeFirstRevealBecause": "the control is absent, not because the verb is gated"
+        "reachableBeforeFirstRevealBecause": "the control is non-interactive, not because the verb is gated; there is no press for the precondition to reject"
       },
       {
         "id": "closeIndex",
@@ -182,7 +190,7 @@ surface is checked rather than argued about.
     "notNodes": [
       { "id": "areas", "because": "depths.areas[].unlock is previousAreaComplete; plots.openings is alwaysOpen with no barrier and studsBetweenParts 0; meta/04 makes the next area enterable at the instant one completes. theme/setting/02 forbids a view of the whole works." },
       { "id": "shop", "because": "ruling R-4 removed the in-game store; products.F19 forbids naming, showing or pricing a product on any in-game surface." },
-      { "id": "upgradesScreen", "because": "the upgrade readouts and their controls are a persistent HUD group, never opened or closed." },
+      { "id": "upgradesScreen", "because": "the upgrade readouts and their controls are the bottomRight cluster of composition, never opened or closed." },
       { "id": "hubOrTitle", "because": "the game opens into play; firstSession puts three readouts on screen at join and nothing else." },
       { "id": "pause", "because": "the platform menu is the only one and this category does not own it; there is no failure state to pause out of." },
       { "id": "settings", "because": "04-PRESENTATION.md declined the options pass; no key holds a setting to change." },
@@ -199,67 +207,79 @@ surface is checked rather than argued about.
       { "id": "priority3Surfaces", "because": "03-META.md priority 3 is a hard gate: no leaderboard, daily reward, code entry, trade window, season pass, event banner or rebirth panel, and no space reserved for one." }
     ],
     "addNodeRule": {
-      "appliesTo": "any surface a later domain proposes, including the error surface at category gap G2",
+      "appliesTo": "any surface a later domain proposes; the G2 error surface resolved to a notice this wave and adds none",
       "mustSatisfy": [
         "it declares a node id and at least one edge in this key, with a trigger and a precondition",
         "it does not occlude or disable any of the four instances in input.pressable.roles",
         "it suspends nothing: navigation.suspension applies to the index node alone",
         "it is exited by a drawn control the player activates, never by a timer and never by a beat",
+        "it adds no game-drawn pressable, since input.gameDrawnPressables is 4",
         "it does not raise maxOpenNodes above 1 without a stated concurrency row"
-      ],
-      "routedTo": ["ui-ux/feedback (the surface)", "ui-ux/screens (its copy)"]
+      ]
     }
   }
 }
 ```
 
+## Pushing back
+
+**`cid/gameplay/onboarding/04-run-one-withholds.md`, the ruling *"the panel and whatever surface
+offers a way into it are absent together and lift together."*** I overrule the word **absent** for
+the entry surface only, and keep the panel's absence exactly as ruled. The reason is that the same
+key requires the collection count **present at join with value `0`**, and once
+`composition.groups[collection]` fuses the count into `Pressable_INDEX` those two requirements are
+about one instance: `firstSession` now contradicts itself, and only one half can hold. I keep the
+half that is a readout the player must see, and satisfy the other half's *intent* — no way in
+exists before the first Find — through `Active: false` and `Selectable: false` rather than through
+deletion. Nothing else in that sheet moves: the latch, the beat, the one-way lift, the ban on a
+lift animation and a lift sound, and `newSaveFields: 0` all hold, because both surfaces still
+share one latch and neither needs storage.
+
 ## Consequences for other work
 
-**Run-one withholding (`firstSession`, currently `gameplay/onboarding/02` and `/04`).** A revision
-request, not an edit: the `withheld` list needs a fourth entry for the index control, or
-`collectionPanel`'s scope must name both surfaces. Precise form in the table below. Nothing else
-about that key moves — the latch, the beat, the ban on a lift animation and a lift sound, and the
-zero new save fields all hold unchanged, because both surfaces share one latch.
+**Run-one withholding (`firstSession`, `gameplay/onboarding/02` and `/04`).** **My round-1 request
+to add a fourth `withheld` entry is withdrawn.** What replaces it is a wording correction, in the
+table below: the entry surface is withheld by *interactivity*, not by presence. No new field, no
+new save field, no change to the latch.
 
-**Persistent-surface composition (`composition`, ui-ux/hud).** Two requirements. (1) The top-left
-cluster must reserve the index control's extent from frame one, so the collection count does not
-move when the control lifts — this is `S12`'s rule applied to a fourth element, and
-`suppressionForbidden` bans `reflowOnLift`. (2) `input.gameDrawnPressables` stays 4: presence
-varies, the count does not.
+**Persistent-surface composition (`composition`, ui-ux/hud).** The fusion is adopted, not
+contested. Two things ride on it. `groups[collection].interactive` is `true` only from the first
+snapshot with a Find, which `hud/02.presence.byGroup[collection].interactiveFrom` already carries.
+And `input.gameDrawnPressables` stays 4 with the fused node counted once — a control that is also
+a readout is still one control.
 
-**Index-panel composition (`screens`).** A close control exists inside the panel and is that
-sheet's to draw and position. It carries **no player-facing string** — it is a glyph, so it
-cannot fail `vocabulary`'s 14-character ceiling and cannot be the imperative `onboarding/03`
-bans. Its rect may not intersect any of the four pressables' rects.
+**Index-panel composition (`screens`).** Its refusal of a close control is **ratified**, and its
+`geometry.mustNotIntersect: ["Pressable_INDEX"]` is promoted from a courtesy to a load-bearing
+invariant: with the close control dropped, that node is the only exit from the only openable
+surface, so a panel that covers it traps the player. Bar (a).
 
-**Object and instance representation (`architect/sheets/06-representation.md`).** `Pressable_INDEX`
-is created with `Visible = false` and lifted with the panel. `pressables` still creates four
-`TextButton`s; only one of them starts hidden.
+**Object and instance representation (`architect/sheets/06-representation.md`).** My round-1
+request for `Visible = false` is withdrawn. `Pressable_INDEX` is created **non-interactive**
+instead, and no module writes `Visible` on it.
 
-**Store UI (`offerSurface`).** Row 4 of the brief's screen table is that sheet's to strike. This
-sheet strikes row 3 (`areas`) and records row 2 (`upgrades`) as HUD. Between the two sheets all
-four rows are accounted for, which is what category gap G3 asks for.
-
-**Analytics — Funnels.** There is no navigation funnel to instrument beyond one edge pair. If a
-panel-open event is wanted it is `openIndex`, it is client-adjudicated and fires no remote today,
-and adding one is a change to that domain's key, not to this one.
+**Store UI (`offerSurface`).** Row 4 of the brief's screen table is that sheet's to strike; this
+sheet strikes row 3 (`areas`) and records row 2 (`upgrades`) as HUD, closing category gap G3.
 
 ### Revision requests issued
 
 | against | file | field | current | required | why |
 |---|---|---|---|---|---|
-| `firstSession` | `cid/gameplay/onboarding/04-run-one-withholds.md` | `withheld` | 3 entries; the index control is not one | add `indexControl`: `presentAtJoin: false`, `liftedBy: "beat:firstReveal"`, `latched: true`, `newSaveFields: 0`, same `latchSource` as `collectionPanel` | its own consequence column requires the panel *and the surface that offers a way into it* be absent together; today only the panel is |
-| `firstSession` | same | `withheld[collectionPanel].latchSource` | corrected 2026-08-01 to *at least one entry is true* | ratified, no change; carried in `navigation.nodes[index].presence.latchSource` so a second reader cannot re-derive it | two builders already read `next(found) ~= nil` and got a panel that lifts at join |
-| `representation` | `architect/sheets/06-representation.md` | `pressable` row, `Pressable_INDEX` | created from join | created with `Visible = false`; lifted when `navigation.nodes[index].presence` lifts | otherwise the drawn button contradicts `onboarding/04` and presses silently |
-| shipped build | `game/src/client/IndexScreen.luau:27-44, 608-619` | the `available` latch | `toggle()` returns silently before the first Find on a drawn button | the control is absent instead; `toggle()`'s no-op path stays only as a guard against a press arriving before `bind()` | the module names this reconciliation as its own invention with no owner; this sheet is the owner |
+| `firstSession` | `cid/gameplay/onboarding/04-run-one-withholds.md` | `withheld[collectionPanel]` prose | *"the panel and whatever surface offers a way into it are absent together"* | *"…are unusable together and become usable together"*; the entry surface is withheld by interactivity, the panel by presence | the entry surface is now `composition.groups[collection].node` and carries a readout required present at join; see `## Pushing back` |
+| `firstSession` | same | `withheld[collectionPanel].latchSource` | corrected 2026-08-01 to *at least one entry is true* | ratified; carried as `countFound(snapshot.found) > 0` in both `navigation` and `composition` | two builders already read `next(found) ~= nil` and got a panel that lifts at join |
+| `representation` | `architect/sheets/06-representation.md` | `pressable` row, `Pressable_INDEX` | created interactive from join | created with `Active`, `Selectable`, `AutoButtonColor` false; `Visible` never written | a drawn, pressable, silent control in minute one; `hud/02` bans the `Visible` write outright |
+| shipped build | `game/src/client/IndexScreen.luau:27-44` | the `available` latch | reconciles `input` and `firstSession` inside a client module, and says so itself | the latch stays; its source becomes `countFound(snapshot.found) > 0` and it drives `Pressable_INDEX.Active` / `.Selectable`, not a silent early return alone | the module names this reconciliation as its own invention with no owner; this sheet is the owner |
+
+**Withdrawn from round 1:** the request to add `firstSession.withheld.indexControl`, and the
+request that `representation` create `Pressable_INDEX` with `Visible = false`.
 
 ## Acceptance criteria
 
 1. `navigation.nodes` holds exactly 2 entries with ids `hud` and `index`; `navigation.edges`
    holds exactly 2 with ids `openIndex` and `closeIndex`; `navigation.notNodes` holds 17 entries
    and every one carries a non-empty `because`.
-2. On a save where every entry of the snapshot's `found` map is `false`, no `Instance` named
-   `Pressable_INDEX` is visible in the PlayerGui — it is either absent or has `Visible == false`.
+2. On a save where `countFound(snapshot.found) == 0`, the instance `Pressable_INDEX` exists with
+   `Active == false`, `Selectable == false` and `AutoButtonColor == false`, and `game/src/`
+   contains zero writes to `.Visible` on `Pressable_INDEX` or any of its descendants.
 3. `navigation.ordinalInvariant` is `true`, and no key or value anywhere in `navigation` contains
    an area ordinal or the substring `areas[`.
 4. This sheet contains zero ` ```coinage ` blocks, and no value in `navigation` is a string that
@@ -268,18 +288,18 @@ and adding one is a change to that domain's key, not to this one.
 ## Flagged to the developer
 
 The brief is silent on every edge in this graph (gap N1), so the entry-point ruling is
-`[cid: decided]`. The live alternative was the shipped behaviour: draw `Pressable_INDEX` from
-join and let it do nothing for the first thirty seconds of play. **Recommendation: the ruling as
-written.** A control that is drawn, pressable and silent is the one interaction in this game a
-player can get wrong, in a design whose whole premise is that nothing can be. The cost is one
-field in `firstSession` and one property in `representation`.
+`[cid: decided]`. Two live alternatives were considered and both are now closed by other sheets:
+absence before the first Find (deletes a required readout under the fusion) and a separate close
+control inside the panel (a fifth game-drawn pressable against `input`). **Recommendation: the
+ruling as written** — one control, present, inert, then live. Reversing it is one field in
+`entryControl.interactivityRule`.
 
 ## Not decided here
 
-The close control's appearance, position, glyph and touch size (`screens`, with `viewport` for
-the floor). The index control's label, cluster order and geometry (`composition`). **Which
-physical input on which device class triggers the `closeIndex` edge, and where focus goes** —
-sheet `03`, which closes that edge's trigger set. What may be open beside the index, what the body
-and the world do while it is open, and the z-order between the panel and the pressables — sheet
-`02`. Whether an error surface is built at all (Feedback UI and Screens, category gap G2). The
-offer path that replaces the deleted `shop` row (`offerSurface`).
+The fused node's label, value formats, cluster order and geometry (`composition`). The panel's
+extent, anchor and internal layout (`screens`). **Which physical input triggers the `closeIndex`
+edge on each device class, and where focus goes** — sheet `03`, which closes that edge's trigger
+set. What may be open beside the index, what the body and the world do while it is open, and the
+z-order between the panel and the pressables — sheet `02`. The error surface's copy and channel
+(`notices`, which took both halves of G2). The offer path that replaces the deleted `shop` row
+(`offerSurface`).

@@ -12,6 +12,8 @@ Ownership is **server-resolved only**, by `entitlements` calling `products.owner
 
 **Both claims can be true, and here is exactly how.** "Cached" and "eventually updated" are both properties of a cache with a refresh, and the pack's second source says only *"Currently Roblox will cache the results of `UserOwnsGamePassAsync`"* with rejoining as the *common workaround* — it never says the cache is immortal `[research: https://devforum.roblox.com/t/do-not-cache-results-of-userownsgamepassasync/3639404]`. The feature request my lead read asks for the cache to be invalidated *when `PromptGamePassPurchaseFinished` fires*, i.e. for an **immediate** update on the in-experience path; the documentation says that path already updates immediately. So the request is about latency, not permanence, and neither source supports "re-polling returns the join-time answer forever". **Documentation beats an unanswered feature request, and the ruling is: a re-poll works, on an unbounded window the platform calls several minutes.** `[cid: decided]`
 
+**The build is identical under either reading, which is why this is safe to rule.** `failureHandling.retry` is "by the next poll only", so the poll is already justified by the failed-join-read case alone — an owner whose join-time check errored plays at the base radius for the rest of the session unless something reads again. If the cache were immortal, the poll would still close that case and would cost the same 0.089 calls/s. Nothing in this sheet is contingent on which reading is right; only the *effective contract* changes.
+
 **The Store UI lead read the same page and reached the same conclusion, and I am ratifying it rather than re-deriving it** `[research: cid/ui-ux/store/_lead.md]`. Its sheet 02 asks for exactly this and explicitly routes the interval, the retry shape and the rate budget to ownership-resolution work. Those three values are what this sheet supplies.
 
 **The other half of my lead's finding stands.** `PromptGamePassPurchaseFinished` fires only for a prompt the experience raised `[research: https://create.roblox.com/docs/reference/engine/classes/MarketplaceService]`, `products.F13` forbids every `PromptGamePassPurchase` call in the build, and no in-experience event fires for a website purchase `[research: https://devforum.roblox.com/t/new-event-marketplaceservicewebsite-gamepasspurchaseplayer-gamepassid/1157069]`. So there is no **event** trigger. A **poll** is the only trigger, and it is sufficient.
@@ -56,6 +58,9 @@ I am overruling `cid/tech/networking/_lead.md`, which instructed sheet 04 to rec
       "clientChannelsCapableOfCarryingAProductIdWhy": "RequestState takes zero arguments and BuyUpgrade takes one upgrade id checked against GameConfig.Upgrades; Protocol.luau asserts the client surface is exactly those two at require time",
       "closedBy": ["economy.authority", "input.clientOriginatedRemotes", "products.F20"]
     },
+    "productCountToday": 1,
+    "nullGamePassIdCountToday": 1,
+    "nullGamePassIdLocation": "game/src/shared/GameConfig.luau:1253, products.items[0].gamePassId for span",
     "resolutionPoints": [
       { "when": "wiring.onJoin step 2", "before": "the publish point", "yields": true, "required": true },
       { "when": "every refreshIntervalSeconds thereafter, while the state is in the live collection", "yields": true, "required": true, "newInThisSheet": true }
@@ -66,6 +71,7 @@ I am overruling `cid/tech/networking/_lead.md`, which instructed sheet 04 to rec
       "eventTriggerAbsentBecause": "PromptGamePassPurchaseFinished fires only for a prompt the experience raised, and products.F13 forbids every PromptGamePassPurchase call in the build; no in-experience event fires for a website purchase",
       "pollWorks": true,
       "pollWorksBecause": "the ownership cache is eventually updated for an out-of-experience purchase in the same session, on a window the platform documents only as 'several minutes'",
+      "pollJustifiedIndependentlyBy": "the failed-join-read case — an owner whose join-time check errored otherwise plays at the base radius for the whole session; the poll closes that case whichever reading of the cache is right",
       "propagationWindowSeconds": null,
       "propagationWindowStated": "several minutes, with no bound, distribution or retry recommendation published",
       "propagationWindowStatus": "[playtest unknown] — settled only by timing a real purchase against a live pass",
@@ -136,7 +142,7 @@ I am overruling `cid/tech/networking/_lead.md`, which instructed sheet 04 to rec
 - **Whoever owns `entitlements` and `server-main` (`architect`, `modules` and `wiring`)** inherits RR-N6 and RR-N7: a twelfth phase and a one-line change to the failure rule. Neither adds a `PlayerState` field and neither fires a remote.
 - **Snapshot work (sheet `01`, this domain)** is confirmed unaffected: an ownership flip produces zero bytes on `StateChanged`, so nothing in the outbound budget moves.
 - **Prediction work (sheet `03`, this domain)** inherits the one visible artefact: after a flip the client's predict radius is stale until the first patch clears outside it, so one or two clears land late and silently. No surface may explain it.
-- **Build & Deploy work (`release`)** inherits the ordering consequence it was already told to wait for: the three null `gamePassId`s may now be created, because the re-resolution question is answered rather than open.
+- **Build & Deploy work (`release`)** inherits the ordering consequence it was already told to wait for: the **one** null `gamePassId` in the build — `GameConfig.luau:1253`, `products.items[0]` for `span` — may now be created, because the re-resolution question is answered rather than open.
 - **Security work (`integrity`)** gains nothing to validate here and should not invent it: there is no inbound ownership message to check, because there is no field one could ride on.
 
 ## Acceptance criteria
@@ -148,4 +154,4 @@ I am overruling `cid/tech/networking/_lead.md`, which instructed sheet 04 to rec
 
 ## Not decided here
 
-Which products exist, their prices, factors and the `F13`/`F19`/`F20` prohibitions themselves (`gameplay/monetization/01`, which holds `products`). Whether `F13` is relaxed (that sheet, then the developer). What a player is shown about a purchase, which is nothing (`ui-ux/store`, `offerSurface`). How a factor composes with set bonuses and the ladder, and where it clamps (`gameplay/systems/06`, `modifiers`). The tool head's geometry at any width (`gameplay/mechanics/04`, `tool`, and Art & Visuals). Creating the game passes and sequencing the operational step (`tech/deploy`, `release`). Whether an incoming message is valid (`tech/security`, `integrity`). The snapshot's bytes and cadence (sheet `01`), the ingress ceilings (sheet `02`), and the predictor's radius derivation (sheet `03`), all this domain.
+Which products exist, their prices, factors and the `F13`/`F19`/`F20` prohibitions themselves (`gameplay/monetization/01`, which holds `products`). Whether `F13` is relaxed (that sheet, then the developer). What a player is shown about a purchase, which is nothing (`ui-ux/store`, `offerSurface`). How a factor composes with set bonuses and the ladder, and where it clamps (`gameplay/systems/06`, `modifiers`). The tool head's geometry at any width (`gameplay/mechanics/04`, `tool`, and Art & Visuals). Creating the game pass and sequencing the operational step (`tech/deploy`, `release`). Whether an incoming message is valid (`tech/security`, `integrity`). The snapshot's bytes and cadence (sheet `01`), the ingress ceilings (sheet `02`), and the predictor's radius derivation (sheet `03`), all this domain.

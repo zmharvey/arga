@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 195 unique source(s); 108 were
+Extracted from `cid`. 195 unique source(s); 109 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -119,7 +119,7 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 4: `tech/persistence/01-the-save-write`, `tech/persistence/_lead`, `ui-ux/feedback/03-system-notices`, `ui-ux/feedback/_lead`*
 
 - **Bare `UserId`, no prefix, no scope.** The store name already carries the namespace and the version, the worst-case key is 19 of the 50 permitted characters, and a prefix added later is itself a migration under sheet 03's `B6`. ``
-- **The retry schedule is set by the join deadline, not by taste.** `firstSession` requires the first reveal within 10 s of join, so `load` gets 3 attempts and 3 s of backoff and nothing more. `leave` gets the most (4 attempts) because no next pass exists. `shutdown` gets a 20-second burst deadline against `BindToClose`'s 30 seconds, leaving 10 s of margin for the other bound callbacks ``. Roblox's own instruction is `pcall` plus "exponential backoff" ``.
+- **The retry schedule is set by the join deadline, not by taste.** `firstSession` requires the first reveal within 10 s of join, so `load` gets 3 attempts and 3 s of backoff and nothing more. `leave` gets the most (4 attempts) because no next pass exists. `shutdown` gets a 20-second burst deadline against `BindToClose`'s "30 seconds total, shared across all bound callbacks" ``, leaving 10 s of margin. Roblox's own instruction is `pcall` plus "exponential backoff" ``.
 - Roblox documents `pcall` wrapping and exponential backoff for data-store errors and **states no recovery behaviour at all** — no guidance on kicking, messaging or session locking ``. So this ruling is unspecified by the platform rather than a deviation from it. Silence was the cheap answer and it is wrong: the harm is real, shipped and reachable, and *"there is no failure state"* `[brief: soft]` ← `02-GAMEPLAY.md` is a statement about the **game's** rules, not a licence to hide an infrastructure failure from an eight-year-old.
 - `` — Roblox documents wrapping data store calls in `pcall()` and retrying internal errors *"with exponential backoff"*, and **documents no recovery behaviour at all** — no guidance on kicking, messaging or session locking. So 03's ruling is genuinely unspecified by the platform, not a deviation from it.
 
@@ -201,9 +201,9 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 4: `tech/security/01-position-authority`, `tech/security/02-channel-admission`, `tech/security/03-violation-response-and-logging`, `tech/security/_lead`*
 
 - **The exploit is real and the brief never named it.** The server pays for every patch inside a radius of `root.Position`, and a client with network ownership of its character can "teleport to any position" and "manipulate their movement and state, such as flying or changing their speed" ``. Position is a client-owned input and it is the sole input to both protected surfaces: `state.found` and `state.cleared` are written only inside the same loop that credits currency ``.
-- **The constant is the wrong clock and the sheet must say so.** `Clearing.luau:485` drives the loop with `task.wait(Config.ClearTickRate)`, which resumes on the next 60 Hz Heartbeat and realises `ceil(0.12 × 60) / 60 = 0.1333 s`, not 0.12. It grows further under load. A validator using `runtime.clearTickRate` as its elapsed time under-budgets every step and false-positives on every server hitch, which is exactly the failure Roblox warns about — "basic heuristics can flag innocent players with unstable connections", and position updates require "averaging over time" ``. So the step reads…
+- **The constant is the wrong clock and the sheet must say so.** `Clearing.luau:485` drives the loop with `task.wait(Config.ClearTickRate)`, which resumes on the next 60 Hz Heartbeat and realises `ceil(0.12 × 60) / 60 = 0.1333 s`, not 0.12. It grows further under load. A validator using `runtime.clearTickRate` as its elapsed time under-budgets every step and false-positives on every server hitch, which is exactly the failure Roblox warns about — "basic heuristics can flag innocent players with unstable connections", and position updates require "averaging over time" ``. The same page's…
 - **The character-CFrame channel has no bound at the platform and is not given one here.** A client with network ownership can "teleport to any position" ``; the admission rule is not that the position be refused but that **no payout may read it**, which sheet `01` enforces by measuring elsewhere.
-- **The population makes false positives likely and expensive.** Roblox warns that "basic heuristics can flag innocent players with unstable connections" and that position updates require "averaging over time" ``; the audience is *"8–14, mobile-heavy, short sessions"* `[brief: binding]` ← `[you chose: R1 Q4]`. A bucket flag on a phone on a bad connection is the expected case, not the exception.
+- **The population makes false positives likely and expensive.** Roblox warns that "basic heuristics can flag innocent players with unstable connections" and that position updates require "averaging over time" ``; the audience is *"8–14, mobile-heavy, short sessions"* `[brief: binding]` ← `[you chose: R1 Q4]`. A bucket flag on a phone on a bad connection is the expected case, not the exception. And an appeals surface is unfunded by construction: *"Success is shipped artifacts, not players"* `[brief: binding]` ← `[you chose: R1 Q3]`.
 - The conclusion is right and the sufficiency is wrong, and the shipped game is the proof. Clearing and currency awards **already are** server-validated in the strongest sense the sentence can mean: `protocol.REMOTES` carries no clearing channel and no currency channel, `Clearing.luau` reads no client message and uses no `Touched`, and `Progression.award` is reachable from one call site. There is nothing for a client to claim. The game is still totally exploitable, because "server-validated" was read as "server-*computed*", and the server computes from an input the client owns:…
 
 ## https://devforum.roblox.com/t/analytics-view-retention-by-acquisition-source-and-select-your-benchmark-set/4010157
@@ -299,10 +299,10 @@ did not fetch" becomes checkable instead of trusted.
 
 ## https://create.roblox.com/docs/reference/engine/classes/DataModel#BindToClose
 
-*Cited by 3: `tech/deploy/01-the-release-contract`, `tech/persistence/01-the-save-write`, `tech/persistence/_lead`*
+*Cited by 3: `tech/_verified`, `tech/deploy/01-the-release-contract`, `tech/persistence/_lead`*
 
+- ### `cid/tech/persistence/01-the-save-write.md` — a `` tag points at a page that does not carry the claim **Violates:** every `` corresponds to a real fetched source carrying the fact. **Fix:** line 37 cites `` for the 30-second budget. `persistence/_lead` records under "Fetched but incomplete" that this fetch *"returned the Studio note but not the timeout"* and that the sentence came from a search snapshot. `tech/deploy/_lead` fetched a page that does carry it: `https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud-services/data-stores/player-data-purchasing.md`. Re-cite to…
 - *Shutdown gets a second chance, not a redesign.** `BindToClose` callbacks share 30 seconds total `` — 16 parallel saves in one budget. `ServerRestartScheduled` fires before any of it, so saving there makes `BindToClose` a retry. Additive; `wiring.onShutdown` is untouched.
-- **The retry schedule is set by the join deadline, not by taste.** `firstSession` requires the first reveal within 10 s of join, so `load` gets 3 attempts and 3 s of backoff and nothing more. `leave` gets the most (4 attempts) because no next pass exists. `shutdown` gets a 20-second burst deadline against `BindToClose`'s 30 seconds, leaving 10 s of margin for the other bound callbacks ``. Roblox's own instruction is `pcall` plus "exponential backoff" ``.
 
 ## https://create.roblox.com/docs/reference/engine/classes/GuiObject
 
@@ -324,7 +324,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 3: `tech/networking/01-snapshot-wire-form`, `tech/performance/02-server-frame-cost`, `tech/performance/_lead`*
 
-- *The rate is Performance's, the cost is mine.** The server heartbeat is capped at 60 Hz `` and `task.wait` resumes on the next Heartbeat ``, so `Clearing.luau`'s `task.wait(Config.ClearTickRate)` realises `ceil(d × 60) / 60` ``. I cost the realised periods — 0.1333 s and 0.05 s — and state no tick preference. Balance's requested 0.04 is cited from an unreleased stage (`cid/gameplay/_verified-wave4.md` line 3) and is named by its realised value, never by its requested one.
+- *The rate is Performance's, the cost is mine.** The server heartbeat is capped at 60 Hz `` and `task.wait` resumes on the next Heartbeat ``, so `Clearing.luau`'s `task.wait(Config.ClearTickRate)` realises `ceil(d × 60) / 60` ``. I cost the realised periods — 0.1333 s and 0.05 s — and state no tick preference. Balance's requested 0.04 is cited from an unreleased stage and is named by its realised value, never by its requested one.
 - *The quantisation rule first, because every figure in circulation ignores it.** Server heartbeat is capped at 60 FPS ``, and `task.wait` *"yields the current thread until the given duration (in seconds) elapses and then resumes the thread on the next Heartbeat step"* ``. `Clearing.luau:485` drives the loop with `task.wait(Config.ClearTickRate)`, so the realised period is **`ceil(d × 60) / 60`** and the only reachable periods are integer multiples of 16.67 ms. **0.12 → 0.1333 s. 0.04 → 0.05 s. Nothing between 0.0334 and 0.05 is reachable at all**, because 2 frames is 0.0333 and 3 frames is…
 
 ## https://create.roblox.com/docs/workspace/collisions
@@ -370,7 +370,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 3: `tech/networking/01-snapshot-wire-form`, `tech/performance/02-server-frame-cost`, `tech/performance/_lead`*
 
-- *The rate is Performance's, the cost is mine.** The server heartbeat is capped at 60 Hz `` and `task.wait` resumes on the next Heartbeat ``, so `Clearing.luau`'s `task.wait(Config.ClearTickRate)` realises `ceil(d × 60) / 60` ``. I cost the realised periods — 0.1333 s and 0.05 s — and state no tick preference. Balance's requested 0.04 is cited from an unreleased stage (`cid/gameplay/_verified-wave4.md` line 3) and is named by its realised value, never by its requested one.
+- *The rate is Performance's, the cost is mine.** The server heartbeat is capped at 60 Hz `` and `task.wait` resumes on the next Heartbeat ``, so `Clearing.luau`'s `task.wait(Config.ClearTickRate)` realises `ceil(d × 60) / 60` ``. I cost the realised periods — 0.1333 s and 0.05 s — and state no tick preference. Balance's requested 0.04 is cited from an unreleased stage and is named by its realised value, never by its requested one.
 - *The quantisation rule first, because every figure in circulation ignores it.** Server heartbeat is capped at 60 FPS ``, and `task.wait` *"yields the current thread until the given duration (in seconds) elapses and then resumes the thread on the next Heartbeat step"* ``. `Clearing.luau:485` drives the loop with `task.wait(Config.ClearTickRate)`, so the realised period is **`ceil(d × 60) / 60`** and the only reachable periods are integer multiples of 16.67 ms. **0.12 → 0.1333 s. 0.04 → 0.05 s. Nothing between 0.0334 and 0.05 is reachable at all**, because 2 frames is 0.0333 and 3 frames is…
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/analytics/analytics-dashboard.md
@@ -698,6 +698,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Orientation was unstated anywhere in the brief and changes the answer completely.** The dynamic thumbstick captures **left 40% × bottom two-thirds** in landscape and **full width × bottom 40%** in portrait ``, and the legacy `Thumbstick`, `DPad` and `Thumbpad` modes are gone, so that is the region that actually exists ``. Portrait swallows the whole bottom band and both bottom clusters with it. I rule landscape `[cid: decided]`: it is what `ui-forge` calibrates against (`cli.mjs:42-46`, phone 896×414 landscape) and the orientation in which the right half of the screen is free. Portrait…
 - Dynamic thumbstick capture frame — landscape `Size (0.4, 0, 2/3, 0)` at `Position (0, 0, 1/3, 0)`; portrait `Size (1, 0, 0.4, 0)` at `Position (0, 0, 0.6, 0)`. The frame layout does not vary with screen size; only the drawn thumbstick art does. ``
+
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud-services/data-stores/player-data-purchasing.md
+
+*Cited by 2: `tech/deploy/_lead`, `tech/persistence/01-the-save-write`*
+
+- **The retry schedule is set by the join deadline, not by taste.** `firstSession` requires the first reveal within 10 s of join, so `load` gets 3 attempts and 3 s of backoff and nothing more. `leave` gets the most (4 attempts) because no next pass exists. `shutdown` gets a 20-second burst deadline against `BindToClose`'s "30 seconds total, shared across all bound callbacks" ``, leaving 10 s of margin. Roblox's own instruction is `pcall` plus "exponential backoff" ``.
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud/guides/usage-place-publishing.md
 
@@ -1156,11 +1162,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/identity/_lead`*
 
 - **Names display above heads by default and default to the account Display Name.** *"Roblox displays a name and/or health bar above that part"*; *"By default, a humanoid's display name matches the user's Roblox account Display Name which is unique and separate from their account Username."* Suppressible entirely with `DisplayDistanceType = None`. ``
-
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud-services/data-stores/player-data-purchasing.md
-
-*Cited by 1: `tech/deploy/_lead`*
-
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/performance-optimization/design.md`
 

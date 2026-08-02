@@ -18,7 +18,9 @@ A snapshot crosses `StateChanged` as **one shallow Luau table, the single argume
 
 **Every byte total here is an upper bound and none of them is a clean fetch.** The per-type table (blank call 9 B, string len+2, number 9, boolean 2, table 2) came back HTTP 403 on two direct attempts and through archive.org; the figures are a search index's rendering of that page. `[research owed: https://ffrostfall.net/stuff/list/remoteevents/ from an unblocked client]` Roblox also compresses remote payloads in transit, and the `found` map is 24 constant strings and 24 mostly-identical booleans — close to the best case for a dictionary coder. So the totals are `[playtest unknown]`; the instrument that settles them is a `Stats.DataSendKbps` differential taken across a counted number of pushes in Studio `[research owed: https://create.roblox.com/docs/reference/engine/classes/Stats — the page lists the property and states neither what it measures nor on which side]`.
 
-**The rate is Performance's, the cost is mine.** The server heartbeat is capped at 60 Hz `[research: https://github.com/Roblox/creator-docs/blob/main/content/en-us/performance-optimization/identify.md]` and `task.wait` resumes on the next Heartbeat `[research: https://create.roblox.com/docs/scripting/scheduler]`, so `Clearing.luau`'s `task.wait(Config.ClearTickRate)` realises `ceil(d × 60) / 60` `[research: game/src/server/Clearing.luau]`. I cost the realised periods — 0.1333 s and 0.05 s — and state no tick preference. Balance's requested 0.04 is cited from an unreleased stage (`cid/gameplay/_verified-wave4.md` line 3) and is named by its realised value, never by its requested one.
+**The rate is Performance's, the cost is mine.** The server heartbeat is capped at 60 Hz `[research: https://github.com/Roblox/creator-docs/blob/main/content/en-us/performance-optimization/identify.md]` and `task.wait` resumes on the next Heartbeat `[research: https://create.roblox.com/docs/scripting/scheduler]`, so `Clearing.luau`'s `task.wait(Config.ClearTickRate)` realises `ceil(d × 60) / 60` `[research: game/src/server/Clearing.luau]`. I cost the realised periods — 0.1333 s and 0.05 s — and state no tick preference. Balance's requested 0.04 is cited from an unreleased stage and is named by its realised value, never by its requested one.
+
+**These byte figures do not move when the bay does.** A snapshot's size is a function of the collection (24 Finds), the ladder (3 axes) and the area label — never of `patchCount`. Wave 4's revisions to the post-terminal bay change the *scan* cost, which is `serverCost`'s, and change nothing here. `outboundBudget` is the owning value for snapshot bandwidth and other sheets should cite the field rather than copy the number, because the only thing that would move it is a change to `snapshotShape()`.
 
 **The producer has no owner and the two copies have already drifted.** `init.server.luau` and `Clearing.luau` each hold a private `buildSnapshot`; only the latter warns on a field that is neither a state field nor a derivation it knows `[research: game/src/server/init.server.luau]` `[research: game/src/server/Clearing.luau]`. `interfaces` exposes no snapshot builder, so nothing is violated today — but `areaPatchCount` and `areaLabel` are derived twice and must agree, or the progress readout means different things depending on which originator pushed it. `protocol` is the right home: it already owns `snapshotShape()` and states both derived fields' definitions in its own comment, and `Layout` requires only `GameConfig` and `Types`, so `protocol → layout` is acyclic `[research: game/src/shared/Layout.luau]` `[cid: decided]`.
 
@@ -72,6 +74,8 @@ A snapshot crosses `StateChanged` as **one shallow Luau table, the single argume
       "typicalEqualsWorstCase": true,
       "typicalVarianceBytes": [462, 466],
       "typicalVarianceSource": "areaLabel length only; every other component is constant across a session",
+      "independentOfPatchCount": true,
+      "independentOfPatchCountWhy": "a snapshot's size is a function of the collection size, the ladder width and the area label; patchCount reaches the wire only as one number, areaPatchCount, whose 9 bytes do not change with its value",
       "foundMapShareOfWorstCase": 0.485,
       "foundMapChangesAfterFill": "values only, never keys; 24 keys re-cross on every push",
       "status": "[playtest unknown]",
@@ -96,6 +100,8 @@ A snapshot crosses `StateChanged` as **one shallow Luau table, the single argume
       "pushOnOwnershipChangeReason": "owned never crosses the wire, so an ownership flip changes no snapshot byte; see 04-ownership-authority"
     },
     "outboundBudget": {
+      "owningValueFor": "snapshot bandwidth per player and per server; other sheets cite replication.outboundBudget rather than copying a figure",
+      "supersedes": "any 62 kB/s figure in circulation, which used the requested 0.12 rather than the realised 0.1333",
       "computedAt": { "maxPlayers": 16, "source": "architect runtime.maxPlayers" },
       "cadences": [
         { "requestedTickSeconds": 0.12, "realisedTickSeconds": 0.1333, "ceilingSendsPerSecondPerPlayer": 7.5,  "ceilingBytesPerSecondPerPlayer": 3480,  "ceilingBytesPerSecondAt16": 55680 },
@@ -104,6 +110,8 @@ A snapshot crosses `StateChanged` as **one shallow Luau table, the single argume
       ],
       "realisedPeriodRule": "ceil(requested * 60) / 60; nothing between 0.0334 and 0.05 is reachable",
       "realisedPeriodOwnedBy": "tech/performance serverCost; this key costs both and prefers neither",
+      "movesWithPatchCount": false,
+      "movesWithPatchCountNote": "the scan cost does move with the bay and is serverCost's; nothing in this block does",
       "steadyStateSendsPerSecondPerPlayerAtBaseStats": 0.85,
       "steadyStateDerivation": "one depth-1 lap is 140 patches over ~165 s, so a moving base-stat player produces a changed tick roughly 0.85 times a second and the 7.5 ceiling is a 9x overestimate",
       "steadyStateApproachesCeilingWhen": "the swept area per tick exceeds one patch spacing; at max ladder (radius 36, speed 30.7) about 2.9 patches clear per 0.1333 s tick, so nearly every tick is a changed tick",
@@ -168,7 +176,7 @@ A snapshot crosses `StateChanged` as **one shallow Luau table, the single argume
 
 ## Consequences for other work
 
-- **Server-frame-cost work (`serverCost`, tech/performance sheet 02)** gets the network half of the tick decision as a cost and not an opinion: 55.7 kB/s at the realised 0.1333 s, 148.5 kB/s at the realised 0.05, 222.7 kB/s at the only reachable value under 0.04. Nothing here prefers a tick.
+- **Server-frame-cost work (`serverCost`, tech/performance sheet 02)** gets the network half of the tick decision as a cost and not an opinion: 55,680 B/s at the realised 0.1333 s, 148,480 at the realised 0.05, 222,720 at the only reachable value under 0.04. Cite `replication.outboundBudget.cadences[].ceilingBytesPerSecondAt16`; do not copy it, and do not carry the older 62 kB/s, which used the requested period. Nothing here prefers a tick, and nothing here moves when the bay's patch count moves.
 - **Whoever owns `clearing`'s loop shape (`architect`, `modules`)** inherits the send rule verbatim: one `FireClient` per player per changed tick, zero on an unchanged pass, and **no deferral**. A bucketed or spread tick that fires a player's snapshot on a different frame from the pass that changed it breaks the live-table rule and must copy instead.
 - **Whoever executes RR-N1** owns a one-function move, not a redesign: both copies already produce the identical eight fields; only the warn differs, and the exported one keeps it.
 - **Persistence work** is untouched and should stay so: nothing here adds a persisted field, and `found`'s wire cost is a consequence of the load-time fill, not of the save format.

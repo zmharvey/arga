@@ -8,7 +8,7 @@
 generation, 2020) on iOS, an Android 8.0+ / OpenGL ES 3.0 / 3 GB device on Android, 60 Hz
 display** `[cid: decided]`. Every ceiling in `budgets` derives from that one field, computed
 against the **merged** `depths.areas[].patchCount` maximum of 640 at `runtime.maxPlayers` **16**,
-with wave 4's requested 1,200 / 1,880 published beside them and marked unreleased.
+with wave 4's requested counts read **by field** and marked unreleased.
 **`StreamingEnabled` is true**, min radius **160**, target radius **512**,
 `StreamingIntegrityMode` **`PauseOutsideLoadedArea`**, `ModelStreamingMode` **`Default`**.
 
@@ -52,12 +52,15 @@ written as sourced fact would be a claim no page supports.** The memory-category
 form a reading can be checked against, but their page is absent from the research pack.
 `[research owed: create.roblox.com/docs/studio/optimization/memory-usage — the PlaceMemory category tree]`
 
-**Which patch count.** 140 is `area.patchCount`, area 1 only, the smallest thing in the game
-and not a ceiling. 640 is `depths.areas[7..8]`, merged, the largest. Wave 4 requests 1,200 and
-1,880 and **is FAIL** (`cid/gameplay/_verified-wave4.md` line 3), so 640 is the live column and
-the requested figures ride with `released: false`. Both are computed at 16, never the 20 wave 4
-costed against. **At the requested counts three ceilings break at once**, and the fix is
-`depths.areas[].patchCount`: sheet `03` forbids every optimisation that would close a 2.5×
+**Which patch count, and why every wave-4 figure here is a field reference rather than a
+number.** 140 is `area.patchCount`, area 1 only, the smallest thing in the game and not a
+ceiling. 640 is `depths.areas[7..8]`, merged, the largest. Wave 4 **is FAIL**
+(`cid/gameplay/_verified-wave4.md` line 3) and **its post-terminal bay has moved three times —
+47 chunks, then 44, then 42 after round 3 cut the Vault set factor 1.20 → 1.15.** So 640 is the
+live column, the requested column is `depths.postTerminalArea.patchCount` (**1,680 at the
+current revision**), and I read it by field. Both are computed at 16, never the 20 wave 4
+costed against. **At the requested count three ceilings still break at once**, and the fix is
+`depths.areas[].patchCount`: sheet `03` forbids every optimisation that would close a 2.2×
 instance gap.
 
 **The lane's instance shape is already fixed and I only count it.** `representation` makes a
@@ -65,7 +68,7 @@ lane one slab Part resized inward per bay, four boundary parts, one spawn `Attac
 anchored non-colliding Part per patch — `WedgePart` for Heartvine
 `[research: architect/sheets/06-representation.md]`. A lane is `patchCount + 6` instances and
 `patchCount + 5` parts, and nothing below the live bay holds a patch (`plots.liveGeometry`).
-Merged: **646 per lane, 10,336 at 16 players.** Wave 4's bay: **1,886 and 30,176.**
+Merged: **646 per lane, 10,336 at 16 players.** At the requested bay: **1,686 and 26,976.**
 
 **Streaming is the one lever left and it is unowned today.** `StreamingEnabled` appears in
 neither contract and nowhere in `game/src`; instance streaming *"improves join times, reduces
@@ -87,7 +90,12 @@ the only Models are characters and the held tool.
 budget behind it.** `serverWorldInstanceCeiling` is 12,000: 16 × 646 = 10,336 (86%), 20 × 646 =
 12,920 (108%). **The assertion is true against that ceiling and it is not a cliff** — each
 player adds exactly `patchCount + 6`. `runtime.maxPlayers` 16 is ratified against it, not
-re-decided.
+re-decided. **Its test range is the open interval (10,336, 12,920), not an arbitrary band**:
+at or below 10,336 the merged design fails its own ceiling, and at or above 12,920 the second
+half of acceptance criterion 2 inverts and 20 players becomes legal. My first draft's
+`[8000, 20000]` contained values on both sides of that interval, which is a defect in the range
+rather than latitude. `clientStreamedInstanceCeiling` carries the same defect and the same fix:
+its floor is the 5,814-instance worst case, not a round number below it.
 
 **One saving at zero design cost.** `Plots.luau` sets `CanCollide` and `CastShadow` false on a
 patch and sets neither `CanTouch` nor `CanQuery`. Nothing raycasts, region-queries or
@@ -115,8 +123,8 @@ false.
       { "id": "desktopTypical", "shareOfAudience": 0.25, "shareProvenance": "[brief: soft]", "targetFps": 60, "floorFps": 45, "maxFractionOfSessionBelowFloor": 0.01, "clientPlaceMemoryMB": 900, "loadToFirstInputSeconds": { "target": 3.0, "ceiling": 4.0 } },
       { "id": "console",        "shareOfAudience": 0.05, "shareProvenance": "[brief: soft]", "targetFps": 60, "floorFps": 45, "maxFractionOfSessionBelowFloor": 0.01, "clientPlaceMemoryMB": 900, "loadToFirstInputSeconds": { "target": 3.0, "ceiling": 4.0 }, "note": "inherits the desktop budget; no console-specific ceiling is set." }
     ],
-    "everyTierFigureIs": "[playtest unknown]. Test ranges: mobileFloor targetFps 24-40, floorFps 20-30, clientPlaceMemoryMB 250-700; desktop clientPlaceMemoryMB 600-1400; loadToFirstInput 3.0-10.0. Instrument: Developer Console on the floor device.",
-    "loadTargetDerivation": "firstSession.beats[firstReveal].bySecond is 10.0 JOIN-relative, and onboarding/02 puts the reveal within 3 s of FIRST INPUT. So load-to-first-input must finish by 7.0 s or the 10 s promise cannot be kept by any layout. Clock origin: PlayerAdded to a controllable character. NOT app launch, which is the platform's and nobody's here.",
+    "everyTierFigureIs": "[playtest unknown]. Test ranges: mobileFloor targetFps 24-40, floorFps 20-30, clientPlaceMemoryMB 250-700; desktop clientPlaceMemoryMB 600-1400; loadToFirstInput target 3.0-6.0 with the ceiling fixed at 7.0 by loadTargetDerivation. Instrument: Developer Console on the floor device.",
+    "loadTargetDerivation": "firstSession.beats[firstReveal].bySecond is 10.0 JOIN-relative, and onboarding/02 puts the reveal within 3 s of FIRST INPUT. So load-to-first-input must finish by 7.0 s or the 10 s promise cannot be kept by any layout. The ceiling is derived, not chosen, and is not inside any test range. Clock origin: PlayerAdded to a controllable character. NOT app launch, which is the platform's and nobody's here.",
     "server": {
       "heartbeatStepsPerSecondCap": 60,
       "heartbeatFloor": 55,
@@ -135,15 +143,18 @@ false.
       "playersSource": "runtime.maxPlayers. NOT the 20 wave 4 costed against.",
       "requestedButUnreleased": {
         "released": false,
-        "status": "cid/gameplay/_verified-wave4.md line 3: Stage 4 does not release. Sixteen defects, nine inside revision requests not yet executed.",
-        "areaEightPatchCount": 1200,
-        "postTerminalBayPatchCount": 1880,
-        "breaches": [
-          "serverWorldInstanceCeiling: 16 x 1886 = 30176 against 12000 — 251%",
-          "clientStreamedInstanceCeiling: 9 lanes x 1886 = 16974 against 6000 — 283%",
-          "triangles at the 100/patch budget: 1697400 against 1000000 — 170%"
+        "status": "cid/gameplay/_verified-wave4.md line 3: Stage 4 does not release.",
+        "readByField": "depths.postTerminalArea.patchCount and depths.areas[7].patchCount. DO NOT COPY EITHER NUMBER INTO ANOTHER KEY.",
+        "whyByField": "the post-terminal bay has moved three times — 47 chunks, then 44, then 42 after wave 4 round 3 cut the Vault set factor 1.20 to 1.15. Every figure below is evaluated at the current revision and is re-derivable from breachFormula rather than restated.",
+        "postTerminalBayPatchCountAtThisRevision": 1680,
+        "breachesAtThisRevision": [
+          "serverWorldInstanceCeiling: 16 x (1680 + 6) = 26976 against 12000 — 225%",
+          "clientStreamedInstanceCeiling: 9 lanes x 1686 = 15174 against 6000 — 253%",
+          "triangles at the 100/patch budget: 15174 x 100 = 1517400 against 1000000 — 152%"
         ],
-        "whoFixesIt": "depths.areas[].patchCount, not this domain. Sheet 03 forbids every optimisation that would close a 2.5x instance gap."
+        "breachFormula": "serverInstances = 16 * (depths.postTerminalArea.patchCount + 6); clientStreamed = 9 * (patchCount + 6); triangles = clientStreamed * renderCeilings.trianglesPerPatchBudget",
+        "whoFixesIt": "depths.areas[].patchCount, not this domain. Sheet 03 forbids every optimisation that would close a 2.2x instance gap.",
+        "stillBreachingAfterThreeReductions": "47 to 44 to 42 chunks has moved the breach from 251% to 225% of serverWorldInstanceCeiling. Chunk-count trimming is not converging on a fix."
       }
     },
     "instanceCeilings": {
@@ -158,7 +169,11 @@ false.
       "clientStreamedInstancesWorstCase": 5814,
       "worstCaseDerivation": "9 lanes inside a 512-stud target radius at plots.pitchStuds 122, every one at the deepest merged bay, x 646.",
       "marginalCostPerPlayer": "patchCount + 6 server instances, and up to patchCount added to a neighbour's streaming sphere. This is the honest restatement of social.maxPlayers.aboveMaxBreaks.",
-      "status": "[playtest unknown]. serverWorldInstanceCeiling test range 8000-20000; clientStreamedInstanceCeiling 3000-10000. Instrument: Developer Console > Memory > PlaceMemory.Instances, floor device."
+      "status": "[playtest unknown]. Instrument: Developer Console > Memory > PlaceMemory.Instances, floor device.",
+      "serverWorldInstanceCeilingTestRange": [10500, 12800],
+      "serverWorldInstanceCeilingRangeIsBounded": "the legal interval is OPEN (10336, 12920), fixed by acceptance criterion 2 and not by taste. At or below 10336 the merged design fails its own ceiling; at or above 12920 the criterion's second half inverts and 20 players becomes legal, contradicting social.maxPlayers.aboveMaxBreaks and runtime.maxPlayers 16. A test range wider than this interval is a defect in the range, not latitude.",
+      "clientStreamedInstanceCeilingTestRange": [5900, 10000],
+      "clientStreamedInstanceCeilingRangeIsBounded": "the floor is clientStreamedInstancesWorstCase 5814. Any value below it fails the merged design at nine loaded lanes."
     },
     "renderCeilings": {
       "drawCalls": 1000,
@@ -195,7 +210,7 @@ false.
       "Gui": 25,
       "headroomForUntracked": 165,
       "total": 420,
-      "status": "[playtest unknown]. Every row test range +/- 60%. Instrument: Developer Console > Memory, floor device.",
+      "status": "[playtest unknown]. Every row test range +/- 60%, subject to the two invariants that the seven rows plus headroomForUntracked sum to total, and total equals tiers[mobileFloor].clientPlaceMemoryMB. Instrument: Developer Console > Memory, floor device.",
       "sourceNote": "[research owed:] the category tree is named from my lead's fetch record; its reference page is absent from cid/_research/pack.md."
     },
     "streaming": {
@@ -209,7 +224,7 @@ false.
       "targetRadiusReasoning": "1024 reaches all 16 lanes of a 1952-stud row at plots.pitchStuds 122, so a client loads sixteen live bays. 512 reaches four lanes either side (488 studs) and still spans a whole merged bay longitudinally (480 studs).",
       "modelStreamingModeReasoning": "world geometry contains no Model. A lane is a slab Part with its patches, boundary and spawn Attachment parented to it. The only Models are characters and the held tool.",
       "setBy": "place configuration — Workspace streaming properties, set in Studio before publish. See revisionRequests[1].",
-      "status": "both radii are [playtest unknown]. StreamingMinRadius test range 128-320; StreamingTargetRadius 256-1024."
+      "status": "both radii are [playtest unknown]. StreamingMinRadius test range 128-320, floor fixed by minRadiusFloor. StreamingTargetRadius test range 488-704: below 488 a neighbouring lane at four slots' separation stops loading, and above 704 nine lanes becomes eleven and clientStreamedInstancesWorstCase exceeds its ceiling."
     },
     "crashTolerance": {
       "outOfMemoryTerminationsPerTwentyMinuteSession": 0,
@@ -224,6 +239,14 @@ false.
       "alreadyFalse": ["CanCollide", "CastShadow"],
       "safeBecause": "nothing raycasts, region-queries or Touched-handles a patch. Clearing is a squared XZ distance test over a Luau table (Clearing.luau:392) and architect forbids a Touched handler on a patch.",
       "ownedBy": "representation work (architect/06); stated here as a consequence, not applied here."
+    },
+    "readFromOtherKeysNeverCopied": {
+      "snapshotOutboundBandwidth": "replication's 16-player outbound figure. Networking owns it; this key states no byte total of its own and no earlier draft's figure survives here.",
+      "postTerminalBayPatchCount": "depths.postTerminalArea.patchCount",
+      "areaEightPatchCount": "depths.areas[7].patchCount",
+      "coPresenceSeparation": "social.maxCoPresenceSeparationStuds",
+      "lanePitchAndWidth": "plots.pitchStuds, plots.laneWidthStuds",
+      "revealDeadline": "firstSession.beats[firstReveal].bySecond"
     },
     "revisionRequests": [
       {
@@ -274,8 +297,10 @@ assertion, which is the shape `maxPlayers` already uses.
   properties and a boot assertion. Missed, the place ships at 64/1024 and a client loads all
   sixteen lanes.
 - **Area-authoring-by-depth work (`depths`)** inherits a hard ceiling: 640 patches per live bay
-  at 16 players is 86% of `serverWorldInstanceCeiling`. **Wave 4's 1,880 is 251% of it and is
-  not closeable by any optimisation sheet `03` permits.** The lever is `patchCount`.
+  at 16 players is 86% of `serverWorldInstanceCeiling`. **The post-terminal bay is 225% of it at
+  the current revision, and three successive chunk-count reductions have moved it only from 251%
+  to 225% — trimming is not converging.** The lever is `patchCount`, and no optimisation sheet
+  `03` permits will close it.
 - **Overgrowth-tier and representation work (`tiers`, `representation`)** inherit a 400-triangle
   budget across four shapes. If `Ball` (Bramble, 14% of patches) overruns, the fix is a shape
   swap, never an LOD. `representation` should also set `CanTouch` and `CanQuery` false.
@@ -290,6 +315,8 @@ assertion, which is the shape `maxPlayers` already uses.
   input-relative budget.
 - **Environment and object art** get a closed asset budget: zero uploaded images, zero meshes,
   three built-in materials.
+- **Networking (`replication`)** keeps sole ownership of snapshot bandwidth. This key states no
+  byte total and reads its field.
 
 ## Acceptance criteria
 
@@ -297,12 +324,12 @@ assertion, which is the shape `maxPlayers` already uses.
    in `budgets` names a second device.
 2. `16 × (max(depths.areas[].patchCount) + 6) ≤ budgets.instanceCeilings.serverWorldInstanceCeiling`
    evaluates true at merged values (10,336 ≤ 12,000) and false at 20 players (12,920 > 12,000).
-3. `budgets.streaming.StreamingMinRadius ≥ social.maxCoPresenceSeparationStuds.value` and
+3. Every value in `serverWorldInstanceCeilingTestRange` satisfies criterion 2, and every value
+   in `clientStreamedInstanceCeilingTestRange` is at least `clientStreamedInstancesWorstCase`:
+   `10,500 > 10,336`, `12,800 < 12,920`, `5,900 ≥ 5,814`.
+4. `budgets.streaming.StreamingMinRadius ≥ social.maxCoPresenceSeparationStuds.value` and
    `budgets.streaming.StreamingTargetRadius ≥ 4 × plots.pitchStuds` both hold (160 ≥ 128;
    512 ≥ 488).
-4. `grep -rn "rbxassetid" game/src` returns nothing outside client UI files, and
-   `grep -rn "Enum.Material\." game/src/server` matches only `Grass`, `Slate` and
-   `SmoothPlastic`.
 
 ## Flagged to the developer
 
@@ -318,9 +345,9 @@ changes.
 The tick's value, the proximity scan's cost model, the per-frame instance burst and the
 bucketing requirement — sheet `02`, which holds `serverCost`. Which savings this domain may
 never take — sheet `03`, which supplies no key. The art inside these ceilings — Art & Visuals.
-Every patch count, footprint and area size — `depths` and `layout`. Snapshot bytes and outbound
-bandwidth — Networking's `replication` (62 kB/s at 16 players at the shipped cadence). The save
-payload — Persistence. **Whether a device is ever measured, and by whom: no sheet in either
+Every patch count, footprint and area size — `depths` and `layout`, read by field. Snapshot
+bytes and outbound bandwidth — Networking's `replication`, which owns the figure outright. The
+save payload — Persistence. **Whether a device is ever measured, and by whom: no sheet in either
 contract owns taking a MicroProfiler, Server Jobs or Memory reading**, and every
 `[playtest unknown]` here depends on one. Named for the final cross-category pass, beside
 Security's logging pipe. Whether anchored parts stay precise beyond ~20,000 studs from the

@@ -6,13 +6,14 @@
 
 One key per player — bare `tostring(player.UserId)` under `runtime.dataStoreName`, one partition,
 never `SetAsync` — read and written through `UpdateAsync` with a four-profile deterministic retry
-schedule, at 3.4% of the experience write budget and 0.53% of the value cap.
+schedule, at 3.4% of the experience write budget and 0.53% of the value cap. **No write path runs in
+Studio**, guarded once, inside `save`.
 
 **The `blockedSaves` latch is adopted as declared data and then bounded.** It stays as the *write*
 rule (a session started on a failed read never overwrites the real save) and is replaced as the
-*session* rule: each periodic pass re-reads instead of writing, and after three consecutive failed
-passes — 135 seconds — `server-main` releases the player from the server rather than letting them
-play a whole session that will be discarded.
+*session* rule: each periodic pass re-reads instead of writing, **any pass that does not write is a
+failed pass**, and after three of them — 135 seconds — `server-main` releases the player from the
+server rather than letting them play a whole session that will be discarded.
 
 ## Why
 
@@ -21,9 +22,9 @@ play a whole session that will be discarded.
   itself a migration under sheet 03's `B6`. `[research: https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits]`
 - **It does not foreclose priority-2 visitable restored ruins**, the only excluded item a key format
   could foreclose: a shared restored-ruin record would be a *different store name* keyed by area
-  ordinal, not a prefixed key in a per-player store. `[brief: soft]` `03-META.md` priority 2.
-- **One partition.** Sharding a 22 KB value against a 4,194,304-character cap is invented
-  machinery, which is the failure this stage exists to prevent. `[cid: decided]`
+  ordinal, not a prefixed key in a per-player store. `[brief: soft]` `03-META.md` priority 2. **One
+  partition**, because sharding a 22 KB value against a 4,194,304-character cap is invented
+  machinery. `[cid: decided]`
 - **`UpdateAsync` for both directions.** Roblox states `SetAsync` "can cause data inconsistency if
   two servers try to set the same key at the same time" and recommends `UpdateAsync` "to handle
   multi-server attempts" `[research: https://create.roblox.com/docs/cloud-services/data-stores]`.
@@ -33,9 +34,9 @@ play a whole session that will be discarded.
 - **The retry schedule is set by the join deadline, not by taste.** `firstSession` requires the
   first reveal within 10 s of join, so `load` gets 3 attempts and 3 s of backoff and nothing more.
   `leave` gets the most (4 attempts) because no next pass exists. `shutdown` gets a 20-second burst
-  deadline against `BindToClose`'s 30 seconds, leaving 10 s of margin for the other bound callbacks
-  `[research: https://create.roblox.com/docs/reference/engine/classes/DataModel#BindToClose]`.
-  Roblox's own instruction is `pcall` plus "exponential backoff"
+  deadline against `BindToClose`'s "30 seconds total, shared across all bound callbacks"
+  `[research: https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud-services/data-stores/player-data-purchasing.md]`,
+  leaving 10 s of margin. Roblox's own instruction is `pcall` plus "exponential backoff"
   `[research: https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits]`.
 - **The backoff carries no jitter, and that is forced.** `runtime` acceptance criterion 3 greps
   `math.random|Random.new()|os.time()|os.clock()` across `game/src`. Sixteen players failing in
@@ -54,23 +55,39 @@ play a whole session that will be discarded.
   starts fresh and the next write replaces it. Shipped behaviour, and correct.
 - **Why the latch could not stay as shipped.** A returning player with 18 Finds joins on a failed
   read, sees `0`, plays a full session and loses all of it silently. That meets both stopping-rule
-  bars, and today it is a Luau comment rather than a decision. The recovery pass costs nothing — it
-  replaces a write that was refused anyway — and the 135-second release is what bounds the loss.
-  `[brief: binding]` `01-FOUNDATION.md`'s "cleared is permanent" is why a discarded session is
-  expensive here in a way it would not be in an idle game.
+  bars, and today it is a Luau comment rather than a decision. `[brief: binding]`
+  `01-FOUNDATION.md`'s "cleared is permanent" is why a discarded session is expensive here in a way
+  it would not be in an idle game.
+- **The release counter has one reading, and it is the strict one: it resets only on a pass that
+  writes.** A re-read that succeeds and returns a payload is a **failed pass**. The alternative —
+  counting any answering store as a success — reinstates the whole defect: a player whose reads
+  succeed intermittently never reaches three consecutive failures, plays the entire session at `0`
+  and loses it, which is the case this sheet exists to close. **The cost of the strict reading is a
+  false release**: a player whose real save is intact and whose store is healthy is disconnected at
+  135 s because their *own key* could not be read at join. That is the right trade — 135 seconds
+  lost against a whole session lost — and it is bounded, because the only path into it is a read
+  failure at join, which a healthy store does not produce. `[cid: decided]`
 - **`storeUnavailable` is deliberately not released.** `GetDataStore` throwing is almost always
   Studio API access being off, and it is server-wide: ejecting every player accomplishes nothing.
+- **The Studio guard belongs inside `save`, once, and nowhere else.**
+  `release.environments.studioWriteRule` owns the rule; the placement is mine.
+  `RunService:IsStudio()` appears **exactly once** in all of `game/src`, at `init.server.luau:512`
+  inside `onShutdown`, so the periodic loop and `onLeave` are unguarded today and a Studio play-test
+  past 45 seconds writes test state to the live store. One test inside `save` covers all three write
+  call sites; three tests at three call sites is three places for the fourth to be forgotten.
+  **Reads stay permitted**, so a developer can play-test against real data. A Studio-suppressed
+  write returns `(false, "studio")`, which is **not** a `staleSession` reason, never arms the latch
+  and never counts toward the release counter. `wiring`'s existing `onShutdown` guard is redundant
+  under this and stays, because it is `wiring`'s.
 - **The payload bound in both contracts is wrong by 2.94×.** `stateShape` and `Persistence.luau:13`
-  both assert "at most 640 keys in `cleared`". Wave 4 puts area 8 at 1,200 patches and the
-  post-terminal bay at 1,880, cited as **unreleased** — `cid/gameplay/_verified-wave4.md` line 3,
-  "Stage 4 does not release." At 1,880 the payload is ~22,100 characters, 0.53% of the cap, and it
-  still does not grow with progress.
+  both assert "at most 640 keys in `cleared`". `depths` as revised in wave 4 puts area 8 at 1,200
+  patches and the post-terminal bay at 1,880, cited as **unreleased** —
+  `cid/gameplay/_verified-wave4.md` line 3, "Stage 4 does not release." At that count the payload is
+  ~22,100 characters, 0.53% of the cap, and it still does not grow with progress. The figure is
+  `depths`'s and moves with it.
 - **No link between the tick and the save.** `runtime.clearTickRate` and `saveIntervalSeconds` are
   independent; the requested 0.12 → 0.04 tick change moves no figure in the budget block. Stated
   because a builder reading both sheets will look for one.
-- **Three keys where the category doc expected one**, because `bridge/merge.mjs:135` makes two
-  sheets proposing one key a hard error while every sheet must carry a manifest; session locking and
-  store migration both have data forms and would otherwise be buried inside this one.
 
 ```manifest
 {
@@ -96,6 +113,18 @@ play a whole session that will be discarded.
       "reason": "SetAsync can cause data inconsistency when two servers set one key; UpdateAsync is also the only API whose transform can read the stored lock in the same request, which is what makes sessionLock cost zero extra requests",
       "budgetAccounting": "whether UpdateAsync consumes one read slot and one write slot is unverified; the budget block below is stated at both readings and holds at either"
     },
+    "studioWriteGuard": {
+      "where": "inside persistence.save, once, before the payload is built",
+      "readsPermitted": true,
+      "writesPermitted": false,
+      "returns": "(false, 'studio')",
+      "isAStaleSessionReason": false,
+      "countsTowardRelease": false,
+      "ruleOwner": "release.environments.studioWriteRule — cid/tech/deploy owns the rule; this field is the placement its AC3 greps for",
+      "coversCallSites": ["wiring.onSave", "wiring.onLeave", "wiring.onShutdown"],
+      "whyOnePlace": "RunService:IsStudio() appears exactly once in all of game/src, at init.server.luau:512 inside onShutdown, so the periodic loop and onLeave are unguarded and a Studio play-test past 45 s writes the live store. One test inside save covers all three call sites; three tests at three call sites is three places for the fourth to be forgotten.",
+      "existingShutdownGuard": "redundant under this and stays, because it is wiring's"
+    },
     "retry": {
       "backoffShape": "exponential, deterministic, no jitter",
       "perPlayerOffsetSeconds": "(player.UserId % 1000) / 1000, added to every backoff step so sixteen simultaneous failures do not retry in lockstep and no call to math.random enters game/src",
@@ -115,6 +144,7 @@ play a whole session that will be discarded.
       "adopted": true,
       "stateField": "writesBlocked",
       "reasonField": "blockedReason",
+      "failedPassDefinition": "a pass that does not write. This is the single definition the release counter uses and every row below is stated against it.",
       "reasons": [
         {
           "id": "readFailed",
@@ -122,8 +152,13 @@ play a whole session that will be discarded.
           "recoveryPass": "each periodic pass re-reads instead of writing",
           "clearsWhen": "a re-read succeeds AND returns nil — the store confirms there is nothing to protect",
           "neverClearsWhen": "a re-read succeeds and returns a payload; the real save is never overwritten and the stale session is never merged into it",
+          "aReReadThatReturnsAPayloadCountsAsAFailedPass": true,
+          "aReReadThatFailsCountsAsAFailedPass": true,
+          "counterResetsOn": "a pass that writes, and on nothing else",
           "releaseAfterFailedPasses": 3,
-          "releaseAfterSeconds": 135
+          "releaseAfterSeconds": 135,
+          "costOfThisReading": "a false release — a player whose real save is intact and whose store is healthy is disconnected at 135 s because their own key could not be read at join. Accepted: 135 seconds lost against a whole session lost, and the only path into it is a read failure at join.",
+          "costOfTheOtherReading": "a player whose reads succeed intermittently never reaches three consecutive failures, plays the whole session at 0 and loses it — the defect this key exists to close"
         },
         {
           "id": "storeUnavailable",
@@ -165,7 +200,7 @@ play a whole session that will be discarded.
       "shutdownBurstIfEveryWriteRetriesTwice": 48,
       "queueDepth": 30,
       "queueDrainPerSecond": 10.33,
-      "queueVerdict": "16 fits with 14 slots spare. 48 never queues at once: the per-player offset spreads the burst over 1 s and the two backoff steps over 3 s more, so outstanding requests peak at 16.",
+      "queueVerdict": "16 fits with 14 slots spare, because sessionLock folds release into the save write rather than issuing a second one. 48 never queues at once: the per-player offset spreads the burst over 1 s and the two backoff steps over 3 s more, so outstanding requests peak at 16.",
       "bindToCloseSeconds": 30,
       "shutdownDeadlineSeconds": 20,
       "retriesThatFitInsideShutdown": 3,
@@ -178,11 +213,11 @@ play a whole session that will be discarded.
     },
     "payload": {
       "fields": "exactly the seven stateShape fields marked persisted, plus the envelope fields sessionLock.record declares and nothing else",
-      "clearedMaxKeys": 1880,
-      "clearedMaxKeysSource": "depths, wave 4 revision: area 8 at 1200 patches, post-terminal bay at 1880 — UNRELEASED, cid/gameplay/_verified-wave4.md line 3, 'Stage 4 does not release'",
-      "supersedes": "stateShape's and Persistence.luau:13's 'at most 640 keys in cleared', which is low by 2.94x",
+      "clearedMaxKeysSource": "max(depths.areas[].patchCount, depths.postTerminalBay.patchCount) — read from that key, never copied. At the wave-4 revision those are 1200 and 1880; UNRELEASED, cid/gameplay/_verified-wave4.md line 3, 'Stage 4 does not release'.",
+      "clearedMaxKeysAtCitedRevision": 1880,
+      "supersedes": "stateShape's and Persistence.luau:13's 'at most 640 keys in cleared', which is low by 2.94x at the cited revision",
       "worstCaseChars": 22100,
-      "worstCaseDerivation": "cleared 21465 (9 one-digit keys at 9 chars, 90 two-digit at 10, 900 three-digit at 11, 881 four-digit at 12) + found 491 + upgrades 48 + rowsRevealed 67 + three scalars 58 + braces 10",
+      "worstCaseDerivation": "at 1880 keys: cleared 21465 (9 one-digit keys at 9 chars, 90 two-digit at 10, 900 three-digit at 11, 881 four-digit at 12) + found 491 + upgrades 48 + rowsRevealed 67 + three scalars 58 + braces 10. Recompute from depths if the bay count moves.",
       "worstCasePercentOfValueCap": 0.53,
       "integerKeysReturnAsStrings": true,
       "integerKeyRule": "every reader of cleared uses tonumber(key) and never a type test, because the JSON round trip returns integer keys as strings",
@@ -203,11 +238,13 @@ play a whole session that will be discarded.
       { "id": "D12", "rule": "no remote reads or writes a save; the snapshot is protocol's and carries no payload field",             "observable": "grep -rn 'Persistence' game/src/client returns nothing" },
       { "id": "D13", "rule": "no ranking, ladder or leaderboard structure of any kind",                                               "observable": "grep -rn 'leaderstats\\|leaderboard' game/src returns nothing" },
       { "id": "D14", "rule": "no SetAsync",                                                                                          "observable": "grep -rn 'SetAsync' game/src returns nothing" },
-      { "id": "D15", "rule": "no fourth write call site. Writes happen at wiring.onSave, onLeave and onShutdown and nowhere else — a save on every Find or every purchase is a revision against wiring, not an optimisation", "observable": "every call to Persistence.save in game/src/server is inside one of those three phases" }
+      { "id": "D15", "rule": "no fourth write call site. Writes happen at wiring.onSave, onLeave and onShutdown and nowhere else — a save on every Find or every purchase is a revision against wiring, not an optimisation", "observable": "every call to Persistence.save in game/src/server is inside one of those three phases" },
+      { "id": "D16", "rule": "no write path runs in Studio, and the guard is in exactly one place",                                   "observable": "grep -rn 'IsStudio' game/src/server/Persistence.luau returns exactly one match, and it precedes every UpdateAsync in that file" }
     ],
     "observability": {
       "emits": "one warn per failed attempt and one per exhausted profile, prefixed [Persistence], naming the player and the reason",
       "storeOpenWarning": "once per server, never once per pass",
+      "studioSuppressedWrite": "warned once per server, not once per pass, so a play-test log stays readable",
       "pipe": "unowned. Warnings reach the server output and nowhere a human reads. Security names the same gap for detection; Analytics owns what to record and explicitly not how the pipe is built.",
       "kindOfWorkNeeded": "server-side event transport and retention"
     }
@@ -221,55 +258,56 @@ I do not edit `architect/`. Each of these names a field.
 
 | id | target | request |
 |---|---|---|
-| **RR-P1** | `architect/03-state-shape` — `fields` | Add an eighth persisted field **`sessions: integer`**, `writtenBy: "persistence"`, incremented exactly once per successful load (a first-ever load yields `1`), never decremented, never read by any path that grants anything. **Three domains asked for the same thing from three directions**: Engagement, Funnels and Event Logging each hit `save` writing seven fields with no timestamp, no join count and no session count, while `load` returns `readable`, which is `true` for a fresh save too. From `sessions`: a run ordinal is `sessions`; "is this a returning player" is `sessions > 1`, which `readable` cannot express; a session id is `(UserId, sessions)` with no clock and no GUID. It is **not a streak** — it has no date component and cannot express consecutiveness — and it is not a timestamp, so `01-FOUNDATION.md`'s no-offline-accumulation line is untouched. Cost: one integer, `log10` digits of payload growth. **Adding it fires my own sheet-03 trigger `B3` and bumps the store, which is free today and is the point of stating the trigger list.** |
+| **RR-P1** *(narrowed, round 1)* | `architect/03-state-shape` — `fields` | Add an eighth persisted field **`sessions: integer`**, `writtenBy: "persistence"`, incremented exactly once per successful load (a first-ever load yields `1`), never decremented, never read by any path that grants anything. **The request now covers the run-ordinal half only.** Event Logging has since closed the session-id half with no schema change, holding one in a module-local `UserId` map, so `(UserId, sessions)` is no longer the argument. What remains underivable anywhere in the game is **which run this is**: `load` returns `readable`, which is `true` for a fresh save, so nothing can tell a returning player from a new one or order two sessions. Engagement and Funnels both need that and neither can derive it. It is **not a streak** (no date component, cannot express consecutiveness) and not a timestamp, so `01-FOUNDATION.md`'s no-offline-accumulation line is untouched. Cost: one integer, `log10` digits of payload. **Adding it fires my own sheet-03 trigger `B3` and bumps the store, which is free today and is the point of stating the trigger list.** |
 | **RR-P2** | `architect/03-state-shape` — acceptance criterion 2 | Narrow to: "The persisted payload contains exactly the seven fields marked `persisted: true`, **plus any envelope field declared in `sessionLock.record` and declared nowhere else**. `patches`, `spawnPivot`, `owned`, `armState` and `player` never reach a DataStore." The criterion's purpose is that no *live* field reaches the store; a lock field is `persistence`'s envelope and is not a `PlayerState` field at all. |
-| **RR-P3** | `architect/02-modules` — `persistence.exposes` | `save(player, state): boolean` → `save(player, state): (boolean, string?)`. `server-main` cannot distinguish an ordinary write failure from a stale session without it, and the release rule turns on exactly that distinction. Backward compatible: an existing caller ignoring the second return still compiles. |
+| **RR-P3** | `architect/02-modules` — `persistence.exposes` | `save(player, state): boolean` → `save(player, state): (boolean, string?)`. `server-main` cannot distinguish an ordinary write failure from a stale session from a Studio suppression without it, and both the release counter and `studioWriteGuard.countsTowardRelease` turn on exactly that distinction. Backward compatible: an existing caller ignoring the second return still compiles. |
 | **RR-P4** | `architect/02-modules` — `entitlements` criterion 3 | `grep -rn 'owned' game/src/server/Persistence.luau returns nothing` is **unsatisfiable** — it returns two matches (a comment and `owned = {}`) and it must, because `07-wiring.constructs` requires `defaultState()` to set `owned {}` there. Narrow it to `grep -rn 'state.owned'`, which is what `03-state-shape` criterion 8 already greps and which passes. The underlying rule holds in the shipped file: `save`'s payload literal is exactly the seven persisted fields. |
-| **RR-P5** | `architect/03-state-shape` — the `cleared` note, and `02-modules` `persistence` criterion 1 | "at most 640 keys" → **1,880**, sourced to `depths` as revised in wave 4 and marked unreleased. The bound is not decorative: it is what the value-cap and per-key-throughput percentages are computed against. |
-| **RR-P6** | `architect/07-wiring` — `onSave` step 1 | Its description reads "a failure warns and the loop continues; the next pass retries by existing", which is true of a *write* failure and silent on the read-failure latch. Add that for a `writesBlocked` player the pass performs a re-read rather than a write, and that three consecutive `readFailed` returns release the player. |
+| **RR-P5** | `architect/03-state-shape` — the `cleared` note, and `02-modules` `persistence` criterion 1 | Replace the literal "at most 640 keys" with a **reference to `depths`** rather than a second integer: the bound is `max(depths.areas[].patchCount, depths.postTerminalBay.patchCount)`, which is 1,880 at wave 4's unreleased revision. Stated as a reference because three keys now carry that figure and all of them must move together if wave 4 releases at a different chunk count. |
+| **RR-P6** | `architect/07-wiring` — `onSave` step 1 | Its description reads "a failure warns and the loop continues; the next pass retries by existing", which is true of a *write* failure and silent on the read-failure latch. Add that for a `writesBlocked` player the pass performs a re-read rather than a write, that a re-read returning a payload is still a failed pass, and that three consecutive `readFailed` returns release the player. |
 
 ## Consequences for other work
 
 - **Notice work (`ui-ux/feedback`, sheet 03)** gets its case (a) answered from my side: the session
   is bounded at 135 seconds and ends in a `Kick`, not in a silent full-session discard. If it
   supplies a kick string that string is what the player reads; if it declines, the platform default
-  shows and nothing here breaks. It should also know there is **no notice for `lockHeld`** — sheet
-  02 rules that out.
+  shows. There is **no notice for `lockHeld` and none for a Studio-suppressed write.**
 - **Server-boot and join work (`server-main`)** gains one counter per player and one `Player:Kick`
-  call site, and loses nothing. The counter resets on a successful pass.
-- **Engagement, Funnels and Event Logging work** should read RR-P1 rather than deriving a session
-  identity from `readable`, which is `true` for a fresh save and cannot tell a returning player from
-  a new one.
+  call site. The counter resets **only on a pass that writes** — not on a pass that merely read
+  successfully, and not on a Studio-suppressed pass, which does not touch it at all.
+- **Build & Deploy work** owns `release.environments.studioWriteRule` and now has the field its AC3
+  greps for: `persistence.studioWriteGuard`, one `IsStudio` test inside `save` covering all three
+  write call sites. It also inherits `D6` as the concrete case of its own emitted-null hazard — no
+  value in any of my three keys is null.
+- **Engagement and Funnels work** should read the narrowed RR-P1 rather than deriving a run ordinal
+  from `readable`. Event Logging's module-local session id needs nothing from me.
 - **Security work** inherits that a save is never client-reachable (`D12`) and that the only
   detection signal this module produces is a `warn` into an unowned pipe.
-- **Performance work** inherits a payload figure to budget against — 22,100 characters at the
-  post-terminal bay — and the statement that the tick rate does not move it.
-- **Build & Deploy work** inherits `D6` as the concrete case of its own emitted-null hazard: no
-  value in any of my three keys is null, deliberately.
-- **Area-layout and endgame work** are untouched: nothing here stores a per-area boolean, and the
-  `areasFinished` integer stays the whole record of the endless run.
+- **Performance work** inherits a payload figure to budget against and the statement that the tick
+  rate does not move it. Both of us should cite `depths` rather than restating 1,880.
+- **Area-layout and endgame work** are untouched: nothing here stores a per-area boolean.
 
 ## Pushing back
 
 **`architect/02-modules`, `persistence` criterion 3 — "a DataStore outage leaves the player playable
 rather than erroring."** I keep it at join and narrow it after: the player *is* playable, for 135
 seconds, and is then released. The criterion was written when the alternative to "playable" was
-"erroring at join", and the third case — playable but permanently unsaveable — was not in view. It
-is the case that costs a returning player a whole session, and the shipped module's own header
-concedes this behaviour "is not in the state shape."
+"erroring at join", and the third case — playable but permanently unsaveable — was not in view.
 
 ## Acceptance criteria
 
-1. `grep -rn "SetAsync" game/src` returns nothing, and `grep -rn "UpdateAsync"
-   game/src/server/Persistence.luau` returns at least two matches.
+1. `grep -rn "SetAsync" game/src` returns nothing; `grep -rn "UpdateAsync"
+   game/src/server/Persistence.luau` returns at least two matches; `grep -rn "IsStudio"
+   game/src/server/Persistence.luau` returns exactly one match, positioned before every `UpdateAsync`
+   in that file.
 2. `grep -rn "math.random\|Random.new\|os.time\|os.clock\|tick()"
    game/src/server/Persistence.luau` returns nothing.
-3. A 16-player server in which one joining player's read fails on every attempt, run for 150
-   seconds at `saveIntervalSeconds` 45, produces exactly three `[Persistence]` re-read warnings for
-   that player, exactly one `Player:Kick` call, and zero writes carrying that player's payload.
-4. A payload for a player in the post-terminal bay with all 1,880 `cleared` keys serialises to
-   fewer than 25,000 characters, and payloads for the same player at `areasFinished` 8 and at 40
-   differ by at most 2 characters.
+3. A 16-player server in which one joining player's read fails at join, run for 150 seconds at
+   `saveIntervalSeconds` 45, releases that player at pass 3 in **both** of these runs: one where
+   every re-read also fails, and one where every re-read succeeds and returns a payload. Zero writes
+   carry that player's payload in either run.
+4. A payload for a player in the post-terminal bay with all `depths.postTerminalBay.patchCount`
+   `cleared` keys serialises to fewer than 25,000 characters, and payloads for the same player at
+   `areasFinished` 8 and at 40 differ by at most 2 characters.
 
 ## Not decided here
 
@@ -278,6 +316,7 @@ Whether a session lock exists, its record, its cadence and its steal timeout —
 whether a prior version is read, and the migration and per-bump rollback — sheet 03, which holds
 `storeMigration`. The persisted field list, the store name and the 45-second interval —
 `architect`'s `stateShape`, `runtime` and `wiring`; every change I need is a revision request above.
-The exact string a released player reads — `notices` (`ui-ux/feedback` 03). Where the warning pipe
-writes — nobody's; named in `observability.pipe`. Whether `clearTickRate` changes — Tech &
-Performance; nothing here moves with it.
+The **rule** that no write runs in Studio, the environment split and the build version —
+`cid/tech/deploy`, which holds `release`; I own only where the guard sits. The exact string a
+released player reads — `notices` (`ui-ux/feedback` 03). Where the warning pipe writes — nobody's;
+named in `observability.pipe`. Whether `clearTickRate` changes — Tech & Performance.

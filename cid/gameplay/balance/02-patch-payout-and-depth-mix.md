@@ -82,8 +82,8 @@ depth argument. Both are revision requests below; **without them this key has no
       { "ordinal": 4, "depth": 2, "patchCount": 370,  "currency": 2165 },
       { "ordinal": 5, "depth": 3, "patchCount": 585,  "currency": 3896 },
       { "ordinal": 6, "depth": 3, "patchCount": 702,  "currency": 4675 },
-      { "ordinal": 7, "depth": 4, "patchCount": 1040, "currency": 7748 },
-      { "ordinal": 8, "depth": 4, "patchCount": 1200, "currency": 8940 }
+      { "ordinal": 7, "depth": 4, "patchCount": 1000, "currency": 7450 },
+      { "ordinal": 8, "depth": 4, "patchCount": 1120, "currency": 8344 }
     ],
     "incomeNote": "patchCount is sheet 03's revised depths row set, not the merged one. At level 0 with no set bonus, which is a measurement condition and not a play state past area 1.",
     "invariants": [
