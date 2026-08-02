@@ -151,6 +151,51 @@ local TOUCH_PROBE_WARN_AFTER_SECONDS = 10
 local HUD_CLUSTER_MAX_WIDTH_SCALE = 0.46
 
 --[[
+	...and 0.46 is the wrong number to POSITION against, which a playtest showed plainly.
+
+	It is `maxSize` — the widest the cluster may EVER be, a ceiling the pattern sets so a
+	cluster cannot grow across the screen. The realised cluster is nothing like it: three
+	stacked readouts render about 0.11 of an 1800 px viewport. Reserving the ceiling put the
+	purchase column's right edge at 1 - 0.46 = 0.54, i.e. dead centre of the screen, on top of
+	the player's own character and half a screen from the readouts it is captioned to sit
+	beside. `representation.pressable` asks for "inside the HUD's bottom-right cluster,
+	aligned with the upgrade readouts"; against the ceiling that is unsatisfiable.
+
+	So measure the cluster instead of assuming it, and keep the ceiling only as the cap on the
+	measurement. The realised width is knowable — the cluster is a node in the same ScreenGui.
+
+	The deeper gap is real and stays recorded: NO CONTRACT KEY OWNS THE HUD'S CLUSTER
+	GEOMETRY. `ui-ux/hud` has not run. Until it does, this module is measuring another
+	module's output at runtime, which is a derivation and not a decision.
+]]
+local HUD_CLUSTER_FALLBACK_WIDTH_SCALE = 0.16
+
+--[[
+	The realised width of the bottom-right readout cluster, as a fraction of the viewport.
+	Falls back when the node cannot be found, and is capped by the pattern's own ceiling so a
+	pathological measurement cannot push the column off-screen.
+]]
+local function measureClusterWidthScale(gui: Instance?): number
+	if gui == nil then
+		return HUD_CLUSTER_FALLBACK_WIDTH_SCALE
+	end
+	local cluster = gui:FindFirstChild("Cluster_bottomRight", true)
+	if cluster == nil or not cluster:IsA("GuiObject") then
+		return HUD_CLUSTER_FALLBACK_WIDTH_SCALE
+	end
+	local viewportWidth = 0
+	local screen = cluster:FindFirstAncestorWhichIsA("ScreenGui")
+	if screen ~= nil then
+		viewportWidth = screen.AbsoluteSize.X
+	end
+	if viewportWidth <= 0 or cluster.AbsoluteSize.X <= 0 then
+		return HUD_CLUSTER_FALLBACK_WIDTH_SCALE
+	end
+	local scale = cluster.AbsoluteSize.X / viewportWidth
+	return math.clamp(scale, HUD_CLUSTER_FALLBACK_WIDTH_SCALE, HUD_CLUSTER_MAX_WIDTH_SCALE)
+end
+
+--[[
 	Read a token out of ui-forge's Theme, with the value the emitted theme carries today as
 	the fallback so a retuned theme cannot leave a button unpositioned.
 ]]
@@ -453,6 +498,7 @@ function Pressables.bind(gui: ScreenGui, onActivate: OnActivate): Updater
 		only Visible changes.
 	]]
 	local function layoutButtons(minTouchPx: number, reservedBottomPx: number)
+		local clusterWidthScale = measureClusterWidthScale(gui)
 		local height = math.max(BUTTON_HEIGHT_PX, minTouchPx)
 		local step = height + stackGap
 		local count = #purchases
@@ -465,7 +511,7 @@ function Pressables.bind(gui: ScreenGui, onActivate: OnActivate): Updater
 			-- in the bottom-right cluster. Held clear of that cluster's widest possible
 			-- extent on X, and clear of the platform control band on Y.
 			binding.button.Position = UDim2.new(
-				1 - HUD_CLUSTER_MAX_WIDTH_SCALE,
+				1 - clusterWidthScale,
 				-edgeMargin,
 				1,
 				-(reservedBottomPx + edgeMargin + (count - index) * step)
@@ -476,7 +522,7 @@ function Pressables.bind(gui: ScreenGui, onActivate: OnActivate): Updater
 		indexButton.Size = UDim2.new(BUTTON_WIDTH_SCALE, 0, 0, height)
 		-- Top-left, beside the collection readout: past that cluster's widest possible
 		-- extent, which is the only bound on it this module can know.
-		indexButton.Position = UDim2.new(HUD_CLUSTER_MAX_WIDTH_SCALE, edgeMargin, 0, edgeMargin)
+			indexButton.Position = UDim2.new(clusterWidthScale, edgeMargin, 0, edgeMargin)
 	end
 
 	layoutButtons(MIN_TOUCH_TARGET_PX, 0)
