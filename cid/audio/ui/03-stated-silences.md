@@ -4,12 +4,13 @@
 
 ## Decision
 
-**Twenty-nine interface moments make no sound, each with the sheet that forbids it and an
-observable a grep or a count settles — against a permitted set of three cues.** The forbidden set
-being ten times the cue list is not an accident of this domain; it is the domain. Five rows are
-inherited from `notices` and say so, scoped to **sound only**, and re-rule nothing about the
-plate. Seven are priority-3 reflexes named in order to forbid them, and one closes the whole class
-by forbidding any reserved bus, empty cue slot or held-open field for them.
+**Thirty interface moments make no sound, each with the sheet that forbids it and an observable a
+grep or a count settles — against a permitted set of three cues.** Twenty-nine of them, `F1` to
+`F29`, are stated here; the thirtieth is the system notice and sheet `04` carries it, so one row
+is not written twice. Five rows are inherited from `notices`, say so, are scoped to **sound only**
+and re-rule nothing about the plate. Seven are priority-3 reflexes named in order to forbid them,
+and one closes the whole class by forbidding any reserved bus, empty cue slot or held-open field
+for them.
 
 ## Why
 
@@ -54,8 +55,9 @@ this domain would otherwise sound **does not exist**, and the player's only volu
 platform's own. That is a consequence for `mix`, routed and not decided here.
 
 **Platform UI sounds are outside the game's surface, ruled rather than assumed.** `navigation/03`
-has the game do nothing at all on `MenuOpened` `[research: cid/ui-ux/navigation/03-close-and-focus-by-device.md]`.
-Whether Roblox CoreScripts play a sound on platform-menu open or close on mobile is
+has the game do nothing at all on `MenuOpened`
+`[research: cid/ui-ux/navigation/03-close-and-focus-by-device.md]`. Whether Roblox CoreScripts
+play a sound on platform-menu open or close on mobile is
 `[research owed: a device check, or the current PlayerModule/CoreGui source, stating whether any
 CoreScript plays a sound on platform-menu open or close]`. **The ruling does not depend on the
 answer**: this game neither adds to nor suppresses any platform interface sound, in either case,
@@ -73,8 +75,9 @@ seven. `rebirth` additionally fails the merge as a `vocabulary.bannedWords` memb
 **Five rows are inherited and one is not repeated.** `F5`–`F7` (the three lifts), `F8` (a
 save-succeeded sound) and `F12` (a notice-authored sound) all restate a `notices` row **scoped to
 sound**, name it as inherited, and add nothing to the plate ruling. The system notice's own
-sound is **sheet `04`'s row and is not carried here**, because one key with one row written twice
-is the collision this batching exists to prevent.
+sound is **`F30`, sheet `04`'s row, and is not carried here**, because one key with one row
+written twice is the collision this batching exists to prevent. The count below is the whole set;
+the rows below are this sheet's twenty-nine.
 
 ## Consequences for other work
 
@@ -101,7 +104,7 @@ is the collision this batching exists to prevent.
   mid-session or at rejoin is silent. `cid/_state.md`'s recorded harm — a purchased pass that
   produces no visible change — is not closed by a sound, and this row says so rather than leaving
   it as the obvious fix.
-- **Verification work** gets 29 checks, all mechanical, most of them one grep.
+- **Verification work** gets 29 checks from this sheet, all mechanical, most of them one grep.
 
 | id | forbidden, named | ruling | observable |
 |---|---|---|---|
@@ -134,12 +137,16 @@ is the collision this batching exists to prevent.
 | `F27` | A returning-player or welcome-back greeting, including an offline-accrual return cue | `03-META.md` priority 3 — offline accrual; `theme/tone/04` `D15`; `notices` carries no returning-player member | `uiSound` contains no string matching `welcome`, `returning`, `back` or `offline` |
 | `F28` | A rebirth, prestige or reset sting | `03-META.md` priority 3 — rebirth; `01-FOUNDATION.md` *"Cleared is permanent"* `[brief: binding]`, so nothing may announce a reset; `rebirth` is in `vocabulary.bannedWords` and fails the merge | `uiSound` contains no string matching `rebirth`, `prestige` or `reset` |
 | `F29` | Any reserved `SoundGroup`, empty cue slot, unused bus, placeholder id or `future`/`planned`/`tbd` field held open for `F22`–`F28` | the category scope gate: naming a priority-3 subject to forbid it is compliant, reserving space for it is not | every `uiSound.cues[]` row has a non-empty `cause` and a named `playSite`; `uiSound` contains no key named `reserved`, `future`, `planned`, `tbd` or `placeholder` |
+| `F30` | Any sound accompanying the one system notice | **sheet `04`'s row, listed here for completeness and written there** | see sheet `04` |
 
 ```manifest
 {
   "amends": "uiSound",
   "value": {
-    "forbiddenCount": 29,
+    "forbiddenCount": 30,
+    "forbiddenRowsWrittenHere": 29,
+    "forbiddenRowIdsWrittenHere": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18", "F19", "F20", "F21", "F22", "F23", "F24", "F25", "F26", "F27", "F28", "F29"],
+    "forbiddenRowWrittenElsewhere": { "id": "F30", "sheet": "cid/audio/ui/04-system-notice-sound.md", "reason": "one key, one row, one sheet" },
     "permittedCueCount": 3,
     "forbiddenScope": "sound only; no row re-rules a plate, a motion, a string or a surface",
     "inheritedRows": ["F5", "F6", "F7", "F8", "F12"],
@@ -147,7 +154,7 @@ is the collision this batching exists to prevent.
     "priorityThreeRows": ["F22", "F23", "F24", "F25", "F26", "F27", "F28"],
     "reservationForbiddenRow": "F29",
     "notCarriedHere": [
-      { "what": "a sound for the one system notice", "owner": "cid/audio/ui/04-system-notice-sound.md", "reason": "one key, one row, one sheet" },
+      { "what": "a sound for the one system notice", "owner": "cid/audio/ui/04-system-notice-sound.md", "id": "F30" },
       { "what": "silence on the respawn close path", "owner": "cid/audio/ui/02-index-open-and-close.md closePaths", "reason": "it is a path of a permitted cue, not a forbidden class" }
     ],
     "consequenceRoutedNotDecided": {
@@ -193,8 +200,9 @@ is the collision this batching exists to prevent.
 
 ## Acceptance criteria
 
-1. `uiSound.forbidden` has exactly 29 rows with ids `F1` through `F29`, each carrying a non-empty
-   `what`, `ruling` and `observable`, and `uiSound.forbiddenCount` equals that length.
+1. The merged `uiSound.forbidden` has exactly 30 rows with ids `F1` through `F30`, each carrying a
+   non-empty `what`, `ruling` and `observable`; 29 of them are supplied by this sheet and `F30` by
+   sheet `04`, and `uiSound.forbiddenCount` is 30.
 2. `game/src/client/` contains zero `MouseEnter`, `MouseLeave`, `MouseMoved`, `SelectionGained`
    and `SelectionLost` connections, and `game/src/` contains zero writes to a `SoundService`
    property.
@@ -202,19 +210,19 @@ is the collision this batching exists to prevent.
    `code`, `redeem`, `leaderboard`, `rank`, `trade`, `gift`, `season`, `event`, `holiday`,
    `offline`, `welcome`, `reserved`, `future`, `planned`, `tbd` or `placeholder`.
 4. Every `uiSound.cues[]` row has a non-empty `cause` and a `playSite`, and
-   `uiSound.permittedCueCount` (3) is less than `uiSound.forbiddenCount` (29).
+   `uiSound.permittedCueCount` (3) is less than `uiSound.forbiddenCount` (30).
 
 ## Not decided here
 
-Whether the one system notice makes a sound — sheet `04`, this domain, which carries that row so
-it is not written twice. The press-edge ruling `F3` cites, and the whole permitted cue set — sheet
-`01`. The two index cues and the respawn close path — sheet `02`. Every plate, motion, string and
-surface these rows sit beside — `notices` (`ui-ux/feedback`) and `composition` (`ui-ux/hud`);
-five rows here are its rulings in the audio channel and re-decide none of them. Whether an
-options, volume or mute surface should exist at all — the developer, via `04-PRESENTATION.md`'s
-declined pass; and the consequence of its absence is `mix`'s to state. Volume, buses, roll-off,
-the concurrency cap and the MB allowance — `mix`. Whether Roblox CoreScripts play any sound on
-platform-menu open or close — `[research owed]` above; the `F17` ruling stands either way. The
-platform's default character sounds (footstep, jump, landing) — SFX, category gap `G4`; they are
-in-world sound and not interface sound. Whether any of these greps becomes a `bridge/merge.mjs`
-check or stays a build-report item — contract-and-seam work.
+Whether the one system notice makes a sound, and the `F30` row itself — sheet `04`, this domain,
+which carries it so it is not written twice. The press-edge ruling `F3` cites, and the whole
+permitted cue set — sheet `01`. The two index cues and the respawn close path — sheet `02`. Every
+plate, motion, string and surface these rows sit beside — `notices` (`ui-ux/feedback`) and
+`composition` (`ui-ux/hud`); five rows here are its rulings in the audio channel and re-decide
+none of them. Whether an options, volume or mute surface should exist at all — the developer, via
+`04-PRESENTATION.md`'s declined pass; and the consequence of its absence is `mix`'s to state.
+Volume, buses, roll-off, the concurrency cap and the MB allowance — `mix`. Whether Roblox
+CoreScripts play any sound on platform-menu open or close — `[research owed]` above; the `F17`
+ruling stands either way. The platform's default character sounds (footstep, jump, landing) —
+SFX, category gap `G4`; they are in-world sound and not interface sound. Whether any of these
+greps becomes a `bridge/merge.mjs` check or stays a build-report item — contract-and-seam work.

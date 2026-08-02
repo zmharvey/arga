@@ -36,9 +36,9 @@
     "ducking": {
       "principle": "a level change on a bus, never a suppression of a voice. Nothing in this key drops, refuses, queues, delays, shortens or fades out an onset.",
       "crossBus": [
-        { "cause": "any audible Stingers voice", "ducked": "World", "toFractionOfDefault": 0.45, "realisedWhileDucked": 0.2475 },
+        { "cause": "any audible Stingers voice", "ducked": "World", "toFractionOfDefault": 0.45, "duckedBusVolume": 0.2475, "realisedCueLevelWhileDucked": 0.1485 },
         { "cause": "any audible Stingers voice", "ducked": "WorldNeighbour", "toFractionOfDefault": 0.45, "note": "inherits World's duck through the bus chain and is never ducked twice" },
-        { "cause": "any audible Stingers voice", "ducked": "Beds", "toFractionOfDefault": 0.35, "realisedWhileDucked": 0.0578 }
+        { "cause": "any audible Stingers voice", "ducked": "Beds", "toFractionOfDefault": 0.35, "duckedBusVolume": 0.105, "realisedCueLevelWhileDucked": 0.0578 }
       ],
       "neverDucked": ["Master", "Stingers", "Interface"],
       "whyInterfaceIsNeverDucked": "response gives upgradePurchased a 200 ms budget, the tightest in the game, on the game's only currency sink; input.debounceSeconds 0.35 caps its rate at 2.9 per second so it cannot flood a bus.",
@@ -65,7 +65,7 @@
       "minimumDuckedFractionRule": "no ducking or trim figure in this key, at any future tuning, may put a bus below 0.30 of its default. A bus at 0 is a suppression and is illegal under response.onOverload and performance/03 N14.",
       "worstCaseDuckedWindowSeconds": 3.7,
       "worstCaseDerivation": "the 4.3% lap where B1, B2 and B3 all fire on one clear: B1 onset, +0.6 s to B2, +0.6 s to B3 (response.minOnsetGapSeconds, [playtest unknown] at 0.35 to 0.9), plus B3's 2.5 s audible cap from notices, plus 0.35 s release.",
-      "worstCaseConsequence": "World and Beds sit at their ducked level for up to 3.7 s once per completing lap. B5 continues to fire and continues to be audible throughout at 0.2475."
+      "worstCaseConsequence": "World and Beds sit at their ducked level for up to 3.7 s once per completing lap. B5 continues to fire and continues to be audible throughout at a realised 0.1485."
     },
     "attenuation": {
       "whyThisBlockExists": "RollOffMode.Inverse is the engine default and does not use RollOffMaxDistance at all, so at defaults nothing in this game is ever culled by distance and every voice inside a 512-stud streamed set stays in the mix forever.",

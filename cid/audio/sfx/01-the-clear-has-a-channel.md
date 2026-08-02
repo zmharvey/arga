@@ -19,24 +19,24 @@ lands, sheet 03's cue reads the array at runtime and is silent-and-correct rathe
 - **The decisive argument is that the brief's tier note has nowhere else to live.** `rarity` is
   one graded ladder read from `patch.tierIndex`, *"a Find has no rarity of its own"*
   (`gameplay/systems/03`), and `rarity.forbidden` bans a reveal cue that varies by set. So the
-  per-tier note cannot attach to `B1`, cannot attach to `B2`/`B3` (which fire once per set and
-  once per area, not per patch), and cannot attach to `B4`. `B5` is the only beat that fires once
-  per patch and therefore the only beat that can carry a per-patch property at all. **Delete
-  `B5`'s audio channel and the brief's one concrete audio instruction is unimplementable
-  anywhere in the game.**
+  per-tier note cannot attach to `B1`; it cannot attach to `B2` or `B3`, which fire once per set
+  and once per area rather than once per patch; and `B4` is a purchase. `B5` is the only beat
+  that fires per patch and therefore the only one that can carry a per-patch property at all.
+  **Delete `B5`'s audio channel and the brief's one concrete audio instruction is unimplementable
+  anywhere in this game.** `[cid: decided]`
 - **No sheet ever argued for a silent clear.** `mechanics/05`'s `## Why` covers control, reveal
   persistence, channel exclusivity, latency ownership and prediction. Not one line of it, and no
   row of its ten-rule table, reasons about `B5` being inaudible. The omission has no author.
-- **`audio` is not an exclusive channel and adding it costs nothing structurally.**
-  `response.channelExclusivity` names `atPatch` and `notice` only; four of the five beats already
-  carry `audio` concurrently, so the channel is shared by construction `[research: cid/gameplay/mechanics/05-response-contract.md]`.
+- **`audio` is not an exclusive channel, so adding it costs nothing structurally.**
+  `response.channelExclusivity` names `atPatch` and `notice` only, and four of the five beats
+  already carry `audio` concurrently `[research: cid/gameplay/mechanics/05-response-contract.md]`.
 - **The muted-player invariant survives.** `patchClear` keeps `atPatch` and `readout`, so audio is
   additive and the count of beats whose only channel is `audio` stays 0. That invariant is Mix's
-  to carry and I may not break it; adding a third channel to a beat that already has two cannot.
+  to carry and I may not break it; a third channel on a beat that already has two cannot.
 - **Rank is not channel count, and tone/03 says so itself.** `B2` is permitted to be *"longer and
-  wider than `B1`, occupying more channels and resolving after it, but never sharper."* So a beat
-  occupying three sites is not thereby louder than one occupying two. `B5` stays the quietest
-  beat in every medium it occupies, which is the invariant sheet 03 carries.
+  wider than `B1`, occupying more channels and resolving after it, but never sharper."* A beat
+  occupying three sites is therefore not thereby louder than one occupying two, and `B5` stays the
+  quietest beat in every medium it occupies — the invariant sheet 03 carries as its cue row.
 
 ## Pushing back — `gameplay/mechanics/05-response-contract`
 
@@ -46,9 +46,9 @@ of that sheet's merged `response` manifest. `[cid: decided]`
 That sheet is merged and shipped and the running build reads it, so it can decline: the manifest
 is the artifact and the consequence paragraph is not, and *"the prose is wrong"* is an available
 answer. **The consequence of declining, stated so it is made in view:** sheet 03's `patchClear`
-cue becomes unreachable data, the game's most-repeated event is silent forever, and
-`OPEN.md §2`'s per-tier pitched note is unimplementable in this game by the argument above.
-`theme/tone/03` would then also need amending, because its `B5` row describes a cue's intensity.
+cue becomes unreachable data, the game's most-repeated event is silent forever, and `OPEN.md §2`'s
+per-tier pitched note is unimplementable by the argument above. `theme/tone/03` would then also
+need amending, because its `B5` row describes a cue's intensity.
 
 The revision request is one array element. Verbatim, the only change asked for:
 
@@ -71,22 +71,18 @@ not `residueLifetimeSeconds`, not the rank. I do not edit that sheet.
 ## Pushing back — `theme/tone/03-beat-map`, beat `B5`
 
 **What I am overruling:** that sheet's *"may occupy: one channel"* cell on `B5`, at
-`cid/theme/tone/03-beat-map.md`. `[cid: decided]`
-
-That sheet names exactly two kinds of work permitted to overturn it, one of them **audio
-intent**, and requires the `B` ids be named and the file cited. Both done, and this is the whole
-of what I re-open: **`B5` only, the channel-count cell only, and not the ranking.** `B1 > B2 >
-B3 > B4 > B5` with no ties stands untouched, and `B5` remains the quietest.
-
-Three reasons the cell does not survive:
+`cid/theme/tone/03-beat-map.md`. `[cid: decided]` That sheet names exactly two kinds of work
+permitted to overturn it, one of them **audio intent**, and requires the `B` ids be named and the
+file cited. Both done, and this is the whole of what I re-open: **`B5` only, the channel-count
+cell only.** The ranking `B1 > B2 > B3 > B4 > B5` with no ties stands untouched.
 
 1. **It is a media taxonomy and `response`'s is a site taxonomy.** Tone's "channel" means a
-   medium — sound, world visual, on-screen text. `response`'s `channels` array means a *site* —
-   `atPatch`, `readout`, `notice`, `audio`. The two words are not the same word, and every claim
-   in this sheet says which it means.
+   medium — sound, world visual, on-screen text. `response`'s `channels` array means a *site*:
+   `atPatch`, `readout`, `notice`, `audio`. Those are not the same word, and every claim in this
+   sheet says which it means.
 2. **In tone's own media terms the cell is already exceeded, by two approved and shipped
    channels.** `B5` today occupies `atPatch` (a world visual) and `readout` (an on-screen
-   number). That is two media with the cell reading one, before any audio is added.
+   number) — two media, with the cell reading one, before any audio is added.
 3. **None of that sheet's four acceptance criteria enforces it.** The cell is prose no check
    points at, which is the difference between a rule and a wish.
 
@@ -94,18 +90,19 @@ Three reasons the cell does not survive:
 
 - **Response-contract work (`gameplay/mechanics/05`)** owns the one-element edit above and owns
   declining it. If it declines, it should say so in that sheet rather than leave the omission
-  unauthored, so the silent clear becomes a decision somebody made.
+  unauthored, so a silent clear becomes a decision somebody made.
 - **Beat-scheduler work (`game/src/client/Beats.luau`)** inherits **zero new warnings**, verified
-  against the source. `checkContract`'s exclusivity loop iterates `response.sequencedBeats`, and
-  `patchClear` is in `unsequencedBeats`; the forbidden-channel loop only warns when a name is in
+  against the source. `checkContract`'s exclusivity loop iterates `response.sequencedBeats` and
+  `patchClear` is in `unsequencedBeats`; the forbidden-channel loop warns only when a name is in
   both `channels` and `forbiddenChannels`, and `patchClear` declares no `forbiddenChannels`;
-  `channelExclusivity` has no `audio` entry for anyone to own `[research: game/src/client/Beats.luau]`.
+  `channelExclusivity` has no `audio` entry for anyone to own
+  `[research: game/src/client/Beats.luau]`.
 - **In-world sound work (sheet 03, mine)** inherits a hard invariant: the `patchClear` cue reads
   `GameConfig.Response.beats[patchClear].channels` at runtime and plays only when `"audio"` is
-  present. It may never test a literal, and it may never assume the amendment landed.
+  present. It may never test a literal and may never assume the amendment landed.
 - **Mix work (`audio/mix/02`)** gets G1 resolved in the direction that makes its load case real:
-  the 8-onsets-per-second case is live, and its concurrency cap and roll-off curve have something
-  to attenuate. It must still stay legal under a decline, which is what the runtime read gives it.
+  the 8-onsets-per-second case is live and its cap and roll-off curve have something to attenuate.
+  It must still stay legal under a decline, which is what the runtime read gives it.
 - **Muted-play work (`audio/mix/04`)** gets a beat that gains a third channel and keeps both
   non-audio ones, so `audioOnlyBeats: 0` is unaffected and is not asked to widen.
 - **Stinger work** is untouched: `B1`, `B2` and `B3` already carry `audio` and no ranking moves.
@@ -117,8 +114,8 @@ Three reasons the cell does not survive:
    pre-revision form shows exactly one added array element and no other change.
 2. Built against an unamended `response` whose `patchClear.channels` is `["atPatch", "readout"]`,
    the `patchClear` cue plays no sound and writes no warning across 200 clears; built against the
-   amended one, it plays. The cue body contains no string literal `"audio"` compared against a
-   hard-coded channel list — it reads the array from `GameConfig`.
+   amended one, it plays. The cue body contains no hard-coded channel list — it reads the array
+   from `GameConfig`.
 3. With `"audio"` added, `Beats.luau`'s `checkContract` emits zero warnings it did not emit
    before, at connect, on a config where `patchClear` is in `unsequencedBeats`,
    `channelExclusivity` has no `audio` key, and `patchClear.forbiddenChannels` is empty.

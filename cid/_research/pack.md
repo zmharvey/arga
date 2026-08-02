@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 250 unique source(s); 139 were
+Extracted from `cid`. 250 unique source(s); 164 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -24,6 +24,18 @@ did not fetch" becomes checkable instead of trusted.
 - `` and `` — the two sources behind the case-(c) ruling above.
 - *The Feedback reading is correct and is about a different thing.** `PromptGamePassPurchaseFinished` fires only for a prompt the experience raised ``, `products.F13` forbids raising one, and no in-experience event fires for a website purchase ``. So **nothing is pushed** to anybody — which forbids event-driven detection and a notice, and says nothing about polling. Its sentence *"the client never learns the purchase happened"* is true of the client and must not be read as true of the server, or a builder concludes there is nothing to poll ``.
 - `` — the rendered reference page. Confirms `PromptGamePassPurchaseFinished(player, gamePassId, wasPurchased)` exists and fires on prompt completion, i.e. only for prompts the experience raised.
+
+## https://create.roblox.com/docs/parts/materials
+
+*Cited by 8: `art/environment/01-world-part-budget`, `art/environment/03-groundwork-and-channels`, `art/objects/02-the-object-roster`, `art/objects/03-the-tool-in-hand`, `art/objects/05-foliage-form`, `art/objects/_lead`, `art/style/01-palette-and-materials`, `art/style/_lead`*
+
+- **Weathering with zero uploaded assets.** `MaterialVariant` and `SurfaceAppearance` both require an uploaded texture; built-in base materials require none, their *"texture assets are bundled with Studio"* ``, and `Limestone` and `Cobblestone` are base materials valid on a `BasePart` ``. So `P7` weathering is carried by the material choice and by nothing else. Stain overlays, patina parts and softened arrises are **not depicted**, and that is an accepted loss, not an omission: each would cost an uploaded image against `uploadedImageAssetsInWorldGeometry` 0 and `N17`, or a second tuple…
+- **Why `Cobblestone` and not `Slate`.** `theme/setting/01` forbids grey granite, white marble, red brick and dark basalt and requires *"warm pale limestone, dressed and weathered"*; the same sheet makes *"pattern in paving"* one of the four permitted ornament channels. `Cobblestone` is a base material applicable to a `BasePart` and carries a bundled tileable pattern at **zero uploaded assets** ``, ``. `Slate` supplies neither the warmth nor the dressed-joint pattern and is the material a builder chose because no key stated one.
+- **The defect is not in dispute.** `game/src/server/Tool.luau:211`: *"Colour, Material and Transparency are deliberately NOT set: no key states them, so the engine defaults stand rather than this module choosing an appearance. Reported."* Two `Part`s in every player's hand render as default-grey `Plastic` ``. That is gap G7 and closing it is why `objectArt` is being proposed. Every value below is `[cid: decided]`: **the brief names no material, colour or finish for any object** (O1).
+- **The choice space is exactly 47 built-in `Enum.Material` members** ``. `MaterialVariant` and `SurfaceAppearance` are both out on a source, not an assumption: their texture maps require that you *"paste an asset ID or import a new texture from your computer"*, while built-in base materials need no upload because their *"texture assets are bundled with Studio"* ``. `budgets` sets `uploadedImageAssetsInWorldGeometry` to 0, so both routes are forbidden outright.
+- **A `Decal` or `Texture` is also an uploaded image asset**, which `budgets.uploadedImageAssetsInWorldGeometry` 0 forbids outright — the same sourced ground as the custom-material ban ``.
+- `` — the distinction the enum page omits. A `MaterialVariant`'s texture maps require that you *"paste an asset ID or import a new texture from your computer"*; `SurfaceAppearance` uses the same PBR texture route; built-in base materials require no upload, their *"texture assets are bundled with Studio instead of being accessible as a typical asset ID."* **This settles that any custom material in this game is an uploaded image asset, which `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry: 0` forbids outright.** It is the sourced half of sheet 03's constraint.
+- *A limestone world costs zero uploaded assets.** `Limestone`, `Sandstone`, `Concrete`, `Cobblestone`, `Pavement`, `Rock`, `Slate` and `Granite` are base materials applicable to a `BasePart`, and built-in base material textures *"are bundled with Studio instead of being accessible as a typical asset ID"* ``. `MaterialVariant` and `SurfaceAppearance` both take a PBR texture you *"paste an asset ID or import"* for ``, which is what makes both forbidden under `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry` 0 and `N17` — sourced, not assumed. `Enum.Material` has 47 members including…
 
 ## https://create.roblox.com/docs/production/analytics/analytics-dashboard
 
@@ -49,6 +61,15 @@ did not fetch" becomes checkable instead of trusted.
 - *The Networking reading rests on weaker evidence and I am not adopting its conclusion.** It cites an open devforum feature request asking for the cached value to be invalidated when `PromptGamePassPurchaseFinished` fires, with no staff reply ``. That is community consensus, and the request is *for* behaviour the current documentation now describes; a request that may since have been granted is not evidence it was refused. The second devforum thread establishes only that a cache exists, which nobody disputes, and its own workaround — *"the only valid way … is by having players rejoin"* — is…
 - `` — developer-side corroboration that the cache is real and that *"the only valid way to validate gamepass purchases is by having players rejoin"* is the common workaround. Cited as evidence of the belief build note 4 encodes, **not** as evidence the belief is correct; the reference above is the one that governs.
 
+## https://create.roblox.com/docs/production/publishing/accessibility
+
+*Cited by 6: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`, `art/style/01-palette-and-materials`, `art/style/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
+
+- *That does not fail the brief, and no sheet may pretend the floor is what satisfies it.** The brief's requirement is *"rarity tiers must differ by shape or silhouette, not only hue … This is a requirement, not a nicety"* `[brief: soft]`, treated as effectively binding by `architect/06`. It is carried by `tiers` shipping four distinct shapes at four distinct heights, and its check is `tiers` criterion 4 — every tier a distinct silhouette in a greyscale screenshot. The platform arrives at the same place independently: Roblox publishes **no contrast ratio at all** and recommends *"different…
+- *The luma floor is not the legibility guarantee, and no sheet may claim it as one.** It is Rec.601 luma; WCAG 1.4.11's 3:1 is sRGB relative luminance, a different quantity, computing to roughly **1.5:1** against `tiers[0]`. That does not fail the brief — the guarantee is `tiers`' four shapes and four heights under *"rarity tiers must differ by shape or silhouette, not only hue"* `[brief: soft]`, treated as effectively binding — but a sheet that cites the luma floor as an accessibility conformance claim is citing the wrong number. Roblox publishes no contrast ratio and prescribes *"different…
+- *`TextScaled` is banned outright, and the reason is accessibility rather than taste.** Labels with `TextScaled` *"bypass the `PreferredTextSize` value entirely"*, while `AutomaticSize` objects *"resize their bounds as text size changes"* and wrapped text *"flows to additional lines as `PreferredTextSize` increases"* ``. A player who raises Text Size in the Roblox menu must get larger text, and `TextScaled` silently removes that. `Enum.PreferredTextSize` has four members, `Medium` (default), `Large`, `Larger`, `Largest` ``.
+- `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
+
 ## https://create.roblox.com/docs/reference/engine/classes/GuiService
 
 *Cited by 6: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
@@ -59,6 +80,17 @@ did not fetch" becomes checkable instead of trusted.
 - `GuiService:GetGuiInset()` returns `screenAreaTopLeft, screenAreaBottomRight`; `GetInsetArea(Enum.ScreenInsets)` returns a `Rect`, and its values *"only take effect on ScreenGuis that have their `IgnoreGuiInset` property set to false."* Gamepad members are `SelectedObject`, `AutoSelectGuiEnabled`, `GuiNavigationEnabled`, `Select()`. ``
 - *`TextScaled` is banned outright, and the reason is accessibility rather than taste.** Labels with `TextScaled` *"bypass the `PreferredTextSize` value entirely"*, while `AutomaticSize` objects *"resize their bounds as text size changes"* and wrapped text *"flows to additional lines as `PreferredTextSize` increases"* ``. A player who raises Text Size in the Roblox menu must get larger text, and `TextScaled` silently removes that. `Enum.PreferredTextSize` has four members, `Medium` (default), `Large`, `Larger`, `Largest` ``.
 - `Enum.PreferredTextSize` has four members — `Medium` (default), `Large`, `Larger`, `Largest` — reachable via `GetPropertyChangedSignal`. ``
+
+## https://devforum.roblox.com/t/failed-to-load-soundid-error-spam-extreme-log-file-sizes/2225682
+
+*Cited by 6: `audio/mix/03-the-asset-ledger`, `audio/sfx/03-the-sfx-key`, `audio/stingers/01-the-three-payoff-cues`, `audio/ui/01-press-acknowledgment`, `audio/ui/02-index-open-and-close`, `audio/ui/_lead`*
+
+- *The guard sits at the pool, not at the id.** A sound whose id will not load errors in the console rather than failing silently, and the 2023 platform fix was to the error *spam*, not the error ``. So the rule is one test in the pool's acquire function — no `Play()` on a `Sound` whose `SoundId` is the sentinel — and a build with every id unprovisioned boots, plays nothing, and warns nothing.
+- **Every id is `""`, never `null` and never `"none"`.** `bridge/emit-config.mjs:79` maps `null` to `nil` and Luau drops the key ``; `SoundId` is a `ContentId` string, so `release.provisioning.unprovisionedIdValue` `0` does not transfer, and a non-empty unresolvable id errors repeatedly in the console `` — which is why the guard sits at the play site. Mix rules the sentinel for six domains and this key follows it.
+- `Sound.SoundId` is a `ContentId` string, so `release.provisioning.unprovisionedIdValue`'s `0` cannot transfer by type, and `tech/deploy/02` forbids an explicit null ``. **I use `""`, the engine's own empty default, and Mix's ruling supersedes this field if it lands differently** — a one-field revision, not a redesign. The guard is at the play site rather than at the id because a sound whose id will not load *"will CONSTANTLY error"* in the console ``, so a cue body must return before it touches a `Sound` at all. Source class is `creatorStore` for all three by preference: the store carries…
+- *The asset form is `mix`'s, mirrored here.** `Sound.SoundId` is a **ContentId** string ``, so `release.provisioning.unprovisionedIdValue`'s `0` does not transfer by type. The guard sits at the **play site**, not at the id, because an id that will not load errors in the console rather than failing silently ``. Uploaded audio is private and needs a per-experience grant, and the Creator Store carries free-to-use audio `` — which is why each row carries a `sourceClass` that makes the upload orderable work rather than a redesign.
+- *One asset per cue, and both are the sentinel until provisioned**, written through `mix`'s unprovisioned form with the play-site guard `01` states, since an id that will not load errors in the console rather than failing silently ``.
+- A sound whose id will not load errors in the console rather than failing silently — *"Currently if an audio is played but it won't load (such as the sound id being zero), Roblox will CONSTANTLY error it in the console"*; staff acknowledged and the **spam** was fixed in 2023, not the error itself. `` → the sentinel guard must sit at the play site, not at the id.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/custom-events.md
 
@@ -104,15 +136,13 @@ did not fetch" becomes checkable instead of trusted.
 - Method signatures `` — `LogCustomEvent(player, eventName, value, customFields)`, `LogEconomyEvent(player, flowType, currencyType, amount, endingBalance, transactionType, itemSku, customFields)`, `LogFunnelStepEvent(player, funnelName, funnelSessionId, step, stepName, customFields)`, `LogOnboardingFunnelStepEvent(player, step, stepName, customFields)`, `LogProgressionEvent(...)`. The page states no rate limit and no data restriction.
 - *Out-of-order detection is achievable, and not inside the funnel API.** `LogCustomEvent(player, eventName, value, customFields)` takes a **numeric `value`** and is subject to no funnel step semantics ``. So: **one custom event, fired once per player at the instant step 6 is emitted, whose `value` is the number of lower-ordinal steps not yet emitted for this player this session.** Zero in the correct case, one or more in exactly the defect case. The dashboard charts a custom event's value by count, average, sum, min and max ``. It needs no clock, no bucket and no cross-step join, and it is…
 
-## https://devforum.roblox.com/t/failed-to-load-soundid-error-spam-extreme-log-file-sizes/2225682
+## https://create.roblox.com/docs/reference/engine/enums/Material
 
-*Cited by 5: `audio/sfx/03-the-sfx-key`, `audio/stingers/01-the-three-payoff-cues`, `audio/ui/01-press-acknowledgment`, `audio/ui/02-index-open-and-close`, `audio/ui/_lead`*
+*Cited by 5: `art/objects/02-the-object-roster`, `art/objects/03-the-tool-in-hand`, `art/objects/_lead`, `art/style/01-palette-and-materials`, `art/style/_lead`*
 
-- **Every id is `""`, never `null` and never `"none"`.** `bridge/emit-config.mjs:79` maps `null` to `nil` and Luau drops the key ``; `SoundId` is a `ContentId` string, so `release.provisioning.unprovisionedIdValue` `0` does not transfer, and a non-empty unresolvable id errors repeatedly in the console `` — which is why the guard sits at the play site. Mix rules the sentinel once for six domains and this key follows it.
-- `Sound.SoundId` is a `ContentId` string, so `release.provisioning.unprovisionedIdValue`'s `0` cannot transfer by type, and `tech/deploy/02` forbids an explicit null ``. **I use `""`, the engine's own empty default, and Mix's ruling supersedes this field if it lands differently** — a one-field revision, not a redesign. The guard is at the play site rather than at the id because a sound whose id will not load *"will CONSTANTLY error"* in the console ``, so a cue body must return before it touches a `Sound` at all. Source class is `creatorStore` for all three by preference: the store carries…
-- *The asset form is `mix`'s and mirrored here.** `Sound.SoundId` is a **ContentId** string ``, so `release.provisioning.unprovisionedIdValue`'s `0` does not transfer by type. The guard sits at the **play site** and not at the id, because an id that will not load errors in the console rather than failing silently ``. Every row below carries `mix`'s sentinel mirrored, and this key rules nothing about it. Uploaded audio is private and needs a per-experience grant, and the Creator Store carries free-to-use audio `` — which is why each row names a `sourceClass` that makes the upload orderable…
-- *One asset per cue, and both are the sentinel until provisioned**, written through `mix`'s unprovisioned form with the play-site guard `01` states, since an id that will not load errors in the console rather than failing silently ``.
-- A sound whose id will not load errors in the console rather than failing silently — *"Currently if an audio is played but it won't load (such as the sound id being zero), Roblox will CONSTANTLY error it in the console"*; staff acknowledged and the **spam** was fixed in 2023, not the error itself. `` → the sentinel guard must sit at the play site, not at the id.
+- **The choice space is exactly 47 built-in `Enum.Material` members** ``. `MaterialVariant` and `SurfaceAppearance` are both out on a source, not an assumption: their texture maps require that you *"paste an asset ID or import a new texture from your computer"*, while built-in base materials need no upload because their *"texture assets are bundled with Studio"* ``. `budgets` sets `uploadedImageAssetsInWorldGeometry` to 0, so both routes are forbidden outright.
+- `` — **47 members**, including `Limestone`, `Wood`, `WoodPlanks`, `Metal`, `CorrodedMetal`, `Foil`, `Leather`, `Fabric`, `Plaster`, `Concrete`, `Cobblestone`, `Sandstone`, `Slate`, `Grass`, `LeafyGrass` and **`Neon`**. This is the space sheets 03 and 05 choose inside, and `Neon`'s presence is why `T10`'s no-glow rule needs a named ban rather than an adjective. The page does **not** distinguish built-in from custom.
+- *A limestone world costs zero uploaded assets.** `Limestone`, `Sandstone`, `Concrete`, `Cobblestone`, `Pavement`, `Rock`, `Slate` and `Granite` are base materials applicable to a `BasePart`, and built-in base material textures *"are bundled with Studio instead of being accessible as a typical asset ID"* ``. `MaterialVariant` and `SurfaceAppearance` both take a PBR texture you *"paste an asset ID or import"* for ``, which is what makes both forbidden under `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry` 0 and `N17` — sourced, not assumed. `Enum.Material` has 47 members including…
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/MarketplaceService.yaml
 
@@ -132,8 +162,18 @@ did not fetch" becomes checkable instead of trusted.
 - `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
 - **`Volume` default is 0.5, range 0 to 10** ``.
 - **One `Sound` cannot overlap itself.** `Play()` *"sets TimePosition to the last value set by a script (or 0 …), then sets Playing to true"* ``, and the community reading is unambiguous — *"doing this restarts the sound if it was already playing"*, overlap requires multiple instances ``. **This is why `response`'s `onOverload: "overlap"` at 8/s is a data requirement and not a note:** a builder handed one row with one id builds a machine-gun restart, which two builders would not converge on.
-- *The asset form is `mix`'s and mirrored here.** `Sound.SoundId` is a **ContentId** string ``, so `release.provisioning.unprovisionedIdValue`'s `0` does not transfer by type. The guard sits at the **play site** and not at the id, because an id that will not load errors in the console rather than failing silently ``. Every row below carries `mix`'s sentinel mirrored, and this key rules nothing about it. Uploaded audio is private and needs a per-experience grant, and the Creator Store carries free-to-use audio `` — which is why each row names a `sourceClass` that makes the upload orderable…
+- *The asset form is `mix`'s, mirrored here.** `Sound.SoundId` is a **ContentId** string ``, so `release.provisioning.unprovisionedIdValue`'s `0` does not transfer by type. The guard sits at the **play site**, not at the id, because an id that will not load errors in the console rather than failing silently ``. Uploaded audio is private and needs a per-experience grant, and the Creator Store carries free-to-use audio `` — which is why each row carries a `sourceClass` that makes the upload orderable work rather than a redesign.
 - `Sound.SoundId` is type **ContentId** — *"Content ID of the sound file to associate with the Sound"* — and `Sound.IsLoaded` is *"true when the Sound has loaded from Roblox servers and is ready to play. You can use this property and the `Loaded` event to verify a sound has loaded before playing it."* `` → the `0` sentinel `release` uses for a `gamePassId` cannot transfer by type, and a 200 ms budget presumes a resident asset.
+
+## https://robloxapi.github.io/ref/class/Sound.html
+
+*Cited by 5: `audio/ambient/01-the-continuous-layers`, `audio/ambient/_lead`, `audio/mix/01-bus-tree-and-levels`, `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
+
+- *The sentinel is `""`, adopted from `mix`, not chosen here.** `release`'s numeric `0` does not transfer: `SoundId` is a `ContentId` whose engine default is empty ``. **`[research owed: whether `Sound:Play()` with an empty `SoundId` writes a client-output warning — the engine reference does not state it]`**; criterion 2 is written to be failed if it does. `assetSource` is `creatorStore` first: the store holds *"more than 100,000 professionally-produced sound effects and music tracks"* free to use and a store id is already live, skipping the upload gate `mix` is filing against `release` ``.
+- 1. **The `SoundId` sentinel.** `mix` rules it once for six domains and my rows must adopt whatever it picks. My research narrows it — the field is `ContentId` with an empty default ``, so `release`'s numeric `0` demonstrably does not transfer — but the choice between `""` and a sentinel string is theirs. 2. **The 20 MB `Sounds` allocation.** If `mix` splits the budget six ways, a continuously resident looping bed is the largest single claim in the category and the split may not fund the loop length sheet `01` needs. The residue then routes to loop length, not to layer count. 3. **Roll-off…
+- *Level lives in two properties and both are mine.** `Volume` is 0–10 on both `Sound` and `SoundGroup`, engine defaults 0.5 and 1, and the group's value multiplies its members `` ``. Membership is by property, **not** by parenting, and groups nest ``. So a per-bus level and a per-cue level are the same arithmetic, and two keys writing them would be two writers for one number. `mix.assets.rows[].volume` and `mix.buses[].volume` are the only two writers in the game.
+- *The sentinel is `""` and neither existing precedent transfers.** `release.provisioning.unprovisionedIdValue` is `0`, a number; `Sound.SoundId` is a `ContentId` string whose engine default is empty ``, so `0` is a type error. `tech/deploy/02`'s scalar sentinel `"none"` would be a **non-empty content string the engine tries and fails to resolve** — an error, not silence — and that sheet's own rule admits the exception: `"none"` applies *"unless the containing table declares a more specific sentinel in place."* This key declares one, once, for all six audio keys. **Two other domains reached…
+- `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
 
 ## https://robloxapi.github.io/ref/class/StarterPlayer.html
 
@@ -143,6 +183,17 @@ did not fetch" becomes checkable instead of trusted.
 - **A neighbour is nameless at rest and I am not fixing that.** `StarterPlayer.NameDisplayDistance` defaults to 100 `` against a realised 122. Raising it is identity's call and my execution.
 - *Identity work.** My test deliberately does not use the nameplate, so nothing here reopens `theme/identity/03-co-present-stranger`. But `StarterPlayer.NameDisplayDistance` defaults to **100** studs `` against a realised spawn separation of 160 today and 128 at best, so **a co-present stranger is nameless at rest either way.** If that ruling requires a readable nameplate, the display distance must rise above the realised separation — **identity's call, area arrangement's execution, not mine.**
 - `StarterPlayer.NameDisplayDistance` and `HealthDisplayDistance` default to **100** studs. ``
+
+## https://www.international-sound-directory.com/2025/12/07/do-people-really-play-mobile-games-without-sound-myth-or-reality/
+
+*Cited by 5: `audio/mix/04-muted-play`, `audio/music/01-whether-music-exists`, `audio/music/_lead`, `audio/ui/01-press-acknowledgment`, `audio/ui/04-system-notice-sound`*
+
+- *The category handed me an unsourced motive and I am not restating it.** `cid/audio/_category.md` derives the invariant from *"a large share of sessions run with no sound at all"*, which nothing in this repo supports. The one survey any writer in this category reached reports **34.9% always / 23.6% often / 19% sometimes / 9.3% never** playing mobile games with sound, n=541 — general mobile, neither Roblox-specific nor 8–14, so directional at best ``. Music work raised this and it is right. **The invariant survives entirely on the channel lists**, which is how the category actually got it,…
+- The category's muted-player premise — *"a large share of sessions run with no sound at all"* — is unsourced in this repo. The one survey available reports **34.9% always / 23.6% often / 19% sometimes / 9.3% never** playing mobile games with sound, n = 541 `` — general mobile, **not Roblox and not 8–14**, so directional only, and the four buckets as banked sum to 86.8% with the remaining 13.2% unlabelled `[unverified: the source's fifth bucket and its label; settled by re-fetching that survey's own figure table]`. Mix's `audioOnlyBeats: 0` survives on `response`'s per-beat channel arrays,…
+- *This ruling does not rest on muted play, and I will not let it.** The category derives its muted-player invariant from *"a large share of sessions run with no sound at all"*, which no source in this repo supports. The one survey I could find reports **34.9% always / 23.6% often / 19% sometimes / 9.3% never** playing with sound, n=541 `` — general mobile, neither Roblox-specific nor 8–14, so directional only. A silence ruling built on an unevidenced muting reflex would be the comfortable answer this pipeline exists to remove. **What carries when sound is off is unaffected by me either…
+- Mobile muted-play figures, cited above with their limits. ``
+- *Muted play, honestly.** `B4` carries `readout` as well as `audio`, so `audioOnlyBeats: 0` survives on `response`'s own channel arrays and needs no motive from me. The category's *"a large share of sessions run muted"* premise is **unsourced**; the one survey available reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile, neither Roblox-specific nor 8–14 ``. The invariant holds on the channel arrays; the motive is not restated as fact.
+- *Not decided on the muted-player premise, in either direction.** The category's *"a large share of sessions run muted"* line is unsourced; the one available survey reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile and neither Roblox-specific nor 8–14 ``. That figure would be an argument *for* a sound as often as against one, and the ruling rests on `D3`/`D6` and on unactionability instead. `audioOnlyBeats: 0` is unaffected either way: this is not a beat and the plate is its only channel, so a sound could only ever have been a…
 
 ## https://www.rolimons.com/game/133086043677134
 
@@ -258,13 +309,6 @@ did not fetch" becomes checkable instead of trusted.
 - *RR-4 · `cid/gameplay/monetization/01-the-offer-ladder.md:116`.** `externalPrerequisite.what` says the pass must be *"created on the Roblox creator site"* without stating that the experience must be **published first** — pass creation requires a published, accessible experience. `` That inverts the naive order and is the whole of my `provisioning` gate. A one-clause addition, not a re-decision.
 - *180 seconds, staggered.** One product exists ``, so a poll is one web call per player. At 16 players that is 0.089 calls/s server-wide, which is negligible against any plausible `MarketplaceService` budget; and against an unbounded "several minutes" propagation window a 180-second poll adds at most 180 seconds of detection latency to a delay the platform already owns. Staggering the phase by `UserId % 180` matters more than the interval does: sixteen players joining inside the first thirty seconds would otherwise poll in a burst forever. A 10–20 minute session `[brief: binding]` gets 3 to…
 
-## https://create.roblox.com/docs/production/publishing/accessibility
-
-*Cited by 4: `art/lighting/_lead`, `art/style/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
-
-- *`TextScaled` is banned outright, and the reason is accessibility rather than taste.** Labels with `TextScaled` *"bypass the `PreferredTextSize` value entirely"*, while `AutomaticSize` objects *"resize their bounds as text size changes"* and wrapped text *"flows to additional lines as `PreferredTextSize` increases"* ``. A player who raises Text Size in the Roblox menu must get larger text, and `TextScaled` silently removes that. `Enum.PreferredTextSize` has four members, `Medium` (default), `Large`, `Larger`, `Largest` ``.
-- `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
-
 ## https://create.roblox.com/docs/reference/engine/classes/GuiObject
 
 *Cited by 4: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
@@ -338,6 +382,17 @@ did not fetch" becomes checkable instead of trusted.
 - `01-FOUNDATION.md` concedes lap length was unsourceable across three source types and rules the reference's number non-transferable, so this is the first stated number rather than a contradiction of a researched one. The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its smallest early lap is 1.5x this game's entire bound session and it survives that only on long desktop sittings. **It…
 - The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/audio/assets.md
+
+*Cited by 4: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`, `audio/sfx/03-the-sfx-key`, `audio/sfx/_lead`*
+
+- *One coincidence worth stating: a single audio upload may itself be 20 MB.** Uploads are `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo ``. **One maximum-size file is 100% of this whole category's runtime ceiling.** That is the reason every row carries a per-row length cap and a mono requirement rather than a note.
+- *Creator Store by default, and this is the finding music work surfaced.** The store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use by asset id ``. **A store asset already has a live id, so it passes through no upload gate, no moderation queue and no permission grant at all.** An upload costs all three. So `source` is a required column, the default is `creatorStore`, and a row re-declared `upload` by its owning key must carry a `whyNotCreatorStore` string (`forbidden` `M13`).
+- Audio upload limits: `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo; import caps 2,000 per 30 days ID-verified, 100 unverified; the Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use ``. **Note the coincidence worth stating in sheet 03:** one file's upload ceiling is the whole category's runtime memory budget.
+- **`upload`, not `creatorStore`, for all twelve.** The Creator Store's *"more than 100,000 professionally-produced sound effects"* are free to use but do not come pitched to a named scale degree at a fixed length, and imported audio is private until permission is granted per experience ``. Twelve uploads at 0.30 s are far inside the 20 MB per-file ceiling and the 100-import cap.
+- **Audio provisioning.** Imported audio is private by default; *"The asset privacy system automatically ensures that the IDs of your imported audio can't be accessed by users without proper permissions"*, and permission is granted per experience. The Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* that are free-to-use. Formats `.mp3`, `.ogg`, `.wav`, `.flac`; under 20 MB and 7 minutes; sample rate ≤ 48 kHz; 2,000 imports per 30 days if ID-verified, 100 if not; uploads enter moderation and are visible only to the uploader until approved ``.…
+- **A newer API exists.** *"Sound objects don't have the same dynamic functionality as AudioPlayer objects"*, and the docs recommend `AudioPlayer` for new implementations ``. **Not my call** — instance class routes to whoever places the `Sound`/`AudioPlayer` creator (G5, Mix to raise, `representation` to place). Sheet 03 states its rows in fields both APIs have, so the choice does not reopen the key.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/input/mobile.md
 
 *Cited by 4: `audio/ui/03-stated-silences`, `audio/ui/_lead`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
@@ -353,28 +408,9 @@ did not fetch" becomes checkable instead of trusted.
 
 - *`InverseTapered` for own work, `LinearSquare` for a neighbour's.** `InverseTapered` is the lesser of the inverse and linear curves, so it falls off naturally near the source and still reaches zero at `RollOffMaxDistance` — it culls, which `Inverse` does not. 72 studs is above the 51.66-stud maximum effective clear radius `axisBudget` publishes, so the player's own farthest patch is always audible and everything past it is not. `LinearSquare` for the neighbour because *"low `RollOffMaxDistance` values cause audio to abruptly cut off"* `` and the squared curve is already near zero well…
 - Parenting decides spatialisation: child of a `BasePart` or `Attachment` is positional; *"within `SoundService` or `Workspace`"* is global, *"volume and pan position remain the same regardless of the user's sound listener position"*; and *"low `RollOffMaxDistance` values cause audio to abruptly cut off"* ``.
-- **Positional, because a neighbour's clear is the second half of presence.** `social/03` `X10` explicitly permits *"A's own patches clearing… and the clear cue that accompanies it"* to reach a second client, and `social/02` requires a neighbour read as a body whose ground is visibly being cleared. A global 2D cue would be 128 onsets a second at full level at 16 players. Spatialisation is decided by parent — a child of a `BasePart` or `Attachment` attenuates with distance, a child of `SoundService` or `Workspace` does not ``.
+- **Positional, because a neighbour's clear is the second half of presence.** `social/03` `X10` permits *"A's own patches clearing… and the clear cue that accompanies it"* to reach a second client, and `social/02` requires a neighbour read as a body whose ground is visibly being cleared. A global 2D cue would be 128 onsets a second at full level at 16 players. Spatialisation is decided by parent ``.
 - **Positional vs global is decided by parent.** *"Volume changes depending on the distance between the user's sound listener and the position of the part"* when parented to a BasePart or Attachment; parented to `SoundService` or `Workspace`, *"Volume and pan position remain the same regardless of the user's sound listener position or rotation"*. A BasePart parent emits from the whole surface; an Attachment emits from a point ``.
 - **`RollOffMode` defaults to `Inverse`; `EmitterSize` is deprecated — use `RollOffMinDistance` and `RollOffMaxDistance`** ``.
-
-## https://robloxapi.github.io/ref/class/Sound.html
-
-*Cited by 4: `audio/ambient/01-the-continuous-layers`, `audio/ambient/_lead`, `audio/mix/01-bus-tree-and-levels`, `audio/mix/_lead`*
-
-- *The sentinel is `""`, adopted from `mix`, not chosen here.** `release`'s numeric `0` does not transfer: `SoundId` is a `ContentId` whose engine default is empty ``. **`[research owed: whether `Sound:Play()` with an empty `SoundId` writes a client-output warning — the engine reference does not state it]`**; criterion 2 is written to be failed if it does. `assetSource` is `creatorStore` first: the store holds *"more than 100,000 professionally-produced sound effects and music tracks"* free to use and a store id is already live, skipping the upload gate `mix` is filing against `release` ``.
-- 1. **The `SoundId` sentinel.** `mix` rules it once for six domains and my rows must adopt whatever it picks. My research narrows it — the field is `ContentId` with an empty default ``, so `release`'s numeric `0` demonstrably does not transfer — but the choice between `""` and a sentinel string is theirs. 2. **The 20 MB `Sounds` allocation.** If `mix` splits the budget six ways, a continuously resident looping bed is the largest single claim in the category and the split may not fund the loop length sheet `01` needs. The residue then routes to loop length, not to layer count. 3. **Roll-off…
-- *Level lives in two properties and both are mine.** `Volume` is 0–10 on both `Sound` and `SoundGroup`, engine defaults 0.5 and 1, and the group's value multiplies its members `` ``. Membership is by property, **not** by parenting, and groups nest ``. So a per-bus level and a per-cue level are the same arithmetic, and two keys writing them would be two writers for one number. `mix.assets.rows[].volume` and `mix.buses[].volume` are the only two writers in the game.
-- `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
-
-## https://www.international-sound-directory.com/2025/12/07/do-people-really-play-mobile-games-without-sound-myth-or-reality/
-
-*Cited by 4: `audio/music/01-whether-music-exists`, `audio/music/_lead`, `audio/ui/01-press-acknowledgment`, `audio/ui/04-system-notice-sound`*
-
-- The category's muted-player premise — *"a large share of sessions run with no sound at all"* — is unsourced in this repo. The one survey available reports **34.9% always / 23.6% often / 19% sometimes / 9.3% never** playing mobile games with sound, n = 541 `` — general mobile, **not Roblox and not 8–14**, so directional only, and the four buckets as banked sum to 86.8% with the remaining 13.2% unlabelled `[unverified: the source's fifth bucket and its label; settled by re-fetching that survey's own figure table]`. Mix's `audioOnlyBeats: 0` survives on `response`'s per-beat channel arrays,…
-- *This ruling does not rest on muted play, and I will not let it.** The category derives its muted-player invariant from *"a large share of sessions run with no sound at all"*, which no source in this repo supports. The one survey I could find reports **34.9% always / 23.6% often / 19% sometimes / 9.3% never** playing with sound, n=541 `` — general mobile, neither Roblox-specific nor 8–14, so directional only. A silence ruling built on an unevidenced muting reflex would be the comfortable answer this pipeline exists to remove. **What carries when sound is off is unaffected by me either…
-- Mobile muted-play figures, cited above with their limits. ``
-- *No sound may be the sole carrier of anything.** `B4` carries `readout` as well as `audio` ``, so `audioOnlyBeats: 0` survives on `response`'s own channel arrays and needs no motive from me. The category's *"a large share of sessions run muted"* premise is **unsourced**; the one survey available reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile and neither Roblox-specific nor 8–14 ``. The invariant holds on the channel arrays; the motive is not restated as fact.
-- *Not decided on the muted-player premise, in either direction.** The category's *"a large share of sessions run muted"* line is unsourced; the one available survey reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile and neither Roblox-specific nor 8–14 ``. That figure would be an argument *for* a sound as often as against one, and the ruling rests on `D3`/`D6` and on unactionability instead. `audioOnlyBeats: 0` is unaffected either way: this is not a beat and the plate is its only channel, so a sound could only ever have been a…
 
 ## https://www.ofzenandcomputing.com/grass-incremental-tips-tricks/
 
@@ -402,11 +438,26 @@ did not fetch" becomes checkable instead of trusted.
 - *Rollback is a republish.** A restore creates a new version and does **not** publish it ``; publishing does not evict players, and a restart takes a 1–60 minute delay ``. **15 minutes** `[playtest unknown]`, range 5–30, sized for disruption not data: `wiring.onShutdown` saves before teardown, and 15 sits inside the 10–20 minute session `[brief: binding]`. The data half is platform-bounded — successive writes inside one UTC hour overwrite permanently, so **rollback granularity is one hour per key, not one save** ``.
 - **Within one version there is effectively no rollback, and the number is one hour.** DataStore versioned backups keep the latest forever and expire others 30 days after being overwritten, but **successive writes within the same UTC hour overwrite permanently** ``. At a 45-second interval that is 79 of every 80 writes unrecoverable, so per-key recovery granularity is **one hour, not one save**. That makes per-player restore a manual Open Cloud act by whoever holds the API key, and it is why sheet 01's `D11` forbids `GetVersionAsync`, `ListVersionsAsync` and `RemoveAsync` in game code: a…
 
-## https://create.roblox.com/docs/parts/materials
+## https://create.roblox.com/docs/environment/lighting
 
-*Cited by 3: `art/objects/02-the-object-roster`, `art/objects/_lead`, `art/style/_lead`*
+*Cited by 3: `art/lighting/01-the-one-daylight-state`, `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
 
-- `` — the distinction the enum page omits. A `MaterialVariant`'s texture maps require that you *"paste an asset ID or import a new texture from your computer"*; `SurfaceAppearance` uses the same PBR texture route; built-in base materials require no upload, their *"texture assets are bundled with Studio instead of being accessible as a typical asset ID."* **This settles that any custom material in this game is an uploaded image asset, which `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry: 0` forbids outright.** It is the sourced half of sheet 03's constraint.
+- *One state covers eight areas and four depths, argued on geometry plus the engine, not on budget.** Depth already reads through three non-light channels: `layout`'s four disjoint chunk families at 35/37/39/40 anchors per chunk, `depths`' 140 → 640 patches, and rising green quantity by `theme/setting/01`. On top of that the engine renders the terrace/vault difference from one state for free — `Ambient` *"affects the lighting for both outdoor and indoor environments"* while `OutdoorAmbient` *"applies specifically to outdoor areas"*, decided by surface exposure ``. **I do not rest this on…
+- *Three properties are fixed so the readability model is computable without a device.** `ExposureCompensation` 0 makes the global exposure term identically 1; `ColorShift_Top` and `_Bottom` at black make the sun-facing and away-facing tint terms identity (`_Top` *"reflects from surfaces facing the sun"*, `_Bottom` from those facing away ``); and `EnvironmentDiffuseScale` 0 removes the environment-derived ambient term, which is both the term `02`'s static gate cannot compute and the term that collapses hardest inside an enclosed bay. Any nonzero `ExposureCompensation` is *moving the sun*…
+- *Nobody owns the lighting-style property and the platform is mid-migration on it.** `Enum.LightingStyle` ships exactly two members, `Realistic` (0) and `Soft` (1) ``, while `Enum.Technology` now marks `Legacy` and `Unified` deprecated ``. I set `Realistic`, because `ShadowSoftness` *"only functions with Realistic lighting style"* `` and a hard shadow edge on cleared stone is a local luma trough `02`'s minimum rule catches. The migration's timeline and a new place's default are `[unverified]` secondary claims which I do not write as sourced; the key names both the new field and the…
+- *The enclosure check is a raycast, not a render.** `Ambient` applies indoors and out while `OutdoorAmbient` applies only outdoors, with the engine deciding by surface exposure ``, so an enclosed bay is lit by the darker of the two shipped values. Five upward rays per sample point, two of which must reach open sky, is a coarse proxy for that and it is deliberately coarse: it runs with no rendering, no device and no pixels, and it is the half of the problem `environment` can act on. **It is a requirement on `environment`'s authored openings and never a licence to raise `Brightness`** — `V11`…
+- 1. **Every `Lighting` property default.** The API reference page documents types, not defaults, so the thirteen unstated properties' current effective values are `[unverified]`. `01` must state its values absolutely and never as *"the default"*. → *fetch:* `https://create.roblox.com/docs/reference/engine/classes/Lighting` rendered with the property-default column, or read the defaults off a fresh baseline place in Studio. 2. **Which lighting-style value a new place gets, and the migration's status.** A search returned secondary reports (a devforum announcement thread and two Fandom mirrors)…
+
+## https://create.roblox.com/docs/performance-optimization/improve
+
+*Cited by 3: `art/environment/01-world-part-budget`, `art/environment/_lead`, `tech/performance/_lead`*
+
+- **Why a tuple vocabulary rather than a density number.** Roblox documents draw-call batching for *meshes* sharing content and texture and says nothing about primitives ``. If primitives batch, one tuple costs one draw class; if they do not, it costs its own instance count, which is the resident allowance and is already bounded. A tuple count is therefore the only density figure that is true under both models, and it is checkable without a running game. The same page's warning is the reason the roster is short: *"If a large number of objects are concentrated with a high density, then…
+- **Two free savings taken on every class.** *"For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"* and *"Use the `BasePart.CastShadow` property to disable shadow casting on small parts"* ``. Only `paving`, `kerb`, `parapet`, `crossWall` and `pier` collide, because a player walks on or into them; everything else is set false on all three.
+- **So the density answer is a design rule, not a number.** Roblox documents batching for meshes sharing content and texture, and says nothing about primitives ``. Every world part drawing its `Size`, `Material` and `Color` from one short closed vocabulary costs at most one draw-call class per tuple if any batching exists, and at most its own part count if none does. **`environment.distinctDrawClasses` is then a statically countable number and the honest form of a set-dressing density.**
+- **Two free savings, already sourced.** *"For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"*, and *"Use the `BasePart.CastShadow` property to disable shadow casting on small parts where shadows are unlikely to be visible"* ``. Also from the same page, and it is the sentence a set-dressing sheet should read twice: *"If a large number of objects are concentrated with a high density, then rendering this area of the scene requires more draw calls."*
+- `https://create.roblox.com/docs/performance-optimization/improve` — batching is documented for *meshes* sharing content and texture and is **not addressed for primitives**, which corroborates `budgets.renderCeilings.batchingFactor`'s stated uncertainty from the source rather than from another sheet; plus the `CanCollide`/`CanTouch`/`CanQuery` guidance, the `CastShadow` guidance, and the object-density-raises-draw-calls warning. **This page is one of `tech/performance/01`'s open `[research owed:]` items** and it is now banked.
+- `https://create.roblox.com/docs/performance-optimization/improve` — "For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"; `CastShadow` guidance; draw-call instancing described for *meshes* sharing content and texture. Note for **01**: `Plots.luau` already sets `CanCollide` false and `CastShadow` false on patches but sets **neither `CanTouch` nor `CanQuery`**, which is a one-property saving available at no design cost and is a consequence for whoever holds `representation`.
 
 ## https://create.roblox.com/docs/production/monetization/paid-random-items
 
@@ -453,12 +504,6 @@ did not fetch" becomes checkable instead of trusted.
 - 1. `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/avatar-settings.md` — the three Avatar Type options verbatim; the not-accessible-with-scripts sentence; and, **new to this project, the Body tab**: `Custom Scale` with a settable Minimum/Maximum absolute height in studs, `Custom Build`, and the ~5 / ~6–6.5-stud reference heights. Independently confirms `tech/deploy/01`'s rig rows rather than inheriting them. 2. `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/characters/appearance.md` — body scaling is `height / width / head / body…
 - *Avatar type: the player-choice option is the hazard, not R6.** The options are exactly **R6 / R15 / R15 & R6**, set in Avatar Settings, which *"modifies underlying game defaults that are not visible outside of the settings interface or accessible with scripts"* ``. R6 is total and obvious. **R15 & R6 lets one joiner arrive R6, tool-less, while everyone else is correct** — no error, no reproduction. The setting has no read-back, but `Humanoid.RigType` **is** readable per character from a server script ``, which the architect did not note, so P2 is asserted per spawn rather than not at all.
 
-## https://create.roblox.com/docs/reference/engine/enums/Material
-
-*Cited by 3: `art/objects/02-the-object-roster`, `art/objects/_lead`, `art/style/_lead`*
-
-- `` — **47 members**, including `Limestone`, `Wood`, `WoodPlanks`, `Metal`, `CorrodedMetal`, `Foil`, `Leather`, `Fabric`, `Plaster`, `Concrete`, `Cobblestone`, `Sandstone`, `Slate`, `Grass`, `LeafyGrass` and **`Neon`**. This is the space sheets 03 and 05 choose inside, and `Neon`'s presence is why `T10`'s no-glow rule needs a named ban rather than an adjective. The page does **not** distinguish built-in from custom.
-
 ## https://create.roblox.com/docs/scripting/scheduler
 
 *Cited by 3: `tech/networking/01-snapshot-wire-form`, `tech/performance/02-server-frame-cost`, `tech/performance/_lead`*
@@ -493,8 +538,14 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 3: `audio/mix/02-degradation-under-load`, `audio/sfx/03-the-sfx-key`, `audio/sfx/_lead`*
 
 - *One `Sound` cannot overlap itself** — `Play()` restarts it `` `` — so every cue row carries a `poolSize` and a play site acquires from a pool. Without that, `onOverload: "overlap"` at 8 onsets a second builds a machine-gun restart, and two builders would not converge on the fix.
-- **The variation rule and the tier note are one mechanism, which is why twelve assets are affordable.** `Play()` restarts a `Sound` rather than layering it ``, so eight onsets a second from one id is a machine-gun restart. Variation comes from two places that cost nothing extra: the ground's own tier mix, and a three-step round-robin cursor per `tierIndex`. **No randomness anywhere** — `N10` forbids a second source of it near `layout`, and a deterministic cursor is checkable while an RNG is not. Three is the smallest cycle that does not read as alternation `[playtest unknown]`, test range 2…
+- **The variation rule and the tier note are one mechanism, which is why twelve assets are affordable.** `Play()` restarts a `Sound` rather than layering it ``, so eight onsets a second from one id is a machine-gun restart. Variation comes from the ground's own tier mix and a three-step round-robin cursor per `tierIndex`. **No randomness anywhere** — `N10` forbids a second source of it near `layout`, and a deterministic cursor is checkable while an RNG is not. Three is the smallest cycle that does not read as alternation `[playtest unknown]`, test range 2 to 4 variants per `tierIndex`.
 - **One `Sound` cannot overlap itself.** `Play()` *"sets TimePosition to the last value set by a script (or 0 …), then sets Playing to true"* ``, and the community reading is unambiguous — *"doing this restarts the sound if it was already playing"*, overlap requires multiple instances ``. **This is why `response`'s `onOverload: "overlap"` at 8/s is a data requirement and not a note:** a builder handed one row with one id builds a machine-gun restart, which two builders would not converge on.
+
+## https://devforum.roblox.com/t/keep-particles-on-particleemitterdestroy/335327
+
+*Cited by 3: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/02-who-draws-it-and-where`, `art/vfx/_lead`*
+
+- *V8, the trap: the clear cue may not live on the patch.** `Clearing.luau:242-249` calls `instance:Destroy()` on the patch at the instant of the clear, and destroying an emitter's parent removes its live particles immediately `` (a devforum thread, banked at that strength). A cue hosted on the patch dies at the instant it should play. **The host is the lane slab `Part`** — `representation.plot`, one `Slate` slab per lane, top face at Y = 0, destroyed only at teardown. It outlives every patch on it by construction.
 
 ## https://devforum.roblox.com/t/new-event-marketplaceservicewebsite-gamepasspurchaseplayer-gamepassid/1157069
 
@@ -562,15 +613,6 @@ did not fetch" becomes checkable instead of trusted.
 - `[playtest unknown]`, test range 4.0–8.0 s. It sits at the platform's own `DEFAULT_NOTIFICATION_DURATION` `` and above both beat notices because it is the only string in the game carrying information a player cannot re-derive from the screen. It **fires once** and never repeats: a message repeated every 45 seconds is nagging, and `theme/tone/04` `D6` already bars anything that blinks or pulses for the same reason. It is not louder, larger or animated — sheet `01`'s `motion` block applies unchanged.
 - `` — the platform's own notification system: `MAX_NOTIFICATIONS = 3`, `DEFAULT_NOTIFICATION_DURATION = 5`, and an active queue plus an overflow queue that promotes on expiry. A shipped precedent for 02's concurrency question, and evidence that "5 seconds" is the platform's default rather than my invention ``.
 
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/audio/assets.md
-
-*Cited by 3: `audio/mix/_lead`, `audio/sfx/03-the-sfx-key`, `audio/sfx/_lead`*
-
-- Audio upload limits: `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo; import caps 2,000 per 30 days ID-verified, 100 unverified; the Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use ``. **Note the coincidence worth stating in sheet 03:** one file's upload ceiling is the whole category's runtime memory budget.
-- **`upload`, not `creatorStore`, for all twelve.** The Creator Store's *"more than 100,000 professionally-produced sound effects"* are free to use but do not come pitched to a named scale degree at a fixed length, and imported audio is private until permission is granted per experience ``. Twelve uploads at 0.30 s are far inside the 20 MB / 7-minute per-file ceiling and the 100-import unverified cap.
-- **Audio provisioning.** Imported audio is private by default; *"The asset privacy system automatically ensures that the IDs of your imported audio can't be accessed by users without proper permissions"*, and permission is granted per experience. The Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* that are free-to-use. Formats `.mp3`, `.ogg`, `.wav`, `.flac`; under 20 MB and 7 minutes; sample rate ≤ 48 kHz; 2,000 imports per 30 days if ID-verified, 100 if not; uploads enter moderation and are visible only to the uploader until approved ``.…
-- **A newer API exists.** *"Sound objects don't have the same dynamic functionality as AudioPlayer objects"*, and the docs recommend `AudioPlayer` for new implementations ``. **Not my call** — instance class routes to whoever places the `Sound`/`AudioPlayer` creator (G5, Mix to raise, `representation` to place). Sheet 03 states its rows in fields both APIs have, so the choice does not reopen the key.
-
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/cloud-services/data-stores/error-codes-and-limits.md
 
 *Cited by 3: `tech/persistence/01-the-save-write`, `tech/persistence/02-session-locking`, `tech/persistence/_lead`*
@@ -610,7 +652,14 @@ did not fetch" becomes checkable instead of trusted.
 
 - *The engine default never culls anything, and that single fact is why this sheet exists.** `RollOffMode.Inverse` is the default and attenuates as `RollOffMinDistance/distance`, **not using `RollOffMaxDistance` at all**; only `Linear`, `LinearSquare` and `InverseTapered` attenuate *between* min and max ``. At defaults every voice inside a 512-stud streamed set stays in the mix forever, so the concurrency budget would have to absorb the whole worst case rather than a fraction of it.
 - `RollOffMode`: `Inverse` (0) attenuates as `RollOffMinDistance/distance` and **does not use `RollOffMaxDistance`**; `Linear` (1) and `LinearSquare` (2) attenuate *between* min and max; `InverseTapered` (3) is the lesser of the two ``. **This is the load-bearing one for the cap:** at the engine default nothing is ever culled by distance.
-- **The roll-off requirement is stated against Mix, whose defaults would break it twice.** `RollOffMode` defaults to `Inverse`, which *"does not use `RollOffMaxDistance`"* and therefore never culls a voice ``, and `RollOffMinDistance` defaults to 10 while a neighbour's nearest clearing patch is about **5 studs** across the shared lane edge — so at engine defaults a neighbour's clear is at full volume and louder than your own patch at arm's length. **I set no curve.** I require a mode that honours `RollOffMaxDistance`, a `RollOffMinDistance` at or below 2 studs, and inaudibility by the…
+- **The roll-off requirement is stated against Mix, whose defaults would break it twice.** `RollOffMode` defaults to `Inverse`, which *"does not use `RollOffMaxDistance`"* and therefore never culls a voice ``, and `RollOffMinDistance` defaults to 10 while a neighbour's nearest clearing patch is about **5 studs** across the shared lane edge — so at engine defaults a neighbour's clear is at full volume and louder than your own. **I set no curve.** I require a mode that honours `RollOffMaxDistance`, a `RollOffMinDistance` at or below 2 studs, and inaudibility by the 122-stud plot pitch. The…
+
+## https://robloxapi.github.io/ref-temp/enum/Material.html
+
+*Cited by 3: `art/environment/01-world-part-budget`, `art/environment/03-groundwork-and-channels`, `art/style/_lead`*
+
+- **Weathering with zero uploaded assets.** `MaterialVariant` and `SurfaceAppearance` both require an uploaded texture; built-in base materials require none, their *"texture assets are bundled with Studio"* ``, and `Limestone` and `Cobblestone` are base materials valid on a `BasePart` ``. So `P7` weathering is carried by the material choice and by nothing else. Stain overlays, patina parts and softened arrises are **not depicted**, and that is an accepted loss, not an omission: each would cost an uploaded image against `uploadedImageAssetsInWorldGeometry` 0 and `N17`, or a second tuple…
+- **Why `Cobblestone` and not `Slate`.** `theme/setting/01` forbids grey granite, white marble, red brick and dark basalt and requires *"warm pale limestone, dressed and weathered"*; the same sheet makes *"pattern in paving"* one of the four permitted ornament channels. `Cobblestone` is a base material applicable to a `BasePart` and carries a bundled tileable pattern at **zero uploaded assets** ``, ``. `Slate` supplies neither the warmth nor the dressed-joint pattern and is the material a builder chose because no key stated one.
 
 ## https://rowatcher.com/news/what-the-roblox-algorithm-actually-rewards-in-2026-not-ccu
 
@@ -693,15 +742,6 @@ did not fetch" becomes checkable instead of trusted.
 - **`UpdateAsync` for both directions.** Roblox states `SetAsync` "can cause data inconsistency if two servers try to set the same key at the same time" and recommends `UpdateAsync` "to handle multi-server attempts" ``. It is also the only API whose transform can inspect the stored lock in the same request, which is what makes `sessionLock` cost zero extra requests. **If `sessionLock.enabled` were false the read would be `GetAsync`** — the one place my two keys join, stated rather than discovered.
 - `https://create.roblox.com/docs/cloud-services/data-stores` — "The values you retrieve using `GetAsync()` sometimes can be out of sync with the backend due to the caching behavior", and the `SetAsync` vs `UpdateAsync` multi-server recommendation quoted in sheet 01's row.
 
-## https://create.roblox.com/docs/performance-optimization/improve
-
-*Cited by 2: `art/environment/_lead`, `tech/performance/_lead`*
-
-- **So the density answer is a design rule, not a number.** Roblox documents batching for meshes sharing content and texture, and says nothing about primitives ``. Every world part drawing its `Size`, `Material` and `Color` from one short closed vocabulary costs at most one draw-call class per tuple if any batching exists, and at most its own part count if none does. **`environment.distinctDrawClasses` is then a statically countable number and the honest form of a set-dressing density.**
-- **Two free savings, already sourced.** *"For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"*, and *"Use the `BasePart.CastShadow` property to disable shadow casting on small parts where shadows are unlikely to be visible"* ``. Also from the same page, and it is the sentence a set-dressing sheet should read twice: *"If a large number of objects are concentrated with a high density, then rendering this area of the scene requires more draw calls."*
-- `https://create.roblox.com/docs/performance-optimization/improve` — batching is documented for *meshes* sharing content and texture and is **not addressed for primitives**, which corroborates `budgets.renderCeilings.batchingFactor`'s stated uncertainty from the source rather than from another sheet; plus the `CanCollide`/`CanTouch`/`CanQuery` guidance, the `CastShadow` guidance, and the object-density-raises-draw-calls warning. **This page is one of `tech/performance/01`'s open `[research owed:]` items** and it is now banked.
-- `https://create.roblox.com/docs/performance-optimization/improve` — "For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"; `CastShadow` guidance; draw-call instancing described for *meshes* sharing content and texture. Note for **01**: `Plots.luau` already sets `CanCollide` false and `CastShadow` false on patches but sets **neither `CanTouch` nor `CanQuery`**, which is a one-property saving available at no design cost and is a consequence for whoever holds `representation`.
-
 ## https://create.roblox.com/docs/production/analytics/economy-events
 
 *Cited by 2: `analytics/economy/01-currency-flow-and-holdings`, `analytics/economy/_lead`*
@@ -745,11 +785,45 @@ did not fetch" becomes checkable instead of trusted.
 - *Nothing rests on the 70/25/5 split.** It is `[brief: soft]` and uncorroborated; every rule here is per class and none is weighted by share. The *band* — *"8–14, mobile-heavy, short sessions"* `[brief: binding]` (`00-CORE.md`) — is what the floors serve. `[research owed: the experience's own Creator Dashboard platform breakdown, which cannot exist before launch]` Roblox publishes no minimum touch-target figure: `adaptive-design` and `console-guidelines` carry principles only `` ``. That is why the rule names a measurement, and why the two classes with nothing to measure need the ruling…
 - **Roblox publishes no minimum touch-target pixel figure.** `create.roblox.com/docs/production/ publishing/adaptive-design` was fetched and carries principles only, no numbers. The console guidelines page likewise gives no TV-safe percentage and no minimum text size. This is *why* `minTouchTargetRule` names a measurement, and it vindicates that choice. `` ``
 
+## https://create.roblox.com/docs/reference/engine/classes/AssetService#CreateEditableImageAsync
+
+*Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
+
+- *The static gate has to stand alone, because the rendered one may never run.** An in-engine screenshot-to-pixel route is currently blocked: `CaptureService` is client-only, gated on the Capture capability, and returns content ids that are *"temporary and must be uploaded or saved to persist"* ``; `EditableImage` does expose `ReadPixelsBuffer` at 4 bytes RGBA ``, but the creation path `AssetService:CreateEditableImageAsync` is reported not to accept an `rbxtemp://` id and to be restricted to assets the experience creator owns — **`[unverified]`, a secondary source, and load-bearing** ``.…
+- 1. **Every `Lighting` property default.** The API reference page documents types, not defaults, so the thirteen unstated properties' current effective values are `[unverified]`. `01` must state its values absolutely and never as *"the default"*. → *fetch:* `https://create.roblox.com/docs/reference/engine/classes/Lighting` rendered with the property-default column, or read the defaults off a fresh baseline place in Studio. 2. **Which lighting-style value a new place gets, and the migration's status.** A search returned secondary reports (a devforum announcement thread and two Fandom mirrors)…
+
+## https://create.roblox.com/docs/reference/engine/classes/CaptureService
+
+*Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
+
+- *The static gate has to stand alone, because the rendered one may never run.** An in-engine screenshot-to-pixel route is currently blocked: `CaptureService` is client-only, gated on the Capture capability, and returns content ids that are *"temporary and must be uploaded or saved to persist"* ``; `EditableImage` does expose `ReadPixelsBuffer` at 4 bytes RGBA ``, but the creation path `AssetService:CreateEditableImageAsync` is reported not to accept an `rbxtemp://` id and to be restricted to assets the experience creator owns — **`[unverified]`, a secondary source, and load-bearing** ``.…
+
 ## https://create.roblox.com/docs/reference/engine/classes/DataModel
 
 *Cited by 2: `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`*
 
 - *Version needs both halves because neither derives from the other.** The publish returns `versionNumber` ``; `game.PlaceVersion` returns it live and `0` in Studio `` ``. The emit runs *before* the publish, and nothing writes a stamp into the place file — so both, joined by a ledger. The stamp reaches the build for free once `release` is promoted, with no emitter change ``.
+
+## https://create.roblox.com/docs/reference/engine/classes/EditableImage
+
+*Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
+
+- *The static gate has to stand alone, because the rendered one may never run.** An in-engine screenshot-to-pixel route is currently blocked: `CaptureService` is client-only, gated on the Capture capability, and returns content ids that are *"temporary and must be uploaded or saved to persist"* ``; `EditableImage` does expose `ReadPixelsBuffer` at 4 bytes RGBA ``, but the creation path `AssetService:CreateEditableImageAsync` is reported not to accept an `rbxtemp://` id and to be restricted to assets the experience creator owns — **`[unverified]`, a secondary source, and load-bearing** ``.…
+
+## https://create.roblox.com/docs/reference/engine/classes/ImageLabel
+
+*Cited by 2: `art/objects/04-what-a-find-is-made-of`, `art/objects/_lead`*
+
+- **An icon is an uploaded asset.** `ImageLabel.Image` is typed `ContentId` and every documented sample is `rbxassetid://…` ``. **`[unverified]` as a quotation** — the page states no requirement in words; it is settled as practice, and the settling fetch is `create.roblox.com/docs/ui/labels` or the property's YAML in `creator-docs`. Twenty-four of them contradicts `representation`'s *"no asset needs to be produced to build this game"* and blocks the build on 24 uploads, against *"content design is the primary creative work on this project, **not art**"* `[brief: binding]`, `00-CORE.md`.
+- **An icon is an uploaded asset.** `ImageLabel.Image` is typed `ContentId` and every documented sample is `rbxassetid://…` `` — the page states no requirement in words, so this is `[unverified]` as a quotation and settled as practice. 24 of them contradicts `representation`'s *"no asset needs to be produced to build this game"* and blocks the build on 24 uploads, against a `[brief: binding]` line saying art is not this project's primary work.
+- `` — `Image` is typed `ContentId` and the documented samples are `rbxassetid://…`. **`[unverified]` as a quotation:** the page states no requirement in words. The settling fetch is `raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ImageLabel.yaml` for the property description, or `create.roblox.com/docs/ui/labels`.
+
+## https://create.roblox.com/docs/reference/engine/classes/Lighting
+
+*Cited by 2: `art/lighting/01-the-one-daylight-state`, `art/lighting/_lead`*
+
+- *Thirteen properties were at defaults nobody chose, and the platform documents no defaults.** The API reference lists types, not values ``, so *"leave it at the default"* is not a statable value and every row below is absolute. `[cid: decided]` on all thirteen; the brief contains no hour, sky, light or shadow anywhere in eight sheets, which `theme/setting/03` already flagged upward and which I do not reopen.
+- 1. **Every `Lighting` property default.** The API reference page documents types, not defaults, so the thirteen unstated properties' current effective values are `[unverified]`. `01` must state its values absolutely and never as *"the default"*. → *fetch:* `https://create.roblox.com/docs/reference/engine/classes/Lighting` rendered with the property-default column, or read the defaults off a fresh baseline place in Studio. 2. **Which lighting-style value a new place gets, and the migration's status.** A search returned secondary reports (a devforum announcement thread and two Fandom mirrors)…
 
 ## https://create.roblox.com/docs/reference/engine/classes/Players#MaxPlayers
 
@@ -770,11 +844,30 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Two rows have no read, differently.** Voice has none at any level: `IsVoiceEnabledForUserIdAsync` is per user, not per experience ``. `ChatVersion` is `[unverified]` — deprecated after legacy chat's removal on 30 Apr 2025, so a place created today cannot be on `LegacyChatService`, which lowers the risk without closing the row `` ``. Two settling fetches ride in the key; until then both rows stand on a human tick and one joined test client, and the row says so rather than implying an assertion exists.
 
+## https://create.roblox.com/docs/reference/engine/enums/Font
+
+*Cited by 2: `art/ui-art/01-archetype-and-lock`, `art/ui-art/_lead`*
+
+- *The archetype cannot legally be emitted until sheet `03` closes `A1`.** `fantasy-ornate` resolves `fontStack: 'serif-ui'`, whose `numeric.roblox` is `'MerriweatherBold'`, which is not a member of `Enum.Font` ``. `cartoon-vibrant` is latent-safe only because its stack resolves. **This is the second defect this wave that bites on its own fix**, and emitting the correct archetype before `A1` lands either kills the client or silently renders every number in `Gotham`.
+- `https://create.roblox.com/docs/reference/engine/enums/Font` — enumerates `Enum.Font`. `Merriweather` (32), `SourceSans` (3), `FredokaOne` (26), `Gotham` (17), `GothamBold` (19) are members; **`MerriweatherBold` is not.** 50 members plus `Unknown`. This is the whole basis of sheet 03's blocking defect. ``
+
+## https://create.roblox.com/docs/reference/engine/enums/LightingStyle
+
+*Cited by 2: `art/lighting/01-the-one-daylight-state`, `art/lighting/_lead`*
+
+- *Nobody owns the lighting-style property and the platform is mid-migration on it.** `Enum.LightingStyle` ships exactly two members, `Realistic` (0) and `Soft` (1) ``, while `Enum.Technology` now marks `Legacy` and `Unified` deprecated ``. I set `Realistic`, because `ShadowSoftness` *"only functions with Realistic lighting style"* `` and a hard shadow edge on cleared stone is a local luma trough `02`'s minimum rule catches. The migration's timeline and a new place's default are `[unverified]` secondary claims which I do not write as sourced; the key names both the new field and the…
+
+## https://create.roblox.com/docs/reference/engine/enums/Technology
+
+*Cited by 2: `art/lighting/01-the-one-daylight-state`, `art/lighting/_lead`*
+
+- *Nobody owns the lighting-style property and the platform is mid-migration on it.** `Enum.LightingStyle` ships exactly two members, `Realistic` (0) and `Soft` (1) ``, while `Enum.Technology` now marks `Legacy` and `Unified` deprecated ``. I set `Realistic`, because `ShadowSoftness` *"only functions with Realistic lighting style"* `` and a hard shadow edge on cleared stone is a local luma trough `02`'s minimum rule catches. The migration's timeline and a new place's default are `[unverified]` secondary claims which I do not write as sourced; the key names both the new field and the…
+
 ## https://create.roblox.com/docs/sound/assets
 
 *Cited by 2: `audio/ui/01-press-acknowledgment`, `audio/ui/_lead`*
 
-- *The asset form is `mix`'s and mirrored here.** `Sound.SoundId` is a **ContentId** string ``, so `release.provisioning.unprovisionedIdValue`'s `0` does not transfer by type. The guard sits at the **play site** and not at the id, because an id that will not load errors in the console rather than failing silently ``. Every row below carries `mix`'s sentinel mirrored, and this key rules nothing about it. Uploaded audio is private and needs a per-experience grant, and the Creator Store carries free-to-use audio `` — which is why each row names a `sourceClass` that makes the upload orderable…
+- *The asset form is `mix`'s, mirrored here.** `Sound.SoundId` is a **ContentId** string ``, so `release.provisioning.unprovisionedIdValue`'s `0` does not transfer by type. The guard sits at the **play site**, not at the id, because an id that will not load errors in the console rather than failing silently ``. Uploaded audio is private and needs a per-experience grant, and the Creator Store carries free-to-use audio `` — which is why each row carries a `sourceClass` that makes the upload orderable work rather than a redesign.
 - Audio assets: imported audio must be *"less than 20 MB in size and 7 minutes in duration"*; the asset privacy system *"automatically ensures that the IDs of your imported audio can't be accessed by users without proper permissions"*; the Creator Store carries free-to-use audio. `` → provisioning input for `mix`; my rows may not name an id the creator does not own.
 
 ## https://create.roblox.com/docs/ui/position-and-size
@@ -847,6 +940,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - *A live developer case has exactly this shape**, the feedback being *"theres like a gazillion ui on my screen"* and the advice *"keep it minimal, basic"* ``. **I cite the qualitative observation and not the retention figure attached to it**, because `00-CORE.md` makes beating the retention curve an explicit non-goal `[brief: binding]`.
 - A live developer case with the shape my `04` is about: 23% D1, 30% of players lost in the first minute, and the feedback centred on the first frame being overloaded — "theres like a gazillion ui on my screen" — with the advice to "keep it minimal, basic". No forced-tutorial or immediate-reward mechanism was recommended ``
+
+## https://devforum.roblox.com/t/new-asset-privacy-and-permissions-features-for-audio-and-video/2725248
+
+*Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
+
+- *Audio needs two gates, not one, and only for upload rows.** Uploaded audio is private — *"only you can view and use it"* — and usage permission is granted per experience through Creator Hub → Creations → Asset Details → Permissions ``. A restricted asset without that grant *"cannot load in Studio or at runtime"* ``. **Granting an experience permission requires the experience to exist**, which is the identical publish-first inversion `gamePassId` already has, and `release.provisioning.gates` runs publish → checklist → re-resolution → pass creation → id write → republish with nothing that…
+- Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
 
 ## https://devforum.roblox.com/t/placeversion-only-returning-0/239154
 
@@ -950,6 +1050,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Version needs both halves because neither derives from the other.** The publish returns `versionNumber` ``; `game.PlaceVersion` returns it live and `0` in Studio `` ``. The emit runs *before* the publish, and nothing writes a stamp into the place file — so both, joined by a ledger. The stamp reaches the build for free once `release` is promoted, with no emitter change ``.
 
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/parts/materials.md
+
+*Cited by 2: `art/style/01-palette-and-materials`, `art/style/_lead`*
+
+- *A limestone world costs zero uploaded assets.** `Limestone`, `Sandstone`, `Concrete`, `Cobblestone`, `Pavement`, `Rock`, `Slate` and `Granite` are base materials applicable to a `BasePart`, and built-in base material textures *"are bundled with Studio instead of being accessible as a typical asset ID"* ``. `MaterialVariant` and `SurfaceAppearance` both take a PBR texture you *"paste an asset ID or import"* for ``, which is what makes both forbidden under `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry` 0 and `N17` — sourced, not assumed. `Enum.Material` has 47 members including…
+
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/performance-optimization/design.md
 
 *Cited by 2: `tech/performance/01-device-floor-and-budgets`, `tech/performance/_lead`*
@@ -993,12 +1099,40 @@ did not fetch" becomes checkable instead of trusted.
 - **They exist, they are ten, and they are the most-heard audio in a movement-only game.** The set is `Died, Running, Swimming, Climbing, Jumping, GettingUp, FreeFalling, FallingDown, Landing, Splash`; `Running`, `Swimming` and `Climbing` loop, `Jumping`, `GettingUp` and `Died` are one-shots, `Landing` and `Splash` scale volume with vertical speed, and `FreeFalling` fades in over 1.1 s above 75 studs/s ``.
 - **They exist and they are ten.** The default set is `"Died, Running, Swimming, Climbing, Jumping, GettingUp, FreeFalling, FallingDown, Landing, Splash"`, with Running, Swimming and Climbing looped and Jumping, GettingUp and Died one-shot; Landing and Splash scale volume with vertical speed, FreeFalling fades in over 1.1 s above 75 studs/s ``.
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/effects/particle-emitters.md
+
+*Cited by 2: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/_lead`*
+
+- *The budget: batching does not bound this domain at either end.** At `budgets.renderCeilings.batchingFactor` 500, patches cost ≈ 12 draw calls and effects ≈ 56 against a 1,000 ceiling. At 1, the merged design already renders **5,814 draw calls from patches alone** and *"NO legal streaming radius fixes it"*; effects add under 1%, and the lever is `depths.areas[].patchCount`, a finding against `depths` and not an art decision. **The binding term is fill rate and overdraw**, which batching does not touch: *"Particle count can impact performance due to overdraw, especially when particles are…
+- *The platform cap is unreachable by construction.** *"A single particle emitter can create up to 400 particles per second (100 per second on mobile)"* ``. Every emitter here has `Rate` 0 and emits **8 particles once in its whole 0.4-second life**, so the cap cannot be approached even if `:Emit` is subject to it — which the docs state against `Rate` only and is `[unverified]`. `:Emit(n)` *"will cause the ParticleEmitter to instantly emit the given number of particles"* ``.
+- 1. `theme/setting/05` `A14` is `[cid: decided]` and its argument is *accessibility*, not taste: *"Tier is a core economic signal carried primarily by silhouette, and a swaying silhouette is a changing silhouette… ambient motion on 140 non-colliding patches per plot… is motion competing with the only motion that means anything."* That argument gets **stronger** at 640 patches, not weaker. 2. `theme/setting/03` `R5` (relayed via Audio's brief): *"Anything scheduled, intermittent, randomised over time, or varying with anything but a player's action is a change of state and fails."* Every…
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/performance-optimization/design.md
+
+*Cited by 2: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/_lead`*
+
+- *The budget: batching does not bound this domain at either end.** At `budgets.renderCeilings.batchingFactor` 500, patches cost ≈ 12 draw calls and effects ≈ 56 against a 1,000 ceiling. At 1, the merged design already renders **5,814 draw calls from patches alone** and *"NO legal streaming radius fixes it"*; effects add under 1%, and the lever is `depths.areas[].patchCount`, a finding against `depths` and not an art decision. **The binding term is fill rate and overdraw**, which batching does not touch: *"Particle count can impact performance due to overdraw, especially when particles are…
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/performance-optimization/improve.md
+
+*Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
+
+- *The 20 MB ceiling is a PlaceMemory figure and a creator controls file bytes, so the ledger budgets files and states the conversion it assumes.** `budgets.memoryCeilingsByCategory.Sounds` is 20 MB on a 3 GB phone, `[playtest unknown]` at ±60%, and the platform publishes no conversion from an audio file's bytes to its resident cost. Its only guidance on the subject is a sentence: *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once"* ``. So the ledger sets `assumedExpansionFactor` **2.0**, budgets **10.0 MB of files**,…
+- *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once rather than only loading what you need for a portion of the game"* — the platform's only guidance on audio memory, and it is a sentence, not a number ``. The same page also supplies the `CanTouch`/`CanQuery` guidance `tech/performance/01` recorded as owed.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/funnel-events.md
 
 *Cited by 2: `analytics/funnels/01-onboarding-funnel`, `analytics/funnels/_lead`*
 
 - *`LogOnboardingFunnelStepEvent`, for a decisive reason.** `LogFunnelStepEvent(player, funnelName, funnelSessionId, step, stepName, customFields)` **requires a `funnelSessionId`**; the one-time method takes none and is documented for *"conversion events that only occur once per user"* ``. The first session is once per user by definition.
 - *The funnel API exists on the platform and my sheets are specced against it, not around it.** Two methods: `LogOnboardingFunnelStepEvent(player, step, stepName, customFields)` for *"conversion events that only occur once per user"* and `LogFunnelStepEvent(player, funnelName, funnelSessionId, step, stepName, customFields)` for recurring ones; *"If a user repeats a step in a funnel, the funnel only considers the first instance"* and **"If you skip a step in a funnel, the earlier steps automatically complete"** — which is the fact that decides how `01` frames its own argument `` ``.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/creator-store.md
+
+*Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
+
+- *Audio needs two gates, not one, and only for upload rows.** Uploaded audio is private — *"only you can view and use it"* — and usage permission is granted per experience through Creator Hub → Creations → Asset Details → Permissions ``. A restricted asset without that grant *"cannot load in Studio or at runtime"* ``. **Granting an experience permission requires the experience to exist**, which is the identical publish-first inversion `gamePassId` already has, and `release.provisioning.gates` runs publish → checklist → re-resolution → pass creation → id write → republish with nothing that…
+- Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/publishing/accessibility.md
 
@@ -1007,12 +1141,32 @@ did not fetch" becomes checkable instead of trusted.
 - *Growth is uncapped except where the layout physically cannot give.** Sheet 01 rules the index panel has no scroll region, so at `Largest` the 24 slots cannot grow without overflowing. The platform sanctions the cap it needs: a `UITextSizeConstraint` element *"won't expand beyond `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"* ``. So the 24 slot labels and the 4 headings are capped at their computed fit size; everything else in the game, including all prose, is uncapped and grows.
 - `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/projects/assets/index.md
+
+*Cited by 2: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/_lead`*
+
+- *V1, the ruling nobody had made: a `ParticleEmitter` may exist.** `A14` reaches *ambience* only and `theme/setting/05` wrote the carve-out for me — *"The clear-away effect on a patch is a player-caused event and is not ambient motion"* ``. `budgets` forbids the uploaded **texture**, not the class: `rbxasset://` is the client's own content folder and `rbxassetid://` is a user upload ``, so a built-in particle texture passes `N17`'s `grep -rn "rbxassetid" game/src`. **I permit the class and scope it to one cue**, because the alternative — a tween on a primitive — writes `.Size` after…
+- **Textures.** `uploadedImageAssetsInWorldGeometry` is **0** and `N17`'s check is `grep -rn "rbxassetid" game/src` returns nothing. The default particle texture is `rbxasset://textures/particles/sparkles_main.dds` ``, and **`rbxasset://` is Roblox's content folder on the user's device while `rbxassetid://` is a user-uploaded cloud asset** ``. **So a built-in particle texture is not an uploaded image asset and passes `N17`'s grep as written.** That resolves the *texture* half of `V1` on evidence; the *class* half is still `01`'s ruling and `01` must state it as a ruling, not inherit it from…
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ContentProvider.yaml
+
+*Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
+
+- *Preload two rows and nothing else.** `ContentProvider:PreloadAsync` *"yields until all of the assets… have loaded"*, and the platform's own advice is *"only preload essential assets… You might get occasional pop-in, but it decreases load times"* ``. The essential set is exactly what can fire inside `firstSession.beats[firstReveal].bySecond` 10.0: the clear and the reveal. The call runs **after** the character is controllable, which is where `budgets.loadTargetDerivation` stops the load-to-first-input clock, so preloading contributes 0 s to the 6.0 s target and 7.0 s ceiling. **Audio is…
+- `ContentProvider:PreloadAsync` *"yields until all of the assets associated with the given Instances have loaded"* and handles instances with content links *"such as `Decal` and `Sound`"*; best practice is *"only preload essential assets, not the entire Workspace… You might get occasional pop-in, but it decreases load times"* ``.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiButton.yaml
 
 *Cited by 2: `audio/ui/01-press-acknowledgment`, `audio/ui/_lead`*
 
-- *The pair nobody had noticed.** `input` acceptance criterion 4 reads *"Activating a purchase control with a balance below the price, or at max level, changes no state and **emits nothing on any channel**"* ``, unqualified. The only event that fires a press on all three device classes is `GuiButton.Activated` — *"a left click press-and-release … on desktop, touch release … on mobile, or A/cross … on console"* `` — and it fires **before** the server has adjudicated, because `response.beats[upgradePurchased].decidedBy` is `"server"`. So a press-edge cue on a purchase control fires on the…
+- *The pair nobody had noticed.** `input` acceptance criterion 4 reads *"Activating a purchase control with a balance below the price, or at max level, changes no state and **emits nothing on any channel**"* ``, unqualified. The only press event that fires on all three device classes is `GuiButton.Activated` — *"a left click press-and-release … on desktop, touch release … on mobile, or A/cross … on console"* `` — and it fires **before** adjudication, because `response.beats[upgradePurchased].decidedBy` is `"server"`. A press-edge cue on a purchase control therefore fires on the failure. That…
 - `GuiButton.Activated` — *"Fires when a left click press-and-release is detected on desktop, touch release is detected on mobile, or **A**/cross is activated in UI navigation mode on console."* `MouseButton1Down`/`Up` are mouse-only. `` → settles press-versus-release across all three device classes in one fact.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ParticleEmitter.yaml
+
+*Cited by 2: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/_lead`*
+
+- *The platform cap is unreachable by construction.** *"A single particle emitter can create up to 400 particles per second (100 per second on mobile)"* ``. Every emitter here has `Rate` 0 and emits **8 particles once in its whole 0.4-second life**, so the cap cannot be approached even if `:Emit` is subject to it — which the docs state against `Rate` only and is `[unverified]`. `:Emit(n)` *"will cause the ParticleEmitter to instantly emit the given number of particles"* ``.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/SoundGroup.yaml
 
@@ -1028,6 +1182,28 @@ did not fetch" becomes checkable instead of trusted.
 - *Level lives in two properties and both are mine.** `Volume` is 0–10 on both `Sound` and `SoundGroup`, engine defaults 0.5 and 1, and the group's value multiplies its members `` ``. Membership is by property, **not** by parenting, and groups nest ``. So a per-bus level and a per-cue level are the same arithmetic, and two keys writing them would be two writers for one number. `mix.assets.rows[].volume` and `mix.buses[].volume` are the only two writers in the game.
 - `SoundGroup` is *"used to manage the volume and sound effects on multiple Sounds at once"*, its `Volume` is a 0–10 multiplier applied to member sounds, membership is by the `Sound.SoundGroup` property and **not** by parenting, and groups nest `` ``.
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/optimization/memory-usage.md
+
+*Cited by 2: `audio/mix/03-the-asset-ledger`, `audio/mix/_lead`*
+
+- *`StreamingSounds` is budgeted by nothing today.** PlaceMemory reports **two** audio categories among 22 — `Sounds` (*"in-memory sounds"*) and `StreamingSounds` (*"streaming sounds"*) — and `memoryCeilingsByCategory` names only the first ``. A long looping bed, which is exactly what `ambience` is most likely to hold, would land in the second and be charged against `headroomForUntracked` rather than against any ceiling. RR-M2 asks for an 8 MB row taken out of headroom, which keeps both of that key's stated invariants true. **What routes an asset to one category rather than the other is not…
+- 1. **No loudness, level or dynamic-range position exists anywhere in the brief or either contract.** `OPEN.md §2` describes character and nothing else. → sheet `01`, as `[cid: decided]` values flagged to the developer. 2. **Nothing states whether another player's work is audible, or from how far.** `social/02` B3 is a *sight* requirement; `social/03` X10 permits *"A's own patches clearing — the instance disappearing and the clear cue that accompanies it"* to reach a second client without saying whether that cue exists or how far it carries; `plots.pitchStuds` 122 and `budgets.streaming`…
+- PlaceMemory reports **two** audio categories — `Sounds` (*"in-memory sounds"*) and `StreamingSounds` (*"streaming sounds"*) — among 22 ``. This also closes `tech/performance/01`'s own `[research owed:]` for the PlaceMemory category tree.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/9-slice.md
+
+*Cited by 2: `art/ui-art/02-surface-and-ornament`, `art/ui-art/_lead`*
+
+- *And the refusal is an asset refusal, not a capability one, which corrects my own index.** 9-slice is fully implemented at `UIBuilder.luau:500-507`, and `slice` is a member of `SPEC_PROPS` in `ui-forge/src/compose/overrides.mjs:34`, so a brief **can** already request it through an `overrides[].set` entry on any named node without touching a pattern ``. What it cannot do is supply the image: 9-slice requires *"a valid Roblox image asset with an ID entered into the `Image` field"* ``, against `representation`'s *"no asset id is needed anywhere"*, `budgets.uploadedImageAssetsInWorldGeometry`…
+- `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/9-slice.md` — 9-slice needs `ScaleType.Slice`, a `SliceCenter` rect, and *"a valid Roblox image asset with an ID entered into the `Image` field"*. `UIBuilder.luau:500-507` implements it; **no pattern emits `slice` on any node**. So the emitter can render frame art and nothing can ask it to, and asking would import an uploaded image asset against `representation`'s *"no asset id is needed anywhere."* Sheet 02's finding. ``
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/appearance-modifiers.md
+
+*Cited by 2: `art/ui-art/02-surface-and-ornament`, `art/ui-art/_lead`*
+
+- *The one real increment available without an asset, taken.** `applyStroke` writes `Color`, `Thickness` and `Transparency` and nothing else (`UIBuilder.luau:118-130`), while the platform offers `LineJoinMode` Round/Bevel/Miter on a `UIStroke` and permits a `UIGradient` child on the stroke itself ``. **I take `lineJoinMode` (`A5`) and refuse the stroke gradient.** A miter join is one enum with a visible effect at radii of 2 to 7 px, which is where this archetype lives; a gradient on a 1 to 4 px edge is a second gradient system nobody can see at 70 px on a phone, and `gradientStrength` already…
+- `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/appearance-modifiers.md` — `UIStroke` on a `Frame` is a border with `LineJoinMode` Round/Bevel/Miter; on a `TextLabel` `ApplyStrokeMode` Contextual outlines the glyphs and Border the bounds, and two `UIStroke`s may be parented to control both; *"Both the parent object and `UIStroke` can have child `UIGradient` instances, letting you set gradients on the stroke and fill independently"*; `UICorner` at *"a scale of 0.5 or higher deforms the parent into a pill shape"*; and the warning *"Avoid tweening the `Thickness`…
+
 ## https://readable.com/readability/flesch-reading-ease-flesch-kincaid-grade-level/
 
 *Cited by 2: `theme/tone/01-register`, `theme/tone/_lead`*
@@ -1040,6 +1216,13 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 2: `gameplay/social/01-server-and-co-presence`, `gameplay/social/_lead`*
 
 - `ChatWindowConfiguration.Enabled` defaults to **`true`** — "Whether to show the default chat window. Set to `false` to hide." ``
+
+## https://robloxapi.github.io/ref/class/ParticleEmitter.html
+
+*Cited by 2: `art/vfx/01-the-clear-and-the-reveal`, `art/vfx/_lead`*
+
+- *The texture is a rule, not a name, because I cannot source a name.** The engine default is `rbxasset://textures/particles/sparkles_main.dds` `` and **I reject it by name**: a star-pointed sparkle reads as magic and treasure, against `theme/lore/01`'s overrule (*"Art must not add gold, gilding or gemstones to compensate"*) and `A7`'s ban on any luminous thing. The rule below is checkable; the asset id is `[research owed: the enumerated list of rbxasset:// particle textures shipped in the client content folder, so a soft-edged mote can be named rather than described]`.
+- **Textures.** `uploadedImageAssetsInWorldGeometry` is **0** and `N17`'s check is `grep -rn "rbxassetid" game/src` returns nothing. The default particle texture is `rbxasset://textures/particles/sparkles_main.dds` ``, and **`rbxasset://` is Roblox's content folder on the user's device while `rbxassetid://` is a user-uploaded cloud asset** ``. **So a built-in particle texture is not an uploaded image asset and passes `N17`'s grep as written.** That resolves the *texture* half of `V1` on evidence; the *class* half is still `01`'s ruling and `01` must state it as a ruling, not inherit it from…
 
 ## https://rolearn.dev/guidance/roblox-gamepass-pricing-strategy-guide/
 
@@ -1109,6 +1292,12 @@ did not fetch" becomes checkable instead of trusted.
 - **The measured genre asymmetry says even that is thin, and it is why I take the largest legal area count rather than the smallest.** DIG ships two islands against a 601-item logbook ``, and finishing one *area's* journal there is a 0.4% event across 60,426 and 78,433 earners `` ``. Few areas, a very large collection, and completion is rare. This game is on the wrong side of that on both axes and the partition equality only lets me fix one. See `## Flagged to the developer`.
 - **Finishing one area's collection is a 0.4% event in a shipping game.** DIG's badge "Journal Complete: Cinder Shores" — "You have discovered 100% of the items in Cinder Shores!" — has 60,426 earners at a 0.4% win rate, and "Journal Complete: Mount Cinder" has 78,433 at 0.4%. These are per-*area* completions, not the full 601-item index.
 
+## https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html
+
+*Cited by 2: `art/lighting/02-the-readability-floor`, `art/lighting/_lead`*
+
+- *The metric ruling, and the finding it exposes.** The approved floor is **Rec.601 luma**, `Y = 0.299R + 0.587G + 0.114B` on gamma-encoded sRGB, and it stays authoritative. WCAG 1.4.11 asks a graphical object for *"a contrast ratio of at least 3:1 against adjacent color(s)"*, computed on sRGB **relative luminance**, `L = 0.2126R + 0.7152G + 0.0722B` on **linearised** channels ``. **These are different quantities and one does not imply the other.** Redone against real hues rather than asserted:
+
 ## https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html
 
 *Cited by 2: `ui-ux/feedback/01-the-notice-channel`, `ui-ux/feedback/_lead`*
@@ -1169,12 +1358,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **The cost-curve canon, and its limits.** `Price = BaseCost × Multiplier^(#Owned)`; Clicker Heroes uses 1.07 across all 35 heroes, every Cookie Clicker building uses 1.15, AdVenture Capitalist's ten businesses each sit between 1.07 and 1.15, and Steam's *Monster* goes as high as 2.5; "the curves produced between those bounds are balanced and satisfying" ``. Corroborated with `cost_next = cost_base × rate_growth^owned`, AdVenture Capitalist's Lemonade Stand at `rate_growth = 1.07, cost_base = 4`, and the exponential-cost-versus- polynomial-income framing ``. **The caveat is load-bearing:**…
 
-## https://create.roblox.com/docs/environment/lighting
-
-*Cited by 1: `art/lighting/_lead`*
-
-- 1. **Every `Lighting` property default.** The API reference page documents types, not defaults, so the thirteen unstated properties' current effective values are `[unverified]`. `01` must state its values absolutely and never as *"the default"*. → *fetch:* `https://create.roblox.com/docs/reference/engine/classes/Lighting` rendered with the property-default column, or read the defaults off a fresh baseline place in Studio. 2. **Which lighting-style value a new place gets, and the migration's status.** A search returned secondary reports (a devforum announcement thread and two Fandom mirrors)…
-
 ## https://create.roblox.com/docs/environment/skybox
 
 *Cited by 1: `art/environment/_lead`*
@@ -1206,40 +1389,11 @@ did not fetch" becomes checkable instead of trusted.
 - **`Workspace.AuthorityMode = "Server"`.** Roblox ships a server-authority model in which "the server is the single source of truth" and movement validation moves off the client, which is precisely what sheet 01 hand-rolls ``. **I am not speccing it**: it requires `NextGenerationReplication`, `PlayerScriptsUseInputActionSystem`, `SignalBehavior` Deferred, `UseFixedSimulation` and `StreamingEnabled`, all of which are place configuration, and place configuration with no script path is the residue the category routed to publish-time checklist work [currently Build & Deploy]. It would also…
 - `https://create.roblox.com/docs/projects/server-authority` — the model, and its five Workspace prerequisites, quoted in "Considered and not assigned" above.
 
-## https://create.roblox.com/docs/reference/engine/classes/AssetService#CreateEditableImageAsync
-
-*Cited by 1: `art/lighting/_lead`*
-
-- 1. **Every `Lighting` property default.** The API reference page documents types, not defaults, so the thirteen unstated properties' current effective values are `[unverified]`. `01` must state its values absolutely and never as *"the default"*. → *fetch:* `https://create.roblox.com/docs/reference/engine/classes/Lighting` rendered with the property-default column, or read the defaults off a fresh baseline place in Studio. 2. **Which lighting-style value a new place gets, and the migration's status.** A search returned secondary reports (a devforum announcement thread and two Fandom mirrors)…
-
-## https://create.roblox.com/docs/reference/engine/classes/CaptureService
-
-*Cited by 1: `art/lighting/_lead`*
-
-
 ## https://create.roblox.com/docs/reference/engine/classes/DataStoreService
 
 *Cited by 1: `tech/persistence/_lead`*
 
 - `https://create.roblox.com/docs/reference/engine/classes/DataStoreService` — `GetRequestBudgetForRequestType(requestType)` exists and returns the current budget; `Enum.DataStoreRequestType` members appearing in the samples are `StandardRead`, `StandardWrite`, `StandardList`, `StandardRemove`, `SetIncrementAsync`.
-
-## https://create.roblox.com/docs/reference/engine/classes/EditableImage
-
-*Cited by 1: `art/lighting/_lead`*
-
-
-## https://create.roblox.com/docs/reference/engine/classes/ImageLabel
-
-*Cited by 1: `art/objects/_lead`*
-
-- **An icon is an uploaded asset.** `ImageLabel.Image` is typed `ContentId` and every documented sample is `rbxassetid://…` `` — the page states no requirement in words, so this is `[unverified]` as a quotation and settled as practice. 24 of them contradicts `representation`'s *"no asset needs to be produced to build this game"* and blocks the build on 24 uploads, against a `[brief: binding]` line saying art is not this project's primary work.
-- `` — `Image` is typed `ContentId` and the documented samples are `rbxassetid://…`. **`[unverified]` as a quotation:** the page states no requirement in words. The settling fetch is `raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ImageLabel.yaml` for the property description, or `create.roblox.com/docs/ui/labels`.
-
-## https://create.roblox.com/docs/reference/engine/classes/Lighting
-
-*Cited by 1: `art/lighting/_lead`*
-
-- 1. **Every `Lighting` property default.** The API reference page documents types, not defaults, so the thirteen unstated properties' current effective values are `[unverified]`. `01` must state its values absolutely and never as *"the default"*. → *fetch:* `https://create.roblox.com/docs/reference/engine/classes/Lighting` rendered with the property-default column, or read the defaults off a fresh baseline place in Studio. 2. **Which lighting-style value a new place gets, and the migration's status.** A search returned secondary reports (a devforum announcement thread and two Fandom mirrors)…
 
 ## https://create.roblox.com/docs/reference/engine/classes/Players
 
@@ -1280,27 +1434,11 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `tech/networking/_lead`*
 
 
-## https://create.roblox.com/docs/reference/engine/enums/Font
-
-*Cited by 1: `art/ui-art/_lead`*
-
-- `https://create.roblox.com/docs/reference/engine/enums/Font` — enumerates `Enum.Font`. `Merriweather` (32), `SourceSans` (3), `FredokaOne` (26), `Gotham` (17), `GothamBold` (19) are members; **`MerriweatherBold` is not.** 50 members plus `Unknown`. This is the whole basis of sheet 03's blocking defect. ``
-
-## https://create.roblox.com/docs/reference/engine/enums/LightingStyle
-
-*Cited by 1: `art/lighting/_lead`*
-
-
 ## https://create.roblox.com/docs/reference/engine/enums/SafeAreaCompatibility
 
 *Cited by 1: `ui-ux/platform/_lead`*
 
 - `Enum.ScreenInsets` = `None` (0), `DeviceSafeInsets` (1), `CoreUISafeInsets` (2), `TopbarSafeInsets` (3); `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts. `Enum.SafeAreaCompatibility` = `None` (0), `FullscreenExtension` (1). `` ``
-
-## https://create.roblox.com/docs/reference/engine/enums/Technology
-
-*Cited by 1: `art/lighting/_lead`*
-
 
 ## https://create.roblox.com/docs/scripting/security/security-tactics
 
@@ -1360,11 +1498,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/fantasy/_lead`*
 
 
-## https://devforum.roblox.com/t/keep-particles-on-particleemitterdestroy/335327
-
-*Cited by 1: `art/vfx/_lead`*
-
-
 ## https://devforum.roblox.com/t/let-there-be-unified-light-unified-lighting-is-fully-live/3401512
 
 *Cited by 1: `art/lighting/_lead`*
@@ -1376,12 +1509,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `art/ui-art/_lead`*
 
 - 1. **Whether `(Enum.Font :: any)["MerriweatherBold"]` throws or returns `nil`.** The creator docs are silent; forum evidence shows the error form *"X is not a valid member of Enum"* (`https://devforum.roblox.com/t/mousebutton2-is-not-a-valid-member-of-enumkeycode/2888739`, `https://devforum.roblox.com/t/uitheme-is-not-a-valid-member-of-enum/2472340`), which implies an error and therefore that `UIBuilder.luau:482`'s `or Enum.Font.Gotham` fallback never runs. **`[unverified]`.** Settled by one line in Studio: `print(pcall(function() return (Enum.Font :: any).MerriweatherBold end))`. **Sheet 03…
-
-## https://devforum.roblox.com/t/new-asset-privacy-and-permissions-features-for-audio-and-video/2725248
-
-*Cited by 1: `audio/mix/_lead`*
-
-- Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
 
 ## https://devforum.roblox.com/t/roblox-audio-api-exits-beta-enhanced-sound-controls-now-available/3153454
 
@@ -1480,11 +1607,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Names display above heads by default and default to the account Display Name.** *"Roblox displays a name and/or health bar above that part"*; *"By default, a humanoid's display name matches the user's Roblox account Display Name which is unique and separate from their account Username."* Suppressible entirely with `DisplayDistanceType = None`. ``
 
-## https://github.com/Roblox/creator-docs/blob/main/content/en-us/parts/materials.md
-
-*Cited by 1: `art/style/_lead`*
-
-
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/scripting/events/remote.md
 
 *Cited by 1: `tech/networking/_lead`*
@@ -1513,34 +1635,11 @@ did not fetch" becomes checkable instead of trusted.
 
 - 1. `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/avatar-settings.md` — the three Avatar Type options verbatim; the not-accessible-with-scripts sentence; and, **new to this project, the Body tab**: `Custom Scale` with a settable Minimum/Maximum absolute height in studs, `Custom Build`, and the ~5 / ~6–6.5-stud reference heights. Independently confirms `tech/deploy/01`'s rig rows rather than inheriting them. 2. `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/characters/appearance.md` — body scaling is `height / width / head / body…
 
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/effects/particle-emitters.md
-
-*Cited by 1: `art/vfx/_lead`*
-
-- 1. `theme/setting/05` `A14` is `[cid: decided]` and its argument is *accessibility*, not taste: *"Tier is a core economic signal carried primarily by silhouette, and a swaying silhouette is a changing silhouette… ambient motion on 140 non-colliding patches per plot… is motion competing with the only motion that means anything."* That argument gets **stronger** at 640 patches, not weaker. 2. `theme/setting/03` `R5` (relayed via Audio's brief): *"Anything scheduled, intermittent, randomised over time, or varying with anything but a player's action is a change of state and fails."* Every…
-
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/luau/enums.md
 
 *Cited by 1: `art/ui-art/_lead`*
 
 - `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/luau/enums.md` — fetched specifically to settle what an invalid Enum index does. **It does not say.** Recorded as a negative result rather than left implied.
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/performance-optimization/design.md
-
-*Cited by 1: `art/vfx/_lead`*
-
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/performance-optimization/improve.md
-
-*Cited by 1: `audio/mix/_lead`*
-
-- *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once rather than only loading what you need for a portion of the game"* — the platform's only guidance on audio memory, and it is a sentence, not a number ``. The same page also supplies the `CanTouch`/`CanQuery` guidance `tech/performance/01` recorded as owed.
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/creator-store.md
-
-*Cited by 1: `audio/mix/_lead`*
-
-- Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/game-design/core-loops.md
 
@@ -1553,35 +1652,11 @@ did not fetch" becomes checkable instead of trusted.
 
 - Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
 
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/projects/assets/index.md
-
-*Cited by 1: `art/vfx/_lead`*
-
-- **Textures.** `uploadedImageAssetsInWorldGeometry` is **0** and `N17`'s check is `grep -rn "rbxassetid" game/src` returns nothing. The default particle texture is `rbxasset://textures/particles/sparkles_main.dds` ``, and **`rbxasset://` is Roblox's content folder on the user's device while `rbxassetid://` is a user-uploaded cloud asset** ``. **So a built-in particle texture is not an uploaded image asset and passes `N17`'s grep as written.** That resolves the *texture* half of `V1` on evidence; the *class* half is still `01`'s ruling and `01` must state it as a ruling, not inherit it from…
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ContentProvider.yaml
-
-*Cited by 1: `audio/mix/_lead`*
-
-- `ContentProvider:PreloadAsync` *"yields until all of the assets associated with the given Instances have loaded"* and handles instances with content links *"such as `Decal` and `Sound`"*; best practice is *"only preload essential assets, not the entire Workspace… You might get occasional pop-in, but it decreases load times"* ``.
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ParticleEmitter.yaml
-
-*Cited by 1: `art/vfx/_lead`*
-
-
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/avatar-settings.md
 
 *Cited by 1: `art/characters/_lead`*
 
 - 1. `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/avatar-settings.md` — the three Avatar Type options verbatim; the not-accessible-with-scripts sentence; and, **new to this project, the Body tab**: `Custom Scale` with a settable Minimum/Maximum absolute height in studs, `Custom Build`, and the ~5 / ~6–6.5-stud reference heights. Independently confirms `tech/deploy/01`'s rig rows rather than inheriting them. 2. `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/characters/appearance.md` — body scaling is `height / width / head / body…
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/optimization/memory-usage.md
-
-*Cited by 1: `audio/mix/_lead`*
-
-- 1. **No loudness, level or dynamic-range position exists anywhere in the brief or either contract.** `OPEN.md §2` describes character and nothing else. → sheet `01`, as `[cid: decided]` values flagged to the developer. 2. **Nothing states whether another player's work is audible, or from how far.** `social/02` B3 is a *sight* requirement; `social/03` X10 permits *"A's own patches clearing — the instance disappearing and the clear cue that accompanies it"* to reach a second client without saying whether that cue exists or how far it carries; `plots.pitchStuds` 122 and `budgets.streaming`…
-- PlaceMemory reports **two** audio categories — `Sounds` (*"in-memory sounds"*) and `StreamingSounds` (*"streaming sounds"*) — among 22 ``. This also closes `tech/performance/01`'s own `[research owed:]` for the PlaceMemory category tree.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/
 
@@ -1589,33 +1664,10 @@ did not fetch" becomes checkable instead of trusted.
 
 - *`[unverified]`, and it matters to `02`:** whether a `GuiObject` with `Active = true` sinks a **touch tap** identically to a mouse click on a phone. The YAML says only *"sinks input"*. The fetch that would settle it is `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/...` for the input propagation page, or a Studio device-emulator test on a phone viewport. Sheet `02` must not assume the two are the same, because the whole of (a) turns on it for ~70% of the audience.
 
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/9-slice.md
-
-*Cited by 1: `art/ui-art/_lead`*
-
-- `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/9-slice.md` — 9-slice needs `ScaleType.Slice`, a `SliceCenter` rect, and *"a valid Roblox image asset with an ID entered into the `Image` field"*. `UIBuilder.luau:500-507` implements it; **no pattern emits `slice` on any node**. So the emitter can render frame art and nothing can ask it to, and asking would import an uploaded image asset against `representation`'s *"no asset id is needed anywhere."* Sheet 02's finding. ``
-
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/appearance-modifiers.md
-
-*Cited by 1: `art/ui-art/_lead`*
-
-- `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/appearance-modifiers.md` — `UIStroke` on a `Frame` is a border with `LineJoinMode` Round/Bevel/Miter; on a `TextLabel` `ApplyStrokeMode` Contextual outlines the glyphs and Border the bounds, and two `UIStroke`s may be parented to control both; *"Both the parent object and `UIStroke` can have child `UIGradient` instances, letting you set gradients on the stroke and fill independently"*; `UICorner` at *"a scale of 0.5 or higher deforms the parent into a pill shape"*; and the warning *"Avoid tweening the `Thickness`…
-
 ## https://roblox.fandom.com/wiki/Pink_Slime_Studios/Lawn_Mowing_Simulator
 
 *Cited by 1: `theme/fantasy/_lead`*
 
-
-## https://robloxapi.github.io/ref-temp/enum/Material.html
-
-*Cited by 1: `art/style/_lead`*
-
-
-## https://robloxapi.github.io/ref/class/ParticleEmitter.html
-
-*Cited by 1: `art/vfx/_lead`*
-
-- **Textures.** `uploadedImageAssetsInWorldGeometry` is **0** and `N17`'s check is `grep -rn "rbxassetid" game/src` returns nothing. The default particle texture is `rbxasset://textures/particles/sparkles_main.dds` ``, and **`rbxasset://` is Roblox's content folder on the user's device while `rbxassetid://` is a user-uploaded cloud asset** ``. **So a built-in particle texture is not an uploaded image asset and passes `N17`'s grep as written.** That resolves the *texture* half of `V1` on evidence; the *class* half is still `01`'s ruling and `01` must state it as a ruling, not inherit it from…
 
 ## https://robloxapi.github.io/ref/class/SoundService.html
 
@@ -1736,11 +1788,6 @@ did not fetch" becomes checkable instead of trusted.
 ## https://www.u4gm.com/fish-it/blog-ancient-ruins-ancient-jungle-guide-fish-it
 
 *Cited by 1: `theme/fantasy/_lead`*
-
-
-## https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html
-
-*Cited by 1: `art/lighting/_lead`*
 
 
 ## https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html

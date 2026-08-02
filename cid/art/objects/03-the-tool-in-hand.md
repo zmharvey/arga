@@ -5,7 +5,7 @@
 ## Decision
 
 **Both parts of the tool are `Enum.Material.Wood`, `Reflectance` 0, `Transparency` 0, and the head
-is markedly paler than the grip** — grip `[122, 88, 58]` (luma 94.7), head `[190, 158, 118]`
+is markedly paler than the grip** — grip `[118, 88, 66]` (luma 94.5), head `[190, 158, 118]`
 (luma 163.0). One material, two colours, three properties that shipped code currently leaves at
 engine defaults. **Eighteen materials are banned by name**, `Neon` first. The two parts' sizes are
 `representation.tool`'s, they ship, and this sheet does not reopen them.
@@ -44,7 +44,7 @@ engine defaults. **Eighteen materials are banned by name**, `Neon` first. The tw
   place in it until now.
 - **The grip is exempt from the ground-contrast rule and says so.** At 0.3 × 0.3 studs, gripped and
   partly occluded by the hand, it carries no channel; `tool.appearanceChannel` is `headWidth` and
-  nothing else. Its only requirement is separation from the head.
+  nothing else. Its only requirements are separation from the head and the no-gilding test.
 - **`Neon` needs a named ban, not an adjective.** It is a member of the same enum a builder is
   choosing from, `T10` forbids a tool that lights itself, and `theme/setting/05` `A7` allows no
   light source but daylight. A build agent cannot count "not shiny"; it can count `Neon`.
@@ -57,10 +57,10 @@ engine defaults. **Eighteen materials are banned by name**, `Neon` first. The tw
 
 ### The three properties, resolved
 
-| part | size (shipped, not reopened) | role | material | rgb | luma601 | reflectance | transparency |
-|---|---|---|---|---|---|---|---|
-| `Handle` | `0.3 × 0.3 × 1.4` — `representation.tool` | `tool-grip-timber` | `Wood` | `[122, 88, 58]` | 94.7 | 0 | 0 |
-| `Head` | `headWidth × 0.2 × 0.6` — `representation.tool` | `tool-head-timber-pale` | `Wood` | `[190, 158, 118]` | 163.0 | 0 | 0 |
+| part | size (shipped, not reopened) | role | material | rgb | luma601 | blue ÷ red | reflectance | transparency |
+|---|---|---|---|---|---|---|---|---|
+| `Handle` | `0.3 × 0.3 × 1.4` — `representation.tool` | `tool-grip-timber` | `Wood` | `[118, 88, 66]` | 94.5 | 0.559 | 0 | 0 |
+| `Head` | `headWidth × 0.2 × 0.6` — `representation.tool` | `tool-head-timber-pale` | `Wood` | `[190, 158, 118]` | 163.0 | 0.621 | 0 | 0 |
 
 ### Materials banned on the tool, by name
 
@@ -94,8 +94,8 @@ engine defaults. **Eighteen materials are banned by name**, `Neon` first. The tw
 | head width | `1.2 + 0.35 × level` | `tool.headWidthBaseStuds`, `tool.headWidthPerLevelStuds` |
 | first violating level | **Reach level 1** — 1.55 studs against a 1.4-stud grip | arithmetic |
 | width at the top of the ladder | **4.0 studs**, 2.86× the grip | `tool` |
-| what this domain can move | material and colour only | `tool` *"you own what the tool is, its material and its proportions, inside T9 and T11"*, and both figures sit in approved keys |
-| what this domain does about it | the timber material, `Reflectance` 0, and the pale-head-over-dark-grip inversion, so a 4 × 0.2 slab reads as a sweep bar rather than as an axe or a scythe | this sheet |
+| what this domain can move | material and colour only | `tool`: *"you own what the tool is, its material and its proportions, inside T9 and T11"*, and both figures sit in approved keys |
+| what this domain does about it | the timber material, `Reflectance` 0, one colour per part, and the pale-head-over-dark-grip inversion, so a 4 × 0.2 slab reads as a sweep bar rather than as an axe or a scythe | this sheet |
 
 **Filed as a revision request to tool-behaviour work (which owns `tool.headWidthPerLevelStuds`)
 and representation work (which owns `head.Size`), with three options and a recommendation.** I do
@@ -119,19 +119,19 @@ not choose among them, because neither number is mine.
     "allowedMaterialCount": 1,
     "materialSpaceSearched": "the 47 built-in Enum.Material members; MaterialVariant and SurfaceAppearance are excluded because both require an uploaded texture asset",
     "parts": [
-      { "part": "Handle", "role": "tool-grip-timber", "material": "Wood", "rgb": [122, 88, 58], "luma601": 94.7, "reflectance": 0, "transparency": 0, "exemptFromGroundContrastRule": true, "exemptionReason": "0.3 studs across, partly occluded by the hand, and it carries no appearance channel", "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-dark]" },
-      { "part": "Head", "role": "tool-head-timber-pale", "material": "Wood", "rgb": [190, 158, 118], "luma601": 163.0, "reflectance": 0, "transparency": 0, "exemptFromGroundContrastRule": false, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-pale]" }
+      { "part": "Handle", "role": "tool-grip-timber", "material": "Wood", "rgb": [118, 88, 66], "luma601": 94.5, "blueOverRed": 0.559, "reflectance": 0, "transparency": 0, "exemptFromGroundContrastRule": true, "exemptionReason": "0.3 studs across, partly occluded by the hand, and it carries no appearance channel", "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-dark]" },
+      { "part": "Head", "role": "tool-head-timber-pale", "material": "Wood", "rgb": [190, 158, 118], "luma601": 163.0, "blueOverRed": 0.621, "reflectance": 0, "transparency": 0, "exemptFromGroundContrastRule": false, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-pale]" }
     ],
     "invariants": {
       "headLumaMinusGripLumaAtLeast": 60,
-      "headLumaMinusGripLumaActual": 68.3,
+      "headLumaMinusGripLumaActual": 68.5,
       "headIsPalerThanGrip": true,
       "headLumaVsEveryTierGreenAtLeast": 20,
       "headLumaVsTierGreensActual": [39.9, 57.0, 78.0, 93.4],
       "headLumaVsClearedStoneAtLeast": 25,
       "clearedStoneLumaRequiredAtLeast": 188,
       "noGildingTest": "reflectance is 0 and blue divided by red is at least 0.55 on every part",
-      "noGildingActual": [0.475, 0.621],
+      "noGildingActual": [0.559, 0.621],
       "singleColourPerPart": true,
       "singleColourReason": "one colour per part means no edge highlight exists to read as a blade"
     },
@@ -171,9 +171,9 @@ not choose among them, because neither number is mine.
   resolve at luma ≥ 188.** Its own index proposes ≥ 195 headroom above the 165 floor, so this costs
   it nothing. If it resolves in `[165, 188)`, the head value here fails its own invariant and this
   sheet is the one that moves, not the stone — file it against sheet 03.
-- **Tool-module work** gets three property writes it does not have: `Color`, `Material` and
-  `Transparency` on both parts, at the `applyPartRules` site that currently declines to set them.
-  `Reflectance` is a fourth and is stated for the same reason.
+- **Tool-module work** gets four property writes it does not have — `Color`, `Material`,
+  `Transparency` and `Reflectance` on both parts — at the `applyPartRules` site that currently
+  declines to set the first three because no key stated them. Now one does.
 - **VFX work** should note the head is now the palest object a player will see against green. A
   clear effect placed at the patch will be read against it; that is a composition fact, not a
   request.
@@ -185,7 +185,7 @@ not choose among them, because neither number is mine.
 
 1. Both tool parts set `Material = Enum.Material.Wood`, `Reflectance = 0`, `Transparency = 0` and a
    `Color3` from `objectArt.tool.parts[]`; `game/src/server/Tool.luau` leaves none of the four at an
-   engine default, and the file contains no material outside the one-member allowed list.
+   engine default, and the file names no material outside the one-member allowed list.
 2. `head.luma601 − grip.luma601 ≥ 60`, and `head.luma601` differs from every `tiers[].rgb` Rec.601
    luma by at least 20.
 3. Neither part uses any of the 18 materials in `objectArt.tool.bannedMaterials`, and both satisfy
