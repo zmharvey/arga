@@ -6,11 +6,12 @@
 
 **Yes, and they are two cues, not one: `indexOpen` and `indexClose`, both fired at the
 `Pressable_INDEX` `Activated` handler and nowhere else.** They are the only two non-beat cues in
-the game. **The respawn close is silent** — `navigation.respawn.outcome` is `"close"` with no
-player activation, and this key's whole permitted set is defined as *a player activated a
-control*. Gamepad `B` reaches the same toggle path and therefore the same cue, best-effort.
-There are **four** activatable controls, not five: `navigation/03` withdrew the drawn close
-glyph, so the category's surface list and this domain's index gap `U7` are both stale.
+the game, and each carries `"beat": "none"` — the declared scalar sentinel, never a null. **The
+respawn close is silent** — `navigation.respawn.outcome` is `"close"` with no player activation,
+and this key's whole permitted set is defined as *a player activated a control*. Gamepad `B`
+reaches the same toggle path and therefore the same cue, best-effort. There are **four**
+activatable controls, not five: `navigation/03` withdrew the drawn close glyph, so the category's
+surface list and this domain's index gap `U7` are both stale.
 
 ## Why
 
@@ -30,8 +31,19 @@ movement stick loses response at open and regains it at close. One symmetric cue
 changed*; it does not say **which way**, and which way is the only thing that differs between the
 two edges `[cid: decided]`. The panel itself is `0.94 × 0.86` of the viewport
 `[research: cid/ui-ux/screens/01-collection-index.md]`, so audio is nowhere near the sole carrier
-here and the cue pair is confirmation of a change the player can also see occupy most of the
-screen — which is why two cues cost nothing in the muted case and buy something in the audible one.
+here and the cue pair confirms a change the player can also see occupy most of the screen — which
+is why two cues cost nothing in the muted case and buy something in the audible one.
+
+**`"beat": "none"`, and the reason it is not `null`.** These two cues have no beat, and a field
+that is absent must still be *emitted* as something a module can read. `tech/deploy/02` makes an
+explicit null a **hard emit error**: `bridge/emit-config.mjs:79` returns the literal `nil` for
+both `null` and `undefined`, and Luau drops a nil-valued field from a table constructor, so *"an
+explicit null and a never-emitted key are the same bytes at runtime"*
+`[research: cid/tech/deploy/02-no-explicit-null-in-emitted-config.md]`. Its declared sentinel for
+an absent scalar is the string `"none"`, which is what both rows carry and what acceptance
+criterion 1 now tests. **Round-1 finding N1, and it was mine:** both rows read `"beat": null` and
+the criterion *required* the null, in the category that spent the round generalising this exact
+rule. Fixed in place rather than argued.
 
 **Why the respawn close is silent.** `navigation/02` makes `CharacterAdded` close the panel and
 records `isABeat: false`; its only route is the platform menu's Reset Character
@@ -73,6 +85,9 @@ different rulings, and neither leaks into the other.
 unprovisioned form with the play-site guard `01` states, since an id that will not load errors in
 the console rather than failing silently
 `[research: https://devforum.roblox.com/t/failed-to-load-soundid-error-spam-extreme-log-file-sizes/2225682]`.
+Note that the two sentinels are different values for different reasons: `""` for a `SoundId`,
+because a `ContentId` has an empty engine default; `"none"` for `beat`, because a scalar has no
+empty form and `tech/deploy/02` names the string.
 
 ```manifest
 {
@@ -85,10 +100,17 @@ the console rather than failing silently
       "drawnCloseGlyphRuling": "navigation/03 closeControl.separateDrawnCloseControlExists is false; screens/01 hasCloseControl is false with CloseButton in forbiddenNodes",
       "correctsStaleClaim": "cid/audio/_category.md row D and cid/audio/ui/_lead.md U7 both assume a fifth activatable object; navigation has since dropped it and the set is constant at four, open or closed"
     },
+    "absentValueForm": {
+      "rule": "no field in uiSound is ever null",
+      "beatFieldWhenThereIsNoBeat": "none",
+      "soundIdFieldWhenUnprovisioned": "",
+      "why": "tech/deploy/02 - an emitted null and a never-emitted key are the same bytes at runtime; absence is a declared sentinel of the field's own type. A scalar takes the string none; a ContentId takes its own empty engine default, which mix owns.",
+      "closesFinding": "audio round-2 N1, raised against cid/audio/ui/02 lines 91 and 120"
+    },
     "cues": [
       {
         "id": "indexOpen",
-        "beat": null,
+        "beat": "none",
         "isBeat": false,
         "cause": "Pressable_INDEX activated while the index node is closed",
         "verb": "openIndex",
@@ -117,7 +139,7 @@ the console rather than failing silently
       },
       {
         "id": "indexClose",
-        "beat": null,
+        "beat": "none",
         "isBeat": false,
         "cause": "Pressable_INDEX activated while the index node is open",
         "verb": "openIndex",
@@ -166,6 +188,10 @@ the console rather than failing silently
   its preload set and its concurrency arithmetic. Neither can coincide with a beat by design —
   they fire on a player activation, and `response`'s four sequenced beats fire on a server
   decision — but nothing prevents an accidental overlap and no ducking rule covers a non-beat.
+- **Contract-and-seam work** gets `absentValueForm` as a worked instance of `tech/deploy/02`
+  rather than a restatement of it: two sentinels of two types in one key, `"none"` for a scalar
+  and `""` for a `ContentId`, with the reason each is what it is. The round-2 `N1` finding is the
+  argument for a `bridge/schema.mjs` null check at validation time and not only at emit.
 - **Navigation work (`navigation`)** gains an audio consumer for `respawn.outcome: "close"` and
   should not read this sheet as a request to change it: the close **happens**, and only the sound
   is withheld. Its `closeControl.ifThatDependencyIsReleased` clause is the one thing that would
@@ -184,8 +210,10 @@ the console rather than failing silently
 
 ## Acceptance criteria
 
-1. `uiSound.cues[]` contains exactly two rows with `isBeat: false` and `beat: null`, ids
-   `indexOpen` and `indexClose`, each with `assetCount` 1 and `audibleSeconds <= 0.35`.
+1. `uiSound.cues[]` contains exactly two rows with `isBeat: false` and `beat` equal to the string
+   `"none"`, ids `indexOpen` and `indexClose`, each with `assetCount` 1 and
+   `audibleSeconds <= 0.35`. **No field anywhere in `uiSound` holds `null`**, per
+   `tech/deploy/02`; a `null` at any path fails this criterion and `bridge/emit-config.mjs`.
 2. `uiSound.closePaths[]` has exactly six rows; the row whose `path` names `respawn` has
    `playsIndexClose: false`, and `game/src/client/` contains zero `Sound` play calls reachable
    from a `CharacterAdded` handler.
@@ -200,10 +228,12 @@ Whether a purchase press makes a sound and how `B4` is played — sheet `01`, th
 holds the key and rules the press-edge condition this sheet spends. Every silent interface moment,
 including the index-panel lift and the failed press — sheet `03`, this domain. Whether the system
 notice makes a sound — sheet `04`, this domain. Volume, bus assignment, ducking when either cue
-overlaps a beat, roll-off, the concurrency cap, the MB allowance and the sentinel's value — `mix`;
-this sheet mirrors its form and sets none. Which physical input triggers the `closeIndex` edge on
-each device class, where focus goes, and whether a fifth pressable ever exists — `navigation`
-(`ui-ux/navigation/03`), whose rulings this sheet reads and does not move. The panel's extent,
-anchor and internal layout — `screens`. What suspends movement and how — `input` and
-`navigation/02`. Which module creates the `Sound` — instance-representation work, architect sheet
-`06`.
+overlaps a beat, roll-off, the concurrency cap, the MB allowance and the `SoundId` sentinel's
+value — `mix`; this sheet mirrors its form and sets none. Whether `bridge/schema.mjs` rejects a
+null at validation as well as at emit — contract-and-seam work, which `tech/deploy/02` already
+routed it to; this sheet supplies the second instance and asks for nothing further. Which physical
+input triggers the `closeIndex` edge on each device class, where focus goes, and whether a fifth
+pressable ever exists — `navigation` (`ui-ux/navigation/03`), whose rulings this sheet reads and
+does not move. The panel's extent, anchor and internal layout — `screens`. What suspends movement
+and how — `input` and `navigation/02`. Which module creates the `Sound` — instance-representation
+work, architect sheet `06`.
