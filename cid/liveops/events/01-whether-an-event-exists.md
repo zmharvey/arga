@@ -69,7 +69,7 @@ date-keyed *flag*; `N5` closes remote config; `Layout.luau:70` bans `os.time` as
 rule for chunk shuffling, and `Pressables.luau:436` prefers `os.clock` because *"a monotonic clock
 cannot be moved by the system"*. A raw `os.date()` branch changing what a player sees is named by no
 approved sheet. **`EV10` closes it here.** `[cid: decided]` — the brief is silent, the hole is real,
-and it is the shape an event would grow back through.
+verified independently at round 1, and it is the shape an event would grow back through.
 
 ### The dashboard-versus-place boundary, drawn as data
 
@@ -90,7 +90,7 @@ a live dashboard entry and only a paragraph will read `eventCount: 0` as false. 
 | EV4 | an event-exclusive relic, set, area or bay | `03-META.md` *"Never content access"*; `discovery.repeat.possible: false`; `endgame.forbidden[secondCollection]` | `collection.total`: 24, every name reachable by clearing alone |
 | EV5 | an event-gated entry condition on any content | `depths` unlock is `previousAreaComplete`, the only content gate in the game; `endgame.postTerminalArea.unlock` likewise | count of gates with any other condition: 0 |
 | EV6 | a date-keyed flag, calendar, schedule, ramp or soft launch | `release.forbidden` `N2`, `N3`, `N10` | `release.flags.permittedClasses` has one member, `hotfixKillSwitch` |
-| EV7 | a cross-server, announced or broadcast event | `release` `N6` (`MessagingService`); `notices` has exactly two members, both beats; `products` `F19`; `release.shutdown.playerFacing: "nothing"` | count of in-game strings announcing anything: 0 |
+| EV7 | a cross-server, announced or broadcast event | `release` `N6` (`MessagingService`); **`notices.members[]` holds no announcement member of any class**, and `notices.forbiddenAdditions` closes new strings; `products` `F19`; `release.shutdown.playerFacing: "nothing"` | count of `notices.members[]` entries announcing an event, an update or a schedule: 0. **Cited as a field, not a total** — the roster grew from two to three at `feedback/03` (`saveNotLoaded`, class `system`) and this ruling is unaffected |
 | EV8 | an event-triggered product, bundle or offer | `release.provisioning`'s six gates, gate 3 blocked on an unanswered Networking question; `products.devProductCount`: 0; ruling R-4 | count of products created by this key: 0 |
 | EV9 | an event-conditioned analytics trigger or dashboard read | `kpis.verdictRule.forbiddenActions` names *"an event calendar"*; *"no live tuning response exists and none may be invented"* | count of triggers this key names: 0, against five of eight KPI rows `readableToday: false` |
 | EV10 | **a wall-clock read used for content** — `os.time`, `os.date`, `DateTime`, or any real-world date or hour branching what a player sees, earns or reaches | **this sheet.** No approved sheet supplies it: `N2` closes a flag, `N5` closes remote config, `Layout.luau:70` bans `os.time` for determinism only | count of `os.time`, `os.date`, `DateTime` in executable code under `game/src`: 0. `os.clock` is monotonic and permitted |
@@ -118,12 +118,19 @@ The platform half is cheap; the game half is not. What a real event would need a
 | missing surface | closed by |
 |---|---|
 | an in-game store | ruling R-4; `products.storeExists: false`, `itemCount: 1`, `devProductCount: 0` |
-| a notice channel that can carry a non-beat | `notices` has exactly two members, `setComplete` and `areaComplete` |
+| a notice that can announce anything | `notices.members[]` holds no announcement member of any class — the beat members are payoffs and the one `system` member is `saveNotLoaded`, a failed-read message; `notices.forbiddenAdditions` closes new strings |
 | chat of any kind | `social.chat` window, bubble and voice all `false` |
 | a second currency | `economy.forbidden` row 1; `02-GAMEPLAY.md` *"without adding a currency"* |
 | text entry | `products` `F15`; zero `TextBox` instances in any screen |
 | any off-Roblox channel | the brief states none anywhere; category gap `G1` |
 | an instrument to tell whether it worked | zero analytics calls in `game/src`; five of eight KPI rows `readableToday: false` |
+
+**Corrected at round-1 verification, and the correction is the lesson.** I had written *"`notices`
+has exactly two members, both beats"* — stale on both halves. `feedback/03` added a third,
+`saveNotLoaded`, class `system`, approved at `ui-ux/_verified.md:335`, so a **non-beat notice now
+exists** and the surface this game lacks was never "non-beat" — it is **announcement**. Three sibling
+sheets went stale at once off one shared count. Every citation above is now a **field or a predicate
+over `notices.members[]`**, which a fourth member cannot falsify.
 
 So the cheapest genuine event is a new product behind `release.provisioning`'s six gates, one of them
 blocked on an unanswered Networking question, announced on a surface that does not exist, and
@@ -160,12 +167,26 @@ measured by nothing.
       "id": "EV10",
       "rule": "no real-world date, hour or calendar value may branch what a player sees, earns or reaches",
       "suppliedBy": "this sheet; no approved sheet closes it",
+      "verifiedIndependentlyAtRound1": true,
       "adjacentRulesThatDoNotCover": ["release N2 closes a date-keyed flag only", "release N5 closes remote config only", "Layout.luau line 70 bans os.time for determinism in chunk shuffling only"],
       "forbiddenTokens": ["os.time", "os.date", "DateTime", "GetJoinData", "GameJoinContext", "EventId"],
       "permittedToken": "os.clock",
       "permittedBecause": "monotonic; it cannot be moved by the system clock and carries no calendar",
       "verifiedCountToday": 0,
       "verifiedScope": "executable code under game/src; the only matches are two comments at Pressables.luau line 436 and Layout.luau line 70 stating they are deliberately not used"
+    },
+    "citedByFieldNotByTotal": {
+      "rule": "every cross-key citation in this sheet is a field or a predicate over a field, never a member count, because a roster that grows falsifies a count and leaves the ruling intact",
+      "correctedAtRound1": {
+        "asWritten": "notices has exactly two members, both beats",
+        "wrongTwice": [
+          "the count: feedback/03 added a third member, saveNotLoaded, class system, approved at ui-ux/_verified.md line 335",
+          "the framing: saveNotLoaded is itself a non-beat, so the surface this game lacks was never non-beat, it is announcement"
+        ],
+        "nowCitedAs": "notices.members[] holds no announcement member of any class, and notices.forbiddenAdditions closes new strings",
+        "sheetsThatWentStaleTogether": 3,
+        "sharedAssumption": "a member count taken from the category brief rather than from the notices key"
+      }
     },
     "subjects": [
       { "id": "S1", "subject": "event concepts", "state": "absent", "emptiedBy": "00-CORE.md retention non-goal; R-3; endgame.forbidden seasonalEvent", "observable": "eventCount 0 and len(events) 0" },
@@ -193,7 +214,7 @@ measured by nothing.
       { "id": "EV4", "form": "an event-exclusive relic, set, area or bay", "ruling": "03-META.md never content access; discovery.repeat.possible false; endgame.forbidden secondCollection", "observable": "collection.total 24, every name reachable by clearing alone" },
       { "id": "EV5", "form": "an event-gated entry condition on any content", "ruling": "depths unlock is previousAreaComplete and is the only content gate in the game; endgame.postTerminalArea.unlock likewise", "observable": "count of content gates with any other condition: 0" },
       { "id": "EV6", "form": "a date-keyed flag, calendar, schedule, ramp or soft launch", "ruling": "release.forbidden N2, N3, N10", "observable": "release.flags.permittedClasses has exactly one member, hotfixKillSwitch" },
-      { "id": "EV7", "form": "a cross-server, announced or broadcast event", "ruling": "release N6 MessagingService; notices has exactly two members, both beats; products F19; release.shutdown.playerFacing nothing", "observable": "count of in-game strings announcing anything: 0" },
+      { "id": "EV7", "form": "a cross-server, announced or broadcast event", "ruling": "release N6 MessagingService; notices.members[] holds no announcement member of any class and notices.forbiddenAdditions closes new strings; products F19; release.shutdown.playerFacing nothing", "observable": "count of notices.members[] entries announcing an event, an update or a schedule: 0. Cited as a field rather than a member total: the roster grew from two to three at feedback/03 with saveNotLoaded, class system, and this ruling is unaffected" },
       { "id": "EV8", "form": "an event-triggered product, bundle or offer", "ruling": "release.provisioning six gates with gate 3 blocked on an unanswered Networking question; products.devProductCount 0; ruling R-4", "observable": "count of products created by this key: 0" },
       { "id": "EV9", "form": "an event-conditioned analytics trigger or dashboard read", "ruling": "kpis.verdictRule.forbiddenActions names an event calendar; no live tuning response exists and none may be invented", "observable": "count of triggers this key names: 0, against five of eight KPI rows readableToday false" },
       { "id": "EV10", "form": "a wall-clock read used for content: os.time, os.date, DateTime, or any real-world date or hour branching what a player sees, earns or reaches", "ruling": "this sheet; no approved sheet supplies it, N2 closes a flag, N5 closes remote config, Layout.luau line 70 bans os.time for determinism only", "observable": "count of os.time, os.date and DateTime in executable code under game/src: 0; os.clock is monotonic and permitted" },
@@ -214,7 +235,7 @@ measured by nothing.
       },
       "gameSideMissingSurfaces": [
         "no in-game store: ruling R-4, products.storeExists false, itemCount 1, devProductCount 0",
-        "no notice channel that can carry a non-beat: notices has exactly two members, setComplete and areaComplete",
+        "no notice that can announce anything: notices.members[] holds no announcement member of any class, the beat members are payoffs and the one system member is saveNotLoaded, and notices.forbiddenAdditions closes new strings",
         "no chat on any of the three surfaces: social.chat window, bubble and voice all false",
         "no second currency: economy.forbidden row 1",
         "no text entry: products F15, zero TextBox instances in any screen",
@@ -244,7 +265,8 @@ measured by nothing.
       "no field anywhere in this key is a JSON null",
       "placeSideEventCount is 0 and dashboardEntriesAreNotThisKey is true; a dashboard entry existing does not falsify eventCount",
       "this key adds zero faucets, zero sinks, zero conversions, zero products, zero gates and zero player-facing strings",
-      "every forbidden row carries a ruling tracing to an approved sheet or to this sheet, and an observable that is a count"
+      "every forbidden row carries a ruling tracing to an approved sheet or to this sheet, and an observable that is a count",
+      "no citation in this key is a member count of another key's roster; every cross-key citation is a field or a predicate over a field"
     ]
   }
 }
@@ -257,6 +279,7 @@ measured by nothing.
 | **Store-listing and experience-page work** *[Discovery & Marketing — Store Page, Icon, Thumbnails]* | The boundary lands on you and it is permissive: a Creator Dashboard event entry is **your** surface, needs no place change, caps at 10 concurrent and runs 7–30 days. What my zero forbids is the place behaving differently while one runs. *"Seasonal and event variants"* of an icon or thumbnail have **no in-game referent** after this ruling and may not imply a place-side change. |
 | **Update-ordering work** *[Live Ops — Roadmap]* | An undated ordering is yours; a date is mine and is zero. `release` `N2` answers *"why is an ordering permitted and a calendar not"* and it is not mine to give. Either Roadmap ruling leaves this key untouched. |
 | **Income and sink work** *[Gameplay — Systems `economy`; Balance `solvency`]* | Subject five stays yours. This key adds no faucet, no sink and no conversion, and states no rule about held currency. |
+| **Notice and transient-message work** *[UI/UX — Feedback, `notices`]* | Nothing here asks you for a member. My citation is a **predicate over `notices.members[]`** — no entry announces an event, an update or a schedule — so a fourth member does not touch this ruling, and `saveNotLoaded` is correctly recorded as a non-beat that already exists. |
 | **Screen-inventory and UI-emission work** *[UI/UX — Store, Screens]* | Finding `F-E1`. Your whitelist survives; its `instanceToday` would be stronger if it named the event banner and the countdown, and the fix is the two generator inputs, not the emitted files. |
 | **Anyone writing runtime code** *[Tech & Data, Mechanics, Meta & Content]* | `EV10` is new and binds you. `os.clock` is permitted because it is monotonic; `os.time`, `os.date` and `DateTime` are not, and the ban is now a content rule as well as `Layout.luau`'s determinism rule. |
 | **Contract-and-seam work** | `events` needs a shape in `bridge/schema.mjs` with `eventCount == len(events)`. It cites `economy`, `solvency`, `endgame`, `discovery`, `collection`, `depths`, `release`, `kpis`, `notices` and `products`; four are proposals, so reference resolution runs against the proposal set. |
@@ -275,27 +298,32 @@ measured by nothing.
    `artifactHygiene.mustNotBePresent`**. Today that set is exactly
    `{shared/Screens/shop-v2.luau, shared/Screens/quests.luau}`, both already listed, verified this
    run; the criterion fails the moment a path outside that whitelist matches.
-4. Every `unlock` value across `depths` and `endgame.postTerminalArea` is the string
-   `previousAreaComplete`, the count of content gates carrying any other condition is **0**, and
-   `economy.faucetCount` and `economy.sinkCount` are both still **1**.
+4. **No string anywhere in this sheet asserts a member count of another key's roster.** Every
+   cross-key citation is a field or a predicate over one: `notices.members[]` is cited by the
+   predicate *no entry announces an event, an update or a schedule*, and the number of
+   `notices.members[]` entries breaking that predicate is **0** whatever the roster length. The same
+   form holds for `depths` and `endgame.postTerminalArea`, whose every `unlock` value is the string
+   `previousAreaComplete`.
 
 ## Not decided here
 
 What happens to currency the player cannot spend — **`economy.atMaxLadder`** *[Gameplay — Systems]*,
 timed by **`solvency.ladderExhaustedAfter`** *[Balance]*; I route and add no rule. Whether an undated
 ordered sequence of drops exists — **update-ordering work** *[Live Ops — Roadmap]*; I own only the
-dated half. Recurring, tiered, resetting structures — **Seasons**. Whether a dashboard event entry is
-created, what it says and what it looks like — **store-listing work** *[Discovery & Marketing]*; I
-state only that the place may not respond to it. Repairing `F-E1` — the owner of `ui-ux/store/01`'s
-`artifactHygiene`, plus whoever owns `ui-forge/briefs/`; I delete nothing and claim no screen. The
-`·` in the emitted banner — **`vocabulary`**, which forbids it independently. Whether codes or a
-group reward exist — **Codes**, which holds the research line naming them.
+dated half. Recurring, tiered, resetting structures — **Seasons**. How many notices exist and what
+any of them says — **`notices`** *[UI/UX — Feedback]*; I cite a predicate over its roster and set no
+member. Whether a dashboard event entry is created, what it says and what it looks like —
+**store-listing work** *[Discovery & Marketing]*; I state only that the place may not respond to it.
+Repairing `F-E1` — the owner of `ui-ux/store/01`'s `artifactHygiene`, plus whoever owns
+`ui-forge/briefs/`; I delete nothing and claim no screen. The `·` in the emitted banner —
+**`vocabulary`**, which forbids it independently. Whether codes or a group reward exist — **Codes**,
+which holds the research line naming them.
 
 ## Flagged to the developer
 
 | item | what I decided | live alternative | why not |
 |---|---|---|---|
-| **`EV10`, the wall-clock content ban** | No real-world date or hour may branch what a player sees, earns or reaches; `os.clock` stays permitted | Leave it unstated, since no event exists to use it | An unstated hole is the one a builder fills. `N2` covers a flag and `Layout.luau` covers determinism; neither covers an `os.date()` branch |
+| **`EV10`, the wall-clock content ban** | No real-world date or hour may branch what a player sees, earns or reaches; `os.clock` stays permitted | Leave it unstated, since no event exists to use it | An unstated hole is the one a builder fills. `N2` covers a flag and `Layout.luau` covers determinism; neither covers an `os.date()` branch. **Verified independently at round 1** and the gap confirmed real |
 | **The E1 boundary** | A dashboard entry is store-page work and permitted; the place responding to it is not | Rule the dashboard out too, making the zero total | *"No seasons or events"* is written in game-design context, and the docs require no place change. Forbidding a store-page act on a game-design line would legislate over Marketing's surface |
 
 **The circularity, relayed not laundered:** `05-OUTWARD.md` treats priority 3 as settled while

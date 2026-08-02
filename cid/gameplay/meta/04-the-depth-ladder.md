@@ -78,13 +78,24 @@ that the area before it is finished, and taking that condition means striking
   offer ladder's shipped 1.75**, and **resizing cannot fix it**: row 2 is already at its
   under-buy cap (27,104 raw, floored to 25,200), and the 34,650 the 75 s floor would need puts
   its one-level-behind lap at 255.7 s, past `core-loop/04`'s 200 s ceiling.
+- **Row 1's `maxRadiusProduct` was a null and is now the figure this sheet already derived,
+  2.18.** `cid/tech/deploy/02` forbids an explicit null in an emitted value, and no sentinel
+  was correct here: `"none"` would assert that row 1 accepts no radius product at all, and
+  `"unbounded"` would assert it accepts any, while the truth stated twice in this sheet's own
+  prose is that row 1 *has* a threshold of about 2.18x and no shipped product reaches it. So
+  the field is **restructured by supplying the number rather than substituted with a
+  sentinel**, which also makes `invariants[11]` evaluable on all eight rows instead of seven.
+  No figure is invented: 2.18 is the value already printed in the table below and in this
+  sheet's consequences. Note that `gameplay/balance/04-axis-budget` has separately requested
+  the whole field be **deleted** in favour of `axisBudget.jointLapBound`; that request is
+  untouched and, if taken, removes this site rather than re-sentinelling it.
 - `[playtest unknown]` **Lap wall-clock and therefore every footprint in the table.**
   `LAP_TARGET` 165 s carries a 120 to 200 s range at Balance and every row rescales with it;
   the ordering, the chunk quantisation and the flat-lap shape do not.
 
 | # | depth | set | label | footprint | chunks | patches | spacing | arrival | lap s | max radius product |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 1 | terrace | East Terrace | 14,400 | 4 | 140 | 6 | 1.00x | 164 | safe (2.18x needed) |
+| 1 | 1 | terrace | East Terrace | 14,400 | 4 | 140 | 6 | 1.00x | 164 | 2.18 (safe at every shipped product) |
 | 2 | 1 | terrace | West Terrace | 25,200 | 7 | 245 | 6 | 1.92x | 149 | **1.27** |
 | 3 | 2 | cistern | East Cistern | 39,600 | 11 | 407 | 6 | 2.80x | 161 | **1.44** |
 | 4 | 2 | cistern | West Cistern | 50,400 | 14 | 518 | 6 | 3.52x | 163 | 1.84 |
@@ -104,9 +115,10 @@ that the area before it is finished, and taking that condition means striking
     "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
     "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
     "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+    "maxRadiusProductIsAlwaysANumber": "every row carries a number, including row 1. It USED to carry a null on row 1, meaning 'no shipped product comes near this row'. cid/tech/deploy/02 forbids an explicit null in an emitted value, and neither sentinel was safe here: \"none\" reads as 'no radius product is permitted' and \"unbounded\" reads as 'any is', while the truth is a real threshold of about 2.18x that nothing shipped reaches. The figure was already derived twice in this sheet's prose, so the field is filled rather than sentinelled, and invariants[11] is now evaluable on all eight rows instead of seven.",
     "valueOnlyPurchaserThreshold": 7.0,
     "areas": [
-      { "ordinal": 1, "depth": 1, "setId": "terrace", "relicSliceIndex": "seeded(layoutSeed, depth)", "label": "East Terrace", "footprintStuds2": 14400, "chunkCount": 4,  "patchCount": 140, "minSpacing": 6, "unlock": "none",                  "maxRadiusProduct": null },
+      { "ordinal": 1, "depth": 1, "setId": "terrace", "relicSliceIndex": "seeded(layoutSeed, depth)", "label": "East Terrace", "footprintStuds2": 14400, "chunkCount": 4,  "patchCount": 140, "minSpacing": 6, "unlock": "none",                  "maxRadiusProduct": 2.18 },
       { "ordinal": 2, "depth": 1, "setId": "terrace", "relicSliceIndex": "seeded(layoutSeed, depth)", "label": "West Terrace", "footprintStuds2": 25200, "chunkCount": 7,  "patchCount": 245, "minSpacing": 6, "unlock": "previousAreaComplete", "maxRadiusProduct": 1.27 },
       { "ordinal": 3, "depth": 2, "setId": "cistern", "relicSliceIndex": "seeded(layoutSeed, depth)", "label": "East Cistern", "footprintStuds2": 39600, "chunkCount": 11, "patchCount": 407, "minSpacing": 6, "unlock": "previousAreaComplete", "maxRadiusProduct": 1.44 },
       { "ordinal": 4, "depth": 2, "setId": "cistern", "relicSliceIndex": "seeded(layoutSeed, depth)", "label": "West Cistern", "footprintStuds2": 50400, "chunkCount": 14, "patchCount": 518, "minSpacing": 6, "unlock": "previousAreaComplete", "maxRadiusProduct": 1.84 },
@@ -131,7 +143,7 @@ that the area before it is finished, and taking that condition means striking
       "footprintStuds2 <= footprintCeilingStuds2 for every row",
       "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
       "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
-      "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
+      "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row, and every row carries maxRadiusProduct as a number"
     ]
   }
 }
@@ -148,7 +160,8 @@ that the area before it is finished, and taking that condition means striking
   satisfies both and the residue routes to `monetization/03` `H4`, "reduce
   `products[].factor`"**, not to me. The value axis is not the problem: its threshold is about
   7x. Row 1 is safe at any shipped product, since a fresh player holding every pass is at
-  1.75x against a 2.18x threshold.
+  1.75x against a **2.18x** threshold — a figure that is now in the key rather than only in
+  this paragraph, so a per-row checker can read all eight rows.
 - **Balance and Tuning inherits the failure `core-loop/05` predicted, with an address.** At
   shipped `upgrades` values the ladder is fully bought during area 4, so arrival at areas 5
   to 8 is the 4.16x cap and `arrivalDeepest < sweptCap` fails. **The requirement, with no
@@ -156,7 +169,8 @@ that the area before it is finished, and taking that condition means striking
   income of areas 1 through 7**, so the last area still has something left to buy. At shipped
   values that is 11,644 against about 38,500. Raising `maxLevel`, raising `costGrowth` or
   lowering `value.perLevel` all reach it, and **the same change is what restores the "larger"
-  half of the brief line pushed back on below.**
+  half of the brief line pushed back on below.** Its `04-axis-budget` request to delete
+  `maxRadiusProduct` entirely still stands and is unaffected by row 1 now carrying a number.
 - **`02-the-collection.md` needs a two-field revision and I have not made it.**
   `relicsPerArea` 6 → 3, `areasPerDepth` 1 → 2. Its criterion 4 ("`relicsPerArea` is not
   fewer than the largest set") is already false as a general rule: `bridge/schema.mjs` lines
@@ -200,7 +214,8 @@ that the area before it is finished, and taking that condition means striking
    624/655, 624/655, 640/655, 640/655; `patchCount / footprintStuds2` non-decreasing in
    ordinal and strictly larger at each depth step; `minSpacing` strictly above
    `movement.baseClearRadius`; `footprintStuds2` at most 73,216; and the product of every
-   `products[].factor` on the radius axis at most that row's `maxRadiusProduct`.
+   `products[].factor` on the radius axis at most that row's `maxRadiusProduct`, which is a
+   number on **all eight** rows and is never null.
 4. `collection.relicsPerArea * collection.areasPerDepth` equals the length of every
    `collection.sets[].relics`; for every depth, the two resolved slices partition that set
    with no overlap and no gap; and every row's `unlock` is the string `previousAreaComplete`
@@ -277,6 +292,8 @@ interior is made of and where the Finds sit inside it (sheet `05`, this domain).
 an area's ground, the lane width, every bay's length and where a plot sits (sheet `06`). What
 happens after area 8 (sheet `07`). Which axis each set grants and at what factor (sheet `03`,
 then Balance). Whether `collection`'s two fields and `theme/setting/04`'s `W5` are actually
-revised (their owners, from the requests in the key). What any area looks like (Art and
-Visuals). The layout seed's value (architecture; it is an undeclared literal in `Layout.luau`
-`[research: game/src/shared/Layout.luau]` and the slice draw now depends on it).
+revised (their owners, from the requests in the key). Whether `maxRadiusProduct` survives at
+all (Balance's `04-axis-budget` asks for its deletion; I filled row 1 rather than prejudging
+that). What any area looks like (Art and Visuals). The layout seed's value (architecture; it
+is an undeclared literal in `Layout.luau` `[research: game/src/shared/Layout.luau]` and the
+slice draw now depends on it).

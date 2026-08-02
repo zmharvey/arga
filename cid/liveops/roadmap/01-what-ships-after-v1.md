@@ -25,27 +25,40 @@ levers are one entry rather than an ordered pair.
 *without replacement* from its family, seeded by `(layoutSeed, areaOrdinal)`, so growing the
 family re-draws every existing run; `layout` R9 already calls a reorder *"a save migration and
 not a refactor"* `[research: cid/gameplay/meta/05-area-layout.md]`. `storeMigration` **B1** names
-*"its draw sequence"*, and authoring `anchorSource` — today *"generated once from
+*"its grid… its draw sequence"*, and authoring `anchorSource` — today *"generated once from
 `hash(layoutSeed, chunkId)` and frozen"* — moves the grid B1 also names. `translate.discard` is
 `["cleared", "clearedCount"]`. **The bill is every player's current-area partial clearing:** up
 to 640 patches at today's `depths.areas[8].chunkCount` of 16 against `patchesPerChunk` 40, or
 1,120 if `solvency`'s revision lands at 28 — one lap, **93.5 seconds** `[research: cid/_state.md]`.
 Ninety-three seconds is small. *"Cleared is permanent"* `[brief: binding]` ← `[you chose: R2 Q1]`
-is not, and `notices` has two members, both beats, so the game cannot say it happened.
+is not, and **no member of `notices.members` has a trigger a content drop could fire** — the
+three members are `setComplete` and `areaComplete` (beats) and `saveNotLoaded` (class `system`,
+fired by a failed load), so the game cannot say it happened
+`[research: cid/ui-ux/feedback/03-system-notices.md]`.
 
 **Two windows, and one of them is free.** `release.tolerance.fullWipeCondition` accepts a wipe
 *only* while no non-developer save exists, and `storeMigration.shippedToPlayers` is `false`
 today. Outside that window D1 needs a draw stable under an append-only library — **stated here as
 a requirement and designed nowhere.** In both windows
 `release.rollback.publishMayNotProceedWhen` holds: *"an unexercised migration is a publish
-blocker, not a caution"*, and `everExecuted` is `false` with `game/test/migration.spec.luau`
-absent. **That test is on D1's critical path.**
+blocker, not a caution"*, and `everExecuted` is `false` with `game/test/` holding only
+`config.spec.luau` `[research: game/test]`. **Writing and running `migration.spec.luau` once is
+on D1's critical path.**
 
 **The ordering is derived, not invented.** `storeMigration.openConsequences.W1` — `solvency`'s
 table moving `depths.areas[].chunkCount` and `endgame.postTerminalArea` — already fires B1 and B2
 and already discards `cleared`. **D1 riding that publish costs zero extra wipes; D1 after it
 costs a second wipe for the same outcome.** That, and not a calendar, is the whole order this
 domain has.
+
+**A finding nobody else is positioned to see: three approved keys share one id space.**
+`release.forbidden`, `storeMigration.nonTriggers` and `performance.forbidden` all number their
+exclusion rows `N1` upward and they mean different things — `N6` is a `MessagingService` ban in
+one and a *permission* to move every price freely in another. **This key is the only sheet in the
+run that cites more than one of them**, so it is the only place the collision is visible. Every
+citation below is written dotted (`release.forbidden.N6`, `storeMigration.nonTriggers.N6`) and
+criterion 2 is namespaced accordingly; an unqualified `N6` satisfies and fails nothing.
+`[cid: decided]`
 
 **Cadence is `none`, and `OPEN.md §2`'s *"ships and settles"* is upheld on the merits, not on its
 tag** — which is `[brief: soft]` ← `[I assumed — batched]` at **0 interview questions**
@@ -81,15 +94,15 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
 | id | a drop may not | closed by |
 |---|---|---|
 | G1 | raise `depths.areaCount` past 8, or add content to the post-terminal bay | R-3; `endgame` — unbounded already, buries nothing |
-| G2 | add, rename or remove a `collection.sets[].relics` name | R-3; `storeMigration` B4 |
-| G3 | add, remove, rename or retype a persisted field | `storeMigration` B3; `stateShape` — seven fields, one writer each |
+| G2 | add, rename or remove a `collection.sets[].relics` name | R-3; `storeMigration.bumpTriggers.B4` |
+| G3 | add, remove, rename or retype a persisted field | `storeMigration.bumpTriggers.B3`; `stateShape` — seven fields, one writer each |
 | G4 | add a product, a price tier or a second SKU | **G7** — `03-META.md`'s three priority lists contain neither a store nor a pass |
-| G5 | add an instance to a bay | `cid/art/_verified.md` — Environment has **0 spare** at the merged ceiling; `chunkDressing.variantsDressedDifferently: 0` means a 9th chunk reuses its family signature and costs 0 assets |
+| G5 | add an instance to a bay | `cid/art/_verified.md` — Environment has **0 spare** at the merged ceiling; `chunkDressing.variation.variantsDressedDifferently: 0` means a 9th chunk reuses its family signature and costs 0 assets |
 | G6 | introduce a player-facing string | `vocabulary` binds every such string; `environment/04` F6 forbids a numeral, sign, marker or banner on a chunk |
 | G7 | carry a window, countdown, expiry, or a gate on content | `02-GAMEPLAY.md` *"zero tension is deliberate"*; `03-META.md` *"never content access"* |
 | G8 | be justified by retention, return rate, CCU, DAU, session count or revenue | `00-CORE.md`, two binding non-goals |
 | G9 | fire any bump trigger while `storeMigration.everExecuted` is `false` | `release.rollback.publishMayNotProceedWhen` |
-| G10 | request a flag of any class | `release.forbidden` `N1`–`N3`, `N10`; `release.flags.permittedClasses` is one class and it only disables |
+| G10 | request a flag of any class | `release.forbidden.N1`–`.N3`, `.N10`; `release.flags.permittedClasses` is one class and it only disables |
 
 ### Forbidden, diffed against the three closed lists
 
@@ -97,18 +110,18 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
 |---|---|---|
 | R-F1 | a daily reward, login streak or return bonus | `03-META.md` priority 3; `endgame.forbidden[dailyReward]`; `kpis.verdictRule.forbiddenActions` |
 | R-F2 | a season, reward track or battle pass | `endgame.forbidden[seasonPass]`; `liveops/seasons` rules the key |
-| R-F3 | a limited-time event | `endgame.forbidden[seasonalEvent]`; `release.forbidden` `N2`; `liveops/events` rules the key |
+| R-F3 | a limited-time event | `endgame.forbidden[seasonalEvent]`; `release.forbidden.N2`; `liveops/events` rules the key |
 | R-F4 | a code, redemption or group-join grant | `endgame.forbidden[redeemCode]`; `products` `F15`; `liveops/codes` rules the key |
 | R-F5 | a leaderboard, comparative figure or trade | `endgame.forbidden[leaderboard, trading]`; `social` `X7` |
 | R-F6 | rebirth, prestige, offline accrual, real procedural generation | `endgame.forbidden[rebirth, prestige, offlineAccrual]`; `03-META.md` priority 3 |
-| R-F7 | a staged rollout, ramp, canary cohort, soft launch or percentage bucket | `release.forbidden` `N1`, `N4`, `N10` |
-| R-F8 | a flag keyed to a date, calendar or season, or one changing what content exists | `release.forbidden` `N2`, `N3` |
-| R-F9 | a reserved slot, stub, empty track, calendar field, explicit null or "for a future update" note, in this key or in any key a drop touches | `performance` `N9`; `tech/deploy/02` — *an explicit null and a never-emitted key are the same bytes* |
+| R-F7 | a staged rollout, ramp, canary cohort, soft launch or percentage bucket | `release.forbidden.N1`, `.N4`, `.N10` |
+| R-F8 | a flag keyed to a date, calendar or season, or one changing what content exists | `release.forbidden.N2`, `.N3` |
+| R-F9 | a reserved slot, stub, empty track, calendar field, explicit null or "for a future update" note, in this key or in any key a drop touches | `performance.forbidden.N9`; `tech/deploy/02` — *an explicit null and a never-emitted key are the same bytes* |
 | R-F10 | a second review cadence, an event calendar, or any recurring date | `kpis.cadence` closes; `kpis.verdictRule.forbiddenActions` |
-| R-F11 | an in-game announcement that a drop happened, or that one is coming | `notices` has two members, both beats; `products` `F19`; `release.shutdown.playerFacing: "nothing"` |
-| R-F12 | a maintenance, downtime or lockout notice around a drop | `release.forbidden` `N8` — no permitted surface exists to explain one |
-| R-F13 | a `MessagingService` broadcast or any cross-server announcement | `release.forbidden` `N6` |
-| R-F14 | a drop targeted at, varied by, or measured against a cohort of players | `release.forbidden` `N4`; `social` `X7` |
+| R-F11 | an in-game announcement that a drop happened, or that one is coming | no `notices.members` entry has a trigger a drop could fire — two beats plus `saveNotLoaded`, class `system`; `products` `F19`; `release.shutdown.playerFacing: "nothing"` |
+| R-F12 | a maintenance, downtime or lockout notice around a drop | `release.forbidden.N8` — no permitted surface exists to explain one |
+| R-F13 | a `MessagingService` broadcast or any cross-server announcement | `release.forbidden.N6` |
+| R-F14 | a drop targeted at, varied by, or measured against a cohort of players | `release.forbidden.N4`; `social` `X7` |
 
 ```manifest
 {
@@ -120,6 +133,13 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
     "disposition": "DOCUMENTATION_ONLY",
     "neverReaches": "GameConfig",
     "playerFacingStrings": 0,
+    "idNamespaces": {
+      "finding": "release.forbidden, storeMigration.nonTriggers and performance.forbidden all number their rows N1 upward and mean different things. release.forbidden.N6 bans MessagingService fan-out; storeMigration.nonTriggers.N6 permits every price to move freely. This key is the only sheet in the run that cites more than one of them.",
+      "rule": "every citation of an N-numbered row in this key is written dotted, as key.list.Nn. An unqualified Nn is not a citation and satisfies no check.",
+      "namespacesCitedHere": ["release.forbidden", "storeMigration.nonTriggers", "storeMigration.bumpTriggers", "performance.forbidden"],
+      "ownIdPrefixes": ["D for drops", "T for forbiddenTriggers", "X for notADrop", "R-F for forbidden", "G for guardrails"],
+      "ownIdsCollideWithNothing": "no id minted by this key is of the form Nn"
+    },
     "dropUnit": {
       "definition": "a content unit: one or more changes to authored content, or to a content-shaping field in a merged key, shipped together through exactly one release publish",
       "isNotAReleaseVersion": "release owns version. A version is the shipping event and may carry zero drops; a hotfix is a version with no drop. A drop is what a version carries.",
@@ -151,7 +171,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
           "raise layout.chunksPerFamily from 8 toward its published ceiling of 16",
           "author layout.anchorSource per chunk, replacing hash(layoutSeed, chunkId)"
         ],
-        "whyOneDropAndNotTwo": "each lever alone trips storeMigration B1 and each bump discards cleared, so shipping them separately pays the wipe twice for one outcome",
+        "whyOneDropAndNotTwo": "each lever alone trips storeMigration.bumpTriggers.B1 and each bump discards cleared, so shipping them separately pays the wipe twice for one outcome",
         "ownedFieldsMoved": ["layout.chunksPerFamily", "layout.anchorSource"],
         "fieldsThisKeySets": 0,
         "fieldOwner": "cid/gameplay/meta/05-area-layout.md holds layout. This key schedules the move and writes no number.",
@@ -161,14 +181,14 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
         "releaseGates": ["release.provisioning gate 1, publish", "release.provisioning gate 2, publishChecklist P1 to P4", "release.provisioning gate 6, republish then restart"],
         "releaseGatesNotApplicable": ["gate 3, networking re-resolution", "gate 4, create the pass", "gate 5, write the id"],
         "releaseGatesNotApplicableReason": "D1 needs no new product, so the six-gate provisioning sequence collapses to three",
-        "migrationTrigger": "storeMigration.B1",
-        "migrationTriggerReasoning": "layout.composition draws without replacement from the family seeded by (layoutSeed, areaOrdinal), so growing the family re-draws every existing run; and authoring anchorSource moves the grid. B1 names both the draw sequence and the grid.",
+        "migrationTrigger": "storeMigration.bumpTriggers.B1",
+        "migrationTriggerReasoning": "layout.composition draws without replacement from the family seeded by (layoutSeed, areaOrdinal), so growing the family re-draws every existing run; and authoring anchorSource moves the grid. B1 names both the grid and the draw sequence.",
         "migrationTriggerConfirmationOwed": "cid/tech/persistence/03 holds storeMigration and confirms or denies that anchorSource authoring fires B1. This sheet states the reading and designs nothing.",
         "storeBump": "one increment of runtime.dataStoreName, to ArgaRuin_v4 if solvency's revision table has not landed, or v5 if it has",
         "costToPlayers": "cleared and clearedCount are discarded. The player restarts the live area with its ground standing and keeps every Shard, every held level, every revealed row and every Find.",
         "costUpperBound": "one area's patch run: 640 patches at today's depths.areas[8].chunkCount of 16 against layout.families[3].patchesPerChunk of 40, or 1120 if solvency's revision table lands at 28. The depth ladder times that as one lap, 93.5 seconds.",
-        "costAgainst": "'Cleared is permanent' [brief: binding], and it happens silently because notices has two members and both are beats",
-        "precondition": "release.rollback.publishMayNotProceedWhen. storeMigration.everExecuted is false and game/test/migration.spec.luau does not exist, so writing and running that test once is on this drop's critical path.",
+        "costAgainst": "'Cleared is permanent' [brief: binding], and it happens silently because no notices.members entry has a trigger a content drop could fire",
+        "precondition": "release.rollback.publishMayNotProceedWhen. storeMigration.everExecuted is false and game/test holds only config.spec.luau, so writing and running migration.spec.luau once is on this drop's critical path.",
         "shipWindow": {
           "w1": "while storeMigration.shippedToPlayers is false, inside release.tolerance.fullWipeCondition's pre-installed-base window. The wipe costs nobody anything and this is the cheapest window that will ever exist.",
           "w2": "after area-layout work makes the draw stable for existing runs under an append-only library. Stated here as a requirement and designed nowhere.",
@@ -201,7 +221,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       "forbiddenTriggers": [
         { "id": "T1", "condition": "a fall in CCU, DAU or any retention curve", "closedBy": "00-CORE.md, 'Beating the genre's retention curve. Offered and declined' [brief: binding]", "readableToday": false, "blockedBy": "zero AnalyticsService, LogService, FireEvent or LogCustomEvent calls in game/src" },
         { "id": "T2", "condition": "a week-over-week comparison of any metric", "closedBy": "kpis.cadence is a bounded window that closes; no standing review exists", "readableToday": false, "blockedBy": "zero analytics calls in game/src, and StoredState carries no timestamp, session id or run ordinal" },
-        { "id": "T3", "condition": "elapsed calendar time since the last publish", "closedBy": "release.forbidden N2, and cadence none above", "readableToday": true, "blockedBy": "none, and it is forbidden anyway, which is why it is listed" },
+        { "id": "T3", "condition": "elapsed calendar time since the last publish", "closedBy": "release.forbidden.N2, and cadence none above", "readableToday": true, "blockedBy": "none, and it is forbidden anyway, which is why it is listed" },
         { "id": "T4", "condition": "a session return rate or short-session re-engagement reading", "closedBy": "the algorithm source names these and this project measures neither; a discovery argument may not re-enter a declined retention decision", "readableToday": false, "blockedBy": "zero analytics calls in game/src" },
         { "id": "T5", "condition": "a player request, review, comment or community post", "closedBy": "G1 in cid/liveops/_category.md, the brief states no off-Roblox presence anywhere; products F15 closes every in-game intake surface", "readableToday": false, "blockedBy": "no intake channel exists in the brief or in the build; liveops/community rules on intake" },
         { "id": "T6", "condition": "revenue, a purchase count or a pass conversion", "closedBy": "00-CORE.md, 'Revenue. Offered and declined' [brief: binding]", "readableToday": false, "blockedBy": "every gamePassId is unprovisioned at 0 and no purchase has been made" },
@@ -209,13 +229,13 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       ]
     },
     "notADrop": [
-      { "id": "X1", "thing": "a price move on the one SKU inside 349 to 999", "why": "products permits it with no revision and storeMigration N6 makes it no bump. A value move, not a content unit.", "shipsBy": "re-emit, republish, restart" },
+      { "id": "X1", "thing": "a price move on the one SKU inside 349 to 999", "why": "products permits it with no revision and storeMigration.nonTriggers.N6 makes it no bump. A value move, not a content unit.", "shipsBy": "re-emit, republish, restart" },
       { "id": "X2", "thing": "a store-name bump and its migration", "why": "storeMigration owns the procedure. It is a gate a drop passes through, not a thing that ships.", "shipsBy": "the same publish as the drop that forced it" },
       { "id": "X3", "thing": "a code hotfix", "why": "release.rollback.hotfixIs is re-emit, republish, restart, code only", "shipsBy": "release" },
       { "id": "X4", "thing": "executing publishChecklist P1 to P4", "why": "a gate; whether it is re-executed on a subsequent publish is release's question and is not answered here", "shipsBy": "release" },
-      { "id": "X5", "thing": "any balance value: cost, growth rate, per-level factor, tier value or tier weight", "why": "storeMigration N1 and N2 — nothing persisted is keyed by any of them", "shipsBy": "re-emit, republish, restart" },
-      { "id": "X6", "thing": "any player-facing string that is not a found key or an upgrades id", "why": "storeMigration N4. Bound by vocabulary, which this key does not restate.", "shipsBy": "re-emit, republish, restart" },
-      { "id": "X7", "thing": "an art asset swap at constant instance count", "why": "storeMigration N7 — no art asset is referenced by a persisted value. An addition is closed by G5, not by a migration.", "shipsBy": "re-emit, republish, restart" }
+      { "id": "X5", "thing": "any balance value: cost, growth rate, per-level factor, tier value or tier weight", "why": "storeMigration.nonTriggers.N1 and storeMigration.nonTriggers.N2 — nothing persisted is keyed by any of them", "shipsBy": "re-emit, republish, restart" },
+      { "id": "X6", "thing": "any player-facing string that is not a found key or an upgrades id", "why": "storeMigration.nonTriggers.N4. Bound by vocabulary, which this key does not restate.", "shipsBy": "re-emit, republish, restart" },
+      { "id": "X7", "thing": "an art asset swap at constant instance count", "why": "storeMigration.nonTriggers.N7 — no art asset is referenced by a persisted value. An addition is closed by guardrail G5, not by a migration.", "shipsBy": "re-emit, republish, restart" }
     ],
     "declined": [
       {
@@ -223,7 +243,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
         "was": "03-META.md priority 2, 'a duplicate-handling refinement' [brief: soft]",
         "closedBy": "discovery.repeat.possible false, cid/gameplay/systems/05 — 'no reachable duplicate exists, so nothing needs a sink'",
         "status": "already delivered before v1 ships. A priority-2 item retired by an approved key is a declined row, not a schedule slot.",
-        "reversalCost": "nothing to build and nothing to undo. Reopening it means making repeats reachable, which is a layout draw change firing B1, plus a sink, against 02-GAMEPLAY.md's 'solve duplicates without adding a currency'."
+        "reversalCost": "nothing to build and nothing to undo. Reopening it means making repeats reachable, which is a layout draw change firing storeMigration.bumpTriggers.B1, plus a sink, against 02-GAMEPLAY.md's 'solve duplicates without adding a currency'."
       },
       {
         "id": "visitableRestoredRuins",
@@ -239,7 +259,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
         "what": "growing the collection beyond 24 finds, for example 4 sets of 12",
         "offeredBy": "cid/gameplay/meta/04's Flagged to the developer section",
         "blockedBy": "ruling R-3 — the game is not expanded past eight areas and the under-scoping finding is recorded and declined, because the under-scoping argument is a retention argument",
-        "alsoCosts": "storeMigration B4 — any addition to collection.sets[].relics is a bump",
+        "alsoCosts": "storeMigration.bumpTriggers.B4 — any addition to collection.sets[].relics is a bump",
         "needsRuling": "the developer. Not decided here, and no slot is reserved for it."
       },
       {
@@ -252,34 +272,38 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
     "forbidden": [
       { "id": "R-F1", "thing": "a daily reward, login streak or return bonus", "closedBy": "03-META.md priority 3; endgame.forbidden dailyReward; kpis.verdictRule.forbiddenActions" },
       { "id": "R-F2", "thing": "a season, reward track or battle pass", "closedBy": "endgame.forbidden seasonPass; liveops/seasons" },
-      { "id": "R-F3", "thing": "a limited-time event", "closedBy": "endgame.forbidden seasonalEvent; release.forbidden N2; liveops/events" },
+      { "id": "R-F3", "thing": "a limited-time event", "closedBy": "endgame.forbidden seasonalEvent; release.forbidden.N2; liveops/events" },
       { "id": "R-F4", "thing": "a code, redemption or group-join grant", "closedBy": "endgame.forbidden redeemCode; products F15; liveops/codes" },
       { "id": "R-F5", "thing": "a leaderboard, comparative figure or trade", "closedBy": "endgame.forbidden leaderboard and trading; social X7" },
       { "id": "R-F6", "thing": "rebirth, prestige, offline accrual, real procedural generation", "closedBy": "endgame.forbidden rebirth, prestige, offlineAccrual; 03-META.md priority 3" },
-      { "id": "R-F7", "thing": "a staged rollout, ramp, canary cohort, soft launch or percentage bucket", "closedBy": "release.forbidden N1, N4, N10" },
-      { "id": "R-F8", "thing": "a flag keyed to a date, calendar or season, or one that changes what content exists", "closedBy": "release.forbidden N2, N3" },
-      { "id": "R-F9", "thing": "a reserved slot, stub, empty track, calendar field, explicit null or for-a-future-update note, in this key or in any key a drop touches", "closedBy": "performance N9; tech/deploy/02 — an explicit null and a never-emitted key are the same bytes" },
+      { "id": "R-F7", "thing": "a staged rollout, ramp, canary cohort, soft launch or percentage bucket", "closedBy": "release.forbidden.N1, release.forbidden.N4, release.forbidden.N10" },
+      { "id": "R-F8", "thing": "a flag keyed to a date, calendar or season, or one that changes what content exists", "closedBy": "release.forbidden.N2, release.forbidden.N3" },
+      { "id": "R-F9", "thing": "a reserved slot, stub, empty track, calendar field, explicit null or for-a-future-update note, in this key or in any key a drop touches", "closedBy": "performance.forbidden.N9; tech/deploy/02 — an explicit null and a never-emitted key are the same bytes" },
       { "id": "R-F10", "thing": "a second review cadence, an event calendar, or any recurring date", "closedBy": "kpis.cadence closes; kpis.verdictRule.forbiddenActions" },
-      { "id": "R-F11", "thing": "an in-game announcement that a drop happened or is coming", "closedBy": "notices has two members and both are beats; products F19; release.shutdown.playerFacing nothing" },
-      { "id": "R-F12", "thing": "a maintenance, downtime or lockout notice around a drop", "closedBy": "release.forbidden N8" },
-      { "id": "R-F13", "thing": "a MessagingService broadcast or any cross-server announcement", "closedBy": "release.forbidden N6" },
-      { "id": "R-F14", "thing": "a drop targeted at, varied by, or measured against a cohort of players", "closedBy": "release.forbidden N4; social X7" }
+      { "id": "R-F11", "thing": "an in-game announcement that a drop happened or is coming", "closedBy": "no notices.members entry has a class or trigger a content drop could fire; products F19; release.shutdown.playerFacing nothing" },
+      { "id": "R-F12", "thing": "a maintenance, downtime or lockout notice around a drop", "closedBy": "release.forbidden.N8" },
+      { "id": "R-F13", "thing": "a MessagingService broadcast or any cross-server announcement", "closedBy": "release.forbidden.N6" },
+      { "id": "R-F14", "thing": "a drop targeted at, varied by, or measured against a cohort of players", "closedBy": "release.forbidden.N4; social X7" }
     ],
     "guardrails": [
       { "id": "G1", "rule": "no drop raises depths.areaCount past 8 or adds content to the post-terminal bay", "closedBy": "R-3; endgame" },
-      { "id": "G2", "rule": "no drop adds, renames or removes a collection.sets[].relics name", "closedBy": "R-3; storeMigration B4" },
-      { "id": "G3", "rule": "no drop adds, removes, renames or retypes a persisted field", "closedBy": "storeMigration B3; stateShape" },
+      { "id": "G2", "rule": "no drop adds, renames or removes a collection.sets[].relics name", "closedBy": "R-3; storeMigration.bumpTriggers.B4" },
+      { "id": "G3", "rule": "no drop adds, removes, renames or retypes a persisted field", "closedBy": "storeMigration.bumpTriggers.B3; stateShape" },
       { "id": "G4", "rule": "no drop adds a product, a price tier or a second SKU", "closedBy": "G7 — there is no priority ordering to order it by" },
-      { "id": "G5", "rule": "no drop adds an instance to a bay", "closedBy": "cid/art/_verified.md records 0 spare Environment instances at the merged ceiling; chunkDressing.variantsDressedDifferently 0 means a new chunk variant reuses its family signature and costs 0 assets" },
+      { "id": "G5", "rule": "no drop adds an instance to a bay", "closedBy": "cid/art/_verified.md records 0 spare Environment instances at the merged ceiling; chunkDressing.variation.variantsDressedDifferently 0 means a new chunk variant reuses its family signature and costs 0 assets" },
       { "id": "G6", "rule": "no drop introduces a player-facing string", "closedBy": "vocabulary binds every such string; environment/04 F6 forbids a numeral, sign, marker or banner on a chunk" },
       { "id": "G7", "rule": "no drop carries a window, countdown, expiry or gate on content", "closedBy": "02-GAMEPLAY.md zero tension; 03-META.md never content access" },
       { "id": "G8", "rule": "no drop is justified by retention, return rate, CCU, DAU, session count or revenue", "closedBy": "00-CORE.md, two binding non-goals" },
-      { "id": "G9", "rule": "no drop that fires any storeMigration bump trigger ships while everExecuted is false", "closedBy": "release.rollback.publishMayNotProceedWhen" },
-      { "id": "G10", "rule": "no drop requests a flag of any class", "closedBy": "release.forbidden N1 to N3 and N10; release.flags.permittedClasses is one class and it only disables" }
+      { "id": "G9", "rule": "no drop that fires any storeMigration bump trigger ships while storeMigration.everExecuted is false", "closedBy": "release.rollback.publishMayNotProceedWhen" },
+      { "id": "G10", "rule": "no drop requests a flag of any class", "closedBy": "release.forbidden.N1 to release.forbidden.N3 and release.forbidden.N10; release.flags.permittedClasses is one class and it only disables" }
     ],
     "announcement": {
       "inGame": "none",
-      "inGameClosedBy": ["notices has exactly two members, setComplete and areaComplete, both beats", "products F19 — no product is named, shown, priced or referred to anywhere inside the game", "release.shutdown.playerFacing is nothing"],
+      "inGameClosedBy": [
+        "no member of notices.members has a class or trigger that a content drop could fire: setComplete and areaComplete are beats, saveNotLoaded is class system and fires on a failed load. Stated as a predicate over the member list rather than as a member count, so a fourth member does not silently invalidate it.",
+        "products F19 — no product is named, shown, priced or referred to anywhere inside the game",
+        "release.shutdown.playerFacing is nothing"
+      ],
       "consequence": "a drop happens silently, and a player whose area resets is told nothing about why",
       "external": "not this key's. Discovery and Marketing owns the store page, update notes, icon and thumbnail variants, and the update title-tag stem, which G8 leaves without a name."
     },
@@ -287,7 +311,9 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       "len(roadmap.drops) == roadmap.dropCount",
       "every drops[].id, declined[].id, blocked[].id and notADrop[].id is absent from endgame.forbidden",
       "roadmap.cadence.value == 'none' implies roadmap.cadence.intervalDays == 0",
-      "no value anywhere in roadmap is null or undefined at any depth"
+      "no value anywhere in roadmap is null or undefined at any depth",
+      "every citation of an N-numbered row in this key is dotted with its owning key and list",
+      "no field in this key states a count of notices.members"
     ]
   }
 }
@@ -320,18 +346,22 @@ schedule around it, which is why D1 exists at all rather than being declined.
 - **Depth-ladder and area-authoring work (`depths`, `endgame`).** The publish that executes
   `solvency`'s revision table is the one D1 rides. If it goes without D1, D1 loses its only free
   window.
-- **Release work (`release`).** D1 uses gates 1, 2 and 6 only, and requests no flag, so `N1`–`N3`
-  and `N10` are not reopened. `game/test/migration.spec.luau` is on D1's critical path.
-- **Notice-channel work (`notices`).** I request no third member, so D1 ships silently. If a
-  silent area reset is unacceptable, the fix is a `notices` member and this sheet does not ask
-  for one.
+- **Release work (`release`), store-version work and performance-budget work, jointly.** Your
+  three exclusion lists share the `N1…` id space and mean different things. Nothing needs
+  renumbering, but a bare `Nn` is ambiguous across your three keys, and this sheet writes every
+  one of them dotted. Any grep over exclusion ids — in verification, in a build check, or in a
+  later sheet — must namespace them or it will match the wrong list.
+- **Notice-channel work (`notices`).** I request no fourth member, so D1 ships silently. My claim
+  is a predicate over `notices.members` — no member has a trigger a drop could fire — not a member
+  count, so adding a member does not invalidate it and adding an *announcement* member would,
+  deliberately.
 - **Feedback-intake work (`liveops/community`).** `cid/_playtest.md` is the only permitted
   non-dashboard source for a D1 revision request, and it records nothing past area 1 — which is
   exactly why `D1.due` is `false`.
 - **Store-page and update-notes work (Discovery & Marketing).** Your input is: one drop, no
   cadence, no dates, nothing announceable inside the game. No title-tag stem is invented here.
 - **Contract-and-seam work.** `roadmap` is developer-facing and needs `DOCUMENTATION_ONLY` so it
-  never reaches `GameConfig`. The four `invariantsForSchema` rows are the shape to write.
+  never reaches `GameConfig`. The six `invariantsForSchema` rows are the shape to write.
 
 ## Flagged to the developer
 
@@ -350,9 +380,13 @@ recommend the first, riding `solvency`'s publish.**
    case-insensitive scan of the serialised key for
    `monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|march|april|june|july|august|september|october|november|december|weekly|biweekly|fortnight|monthly|quarterly|q[1-4]\b|\d{4}-\d{2}-\d{2}`
    returns zero matches.
-2. Every one of the 13 names in `endgame.forbidden`, and every id `N1`–`N10` in
-   `release.forbidden`, appears inside `roadmap` **only** within `roadmap.forbidden[]` or
-   `roadmap.guardrails[]`; zero appear in `drops[]`, `notADrop[]`, `blocked[]` or `declined[]`.
+2. **Namespaced, because three approved keys share the `N1…` id space.** Every one of the 13
+   names in `endgame.forbidden`, and every id matching `release\.forbidden\.N([1-9]|10)\b`,
+   appears inside `roadmap` **only** within `roadmap.forbidden[]` or `roadmap.guardrails[]`. Ids
+   matching `storeMigration\.(nonTriggers|bumpTriggers)\.` and `performance\.forbidden\.` are
+   outside this criterion's scope and appear legitimately in `notADrop[]`, `declined[]` and
+   `blocked[]`. And no undotted id is cited at all:
+   `grep -oE "(^|[^.[:alnum:]])N([1-9]|10)\b"` over the serialised value returns zero matches.
 3. `grep -rn "AnalyticsService\|LogService\|FireEvent\|LogCustomEvent" game/src` returns zero
    matches; exactly one trigger in the key (`roadmap.trigger.theOneReadableToday`) has a
    `readMechanism` naming a repository artifact; and every `forbiddenTriggers[]` row whose
@@ -360,7 +394,8 @@ recommend the first, riding `solvency`'s publish.**
    non-empty `blockedBy` — exactly rows `T1`, `T2`, `T4`, `T5`, `T6`.
 4. A recursive JSON scan of the `roadmap` value returns zero `null` and zero `undefined` at any
    depth, and zero empty strings; every stated absence is `"none"`, `false`, `0` or `[]`, per
-   `cid/tech/deploy/02`.
+   `cid/tech/deploy/02`. No field in the key states a count of `notices.members`; every reference
+   to that channel is a predicate over its members.
 
 ## Not decided here
 
@@ -368,14 +403,18 @@ The value of `layout.chunksPerFamily` and the content of `layout.anchorSource`
 (`gameplay/meta/05`, which holds `layout`; I schedule the move and write no number), and whether
 the draw can be made stable under an append-only library — same sheet; the requirement is stated,
 the design is not. Whether authoring `anchorSource` fires **B1** (`tech/persistence/03`, which
-holds `storeMigration`; my reading is stated and is theirs to confirm). Whether the collection
-grows past 24 (the developer; R-3 against `meta/04`'s `## Flagged`). Where a second SKU sits in
-any priority order (the developer; **G7**). Whether an event, a season or a code exists
-(`liveops/events`, `/seasons`, `/codes`, each ruling its own key — I forbid them here only as
-roadmap slots, not as designs). Feedback intake, moderation, and whether `cid/_playtest.md` is
-the process (`liveops/community`). Every mechanism of shipping — versions, environments, the
-checklist, the gates, rollback, the restart delay, flags — and whether `publishChecklist`
-`P1`–`P4` is re-executed on a subsequent publish (`tech/deploy/01`, which holds `release`; the
-re-execution question is routed there and unanswered here). How anything is announced outside the
-game, and the `[UPDATE]` title-tag stem (Discovery & Marketing — Name and Store Page; **G8**
-leaves it without a name and I do not fill it). Any tuning value inside a drop (Balance).
+holds `storeMigration`; my reading is stated and is theirs to confirm). Whether the three `N1…`
+exclusion lists are ever renumbered or namespaced at the schema — contract-and-seam work; I state
+the collision and change no other key. Whether the collection grows past 24 (the developer; R-3
+against `meta/04`'s `## Flagged`). Where a second SKU sits in any priority order (the developer;
+**G7**). Whether an event, a season or a code exists (`liveops/events`, `/seasons`, `/codes`,
+each ruling its own key — I forbid them here only as roadmap slots, not as designs). What
+`notices` may say and how many members it has (`ui-ux/feedback/03`, which holds `notices`; I
+assert a predicate over its member list and request no member). Feedback intake, moderation, and
+whether `cid/_playtest.md` is the process (`liveops/community`). Every mechanism of shipping —
+versions, environments, the checklist, the gates, rollback, the restart delay, flags — and
+whether `publishChecklist` `P1`–`P4` is re-executed on a subsequent publish (`tech/deploy/01`,
+which holds `release`; the re-execution question is routed there and unanswered here). How
+anything is announced outside the game, and the `[UPDATE]` title-tag stem (Discovery & Marketing
+— Name and Store Page; **G8** leaves it without a name and I do not fill it). Any tuning value
+inside a drop (Balance).

@@ -74,10 +74,9 @@ the `value` of four events and `session_end.verdictOwnedBy`, all supplied by she
   what share of sessions may fail before anyone acts, over what minimum sample, and what the action
   is — is a project-level judgement and stays KPI-shortlist work's, which is the half that does
   require inventing a number. `[cid: decided]`
-  **Both sheets now state that same boundary, reached independently.** `kpis/02` reversed its
-  decline and carries `rows[aboveTickPayoffGapSeconds]`, setting the target, the alarm and the
-  actor and citing `telemetry.events[session_end].maxPayoffGapSeconds` as build-read. Nothing here
-  asks that sheet to change anything.
+  **Both sheets now state that same boundary, reached independently.** `kpis/02` carries
+  `rows[aboveTickPayoffGapSeconds]`, setting the target, the alarm and the actor and citing
+  `telemetry.events[session_end].maxPayoffGapSeconds` as build-read. Nothing here asks it to change.
 
 ### What resets, pauses and excludes
 
@@ -88,9 +87,9 @@ the `value` of four events and `session_end.verdictOwnedBy`, all supplied by she
 | a patch clears | the tick clock resets; the above-tick clock is untouched | a tick is a payment, not an above-tick payoff |
 | the character is not moving | the tick clock **pauses** | the predicate is about a *moving* player; a standing player is not owed a payment |
 | before the arming transition | both clocks accumulate, neither maximum updates | *"a player who has not moved is not failing"* (`onboarding/02`); the interval is still measured so a slow arm shows in `run_armed.value` |
-| `onDeath` to the next arming transition | both clocks **pause** | there is no character, nothing can be paid, and charging the interval measures `runtime.respawnDelaySeconds` |
+| `onDeath` to the next arming transition | both clocks **pause**, and `lapHadReset` is set | there is no character, nothing can be paid, and charging the interval measures `runtime.respawnDelaySeconds`. The flag is the lap field's, not this clock's |
 | area advance | **no reset.** The completion is itself an above-tick payoff and resets the clock by being one | a second reset here would hide the gap the walk-back to the next bay produces |
-| a lap emitted with `lapOrigin: join` | **no effect on either gap clock** | `lapOrigin` is `lapClock`'s exclusion on the *lap value*; a gap accumulated inside this session is real whatever the lap's entry was |
+| any value of `area_cleared`'s `lap` field | **no effect on either gap clock** | `lap` is `telemetry.sharedPredicate`'s dimension, read by `lapClock` to exclude a *lap value*; a gap accumulated inside this session is real whatever the lap's entry was, so `spanned` and `fallback` censor nothing here |
 | `found == totalFinds` | the above-tick maximum **stops updating**; the tick clock continues | `meta/07` scopes the 90-second rule to `found < totalFinds`, and two of the five payoff kinds are extinct past it |
 | session end | both maxima are emitted on `session_end` and the record is destroyed | nothing crosses a session boundary; there is no persisted clock and none is requested |
 | a session with zero above-tick payoffs | `session_end.value` is the sentinel **`-1`** | an open interval is not a gap. Such a session is still caught: its reveal and completion counts are zero and its tick bucket is `gt30` |
@@ -106,14 +105,16 @@ the `value` of four events and `session_end.verdictOwnedBy`, all supplied by she
   5 says the published figure is not. The 90-second rule's scoping to `found < totalFinds` is
   implemented as an exclusion, so `meta/07`'s guard needs no second statement anywhere.
 - **Logging-pipeline work** inherits the whole per-player record: two clock accumulators, two
-  running maxima, `lastAboveTickSeconds`, `lastTickPositionXZ`, and the pause and resume rules above.
-  All of it is in-memory, keyed by `UserId`, destroyed on leave — the shape `init.server.luau`
-  already uses for `spawnPoses`. **Nothing is added to `stateShape` and nothing crosses the wire.**
+  running maxima, `lastAboveTickSeconds`, `lastTickPositionXZ`, the three lap flags, and the pause
+  and resume rules above. All of it is in-memory, keyed by `UserId`, destroyed on leave — the shape
+  `init.server.luau` already uses for `spawnPoses`. **Nothing is added to `stateShape` and nothing
+  crosses the wire.**
 - **Clearing work** inherits one field: `tickPlayer` must retain the previous tick's XZ position per
   player. One `Vector3` per connected player, read nowhere else.
-- **Session and lap-clock work** should note that `lapOrigin` governs the lap value only. Neither
-  clock here is paused or reset by it, so a lap marked `join` still contributes its in-session gaps
-  to both maxima.
+- **Session and lap-clock work** should note that the `lap` field governs the lap value only.
+  Neither clock here is paused, reset or censored by it, so a lap marked `spanned` or `fallback`
+  still contributes its in-session gaps to both maxima. That is the one place the two readings
+  deliberately disagree, and `telemetry.sharedPredicate` is where the field itself is defined.
 - **Balance work** should know which claim moves. If the realised maximum comes back above
   `pacing.aboveTickGapMaxSeconds`, the failing field is `pacing.aboveTickGapRealisedSeconds` and
   whichever payoff kind `aboveTickGapCarriedBy` currently names. This instrument does not settle
@@ -128,7 +129,7 @@ the `value` of four events and `session_end.verdictOwnedBy`, all supplied by she
 1. `telemetry.aboveTickPayoffs` has exactly 4 entries and their `kind` values are `findReveal`,
    `upgradePurchase`, `areaCompletion` and `setCompletion` — `core-loop/02`'s four names, no fifth.
 2. `session_end.value` is `maxPayoffGapSeconds` with sentinel `-1`, and `telemetry.clock.excludes`
-   names `deathToRearm`, `postTerminal` and `characterNotMoving`.
+   names `deathToRearm`, `postTerminal` and `characterNotMoving` — and does not name any `lap` value.
 3. `session_end.verdictOwnedBy` names this sheet for the per-session pass predicate and
    `kpis.rows[aboveTickPayoffGapSeconds]` for the target, alarm and actor; neither half is described
    as deferred to the other, and no sheet in this domain declines the row. The predicate cites
@@ -141,11 +142,11 @@ the `value` of four events and `session_end.verdictOwnedBy`, all supplied by she
 The share of sessions that may fail the predicate before anyone acts, the minimum sample below which
 no rate may be read, the target and the action a breach triggers — KPI-shortlist work, which owns
 every number that has to be invented rather than cited. Which events exist and what they carry —
-sheet `01`, this domain, which holds the key. How much may be emitted and what a dropped event means
-— sheet `03`, whose drop rule is why the maximum exists. The values of
-`pacing.aboveTickGapMaxSeconds`, `pacing.tickGapRealisedSeconds` and every lap figure — Balance, and
-wave 4 has not released. The lap's population, its exclusion verdicts, its aggregations and
-`lapOrigin`'s spelling — session and lap-clock work; this sheet supplies the number on
-`area_cleared` and rules nothing about how laps are counted. Whether the displacement threshold
-survives contact with a real character controller — `[playtest unknown]`, 0.1 studs, test range 0.05
-to 0.5. How the module is built — logging-pipeline work.
+sheet `01`, this domain, which holds the key and defines the `lap` field in `sharedPredicate`. How
+much may be emitted and what a dropped event means — sheet `03`, whose drop rule is why the maximum
+exists. The values of `pacing.aboveTickGapMaxSeconds`, `pacing.tickGapRealisedSeconds` and every lap
+figure — Balance, and wave 4 has not released. The lap's population, its exclusion verdicts and its
+aggregations — session and lap-clock work; this sheet supplies the number on `area_cleared` and
+rules nothing about how laps are counted. Whether the displacement threshold survives contact with a
+real character controller — `[playtest unknown]`, 0.1 studs, test range 0.05 to 0.5. How the module
+is built — logging-pipeline work.
