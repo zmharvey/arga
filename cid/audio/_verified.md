@@ -242,3 +242,170 @@ it. A check narrowed to the three names that survive a rename is a check fitted 
 3. **N5 needs nothing.**
 4. **Round 3 should be the last.** Every remaining item is a string, a token list or a count. Nothing in this round changed a level, a distance, a cap, a reservation or a budget, so the arithmetic verified in round 1 and re-verified above does not need a third pass.
 5. **Still outbound and still unanswered:** G1 against `gameplay/mechanics/05`, G5 against `architect/sheets/06-representation.md`, RR-M1 against `tech/deploy/01`, RR-M2 against `tech/performance/01`, `ambience`'s RR1–RR3 against three wave-1 Setting sheets, and Music's `RR-M1` against `cid/audio/_category.md`'s unsourced muted-play motive. None blocks Audio; all block somebody.
+
+---
+
+# Round 3 — final
+
+**Status: PASS**
+All four round-2 findings close, each at the class rather than the instance. Mix found two more
+defects in itself that nobody asked about, and declined one sibling request in writing with a
+reason that is correct as far as it goes. **Audio releases.** Two residuals go to the final
+cross-category pass; both are design disagreements resting on unmeasured premises, and neither
+is a defect.
+
+## Round-2 findings — disposition
+
+| # | finding | closed | evidence |
+|---|---|---|---|
+| N1 | two explicit nulls in `uiSound` | **YES, at the class** | `ui/02:113,142` now read `"beat": "none"` beside `isBeat: false`. Criterion 1 was not merely corrected — it was generalised to *"**No field anywhere in `uiSound` holds `null`**, per `tech/deploy/02`; a `null` at any path fails this criterion and `bridge/emit-config.mjs`."* `absentValueForm` (`:103–107`) carries the reasoning as data, and it is right to: `uiSound` legitimately holds **two sentinels for two types** — `"none"` for a scalar with no empty form, `""` for a `ContentId` that has one, owned by `mix`. `ui/02:44` records the finding as its own (*"Round-1 finding N1, and it was mine"*). Verified by grep: `: null` under `cid/audio/ui/` now returns exactly one hit, the prose line naming the finding. |
+| N2 | `M16` over-broad, observable fails | **YES** | `mix/01:135` — the `thing` is now *"depends on a value in an unowned key being NULL, or being UNSET in a field that key declares"*, with three `expresslyPermitted` shapes named and the observable restated so the two permitted shapes are *"permitted and neither is counted."* `mix/03:114` `narrowedFrom` records the over-reach in the sheet rather than quietly deleting it. The `test`, `secondRule` and `ownSentinelIsExempt` are untouched, and `ownSentinelIsExempt` gained one sentence that closes the widening route I checked in round 2: the four sibling keys *"ADOPT this sentinel rather than declaring one, so none reaches this exemption."* |
+| N3 | `M11` unscoped against the neighbour refusal | **YES, and cross-locked** | `M11` scoped to *"an onset of one of this client's own five beats"* with `scope` and `onePermittedRefusal`; `mix/02:149–160` adds `refusalCases` — one entry carrying `case`, `outcome`, `whyItIsLegal`, `whatItCosts`, `howOftenItArises` and `scopedBy` — plus `refusalCaseCount: 1`; step 3 now reads *"on every bus except `WorldNeighbour`, which refuses instead."* **Both sheets' criterion 4 cross-check the pair** (`mix/01` c4 and `mix/02` c4 each assert `M11.onePermittedRefusal` names the same bus as the single `refusalCases` entry), so the two rows cannot drift apart again. `howOftenItArises` is honest about reachability rather than claiming it cannot happen. |
+| N4 | a renamed number surviving the grep | **YES, at the class** | `spreadAcrossTierIndexes` and `spreadCeiling` are gone; `identicalAcrossTierIndexesReason` replaces them and contains no numeral, deriving the cap's satisfaction by construction (*"with no spread across the four notes, `gameplay/core-loop/02`'s cap on that spread is satisfied… and its figure is read there and never restated here"*). Criterion 4 no longer greps a name list — it **enumerates the five permitted fields and requires that no character in any of them is a digit**, so a third attempt under a fourth name fails automatically. That is the correct shape for this check: it constrains the field set, not the vocabulary. |
+
+## Ruling — `M16`'s second permitted shape
+
+**Sound, and true rather than convenient.** The shape is *"a test that an unowned key declares
+NO FIELD of a given name at all, where that key forbids the thing by name"*, and it rescues
+`ui/04` criterion 3 (`notices.members[saveNotLoaded]` carries no `soundId` field). I checked both
+grounds and the failure direction:
+
+1. **`deploy/02` never creates a field.** Its rule operates on fields that carry an explicit
+   null, replacing the value with a declared sentinel of the field's own type. Nothing in it adds
+   a field that was not there. So the absence of `notices.soundId` is not something the
+   correction can disturb — which is precisely what makes it different from `extinctAfter: null`,
+   a field that **exists and will change**. Verified against `tech/deploy/02:7–11`.
+2. **The absence is anchored by a positive declaration in the owning key.**
+   `notices.forbidden.noticeSound` forbids a sound authored by that key, by name and with its own
+   observable. The absence is therefore guaranteed by a rule rather than by happenstance, which
+   is the whole difference between this and the fragile shape.
+3. **The failure direction is safe.** If `notices` ever grew a `soundId`, `ui/04` c3 **fails
+   loudly** rather than passing vacuously. The defect `M16` exists to prevent is a test that
+   silently stops firing; this one cannot.
+
+**The qualifier carries the entire load, and it is present, mandatory and checkable.** Strip
+*"where that key forbids the thing by name"* and the shape collapses straight back into the
+fragile one — an unanchored absence test. It is written into both the `thing` and the observable,
+so it cannot be dropped by accident.
+
+**One inferential step, named because it is the only softness.** `notices.forbidden.noticeSound`
+forbids *a sound authored by `notices`*, not *a field named `soundId`*. If `notices` ever carried
+a `soundId` pointing at an **Audio**-authored cue, its forbidden row would be intact and `ui/04`
+c3 would fail anyway. That is a false alarm, not a silent pass, and it costs one conversation
+rather than one silent regression. It does not break the shape.
+
+## Ruling — Mix's decline of the preload request
+
+**The decline stands, and declining in writing is the right behaviour. The reason is correct
+about the question it answers and silent about the question that was asked.**
+
+**Correct as far as it goes.** `preload.uiSoundRequestDeclined` reasons that minute 1 is not ten
+seconds and that the platform advises preloading only essential assets and accepting occasional
+pop-in. I checked the timing claim and it holds independently: the preload set is bounded by what
+can fire inside `firstSession.beats[firstReveal].bySecond` 10.0, and **neither `uiSound` cue can
+fire inside it.** `indexOpen` is gated by `navigation.selectability.pressableIndexSelectableFrom`
+— the control is inert until the first Find, which *is* the 10-second beat — and
+`upgradePurchased` requires a balance the player cannot have accumulated by then. So the three
+cues are correctly outside the essential set on load-window grounds, and the platform advice is
+real and cited.
+
+**The unanswered half.** `ui/01` did not ask on load-window grounds. Its `preloadRequirement` is
+attached to `B4`, whose **200 ms acknowledgment budget is the tightest in the game**, on the
+game's only currency sink — and its own `openFindings[L1]` records *"first-play latency for a
+preloaded versus non-preloaded `Sound` on the 3 GB floor device against the 200 ms budget"* as
+**unmeasured, with no owner**. Mix's reply answers *when the cue can first fire* and not *whether
+the asset will be resident when it does*. A first-play load on a lazily-loaded asset is the one
+mechanism that could put `B4`'s first firing of a session outside a budget `response` sets.
+
+**Why this is a disagreement and not a defect, stated because the cap is spent.** No builder
+diverges — both read the ledger and do not preload. `performance/03` `N14` is not engaged, because
+a first-play load is not a frame-budget deferral. The exposure is one possibly-late acknowledgment,
+once per session, at a magnitude nobody has measured on either side of the argument. Under the
+stopping rule it fails the two-builders bar outright and is marginal on the player-notices bar,
+against a premise that is `[unverified]` in the sheet that raised it. **It resolves with the
+listening test, not with another round**, and it is carried below rather than sent back.
+
+## The three things Mix found in itself
+
+- **`uiPress` was a second dead level slot, and the catch is better than the one I made.** `ui/01`
+  rules `purchaseControlsHavePressEdgeCue: false` and `ui/02` rules that the index pressable's
+  activation produces `indexOpen` or `indexClose` rather than a separate press cue — so **there is
+  no press class in the game**, and a level of 0.270 was sitting under one. It joins `systemNotice`
+  in `nonBeatsDeleted` with `hadRealised` preserved, `Interface` now routes exactly three named
+  cues plus a `routesExclude` string, and `nonBeatCeilingRule` and criterion 2 both move to
+  `indexOpen`/`indexClose` at 0.270. `deletionRule` generalises: *"a level assigned to a cue that
+  may not fire is the reserved slot forbidden `M1` bans."* I found the first instance; Mix found
+  the second and the rule.
+- **`perDomain[uiSound].maxRows` 5 → 3**, with `maxRowsShape` recording that the set is **closed**
+  (no press-edge cue, no system-notice cue) rather than that the allowance was trimmed. That is the
+  distinction between a budget and a headroom, and it is now data.
+- **The counts are right and they re-derive.** Verified every one: `assetFileCount` **18** =
+  `assetFileCountAddends` 3 + 3 + 12 = sum of `rows[].assetRowsInOwningKey` (1+1+1+1+1+1+12+0);
+  `creatorStoreClassAssetCount` **6** + `uploadClassAssetCount` **12** = 18; `cueClassCount` **8**;
+  `perDomain[].maxRows` 3+12+3+2+0+0 = **20** ≥ 18; instance count 2+2+2+2+1+1+8+5 = **23**;
+  `notCountedHere` carries `ambience`'s 1 for a true build total of **19** files, and says so
+  rather than folding it in silently. The Decision line now reads *"eighteen asset files in eight
+  cue classes, twelve of them uploads"* and agrees with the manifest.
+  `countIsEnumeratedFromTheOwningKeys` records **both** undercounts — the twelve `sfx` files behind
+  one class, then the two index cues — which is the second time this sheet has chosen to keep a
+  superseded figure visible.
+
+## Round-3 knock-ons, checked
+
+- **My round-1 predicted conflict 7 is closed, unrequested.** `mix/02:139` adds
+  `neverStolen: ["Beds"]` with the reason I gave in round 1 almost verbatim (*"a naive global
+  'steal the oldest voice at 24' silences the layer for the whole session, which a player would
+  notice"*), and criterion 4 checks it. `ambient/01`'s `concurrencyRequirementOnMix` asked for
+  *"exempt it or state the restart"*; this is the exemption, and it is now a field rather than a
+  structural accident. **That was the last open item on my predicted-conflict list that Audio
+  could close by itself.**
+- **`poolDepthRule`** (`mix/02:143`) generalises the neighbour exemption into a rule — *pool depth
+  tracks the reservation for a class this order steals from first, and the burst for a class it
+  does not* — so the two figures are derivable rather than remembered.
+- **Nothing changed a level, a distance, a cap, a reservation or a budget.** Re-checked the four
+  the deletions could have disturbed: reservations still 4+3+15+2 = 24; `Interface` still 3 voices
+  for 3 cue classes, now exactly matched; the beat ladder still 0.850 > 0.748 > 0.646 > 0.432 >
+  0.330; `nonBeatCeiling` 0.432 still strictly above the highest live non-beat, now 0.270. **The
+  arithmetic verified in round 1 stands unmoved through two rounds of revision.**
+
+## Carried to the final cross-category pass
+
+Neither is a defect. Both are recorded because the cap is spent and the next reader should not
+have to rediscover them.
+
+1. **The preload decline's unanswered half.** `B4`'s 200 ms budget now rests on a lazily-loaded
+   asset whose first-play latency is `[unverified]` in `ui/01` `openFindings[L1]`, with no owner.
+   The decline is legitimate and in writing; the measurement that would settle it is the same
+   unowned listening test `tech/performance/01` already records. **If one device session is ever
+   run, measure this first** — it is the only figure in the category attached to a budget another
+   key sets.
+2. **The null floor: publish the method and the date, never a number.** As of **2026-08-02**, a
+   whole-repo `:\s*null` sweep counting occurrences inside `manifest` fences returns hits in
+   `cid/analytics/` (six sheets), `cid/ui-ux/feedback/01`, and further sheets under `gameplay/`,
+   `art/`, `ui-ux/` and `tech/`. Music published 43 across seven sheets; within one round it was
+   46, because `cid/analytics/engagement/01-session-shape.md` gained three; `uiSound` has since
+   removed two. **The number is not stable and no run proves an upper bound**, which is exactly
+   what Music's *"a floor and not a total"* framing said. The durable output is the method — count
+   occurrences, not lines; scope to `manifest` fences; do not anchor the pattern to `[a-zA-Z]+`,
+   which cannot match a key containing a digit — and the finding, which is that `tech/deploy/02`'s
+   16-row remediation table names none of these sheets and is therefore incomplete by construction.
+   That belongs to contract-and-seam work, and the honest form of it is a lint, not a census.
+
+## Verdict
+
+**PASS. Audio is released.**
+
+Six keys proposed, none colliding, every beat with an `audio` channel owned exactly once, the
+concurrency arithmetic closing across all six domains at once and surviving two rounds of edits
+unmoved, one sentinel declared once for six keys under a clause that genuinely exists, and a
+category that spent three rounds finding more in itself than was asked of it — two dead level
+slots, two undercounts, a steal exemption, and a rule about depending on other people's absences
+that is now narrower and truer than when it was written.
+
+**Everything still outbound is somebody else's to answer, and every sheet here is written to be
+legal under either resolution:** G1 against `gameplay/mechanics/05`; G5 against
+`architect/sheets/06-representation.md` — still the single point of failure, because **no module
+in this build may create a `Sound`** and all six keys are unbuildable until one is named; RR-M1
+against `tech/deploy/01`; RR-M2 against `tech/performance/01`; `ambience`'s RR1–RR3 against three
+wave-1 Setting sheets; and Music's `RR-M1` against this category's own brief. None of them blocks
+Audio. **G5 blocks the build.**

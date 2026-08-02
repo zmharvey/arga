@@ -656,12 +656,66 @@ export function validateManifest(manifest) {
     if (spec.check && problems.length === before) {
       problems.push(...spec.check(value));
     }
+
+    problems.push(...explicitNulls(key, value));
   }
 
   problems.push(...crossCuttingProblems(manifest));
   problems.push(...crossKeyProblems(manifest));
   return { problems, missing };
 }
+
+/**
+ * An explicit null anywhere in a merged value, found at validation rather than at emit.
+ *
+ * `emit-config.mjs` maps `null` to `nil`, and Luau drops a nil-valued key from a table
+ * entirely — so a module cannot distinguish "no cap" from "the key was never emitted".
+ * `tech/deploy/02` ruled the class forbidden and set a replacement convention per type
+ * (`false`, `{}`, `0`, `"none"`, or a more specific sentinel a key declares for itself).
+ *
+ * It ruled it and then deferred the check, and the cost of deferring is measurable: a
+ * count of 43 was published, was already 46 a round later, and moved again twice inside a
+ * week. Two Audio sheets carried nulls in the same wave that generalised the rule against
+ * them, and one of those sheets had a criterion *requiring* the null. Four separate
+ * domains argued for this check by hand; none of them could enforce it.
+ *
+ * Validation is the right place and emit is the wrong one. At emit the key is already
+ * merged and the sheet that wrote it is out of context; here the path names the field.
+ */
+function explicitNulls(key, value, path = key) {
+  if (value === null) return [`${path} is null. An emitted config cannot carry an explicit null — `
+    + `emit-config maps it to nil and Luau drops the key, so a reader cannot tell "no value" `
+    + `from "never emitted". Use the sentinel for its type (false, {}, 0, "none") or a more `
+    + `specific one this key declares.`];
+  if (Array.isArray(value)) return value.flatMap((v, i) => explicitNulls(key, v, `${path}[${i}]`));
+  if (value && typeof value === 'object') {
+    return Object.entries(value).flatMap(([k, v]) => explicitNulls(key, v, `${path}.${k}`));
+  }
+  return [];
+}
+
+/**
+ * Keys promoted to the contract that a running module never reads.
+ *
+ * Derived from the schema rather than listed in the emitter, because the emitter is the
+ * wrong place to learn what a key is for. A key marked here still merges, still validates,
+ * still fails on a duplicate owner and still has its shape checked — it simply never
+ * reaches Luau.
+ *
+ * The distinction is the sheets' own, reached independently in two categories. Analytics
+ * concluded six of its seven keys are readings *about* the design rather than values the
+ * design reads, with `telemetry` the exception because its `events[]` names insertion
+ * points a builder implements. Live Ops marked `roadmap` `DOCUMENTATION_ONLY` in its own
+ * manifest before anything asked it to. Marketing's artifacts are outward and are built by
+ * a person, not by a module — except `title`, which reaches `Theme.luau` through
+ * `generate.mjs` and is therefore build-read.
+ *
+ * Without this, promoting those keys would push several thousand lines of reading specs,
+ * claim ledgers and publish checklists into a runtime module every file requires — the
+ * same failure `SPECIFICATION_ONLY` was added to stop one wave earlier.
+ */
+export const documentationOnlyKeys = () =>
+  new Set(Object.entries(SCHEMA).filter(([, s]) => s.documentationOnly).map(([k]) => k));
 
 /**
  * Every string a player can read, with where it lives.

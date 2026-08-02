@@ -15,6 +15,8 @@
  * is what made the previous handoff unusable.
  */
 
+import { documentationOnlyKeys } from './schema.mjs';
+
 const HEADER = `--!strict
 --[[
 	GENERATED FILE — do not edit.
@@ -349,8 +351,22 @@ ${r.maxPlayers === undefined ? '' : `GameConfig.MaxPlayers = ${num(r.maxPlayers)
   //
   // `runtime` is deliberately NOT here: it is tuned values, and the hand-written block above
   // emits it.
+  //
+  // The set below is the architect's half, listed here because those keys predate the
+  // schema flag. The creative half is DERIVED — a key whose schema entry carries
+  // `documentationOnly: true` is dropped by `documentationOnlyKeys()`, so a promoted key
+  // that a running module never reads cannot reach Luau by anyone forgetting this list.
+  //
+  // That flag exists because waves 5-7 produced whole categories of key that are readings
+  // *about* the design rather than values the design reads: an event catalog's ceilings, a
+  // KPI shortlist, a publish checklist, a claim ledger. Analytics reached that split
+  // independently in two sheets and Live Ops marked its own key before being asked.
+  // Without the flag, promoting them would push several thousand lines of prose-shaped
+  // data into a module every file requires — which is the exact failure this set was
+  // introduced to stop, one wave earlier and one category over.
   const SPECIFICATION_ONLY = new Set([
     'tree', 'modules', 'interfaces', 'representation', 'stateShape', 'wiring',
+    ...documentationOnlyKeys(),
   ]);
   const derived = Object.keys(manifest)
     .filter((k) => !HAND_WRITTEN.has(k) && !SPECIFICATION_ONLY.has(k))
