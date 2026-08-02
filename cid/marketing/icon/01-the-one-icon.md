@@ -29,11 +29,11 @@ both excluded on stated grounds and the exclusions are the decision**, not the l
 
 | candidate | rejected because |
 |---|---|
-| the held tool in frame | head luma **163.01** and grip **94.46** `[research: cid/art/objects/03-the-tool-in-hand.md]` put both inside the gap between stone (195.84–201.84) and `tiers[0]` (123.11), adding a third and fourth luma band that `02` `L3` caps out; and a tool on a tile is the one image every surveyed competitor already ships `[research: concept/spec/incremental-spinoff-v2/research/landscape.md]` |
+| the held tool in frame | the two parts land on **opposite sides** of the overgrowth, not both inside one gap. Head luma **163.01** sits **inside** the 72.73-wide gap between `tiers[0]` 123.11 and `stone.built` 195.84 — and only **32.83** under the stone, itself below the 40 floor. Grip **94.46** sits **28.65 below** `tiers[0]`, a band beneath the green `[research: cid/art/objects/03-the-tool-in-hand.md]`. So the tool adds one band inside the gap and one band under it: a third and a fourth region against `02` `L3`'s cap of 2. And a tool on a tile is the one image every surveyed competitor already ships `[research: concept/spec/incremental-spinoff-v2/research/landscape.md]` |
 | a player avatar mid-clear | `art/characters/01` — *"the only face available is a player avatar, which you do not control and may not dress."* An uncontrolled subject makes the icon vary by whoever captured it, which is not a composition |
 | an empty socket, setting bed or plinth where something was lifted out | `art/objects/04` forbids Environment placing *"a Find, a plinth for one, or a setting bed where one would sit"*. It would also be a `T6` claim by implication |
 | sky as a backdrop band | the sky is the engine default with **zero `Sky` instances and no `Color3`** (`styleGuide.roles.sky`), so its luma cannot be computed and `02` `L4` cannot be evaluated against it. A region whose separation is unmeasurable is not a legal region |
-| canopy as a backdrop band | `canopy.leaf` 59.31 sits **10.26** from `tiers[3]` 69.57, under the 40 floor, so canopy and dark overgrowth are one region in greyscale. Excluded by arithmetic, not by taste |
+| canopy as a backdrop band | **`02` `L3`: `maxRegions` is 2, and stone and overgrowth take both.** Nothing about canopy's own luma excludes it here — `canopy.leaf` 59.31 against the `tiers[0]` 123.11 actually shown is a separation of **63.80**, which clears the 40 floor. It is excluded by the region budget, not by its colour. The standing note for anyone who later shows a darker tier: `canopy.leaf` sits only **10.26** below `tiers[3]` 69.57, so that pairing would additionally fail `L4` |
 
 **Gap G-I2 is real, it is not solved here, and papering over it would be a `T6` violation.**
 `00-CORE.md` binds distinction to the collection `[you chose: R1 Q1]` → `[brief: binding]`, and the
@@ -44,7 +44,7 @@ the description.** That is a fact for store-listing work, stated rather than rou
 brief's *"two composable halves — a cleared path through green, and a relic mid-reveal"* is scoped
 by its own sentence to **a thumbnail** `05-OUTWARD.md` `[brief: soft]`, so declining its second
 half for a 1:1 icon overrules nothing; the revision request against that line is
-`cid/marketing/thumbnails/03`'s and is **not filed here**.
+`cid/marketing/thumbnails/03`'s `RR-O1` and is **not filed here**.
 
 **The production route is a capture, and the ground is the platform's own words rather than house
 taste.** The thumbnails page carries *"Graphics shown must be representative of the actual in-game
@@ -122,11 +122,11 @@ work** owns the upload step if it is not.
 | a face, eyes or a mouth, on anything | **0** | `D13` |
 | a player character or avatar of any kind | **0** | this sheet — an uncontrolled subject; `art/characters/01` |
 | a nameplate | **0** | follows from zero characters in frame |
-| the held tool | **0** | this sheet — luma bands, and the genre's own default image |
+| the held tool | **0** | this sheet — head 163.01 inside the gap, grip 94.46 **below** the green: a third and a fourth band against `02` `L3` |
 | a second hour, dawn, dusk, night, sunset or moonrise | **0** | `theme/setting/03` `R1`; `art/lighting/01` — every promotional image is at `ClockTime` 15.5 |
 | rain, snow, fog, cloud, wind or any depicted weather | **0** | `theme/setting/03` `R2` |
 | sky pixels | **0** | camera pitch puts the horizon out of frame; `styleGuide.roles.sky` has no `Color3` to measure |
-| canopy or trunk pixels | **0** | `canopy.leaf` 59.31 is 10.26 from `tiers[3]` 69.57, under the 40 floor |
+| canopy or trunk pixels | **0** | **`02` `L3` — `maxRegions` is 2 and stone and overgrowth take both.** Not a luma exclusion: `canopy.leaf` 59.31 against `tiers[0]` 123.11 is 63.80 and clears the 40 floor |
 | more than one overgrowth tier | **1 tier only** | four greens spanning 69.57–123.11 are four bands inside one region; `02` `L3` |
 | a shop screen, offer row, price, Robux glyph or purchase control | **0** | `R-4`; `products.storeExists: false`; `offerSurface` empty |
 | a badge, trophy, leaderboard, code panel or daily-reward tile | **0** | `03-META.md` priority 3; `endgame.forbidden` |
@@ -207,7 +207,11 @@ work** owns the upload step if it is not.
       "boundaryShape": "one straight diagonal, corner to corner",
       "backdropAreaPct": 0,
       "skyAreaPct": 0,
-      "canopyAreaPct": 0
+      "skyAreaPctBecause": "styleGuide.roles.sky has no Color3 and zero Sky instances, so its luma cannot be computed and 02 L4 cannot be evaluated against it. A region whose separation is unmeasurable is not a legal region.",
+      "canopyAreaPct": 0,
+      "canopyAreaPctBecause": "02 L3 - maxRegions is 2 and stone and overgrowth take both. This is a region-budget exclusion, NOT a luma one: canopy.leaf 59.31 against the tiers[0] 123.11 actually shown is a separation of 63.80 and clears the 40 floor. Standing note: canopy.leaf sits only 10.26 below tiers[3] 69.57, so a darker tier shown alongside canopy would additionally fail L4.",
+      "toolAreaPct": 0,
+      "toolAreaPctBecause": "objectArt's two tool parts land on OPPOSITE sides of the overgrowth: head 163.01 inside the 72.73 gap between tiers[0] 123.11 and stone.built 195.84 (and only 32.83 under the stone, itself below the 40 floor), grip 94.46 sitting 28.65 BELOW tiers[0]. That is a third and a fourth band against L3's cap of 2."
     },
     "styleGuideRolesUsed": ["stone.cleared", "stone.built", "overgrowth"],
     "styleGuideRolesForbiddenHere": ["sky", "canopy.leaf", "canopy.trunk", "wood.worked", "clay.fired", "metal.cast"],
@@ -295,7 +299,7 @@ work** owns the upload step if it is not.
       "G-I2": {
         "statement": "the differentiator has no depictable form, so the icon cannot show what makes this game distinct. objectArt.find.worldForm is 'none' and everything the icon can show is the harvest half, which research/landscape.md establishes is the commodity half.",
         "consequence": "the collection reaches a stranger ONLY through the description",
-        "routedTo": "store-listing work; the revision request against 05-OUTWARD.md is cid/marketing/thumbnails/03's and is not filed here"
+        "routedTo": "store-listing work; the revision request against 05-OUTWARD.md is cid/marketing/thumbnails/03's RR-O1 and is not filed here"
       },
       "G-I3": {
         "statement": "storeIcon has no emitter. bridge/emit-config.mjs produces GameConfig.luau, ui-forge produces Theme.luau, release.publishChecklist covers place settings; none can carry a 512x512 image and no build step reads an outward artifact at all.",
@@ -319,10 +323,11 @@ work** owns the upload step if it is not.
   — so if the description also declines to carry it, the brief's one binding differentiator reaches
   no outward surface at all. Also inherits `blocksPublish` as a sequencing fact, not a copy fact.
 - **Thumbnails work** owns the 16:9 set, its overlay rule, its own capture-legitimacy ruling and the
-  `05-OUTWARD.md` revision request. **Both of us may legitimately reach for the cleared/overgrown
-  boundary** — that is duplication of subject, not of key, and neither key restates the other's
-  fields. My two gate conditions are stated as conditions, not as a `captureSource`, so a
-  cross-category pass can diff them without either key naming the other's field.
+  `05-OUTWARD.md` revision request `RR-O1`. **Both of us may legitimately reach for the
+  cleared/overgrown boundary** — that is duplication of subject, not of key, and neither key
+  restates the other's fields. My two gate conditions are stated as conditions, not as a
+  `captureSource`, so a cross-category pass can diff them without either key naming the other's
+  field.
 - **Environment work** learns that one `environment` P1 element — a step, a kerb or a parapet edge —
   is now on the critical path of an outward artifact, and that it is marked **[does not exist]**.
   Nothing here resizes, places or dresses it.
@@ -361,11 +366,11 @@ work** owns the upload step if it is not.
 **The legibility rule itself, its instrument, its pass rule and what a failure changes** — sheet
 `02`, which enforces `storeIcon.legibility` and carries no key. **The game's name and any title
 string** — naming work; this sheet coins none and references none. **The 16:9 thumbnail set, its
-slots, its overlay rule, its capture ruling and the `05-OUTWARD.md` revision request** — thumbnails
-work, `cid/marketing/thumbnails/03`. **Every line of the description, the tag set, the genre
-selection, the age settings and how `Span` is described** — store-listing work, which also inherits
-`G-I2`. **Whether anything is announced when the place publishes** — launch-beat work. **The
-checklist row that carries the upload, and when it is read back** — publish-checklist work
+slots, its overlay rule, its capture ruling and the `05-OUTWARD.md` revision request `RR-O1`** —
+thumbnails work, `cid/marketing/thumbnails/03`. **Every line of the description, the tag set, the
+genre selection, the age settings and how `Span` is described** — store-listing work, which also
+inherits `G-I2`. **Whether anything is announced when the place publishes** — launch-beat work.
+**The checklist row that carries the upload, and when it is read back** — publish-checklist work
 (`release`). **Whether an outward key is a build artifact at all** — contract-and-seam work.
 **Where the dressed stone step sits, its size and its dressing** — environment work; I require one
 in frame and author none. **Whether a Find ever gains a form** — `objectArt` and `representation`,

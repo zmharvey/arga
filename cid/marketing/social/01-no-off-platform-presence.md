@@ -1,6 +1,6 @@
 # 01 — No off-platform presence
 
-**Domain:** marketing/social · **Category:** Discovery & Marketing · **Wave:** 7
+**Domain:** marketing/social · **Category:** Discovery & Marketing · **Wave:** 7 · **Revised:** round 1, `RR-6`
 
 ## Decision
 
@@ -74,6 +74,17 @@ shorthand two category documents use is what misleads. This is a floor, not a to
 `ui-forge/src/transpile/to-html.mjs:309-324`), so the code-redemption closure rests on `F15` and
 priority 3, not on an incapability.
 
+**A url cited as evidence is not a channel, and criterion 2 originally could not tell the
+difference** `[cid: decided]`, round-1 revision `RR-6`. My first form counted external urls *in any
+manifest value*, which is falsified by this sheet's own `platformRules[].source`: `discord.com/terms`
+and `youtube.com/t/terms` are what make the closure sourced rather than asserted. **The count is now
+of urls that name a channel this project would operate**, with citation-role fields excluded by name
+(`platformRules[].source`, `backedBy`, `settledBy`, `captureSource`, `[research: url]` tags), and the
+exclusion is carried in the key as `externalUrlCountScope` so a critic reads the same scope the
+criterion does. The substance is unchanged; three domains this wave shipped an observable that
+matched its own sheet, and the extension of "test a grep before shipping it" is to test it against
+your own file.
+
 **The seam against inbound feedback, asserted so it can be checked.** I rule whether an **outbound**
 channel exists. How **inbound** feedback is received and moderated is community-management work, and
 `cid/_playtest.md` is already an inbound artifact needing no channel. If that work needs an
@@ -85,9 +96,9 @@ naming the row, and it inherits the same 16+ evidence.
 | id | form ruled out | closed by, strongest first | observable |
 |---|---|---|---|
 | `C1` | A Roblox community or group | `products` `F15` (no group-join, follow, like, favourite, rate-us or share prompt anywhere in the game) + `00-CORE.md` non-goals. **Not `PR1`: a community is on-platform** | `robloxCommunityCount == 0`; 0 community ids in any `cid/**` manifest or emitted config; 0 strings rendered to a `Text` property match `/group\|community\|join us/i` |
-| `C2` | A Discord server and its invite | `PR1` (audience cannot see the link) → `PR6` (Discord's own 13+ excludes the lower half of the band) → `PR4`/`PR5` (no link inside an experience) → `F15` → an unfunded moderation obligation | 0 `discord.gg` or `discord.com/invite` urls in `cid/**` or `game/src`; 0 experience-page links of type Discord |
+| `C2` | A Discord server and its invite | `PR1` (audience cannot see the link) → `PR6` (Discord's own 13+ excludes the lower half of the band) → `PR4`/`PR5` (no link inside an experience) → `F15` → an unfunded moderation obligation | 0 `discord.gg` or `discord.com/invite` urls in `cid/**` or `game/src` outside a citation field; 0 experience-page links of type Discord |
 | `C3` | A TikTok account | `PR1` → `PR7` (13+, 14+ in Florida) → *"shipped artifacts, not players"*. **TikTok is not one of the seven linkable types at all**, so its only possible form is an unlinked off-page account | `channelCount == 0`; 0 `tiktok.com/@` handles in any marketing key |
-| `C4` | A YouTube channel | `PR1` → `PR8` (13+) → *"shipped artifacts, not players"* | `channelCount == 0`; 0 YouTube handles or channel urls in any marketing key |
+| `C4` | A YouTube channel | `PR1` → `PR8` (13+) → *"shipped artifacts, not players"* | `channelCount == 0`; 0 YouTube handles or `/channel/`, `/c/`, `/@` urls in any marketing key |
 | `C5` | An X account | `PR1` → *"shipped artifacts, not players"* + *"Revenue. Offered and declined"*. X's own floor is `[unverified]` `U1` and **nothing rests on it** | `channelCount == 0`; 0 `x.com/` handles in any marketing key |
 | `C6` | A Twitch channel | `PR1` → `PR3` (a linkable type with no content to carry: no capture is legitimate, `M2`/`G2`) | `channelCount == 0` |
 | `C7` | A Guilded server | `PR1` → `PR3` → same moderation obligation as `C2` | `channelCount == 0` |
@@ -99,6 +110,9 @@ naming the row, and it inherits the same 16+ evidence.
 | `C13` | Any external url on any in-game surface, including inside a notice string | `PR4` (*"we will prohibit creators from sharing or posting social media links in experiences"*) + `PR5` + `F15` | `grep -rniE "discord\|guilded\|twitch\|tiktok\|youtube\|twitter\|social media\|https?://" game/src` returns 0. **Verified this run: 0 matches** |
 
 ### The platform rules this rests on
+
+**Every `source` below is a citation, not a channel, and is excluded from `externalUrlCount` by
+`externalUrlCountScope`.**
 
 | id | rule | source |
 |---|---|---|
@@ -140,6 +154,11 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     "channelCount": 0,
     "channels": [],
     "externalUrlCount": 0,
+    "externalUrlCountScope": {
+      "counts": "urls that name a channel, server, community or account this project would operate",
+      "excludes": ["platformRules[].source", "backedBy", "settledBy", "captureSource", "research tags", "any url cited as evidence"],
+      "reason": "a cited url is what makes a closure sourced rather than asserted; counting it falsifies the check against the sheet that supplies it"
+    },
     "robloxCommunityCount": 0,
     "postingCadence": "none",
     "postingCadenceStatus": "vacuous",
@@ -166,9 +185,9 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     },
     "forbidden": [
       { "id": "C1",  "form": "robloxCommunity",        "closedBy": ["products.F15", "00-CORE.nonGoals"],                 "observable": "robloxCommunityCount == 0; 0 community ids in any manifest; 0 rendered strings match /group|community|join us/i" },
-      { "id": "C2",  "form": "discordServer",          "closedBy": ["PR1", "PR6", "PR4", "PR5", "products.F15"],         "observable": "0 discord.gg or discord.com/invite urls in cid/** or game/src; 0 links of type Discord" },
+      { "id": "C2",  "form": "discordServer",          "closedBy": ["PR1", "PR6", "PR4", "PR5", "products.F15"],         "observable": "0 discord.gg or discord.com/invite urls in cid/** or game/src outside a citation field; 0 links of type Discord" },
       { "id": "C3",  "form": "tiktokAccount",          "closedBy": ["PR1", "PR7", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 tiktok.com/@ handles in any marketing key" },
-      { "id": "C4",  "form": "youtubeChannel",         "closedBy": ["PR1", "PR8", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 youtube handles or channel urls in any marketing key" },
+      { "id": "C4",  "form": "youtubeChannel",         "closedBy": ["PR1", "PR8", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 youtube handles or /channel/, /c/, /@ urls in any marketing key" },
       { "id": "C5",  "form": "xAccount",               "closedBy": ["PR1", "00-CORE.nonGoals"],                          "observable": "channelCount == 0; 0 x.com/ handles in any marketing key" },
       { "id": "C6",  "form": "twitchChannel",          "closedBy": ["PR1", "PR3", "M2"],                                 "observable": "channelCount == 0" },
       { "id": "C7",  "form": "guildedServer",          "closedBy": ["PR1", "PR3", "00-CORE.nonGoals"],                   "observable": "channelCount == 0" },
@@ -181,14 +200,14 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     ],
     "forbiddenCount": 13,
     "platformRules": [
-      { "id": "PR1", "rule": "Social media links viewable, shareable and manageable only by age-checked 16+, effective 2026-06-30, raised from 13+", "source": "https://devforum.roblox.com/t/proposal-parental-consent-for-13-15-users-to-view-social-media-links-on-roblox/4686207" },
-      { "id": "PR2", "rule": "Settlement term: Roblox shall not allow U16 Users to see or share profile links to other approved sites", "source": "https://devforum.roblox.com/t/allow-users-age-checked-13-15-with-parental-consent-to-see-profile-social-media-links-not-in-regions-where-social-media-is-banned-for-under-16/4693383" },
-      { "id": "PR3", "rule": "Up to three links across seven types; adding requires creator age check 16+ by facial estimation or government ID", "source": "https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/promotion/social-media-links.md" },
-      { "id": "PR4", "rule": "Creators prohibited from sharing or posting social media links in experiences; age bands Under 9, 9-12, 13-15, 16-17, 18-20, 21+", "source": "https://about.roblox.com/newsroom/2025/11/roblox-requires-age-checks-limits-minor-and-adult-chat" },
-      { "id": "PR5", "rule": "No linking to, sharing or displaying URLs of external sites except via the Social Links feature", "source": "https://about.roblox.com/community-standards" },
-      { "id": "PR6", "rule": "Discord requires users to be at least 13", "source": "https://discord.com/terms" },
-      { "id": "PR7", "rule": "TikTok requires 13, or 14 in Florida", "source": "https://www.tiktok.com/legal/page/us/terms-of-service/en" },
-      { "id": "PR8", "rule": "YouTube requires at least 13", "source": "https://www.youtube.com/t/terms" }
+      { "id": "PR1", "rule": "Social media links viewable, shareable and manageable only by age-checked 16+, effective 2026-06-30, raised from 13+", "source": "https://devforum.roblox.com/t/proposal-parental-consent-for-13-15-users-to-view-social-media-links-on-roblox/4686207", "role": "citation" },
+      { "id": "PR2", "rule": "Settlement term: Roblox shall not allow U16 Users to see or share profile links to other approved sites", "source": "https://devforum.roblox.com/t/allow-users-age-checked-13-15-with-parental-consent-to-see-profile-social-media-links-not-in-regions-where-social-media-is-banned-for-under-16/4693383", "role": "citation" },
+      { "id": "PR3", "rule": "Up to three links across seven types; adding requires creator age check 16+ by facial estimation or government ID", "source": "https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/promotion/social-media-links.md", "role": "citation" },
+      { "id": "PR4", "rule": "Creators prohibited from sharing or posting social media links in experiences; age bands Under 9, 9-12, 13-15, 16-17, 18-20, 21+", "source": "https://about.roblox.com/newsroom/2025/11/roblox-requires-age-checks-limits-minor-and-adult-chat", "role": "citation" },
+      { "id": "PR5", "rule": "No linking to, sharing or displaying URLs of external sites except via the Social Links feature", "source": "https://about.roblox.com/community-standards", "role": "citation" },
+      { "id": "PR6", "rule": "Discord requires users to be at least 13", "source": "https://discord.com/terms", "role": "citation" },
+      { "id": "PR7", "rule": "TikTok requires 13, or 14 in Florida", "source": "https://www.tiktok.com/legal/page/us/terms-of-service/en", "role": "citation" },
+      { "id": "PR8", "rule": "YouTube requires at least 13", "source": "https://www.youtube.com/t/terms", "role": "citation" }
     ],
     "platformRuleCount": 8,
     "reopening": {
@@ -208,11 +227,11 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     },
     "invariants": [
       "channelCount == len(channels) == 0",
-      "externalUrlCount == 0 summed across title, storeIcon, storeThumbnails, storeListing, channels, launchBeats",
+      "externalUrlCount == 0 summed across title, storeIcon, storeThumbnails, storeListing, channels and launchBeats, counting only urls that name a channel this project would operate, per externalUrlCountScope",
       "robloxCommunityCount == 0",
       "experiencePageSocialLinks.count == 0",
       "contentPillars == [] and outreach.contactCount == 0",
-      "any channel, invite, handle, group id or external url named by any other Discovery & Marketing key fails against this key"
+      "any channel, invite, handle, group id or operated-channel url named by any other Discovery & Marketing key fails against this key"
     ],
     "seam": {
       "outboundOwnedHere": true,
@@ -248,8 +267,8 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
 | Community-management and feedback-intake work | You inherit an empty **outbound** set, and this key is the half of `G1` that says so. Your `channels == []` and mine agree by construction. If you conclude an off-platform intake must exist, raise a revision request naming `C2`; do not create one, because it hands you a moderation position for an 8-14 audience that nothing funds |
 | Register work (`theme/tone`) | `theme/tone/02`'s *"group posts"* row is now **vacuous**. Not edited here. Whether it is rewritten, dropped or kept as a forbidden surface with no referent is yours |
 | Publish-checklist work (`release`) | **Creator Hub → Creations → Social Links must hold zero entries at publish, and no checklist row reads it back.** Stated as an obligation with `ownedBy: release`; I add no row on my own authority |
-| Contract-and-seam work | `channels` merges and reaches **no emitter** (`M6`). It is `DOCUMENTATION_ONLY` in the emitted-config sense and every field in it is a value or a count a verifier reads. If `channels` is judged to duplicate `community`, the distinguishing line is outbound versus inbound, stated in `seam` |
-| Verification | The useful part of this key is a check on five sibling keys, not on itself: `externalUrlCount == 0` summed across `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels` and `launchBeats` |
+| Contract-and-seam work | `channels` merges and reaches **no emitter** (`M6`). It is `DOCUMENTATION_ONLY` in the emitted-config sense and every field in it is a value or a count a verifier reads. If `channels` is judged to duplicate `community`, the distinguishing line is outbound versus inbound, stated in `seam`. **`externalUrlCountScope` is a field the schema must carry**, because the invariant is unrunnable without it |
+| Verification | The useful part of this key is a check on five sibling keys, not on itself: `externalUrlCount == 0` summed across `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels` and `launchBeats`, **counting operated channels and not cited evidence**. A `T0` `backedBy` url and a `platformRules[].source` are exempt by name |
 
 ## Acceptance criteria
 
@@ -258,11 +277,13 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
    `contentPillars == []`; `outreach.contactCount`, `paidPlacements`, `briefsIssued` and
    `keysIssued` are each `0`; and the merged value contains **zero `null` tokens**.
 2. Summed across `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels` and
-   `launchBeats`, the number of external urls, Discord invites, social handles and Roblox community
-   ids appearing in any manifest value is **0**.
+   `launchBeats`, the number of **operated-channel references** (an external url, Discord invite,
+   social handle or Roblox community id naming a channel this project would run) is **0**. Fields
+   whose role is citation are excluded by name and are not counted: `platformRules[].source`,
+   `backedBy`, `settledBy`, `captureSource`, and any `[research: url]` tag.
 3. `channels.forbidden` has exactly **13** rows, each with `id`, `form`, `closedBy` and `observable`,
-   every `id` unique and matching `/^C\d+$/`; `channels.platformRules` has exactly **8** rows, and
-   every `source` string appears in `cid/_research/pack.md`.
+   every `id` unique and matching `/^C\d+$/`; `channels.platformRules` has exactly **8** rows, each
+   carrying `role: "citation"`, and every `source` string appears in `cid/_research/pack.md`.
 4. `grep -rniE "discord|guilded|twitch|tiktok|youtube|twitter|social media|https?://" game/src`
    returns **0** matches (verified this run). Run over `game/src`, `/group/i` returns **≥5**
    non-player-facing matches (`PROGRESS_GROUP`, `colorToken(group, …)`, `groupGap`, `Group_`,
@@ -277,8 +298,9 @@ on the silence. Live alternatives: **(a)** zero everywhere, as written, closed o
 forbid and which `F15` and the non-goals do; **(c)** a channel behind both reopening gates, bought at
 `RC1`-`RC3` and still invisible to the stated audience. **I recommend (a).** Also `[cid: decided]`:
 extending the enumeration from the four channels my assignment named to **all seven linkable types
-plus TikTok plus the in-experience url**, so the key is closed rather than illustrative; and recording
-`C9`/`C10` as **vacuous** rather than empty.
+plus TikTok plus the in-experience url**, so the key is closed rather than illustrative; recording
+`C9`/`C10` as **vacuous** rather than empty; and `externalUrlCountScope`, which decides that a cited
+url is evidence and not a channel.
 
 ## Not decided here
 
@@ -288,6 +310,6 @@ Discord is ever *stated* in outward copy, which is store-listing work. What the 
 reads back about social-link slots, which is `release`. Whether `theme/tone/02`'s now-vacuous *"group
 posts"* row is rewritten, which is register work. Whether a launch is announced at all and in what
 form, which is launch-beat work; I rule only that no announcement has a channel to use. Whether
-`channels` is promoted into `bridge/schema.mjs` or judged to duplicate `community`, which is
-contract-and-seam work. The three `[unverified]` items `U1`-`U3`, which a batched research pass
-settles and on which nothing in this sheet rests.
+`channels` is promoted into `bridge/schema.mjs` and whether `externalUrlCountScope` becomes a shared
+field the other five marketing keys inherit, which is contract-and-seam work. The three `[unverified]`
+items `U1`-`U3`, which a batched research pass settles and on which nothing in this sheet rests.

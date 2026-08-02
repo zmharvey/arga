@@ -7,8 +7,8 @@
 **Yes, one tagline exists, and it is the brief's line unchanged: `Clear the overgrowth, find
 what's buried.`** It is a **project artifact, not a platform field** — Roblox exposes a name
 field and a description field and no tagline field. It is a **first-session promise with a
-supply of 24**, it appears in outward artifacts only, and it appears **zero times** in
-`game/src`.
+supply of 24**, counted as `sum(len(collection.sets[i].relics))`, it appears in outward
+artifacts only, and it appears **zero times** in `game/src`.
 
 ## Why
 
@@ -41,12 +41,23 @@ The brief's own reasoning for the line is also intact: *"The buried half is the 
 no competitor can claim"* `[brief: soft]`, and `research/landscape.md` still shows nothing in
 the family with a hidden-object collection layer.
 
+**The supply of 24 is derived, not stored, and this sheet had that wrong.** There is **no
+`collection.total` field.** The merged `collection` key holds `className`, `classPlural`,
+`relicsPerArea`, `areasPerDepth` and `sets`, and the four sets hold six named Finds each —
+`Terrace`, `Cistern`, `Vault`, `Spire`
+`[research: cid/gameplay/meta/02-the-collection.md]`. The supply is
+`sum(len(collection.sets[i].relics))`, which is the same expression `store-page/01` already uses
+in its own `C3` check. Every `backedBy` and every check below now names the derivation rather
+than a field that does not exist. `[cid: decided]` — and worth stating plainly, because a
+`backedBy` pointing at a phantom field is exactly the failure `T0` was written to catch, and it
+survived a whole draft here.
+
 **Verified against all four predicates a hook can trip.**
 
 | id | predicate | verdict | why |
 |---|---|---|---|
-| `T1` | endless, ongoing or more things to find | **passes** | the line names no quantity and no continuation; *"find what's buried"* is bounded by `collection.total` 24 and ruled a first-session promise by `theme/fantasy/02` |
-| `T2` | the world ends up restored, reclaimed or finished | **passes** | both clauses are imperative acts, not outcomes; the line contains no *restore*, *reclaim*, *rebuild* or *complete* |
+| `T1` | endless, ongoing or more things to find | **passes** | the line names no quantity and no continuation; *"find what's buried"* is bounded by the derived supply of 24 and ruled a first-session promise by `theme/fantasy/02` |
+| `T2` | the world ends up restored, reclaimed or finished | **passes** | both clauses are imperative acts, not outcomes; the line contains no *restore*, *reclaim*, *rebuild* or *complete*. `01`'s `predicateReadings` settles the reading of `T2` with store-listing work |
 | `T9` | a reason to return the design gave up | **passes** | no banked progress, no accrual, no upkeep, nothing waiting; `03-META.md`'s own *"honest weakness"* is not contradicted |
 | `T10` | urgency, scarcity, discount or limited time | **passes** | no timer, no count, no *limited*, *new*, *ends in* or *today only* |
 
@@ -96,18 +107,19 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
       "promise": {
         "kind": "firstSession",
         "supply": 24,
-        "supplyBackedBy": "collection.total",
+        "supplyDerivation": "sum(len(collection.sets[i].relics)) over the 4 sets. There is no collection.total field and this key does not name one.",
+        "supplyBackedBy": ["collection.sets", "cid/gameplay/meta/02-the-collection.md"],
         "lifetimeRuledBy": "cid/theme/fantasy/02-promise-over-time.md",
         "mayNotBeRestatedInGame": true,
         "mayNotPromiseEndlessFinds": true,
         "mayNotPromiseAReclaimedWorld": true
       },
       "claims": [
-        { "id": "G1", "claim": "clearing overgrowth reveals objects the player keeps", "backedBy": "collection.total (24); onboarding (a guaranteed find in the first area); discovery (the per-Find ledger)", "check": "collection.total == 24 and onboarding guarantees a find in area 1" },
-        { "id": "G2", "claim": "there is overgrowth to clear", "backedBy": "tiers; patch; cid/theme/setting/01-the-ruin.md", "check": "tiers is non-empty and patch defines a clearable footprint" }
+        { "id": "G1", "claim": "clearing overgrowth reveals objects the player keeps", "backedBy": ["collection.sets", "onboarding", "discovery"], "check": "collection.sets has 4 entries whose relics arrays sum to 24; onboarding guarantees a find in the first area; discovery holds a per-Find permanent record", "truthCondition": "a first-session promise with a supply of exactly 24 (theme/fantasy/02); it is the store hook and is not restated on any in-game surface as a standing promise", "tCleared": ["T1", "T2", "T3", "T9", "T10"] },
+        { "id": "G2", "claim": "there is overgrowth to clear", "backedBy": ["tiers", "patch", "cid/theme/setting/01-the-ruin.md"], "check": "tiers is non-empty and patch defines a clearable footprint", "truthCondition": "always", "tCleared": ["T1", "T2"] }
       ],
       "predicateChecks": [
-        { "predicate": "T1", "verdict": "pass", "why": "no quantity and no continuation is named; the supply is 24 and is stated in this key" },
+        { "predicate": "T1", "verdict": "pass", "why": "no quantity and no continuation is named; the supply is 24 and is derived in this key rather than claimed in the line" },
         { "predicate": "T2", "verdict": "pass", "why": "both clauses are acts, not outcomes; contains none of restore, restored, reclaimed, rebuilt, finished, complete" },
         { "predicate": "T9", "verdict": "pass", "why": "names no banked progress, accrual, upkeep or waiting thing" },
         { "predicate": "T10", "verdict": "pass", "why": "contains no timer, count, limited, new, ends in or today only" },
@@ -116,7 +128,7 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
         { "predicate": "humorBan", "verdict": "pass", "why": "theme/tone/02, [brief: binding] on store copy; the line is flat and declarative" }
       ],
       "consumers": [
-        { "surface": "the experience description", "key": "storeListing", "owner": "store-listing work", "rule": "verbatim, once; layout and position are that lead's" },
+        { "surface": "the experience description", "key": "storeListing", "owner": "store-listing work", "rule": "verbatim, once; layout and position are that lead's. It already ships as storeListing.description.S1.L1" },
         { "surface": "any thumbnail text overlay", "key": "storeThumbnails", "owner": "thumbnail work", "rule": "verbatim or absent; composition is that lead's" },
         { "surface": "a trailer brief, if one exists", "key": "launchBeats", "owner": "hype work", "rule": "verbatim or absent; whether a trailer exists is that lead's" }
       ],
@@ -136,29 +148,32 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
   extend it**. Concretely: no sentence anywhere in the description may state or imply that new
   things keep being found, because the supply is 24 and `theme/fantasy/02` ruled the promise
   first-session. Whether the absence of rebirth and idle is disclosed is theirs; it is not in
-  this line and must not be bolted onto it.
+  this line and must not be bolted onto it. Its `C1` and this key's `G1` are the same promise
+  and must keep the same `truthCondition`.
 - **Thumbnail work** gets a text-overlay string it does not have to write, and a prohibition on
   shortening it. It also gets the harder half of the collision: the second clause is the one
   `05-OUTWARD.md` illustrated with *"a relic mid-reveal"*, and `T6` says a Find has no form. The
   **line survives that collision; the image may not**. Gap `M1` is still theirs.
-- **Hype work**: if a trailer brief exists, this is the only promise it may make. If it rules
-  no trailer exists, nothing here is orphaned, because the description consumes the string
-  regardless.
+- **Hype work**: if a trailer brief exists, this is the only promise it may make. If it rules no
+  trailer exists, nothing here is orphaned, because the description consumes the string anyway.
 - **In-game string owners** gain one grep they must keep passing: this sentence appears zero
   times in `game/src`. It is a store hook, and restating it in the HUD would convert a
   first-session promise into a standing one.
-- **Content-volume work (`collection`)**: `G1`'s `backedBy` points at `collection.total`. If 24
-  ever moves, this key's `promise.supply` moves with it and the claim is re-checked, not
-  reworded.
+- **Content-volume work (`collection`)**: `G1` points at `collection.sets`, not at a scalar. If
+  a set's roster ever changes size, `promise.supply` is re-derived and the claim is re-checked,
+  never reworded. **No sheet should reintroduce a `collection.total`** — five sheets across three
+  categories cite that phantom in three spellings, and the cross-category pass is carrying it.
 
 ## Acceptance criteria
 
 1. `title.tagline.text` is exactly `Clear the overgrowth, find what's buried.` — 41 characters,
    matching `^[A-Za-z0-9 ,.'%%/-]+$`, containing no entry of `vocabulary.bannedWords`.
-2. `title.tagline.claims` has at least one row and every row carries a non-empty `backedBy` and
-   a non-empty `check`; `predicateChecks` carries a verdict for each of `T1`, `T2`, `T9`, `T10`.
+2. `title.tagline.claims` has at least one row and every row carries a non-empty `backedBy`, a
+   non-empty `check` and a non-empty `tCleared`; `predicateChecks` carries a verdict for each of
+   `T1`, `T2`, `T9`, `T10`.
 3. `grep -ri "find what's buried" game/src` returns zero matches.
-4. `title.tagline.promise.supply` equals `collection.total`.
+4. `title.tagline.promise.supply` equals `sum(len(collection.sets[i].relics))`, and the string
+   `collection.total` appears zero times in this sheet.
 
 ## Not decided here
 
@@ -166,7 +181,7 @@ The title string, the candidate set and the alternates: sheet `01`, which carrie
 manifest. What the name field may contain and when it may change: sheet `02`. The description's
 structure, every other sentence in it, the tag set, the genre field and whether the absence of
 rebirth and idle is disclosed outward: store-listing work. Whether a thumbnail carries text at
-all, its position, size and typeface, and what a Find looks like given it has no form:
-thumbnail work and icon work, holding gap `M1`. Whether a trailer exists: hype work. The
-in-game wording of anything the player reads while playing: `theme/vocabulary` and each
-string's owning domain.
+all, its position, size and typeface, and what a Find looks like given it has no form: thumbnail
+work and icon work, holding gap `M1`. Whether a trailer exists: hype work. The in-game wording
+of anything the player reads while playing: `theme/vocabulary` and each string's owning domain.
+The four other sheets citing a `collection.total` that does not exist: the cross-category pass.

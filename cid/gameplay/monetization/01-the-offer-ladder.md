@@ -74,6 +74,17 @@ ownership read at join. `PromptGamePassPurchase` is therefore **unused** — not
 deferred — and `F13` becomes the strictly stronger "zero calls anywhere". The honest cost is a
 discovery cost, not a mechanics one, and it is named in `## Consequences`.
 
+**`gamePassId` is `0` until the pass exists, not `null`.** `cid/tech/deploy/02` forbids an explicit
+null in an emitted value: the emitter maps it to `nil`, Luau drops the key, and `entitlements`
+cannot tell an unprovisioned pass from a field nobody wrote. `0` is a legal Luau number that no
+Roblox pass id can hold, so the whole provisioning question reduces to one comparison — **no code
+may call `UserOwnsGamePassAsync` with an id at or below zero**, and a product in that state resolves
+to not-owned with factor 1. That is what makes `release.provisioning`'s claim true, that the build
+runs correctly at every publish gate with the id still unfilled. **The sentinel is a number here
+because a game-pass id is a number.** Audio's six `ContentId` keys declare `""` for the same reason
+in the other direction — an asset id is a string — and the two precedents must not be read onto
+each other: `0` in a `ContentId` field and `""` in an id field are both type errors.
+
 **G4 stands unchanged.** `gameplay/mechanics/04` drives tool head width off Reach *level*; a purchase
 is a factor on effective radius and grants no level, so `Span` would widen the sweep and leave the
 head identical. **Its deliverable is a radius factor *and* a visibly wider head** — a requirement on
@@ -106,23 +117,26 @@ Vocabulary may overwrite without a revision against this sheet.**
     "axesNotSold": ["value", "speed"],
     "rungVocabulary": ["impulse", "mid", "premium"],
     "rungsUsed": ["premium"],
-    "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted",
+    "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted, and NEVER called when gamePassId <= 0",
     "prompt": {
-      "method": null,
+      "method": "none",
+      "methodAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no prompt method because there is no prompt; the sibling promptGamePassPurchaseCalls 0 carries the same fact as a number, so this field is documentary.",
       "promptGamePassPurchaseCalls": 0,
       "reason": "R-4 removed the in-game store. There is no verb, pressable or screen that could trigger a prompt, and none is reserved. If a purchase surface is ever built, this field is what must be revised first."
     },
     "externalPrerequisite": {
       "what": "products.items[].gamePassId must be filled with the id of a pass created on the Roblox creator site and priced to match priceRobux",
       "owner": "the developer, or whoever holds the Roblox creator account",
-      "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification."
+      "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification.",
+      "unprovisionedValue": 0,
+      "unprovisionedValueRule": "gamePassId is 0 while unprovisioned, never null (cid/tech/deploy/02). 0 is a legal number that no pass id can hold, so entitlements guards with a single 'id > 0' test and resolves the product to not-owned with factor 1. This is what lets the build run correctly at every step of release.provisioning with the id still unfilled. The sentinel is a NUMBER because a game-pass id is a number; the empty-string sentinel Audio declares for ContentId fields is the same rule applied to a string-typed id and does not transfer here."
     },
     "items": [
       {
         "id": "span",
         "label": "Span",
         "kind": "gamePass",
-        "gamePassId": null,
+        "gamePassId": 0,
         "axis": "radius",
         "factor": 1.75,
         "factorTestRange": [1.40, 1.95],
@@ -158,7 +172,8 @@ Vocabulary may overwrite without a revision against this sheet.**
       { "id": "F17", "rule": "No purchase may shorten, skip, auto-complete or bypass clearing work: no instant-clear, no auto-clear, no area skip, no completion grant.", "closedBy": "03-META.md (never content access) + theme/fantasy/03 C3", "check": "no product clears a patch, completes an area, or grants a Find; 24/24 is reachable owning zero products" },
       { "id": "F18", "rule": "No subscription, no recurring charge, and no benefit gated on Roblox Premium membership.", "closedBy": "gameplay/systems/06 (nothing timed or expiring) + 03-META.md (never content access)", "check": "zero reads of Player.MembershipType or MembershipType.Premium anywhere in the build" },
       { "id": "F19", "rule": "No product is named, shown, priced or referred to anywhere inside the game. R-4 leaves no surface that may mention one.", "closedBy": "theme/tone/04 D10 + coordinator ruling R-4", "check": "no products[].label and no priceRobux value appears in any string rendered by the game" },
-      { "id": "F20", "rule": "No purchase-derived state is written to persistence. Ownership is read live every join.", "closedBy": "gameplay/systems/06 (recomputed from live ownership, never persisted)", "check": "the save payload contains no pass id, no product id and no purchase-sourced factor" }
+      { "id": "F20", "rule": "No purchase-derived state is written to persistence. Ownership is read live every join.", "closedBy": "gameplay/systems/06 (recomputed from live ownership, never persisted)", "check": "the save payload contains no pass id, no product id and no purchase-sourced factor" },
+      { "id": "F21", "rule": "No call to UserOwnsGamePassAsync with an id at or below zero, and no explicit null in any field of this key.", "closedBy": "cid/tech/deploy/02 + release.provisioning", "check": "every UserOwnsGamePassAsync call site is preceded by an 'id > 0' test; grep for '= nil' in the emitted Products block returns nothing" }
     ],
     "headroom": {
       "canonical": "H1 below is the canonical form of the axis-ceiling inequality. setBonus.invariants[4] states the same bound without the 0.9 margin; H1 subsumes it and a schema author should write H1 only.",
@@ -166,12 +181,13 @@ Vocabulary may overwrite without a revision against this sheet.**
         "rule": "for every axis A and every area ordinal N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
         "marginFraction": 0.9,
         "ladderMax": "for the entry of upgrades[] whose id equals A: base + maxLevel * perLevel",
+        "ceilingsAreExpressionsOrNone": "every entry of ceilings is a ceiling EXPRESSION as a string, or the string \"none\" where no ceiling exists on that axis. It USED to be a null on the value axis, which cid/tech/deploy/02 forbids: emitted as nil, Luau dropped the key, and a builder iterating ceilings saw two axes and could not tell 'the value axis has no ceiling' from 'the value axis is missing from the table'. An axis whose ceiling is \"none\" passes H1 trivially and is never evaluated.",
         "ceilings": {
-          "value": null,
+          "value": "none",
           "radius": "plots.laneWidthStuds / 2",
           "speed": "movement.baseClearRadius / runtime.serverTickSeconds"
         },
-        "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25"
+        "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25; value is unconstrained because its ceiling is \"none\""
       },
       "H2_lapFloor": {
         "rule": "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
@@ -203,11 +219,12 @@ Vocabulary may overwrite without a revision against this sheet.**
 | subject | what this forces or forbids |
 |---|---|
 | Area-sizing and depth-ladder work (`meta/04`) | RR-4's fix lands here, not there. `Π productFactors(value)` is now **1**, so `meta/04`'s value-exposure analysis (the mis-stated 3.94×, really ≈7×) becomes vacuous rather than wrong, and the single live bound is **`Π productFactors(radius) × Π productFactors(speed) ≤ 1.99 at ordinal 2`**, which 1.75 satisfies. **Your eight footprints do not move.** Re-derive the table above if you change any footprint or any arrival level. |
+| Entitlement-resolution work (`entitlements`, and Networking's re-resolution ruling) | **`gamePassId` is `0`, not null.** Guard every `UserOwnsGamePassAsync` with `id > 0`; an unprovisioned product resolves to not-owned with factor 1 and the game is fully playable in that state (`F8`, `F16`, `F17`). This is what `release.provisioning` depends on to claim the build runs at every publish gate. |
 | Store-surface work (UI/UX) | **You have no store to draw.** R-4 removes the screen, the rows, the prices and the purchase control entirely; four pressables and five verbs stand exactly as `mechanics/02` fixed them. This is a deletion of scope, not a deferral. |
 | Store-page and marketing work (wave 7) | **You inherit the honest cost of R-4: a player who owns no pass has no way to learn from inside the game that a pass exists.** The experience page is the only surface on which `Span` is discoverable, so the store description and the pass listing are load-bearing rather than decorative. Named here so wave 7 inherits it instead of rediscovering it. |
 | Held-tool work (owner of `tool`) | Head width must resolve from **effective radius**, not Reach level, or `Span` is a 499-Robux product with no visible expression. I state the requirement and change no value of yours; a refusal is legitimate and revises this sheet. |
 | Onboarding and layout work (`onboarding/02`, `meta/05`) | **A purchaser's effective clear radius at spawn is 9.625 studs, not 5.5.** `firstSession.placement.spawnToNearestPatchMaxStuds` and `layout.spawnAdjacency` are both derived from `movement.baseClearRadius` unmultiplied, and a player who bought `Span` before their first session sweeps a disc 1.75× wider on their first tick. Whether the arming gate and the first-Find guarantee survive that is yours; I state it rather than assume it. |
-| Contract-and-seam work (owner of `bridge/schema.mjs`) | `products` supplies `H1` and `H2` as evaluable expressions. `ceilings.radius` now reads `plots.laneWidthStuds / 2` (RR-11) — numerically 60, identical to the old `area.size / 2`, and defined at every ordinal, where `area.size` was not. `ladderMax` is a lookup by `upgrades[].id == A`. `headroom.canonical` says to write `H1` and not `setBonus.invariants[4]`. `products.items[].label` is still a player-facing string with no path in `playerFacingStrings()`. |
+| Contract-and-seam work (owner of `bridge/schema.mjs`) | `products` supplies `H1` and `H2` as evaluable expressions. `ceilings.radius` now reads `plots.laneWidthStuds / 2` (RR-11) — numerically 60, identical to the old `area.size / 2`, and defined at every ordinal, where `area.size` was not. `ceilings.value` is the string `"none"`, so an `H1` evaluator must skip an axis whose ceiling is not an expression. `ladderMax` is a lookup by `upgrades[].id == A`. `headroom.canonical` says to write `H1` and not `setBonus.invariants[4]`. `products.items[].label` is still a player-facing string with no path in `playerFacingStrings()`. |
 | Balance & Tuning | One factor and one price. `factorTestRange` is [1.40, 1.95] and the upper bound is the hard lap-floor limit, not a taste figure — above it, `H2` fails at ordinal 2. `priceRobux` may move anywhere inside 349–999 with no revision. |
 | Set-bonus work (`meta/03`) | Unchanged and still fits: `Span` at 1.75 leaves 2.16× for radius set factors and your two at ×1.2 spend 1.44. A third radius factor at ×1.2 still fits; a fourth does not. |
 
@@ -223,6 +240,8 @@ Vocabulary may overwrite without a revision against this sheet.**
    89.9 / 89.9.
 4. Owning `span` produces a rendered tool head width strictly greater than not owning it, at every
    Reach level. A build where the two widths are equal fails this sheet.
+5. `products.items[0].gamePassId` is a **number**, never null; while it is `0`, a joined player
+   resolves `span` to not-owned with factor 1 and no `UserOwnsGamePassAsync` call is made.
 
 ## Flagged to the developer
 
@@ -230,7 +249,7 @@ Vocabulary may overwrite without a revision against this sheet.**
 |---|---|
 | **The ladder is now one product; the impulse and mid rungs are empty.** | The alternative the verifier and the coordinator both named is the mirror image: drop `Span`, keep two value passes at ×1.5 and ×2 (verified safe at area 2, 95.5 s). It is a one-field flip. I chose against it because it leaves *the* open item this domain exists to close — "the premium SKU has no home", stated twice in the brief — still open, and wastes the unblocking work `mechanics/04` and `identity/04` both did. If you would rather have two cheap passes than one premium one, say so and the manifest changes in one edit. `[cid: decided]` |
 | **R-4 taken: no in-game store, and its cost is discovery.** | Recorded here as well as in `## Consequences` because it changes what a player can find out. Passes are visible only on the experience page. The alternative was a fifth pressable and a sixth verb, which fails `mechanics/02` criterion 2 and `mechanics/03` `P2`, and which `00-CORE.md` forbids as growth. |
-| **`products.items[].gamePassId` is `null` and must be filled outside this pipeline.** | Creating the pass on the Roblox creator site and pricing it at 499 is a provisioning step owned by the developer. Until it is done, `UserOwnsGamePassAsync` cannot return true and the product is unownable. Carried in the manifest as `externalPrerequisite` so it does not read as an unfinished spec. |
+| **`products.items[].gamePassId` is `0` and must be filled outside this pipeline.** | Creating the pass on the Roblox creator site and pricing it at 499 is a provisioning step owned by the developer, and `release.provisioning` states that the experience must be **published first** — a pass cannot be created against an unpublished experience. Until the id is filled, `ownershipCheck` is never called and the product is unownable. The unprovisioned value is `0` rather than `null` under `cid/tech/deploy/02`, so the build runs correctly at every gate. Carried in the manifest as `externalPrerequisite` so it does not read as an unfinished spec. |
 | **`priceRobux` lives in this key**, against the category ruling that price points belong to Balance & Tuning | `[cid: decided]`, inherited from this domain's index. A Robux price is not an economy, pacing or progression number: it enters no curve, never touches `upgrades[].costBase`, and is sourced from an external market rather than derived from the loop. If the category lead prefers the literal reading, the fix is one field moving table and no sheet changes. |
 | **`03-META.md`'s allowed list is stale by one entry** | It names four multiplier targets; `gameplay/systems/05` left three with a referent, and this sheet now sells one of those three. The line should be read as three. |
 | **Monetization has no priority slot** | `03-META.md`'s three priority lists contain neither a store nor a pass. Escalated to scope-ordering work; it changes nothing here. |
@@ -246,5 +265,6 @@ tool is made of at any width — Art & Visuals. Every footprint, arrival level a
 growth, Shard figure and in-game price — Balance & Tuning. Which axis each set targets and at what
 magnitude — `meta/03`. Whether the arming gate and the first-Find guarantee survive a 9.625-stud
 spawn radius — onboarding and layout work. How the experience page describes the pass — Discovery &
-Marketing, wave 7. Whether a spend guard exists for the under-13 share of an 8–14 audience — the
-developer.
+Marketing, wave 7. When in a publish the pass is created and by whom — `cid/tech/deploy/01`, which
+holds `release.provisioning`. Whether a spend guard exists for the under-13 share of an 8–14
+audience — the developer.

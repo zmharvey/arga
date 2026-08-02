@@ -64,13 +64,23 @@ API or a stopwatch would settle it.]` Roblox's FTUE guidance **states no time th
 ten-second window, chosen without a source, is independently corroborated
 `[research: https://www.spaceport.xyz/blog/how-to-hook-players-in-the-first-2-minutes-game-retention-tips-for-roblox-devs]`.
 
+**Five fields carried an explicit null and now carry a sentinel.** `cid/tech/deploy/02` forbids an
+explicit null in an emitted value: the emitter maps it to `nil` and Luau drops the key, so a
+builder iterating `beats` or `withheld` cannot tell a field with no value from a field that was
+never written. `beats[spawn].teaches` and `beats[tierContrast].teaches` become **`[]`**, which is
+the semantic case — a list-typed field read as `ipairs(nil)` **errors**, so the two readings are a
+crash and an empty loop, and two builders would differ on the guard. The three
+`withheld[].liftedBy` fields become **`"none"`**, which is documentary: `presentAtJoin: true` and
+`latched: false` already carry the same fact as booleans, and the sentinel only keeps the row
+readable. No field gains a value it did not have, and nothing about the six beats changes.
+
 | # | id | bySecond | source of the second | precondition | guaranteed outcome | teaches |
 |---|---|---|---|---|---|---|
-| 1 | `spawn` | 0.0 from join | inherited — pivot on `CharacterAdded` | character loaded and pivoted to the plot spawn point | stands inside standing overgrowth, tool welded and visible, ≥1 standing patch inside `baseClearRadius`, `clearedCount` 0 | nothing — the only beat with no concept |
+| 1 | `spawn` | 0.0 from join | inherited — pivot on `CharacterAdded` | character loaded and pivoted to the plot spawn point | stands inside standing overgrowth, tool welded and visible, ≥1 standing patch inside `baseClearRadius`, `clearedCount` 0 | nothing — the only beat with no concept, carried as `[]` |
 | 2 | `firstClear` | 3.0 from **first input** | `[cid: decided — gameplay/core-loop/01]` 3 s payoff rule | `armed`: horizontal displacement from the spawn pivot has exceeded `armDistanceStuds` once this character life | ≥1 patch clears and credits currency on the same tick | contact clears; the tick that rides it is the currency |
 | 3 | `firstReveal` | 10.0 from **join**, over sessions whose first input arrived by 5.0 | `[brief: soft]` `02-GAMEPLAY.md` ten-second promise | `firstClear` fired on the patch carrying the placed Find — held by `01` plus `spawnToNearestPatchMaxStuds` | exactly one Find revealed, entered permanently | clearing is revealing |
 | 4 | `firstOrdinaryClear` | 15.0 from join `[playtest unknown]` 10–25 | `[cid: decided]` | `firstReveal` fired | ≥3 patches clear with no reveal — implied by `secondFindOrdinalMin` | the ground is not made of Finds |
-| 5 | `tierContrast` | 45.0 from join `[playtest unknown]` 25–75 | `[cid: decided]` | the first 20 patches by spawn-distance ordinal hold ≥2 distinct `tierIndex` values | two clears with different credits and different silhouettes | overgrowth is graded, and grade pays |
+| 5 | `tierContrast` | 45.0 from join `[playtest unknown]` 25–75 | `[cid: decided]` | the first 20 patches by spawn-distance ordinal hold ≥2 distinct `tierIndex` values | two clears with different credits and different silhouettes | no concept in `teaching[]`, carried as `[]`; the contrast is felt, not taught |
 | 6 | `firstSpendAffordable` | 60.0 from join `[playtest unknown]` 40–120 | `[cid: decided]`, **awaiting a value** | balance ≥ the cheapest upgrade's level-1 cost | the cheapest upgrade row lifts and is affordable | that clearing pays for reach — comprehension only, no control named |
 
 **No sixth beat is added to `[cid: decided — gameplay/mechanics/05]`'s five**: rows 2, 4 and 5 are
@@ -85,6 +95,7 @@ from the player.** Area completion, set completion and depth are out of reach: a
     "armDistanceStuds": 2.0,
     "armScope": "perCharacterSpawn",
     "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+    "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
     "ceilings": {
       "secondsToFirstClear": { "max": 3.0, "measuredFrom": "firstInput", "population": "all run-1 sessions in which any input occurred" },
       "secondsToFirstReveal": { "max": 10.0, "measuredFrom": "join", "population": "run-1 sessions whose first input arrived by second 5.0" }
@@ -105,11 +116,11 @@ from the player.** Area completion, set completion and depth are out of reach: a
       "atStats": "base"
     },
     "beats": [
-      { "id": "spawn", "bySecond": 0.0, "from": "join", "precondition": "character loaded and pivoted to the plot spawn point", "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0", "teaches": null },
+      { "id": "spawn", "bySecond": 0.0, "from": "join", "precondition": "character loaded and pivoted to the plot spawn point", "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0", "teaches": [], "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors" },
       { "id": "firstClear", "bySecond": 3.0, "from": "firstInput", "precondition": "armed: horizontal displacement from the spawn pivot has exceeded armDistanceStuds at least once this character life", "guaranteedOutcome": "at least one patch clears and credits currency on the same server tick", "teaches": ["contactClearing", "currency"] },
       { "id": "firstReveal", "bySecond": 10.0, "from": "join", "precondition": "firstClear fired on the patch carrying the placed Find", "guaranteedOutcome": "exactly one Find is revealed and enters the collection permanently", "teaches": ["theFind"] },
       { "id": "firstOrdinaryClear", "bySecond": 15.0, "from": "join", "testRange": [10.0, 25.0], "precondition": "firstReveal has fired", "guaranteedOutcome": "at least three patches clear with no reveal", "teaches": ["theFind"] },
-      { "id": "tierContrast", "bySecond": 45.0, "from": "join", "testRange": [25.0, 75.0], "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values", "guaranteedOutcome": "two clears with different currency credits and different silhouettes", "teaches": null },
+      { "id": "tierContrast", "bySecond": 45.0, "from": "join", "testRange": [25.0, 75.0], "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values", "guaranteedOutcome": "two clears with different currency credits and different silhouettes", "teaches": [], "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors" },
       { "id": "firstSpendAffordable", "bySecond": 60.0, "from": "join", "testRange": [40.0, 120.0], "awaitingValue": "upgrades[].costBase", "precondition": "balance has reached the cheapest upgrade's level-1 cost", "guaranteedOutcome": "the cheapest upgrade row lifts and the player holds enough to buy it", "teaches": ["upgradeAxes"] }
     ],
     "teaching": [
@@ -124,11 +135,11 @@ from the player.** Area completion, set completion and depth are out of reach: a
     "neverTaught": ["rebirth", "offlineAccrual", "findRarity", "discoveryRate", "duplicates", "failure", "anyControl", "codesDailiesLeaderboardsTrading"],
     "tutorialDevicesForbidden": ["imperativeString", "tipHintHowToPlayObjectiveGoalString", "pointerArrowChevronBeamWaypointOutlineHighlight", "ghostedOrPulsingControlGlyph", "firstRunOnlyString", "unrequestedModalPanelOrOverlay", "countdownOrTutorialChecklist", "voiceOverOrSpokenLine", "welcomeOrWelcomeBackString", "stringNamingAControl", "uncausedCameraMoveZoomOrReframe", "promptingSound"],
     "withheld": [
-      { "surface": "collectionCount", "presentAtJoin": true, "liftedBy": null, "latched": false, "joinValue": "0" },
+      { "surface": "collectionCount", "presentAtJoin": true, "liftedBy": "none", "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean", "latched": false, "joinValue": "0" },
       { "surface": "collectionDenominator", "presentAtJoin": false, "liftedBy": "beat:firstReveal", "latched": true, "latchSource": "the collection map is non-empty", "newSaveFields": 0 },
-      { "surface": "currencyReadout", "presentAtJoin": true, "liftedBy": null, "latched": false, "joinValue": "0" },
+      { "surface": "currencyReadout", "presentAtJoin": true, "liftedBy": "none", "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean", "latched": false, "joinValue": "0" },
       { "surface": "upgradeRow", "perRow": true, "presentAtJoin": false, "liftedBy": "balance has reached upgrades[i] level-1 cost", "latched": true, "latchSource": "one persisted boolean per row", "newSaveFields": 3 },
-      { "surface": "areaProgress", "presentAtJoin": true, "liftedBy": null, "latched": false, "joinValue": "0%" },
+      { "surface": "areaProgress", "presentAtJoin": true, "liftedBy": "none", "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean", "latched": false, "joinValue": "0%" },
       { "surface": "collectionPanel", "presentAtJoin": false, "liftedBy": "beat:firstReveal", "latched": true, "latchSource": "the collection map is non-empty", "newSaveFields": 0 }
     ],
     "suppressionForbidden": ["padlockOrLockGlyph", "greyedOrDimmedRow", "questionMarkPlaceholder", "unknownDenominatorForm", "explanatoryTooltip", "liftAnimation", "liftSound", "newBadgeOrDot", "reSuppression", "unrevealedFindsInCount", "percentFormOfCollectionCount", "reflowOnLift"],
@@ -156,6 +167,10 @@ from the player.** Area completion, set completion and depth are out of reach: a
   not moved is not failing; `secondsToFirstReveal` stays join-relative, as promised.
 - **Purchase-verb work**: only row 6's `bySecond` is exposed to the escalation; its content is
   affordability, which no verb changes.
+- **HUD presence and beat-iteration work**: `beats[].teaches` is always a list and never nil, and
+  `withheld[].liftedBy` is always a string and never nil, per `cid/tech/deploy/02`. A row that is
+  never lifted reads `"none"` — test the string, not truthiness, or all six surfaces read as
+  lifted.
 
 ## Acceptance criteria
 
@@ -168,7 +183,8 @@ from the player.** Area completion, set completion and depth are out of reach: a
    spawn point to the nearest patch is at most
    `movement.baseClearRadius - firstSession.armDistanceStuds`.
 4. Every `bySecond` in `firstSession.beats[]` carries a `from` quoted from the brief, an inherited
-   source, or a `testRange`; none is bare.
+   source, or a `testRange`; none is bare. Every `beats[].teaches` is a list and every
+   `withheld[].liftedBy` is a non-empty string; neither is ever null.
 
 ## Flagged to the developer
 

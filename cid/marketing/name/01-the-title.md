@@ -7,9 +7,9 @@
 **Recommended: `Stone Under Green`.** Nine candidates were generated from one stated frame —
 *the title names the place and its condition, never the action, the prize or the genre* — and
 checked against the banked occupancy evidence. **The developer ratifies; `OPEN.md §3` reserves
-that and no sheet can close it.** `title.value` is authoritative for the string and
-`uiTheme.sourceTitle` mirrors it; until this key merges `uiTheme.sourceTitle` holds
-`"Ruin Restoration"` and the `npm test` assertion falls back to it.
+that and no sheet can close it.** `title.value` **decides** the string and
+`uiTheme.sourceTitle` **mirrors** it. **The path from this key to `Theme.luau` is a request,
+not a wire** — `title` carries the same emitter gap as every other key in this category.
 
 ## Why
 
@@ -35,22 +35,31 @@ the frame is built on. Every row inherits `research/landscape.md`'s own bound �
 means 'exists', not 'successful'"*, no CCU or visit figures, an absent hit is weak evidence —
 which is category gap `M9`, unclosed.
 
-**Why the recommendation is not `Ruin Restoration`.** Three independent reasons, none of them
-taste. **(1)** It is `<Noun> <Genre>` — structurally the `X Incremental` skeleton with the noun
+**Why the recommendation is not `Ruin Restoration`. Two grounds, and a third I have withdrawn.**
+**(1)** It is `<Noun> <Genre>` — structurally the `X Incremental` skeleton with the noun
 swapped, and `HANDOFF.md` #1 is binding that *"the noun is not the differentiator"*
 `[brief: binding]`. **(2)** The restoration *position* is occupied by two shipping titles above.
-**(3)** *Restoration* asserts an end state, and `T2` falsifies it: `theme/fantasy/02` rules
-*"no line may promise a world that ends up reclaimed"*, and `theme/setting/02` rules the works
-*"cannot be exhausted because it is uncounted"*. Retained as alternate **A3** anyway, because
-ratifying the incumbent must stay a zero-cost option for the developer.
+Neither was contested and both stand on their own.
+
+**Ground 3 is withdrawn, and the rule that replaces it is stated so this cannot recur.** I had
+argued that *restoration* asserts an end state `T2` falsifies. `store-page/01`'s row `C2` ships
+*"A restoration game."* and clears `tCleared: [T1, T2, T4]`, and **their reading is the correct
+one.** `T2` falsifies *a claim that the world ends up restored, reclaimed or finished* — a claim
+about an **end state**. A genre noun naming what kind of game this is asserts no end state, and
+if it did, `CONCEPT.md`'s binding *"a restoration / completion game, not an incremental"* would
+falsify itself and `uiTheme.genre: "restoration"` would be unshippable. **So: `T2` is tripped by
+a world-outcome claim and never by a genre noun; the word `restoration` is cleared for outward
+use in every Discovery & Marketing key.** `[cid: decided]`, settled with store-listing work.
+**One predicate must have one reading**, which is the whole point of `T0`, and the reading that
+survives is theirs.
 
 **Why `Stone Under Green` wins.** It is `theme/lore/01`'s canon compressed — *"the stone was
-always sound under the green"* — so its `backedBy` resolves to an approved sheet rather than to
-a copywriter. It states a standing relation, not an outcome, so it is true at 24/24 and forever
-after (`T1`, `T2`, `T9`, `T10` all clear). Three words, 17 characters, no article, no glyph, no
-genre suffix. Every word clears `bannedWords`; none appears in either occupied shape; and it
-happens to satisfy `vocabulary.allowedPattern` and `casing: "title"` even though ruling **M-B**
-means neither binds it — a free coherence check, not the reason.
+always sound under the green"* (`lore/01:8-9`) — so its `backedBy` resolves to an approved sheet
+rather than to a copywriter. It states a standing relation, so it is true at 24/24 and forever
+after. Three words, 17 characters, no article, no glyph, no genre suffix. Every word clears
+`bannedWords`; none appears in either occupied shape; and it happens to satisfy
+`vocabulary.allowedPattern` and `casing: "title"` even though ruling **M-B** means neither binds
+it — a free coherence check, not the reason.
 
 **Its stated weakness, so nobody discovers it later:** the title carries **no discovery
 keyword** — no verb, no genre word, no family noun. That is survivable and not free. Primary
@@ -62,7 +71,7 @@ metadata such as titles"*
 substitute `05-OUTWARD.md` could not name** for the cost it priced when it moved this game out
 of the incremental category. Evidence only — the positioning is `[brief: binding]` and I am not
 touching it. The consequence is that the keyword load moves entirely onto the tag set and the
-genre field, which are Store Page's.
+genre field, which are store-listing work's.
 
 **`Works`, `Terrace`, `Cistern`, `Vault` and `Spire` were considered and excluded for two
 different reasons.** `works` is registered in `vocabulary.internalTerms` as a writers-handle with
@@ -98,12 +107,23 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
     "ratifiedBy": "the developer, per OPEN.md section 3 'Needs you'",
     "ratificationOpenReason": "OPEN.md section 3 reserves the name; OPEN.md section 4 routes the work here. This sheet produces the framework, the evidence and the candidate set.",
     "authority": {
-      "authoritativeKey": "title.value",
-      "mirrorKey": "uiTheme.sourceTitle",
-      "path": "title.value -> ctx.title (concept/src/derive/game-context.mjs:136) -> sourceTitle (ui-forge/src/theme/generate.mjs:116) -> Theme.luau meta.sourceTitle",
-      "rule": "uiTheme.sourceTitle must equal title.value. bridge/test/theme-archetype.test.mjs reads title.value once this key is merged, and uiTheme.sourceTitle only until then.",
+      "decidedBy": "title.value",
+      "mirroredBy": "uiTheme.sourceTitle",
+      "rule": "uiTheme.sourceTitle must equal title.value. title is authoritative; where the two differ, uiTheme is the one that is wrong.",
+      "wireExists": false,
+      "wireStatus": "requested, not built",
+      "whatIsActuallyOnDisk": {
+        "gameContext": "concept/src/derive/game-context.mjs:136 reads concept.title off a stage-0 concept object. It reads no CID key, and the concept.json it consumes does not exist anywhere in this repo (art/ui-art/01 A4).",
+        "archetypeTest": "bridge/test/theme-archetype.test.mjs does not exist. It is a test art/ui-art/01 proposed. Nothing asserts sourceTitle against anything today.",
+        "emittedArtifact": "game/src/shared/Theme.luau meta.sourceTitle currently holds Pet Ascend Simulator, which is the defect art/ui-art/01 exists to close."
+      },
+      "emitterGap": "category gap M6. No emitter writes an outward artifact and no code path carries this key to Theme.luau. title is not exempt from that gap and this sheet claims no exemption.",
+      "requestedChanges": [
+        { "id": "N-A", "owner": "contract-and-seam work", "change": "carry title.value into whatever game-context this project actually uses, so ctx.title stops depending on a concept.json that does not exist", "isSameRequestAs": "art/ui-art/01 A4", "blocksNothingShippingToday": true },
+        { "id": "N-B", "owner": "contract-and-seam work, jointly with art/ui-art/01's own request", "change": "write bridge/test/theme-archetype.test.mjs and have it read title.value when title is merged, falling back to uiTheme.sourceTitle until then", "blocksNothingShippingToday": true }
+      ],
       "interimSourceTitle": "Ruin Restoration",
-      "interimEndsWhen": "this key merges",
+      "interimEndsWhen": "title merges",
       "revisionRequest": {
         "against": "cid/art/ui-art/01-archetype-and-lock.md",
         "field": "uiTheme.sourceTitle",
@@ -116,7 +136,7 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
     },
     "generationFrame": [
       { "id": "F1", "rule": "the title names the place and its condition", "excludes": "the action, the prize, and the genre", "because": "the occupancy evidence leaves place-and-condition vocabulary open and closes action-and-prize vocabulary" },
-      { "id": "F2", "rule": "the title states a standing relation, never an outcome", "because": "T2; theme/fantasy/02 forbids promising a world that ends up reclaimed; theme/setting/02 rules the works uncounted" },
+      { "id": "F2", "rule": "the title states a standing relation, never an outcome", "because": "theme/fantasy/02 forbids promising a world that ends up reclaimed; theme/setting/02 rules the works uncounted" },
       { "id": "F3", "rule": "the title does not use the shape <Noun> <Genre>", "because": "HANDOFF.md #1, binding: the noun is not the differentiator, and that shape is the X Incremental skeleton" },
       { "id": "F4", "rule": "the title is true under theme/lore/01 canon", "because": "the place was never lost, only overgrown, and the player is not repairing it" }
     ],
@@ -128,13 +148,16 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
       { "id": "E5", "rule": "carries a trailing genre suffix (Simulator, Tycoon, Incremental, Obby, RNG)", "verdict": "eliminated", "because": "F3" },
       { "id": "E6", "rule": "uses a term registered in vocabulary.internalTerms with renderable false", "words": ["works", "finder"], "verdict": "eliminated", "because": "the title would use a word the game never says" }
     ],
+    "predicateReadings": [
+      { "predicate": "T2", "reading": "T2 is tripped by a claim about the world's end state and never by a genre noun. The word restoration is cleared for outward use in every Discovery and Marketing key.", "settledWith": "cid/marketing/store-page/01-the-claim-ledger-and-the-description.md row C2, which clears tCleared T1 T2 T4", "supersedes": "this sheet's withdrawn third ground against Ruin Restoration" }
+    ],
     "evidenceBound": "'taken' means 'exists', not 'successful'. No CCU or visit figure was gathered for any title below. An absent hit is weak evidence. Inherited verbatim from research/landscape.md and relayed as category gap M9.",
     "evidenceDated": "2026-08-02",
     "candidates": [
-      { "id": "C1", "name": "Stone Under Green", "chars": 17, "frame": "place + condition", "wordOccupancy": "clear: stone and green surfaced no family hit; neither is a signature word of any surveyed competitor", "shapeOccupancy": "clear: not <Noun> <Genre>, not Clear/Clean the ___, not Find the ___", "eliminationRules": "passes E1-E6", "truth": "passes T1, T2, T9, T10 and theme/lore/01 canon", "verdict": "RECOMMENDED", "backedBy": "cid/theme/lore/01-the-past.md, canon 'the stone was always sound under the green'", "exactMatchSearch": "owed" },
+      { "id": "C1", "name": "Stone Under Green", "chars": 17, "frame": "place + condition", "wordOccupancy": "clear: stone and green surfaced no family hit; neither is a signature word of any surveyed competitor", "shapeOccupancy": "clear: not <Noun> <Genre>, not Clear/Clean the ___, not Find the ___", "eliminationRules": "passes E1-E6", "truth": "passes T1, T2, T9, T10 and theme/lore/01 canon", "verdict": "RECOMMENDED", "backedBy": "cid/theme/lore/01-the-past.md:8-9, canon 'the stone was always sound under the green'", "exactMatchSearch": "owed" },
       { "id": "C2", "name": "Under the Overgrowth", "chars": 20, "frame": "condition + concealment", "wordOccupancy": "clear: overgrowth returned no experience in this family, corroborating theme/vocabulary/02 a year on", "shapeOccupancy": "untested: the Under the ___ shape was not searched", "eliminationRules": "passes E1-E6", "truth": "passes", "verdict": "ALTERNATE A1", "backedBy": "https://www.roblox.com/games/4508787172/Lush-Overgrown-Showcase", "exactMatchSearch": "owed" },
       { "id": "C3", "name": "The Green Ruin", "chars": 14, "frame": "condition + place", "wordOccupancy": "partial: ruin has no exact-match experience but is a common platform title word; three near neighbours are all out of family", "shapeOccupancy": "clear", "eliminationRules": "passes E1-E6", "truth": "passes", "verdict": "ALTERNATE A2", "backedBy": "https://www.roblox.com/games/7892152397/Ruins-Realm", "exactMatchSearch": "owed" },
-      { "id": "C4", "name": "Ruin Restoration", "chars": 16, "frame": "place + genre", "wordOccupancy": "the word restoration is free; the position is occupied by reStore and by Clean the Museum's 'the more you restore, the more the museum comes back to life'", "shapeOccupancy": "fails F3: <Noun> <Genre> is the X Incremental skeleton", "eliminationRules": "passes E1-E6", "truth": "T2 risk: restoration asserts an end state theme/fantasy/02 forbids promising", "verdict": "ALTERNATE A3, the incumbent, retained so ratifying the status quo costs nothing", "backedBy": "https://www.roblox.com/games/87179205054038/reStore", "exactMatchSearch": "owed" },
+      { "id": "C4", "name": "Ruin Restoration", "chars": 16, "frame": "place + genre", "wordOccupancy": "the word restoration is free; the position is occupied by reStore and by Clean the Museum's 'the more you restore, the more the museum comes back to life'", "shapeOccupancy": "fails F3: <Noun> <Genre> is the X Incremental skeleton", "eliminationRules": "passes E1-E6", "truth": "passes, including T2. The earlier T2 objection on this row is withdrawn; see predicateReadings.", "verdict": "ALTERNATE A3, the incumbent, retained so ratifying the status quo costs nothing", "backedBy": "https://www.roblox.com/games/87179205054038/reStore", "exactMatchSearch": "owed" },
       { "id": "C5", "name": "Overgrowth", "chars": 10, "frame": "condition only", "wordOccupancy": "clear", "shapeOccupancy": "clear", "eliminationRules": "passes E1-E6", "truth": "passes", "verdict": "REJECTED: names the obstacle and not the place, and a bare common noun indexes badly against a semantic-search sort", "backedBy": "https://create.roblox.com/docs/production/promotion/discovery", "exactMatchSearch": "not owed, rejected" },
       { "id": "C6", "name": "The Overgrown Terrace", "chars": 21, "frame": "condition + one part", "wordOccupancy": "clear", "shapeOccupancy": "clear", "eliminationRules": "passes E1-E6", "truth": "FAILS canon: theme/setting/02 rules the four labels name four kinds of part, not four places, so naming the game after one part misrepresents the extent", "verdict": "REJECTED", "backedBy": "cid/theme/setting/02-extent.md", "exactMatchSearch": "not owed, rejected" },
       { "id": "C7", "name": "The Overgrown Works", "chars": 19, "frame": "condition + place", "wordOccupancy": "clear", "shapeOccupancy": "clear", "eliminationRules": "FAILS E6: works is vocabulary.internalTerms, renderable false", "truth": "passes", "verdict": "REJECTED", "backedBy": "cid/theme/vocabulary/03-term-register.md", "exactMatchSearch": "not owed, rejected" },
@@ -146,18 +169,18 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
       { "rank": "A2", "name": "The Green Ruin", "promoteIf": "A1 also returns a hit, or a 14-character title is wanted for tile legibility" },
       { "rank": "A3", "name": "Ruin Restoration", "promoteIf": "the developer ratifies the incumbent, which changes uiTheme.sourceTitle by zero fields" }
     ],
-    "promotionRule": "an alternate is promoted by editing title.value only. Every other field on this key is unchanged, and uiTheme.sourceTitle follows automatically. After first publish the change policy in sheet 02 governs instead.",
+    "promotionRule": "an alternate is promoted by editing title.value only. Every other field on this key is unchanged, and uiTheme.sourceTitle follows by its mirror rule. After first publish the change policy in sheet 02 governs instead.",
     "preRatificationChecks": [
       { "id": "P1", "check": "exact-match Roblox experience search for 'Stone Under Green'", "status": "owed", "blocks": "ratification, not merge" },
       { "id": "P2", "check": "exact-match Roblox experience search for 'Under the Overgrowth', 'The Green Ruin' and 'Ruin Restoration'", "status": "owed", "blocks": "promotion of that alternate" },
       { "id": "P3", "check": "the recommended string contains no vocabulary.bannedWords entry and no occurrence of 'Incremental'", "status": "passing" }
     ],
     "claims": [
-      { "id": "N1", "claim": "the place in this game is stone with green over it", "backedBy": "cid/theme/lore/01-the-past.md ('the stone was always sound under the green'); cid/theme/setting/01-the-ruin.md (a stone works, civil and utilitarian)", "check": "both sheets state it; the title asserts nothing the two do not" }
+      { "id": "N1", "claim": "the place in this game is stone with green over it", "backedBy": ["cid/theme/lore/01-the-past.md:8-9", "cid/theme/setting/01-the-ruin.md"], "check": "lore/01 states 'the stone was always sound under the green' and setting/01 states the place is a stone works; the title asserts nothing the two do not", "truthCondition": "always. No key, tuning value or purchase can falsify it.", "tCleared": ["T1", "T2", "T9", "T10"] }
     ],
     "claimsNotMade": [
       { "predicate": "T1", "why": "the title names no quantity of things to find and no continuation" },
-      { "predicate": "T2", "why": "the title states a relation, not an outcome; it does not contain restore, restored, reclaimed, finished or complete" },
+      { "predicate": "T2", "why": "the title states a relation, not an outcome; it contains none of restore, restored, reclaimed, finished, complete" },
       { "predicate": "T9", "why": "the title names no reason to return" },
       { "predicate": "T10", "why": "the title contains no urgency, scarcity, discount or limited-time word" }
     ]
@@ -169,18 +192,19 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
 
 - **UI-art archetype work (`uiTheme`)** takes a one-field revision: `sourceTitle` becomes
   `"Ruin Restoration"` → `"Stone Under Green"`, and its acceptance criterion 1's literal moves
-  with it. That sheet accepted this in advance and no new round is needed. **`title.value` is
-  authoritative and `uiTheme.sourceTitle` mirrors it** — if the two ever disagree, `title` wins
-  and `uiTheme` is the one that is wrong.
-- **Store-listing work** inherits the whole keyword load. This title contains no verb, no genre
-  word and no family noun, so the tag set, the genre field and the description are the only
-  places a keyword-matched or semantically-matched query can land. That is a requirement on the
-  tag set, not a suggestion.
+  with it. That sheet accepted this in advance and no new round is needed. **`title.value`
+  decides and `uiTheme.sourceTitle` mirrors** — where the two differ, `title` wins.
+- **Contract-and-seam work** takes `N-A` and `N-B`, and they are **not new requests**: `N-A` is
+  `art/ui-art/01`'s `A4` seen from the other end, and `N-B` is the test that sheet proposed and
+  which does not exist on disk. Nothing this key decides reaches an artifact until both land,
+  and this sheet states that rather than implying a wire.
+- **Store-listing work** owns the whole keyword load. This title contains no verb, no genre word
+  and no family noun, so the tag set, the genre field and the description are the only places a
+  keyword-matched or semantically-matched query can land. It also owns the settled `T2` reading:
+  its `C2` stands, and any later sheet reading `T2` as tripped by a genre noun is wrong.
 - **Store-icon and thumbnail work** get a title that is three short words and never wraps past
   two lines at any tile width. Any overlay repeating the title is redundant with the tile's own
   label; that is their call, and this sheet supplies the string.
-- **Contract-and-seam work** gains a second consumer of `deriveGameContext`'s already-emitted
-  `title` field. No emitter change is requested by this sheet.
 - **Every other outward domain** may cite `title.value`; none may restate the string as a
   literal, because a copied literal is what goes stale when an alternate is promoted.
 
@@ -191,8 +215,9 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
 2. `title.candidates` has at least six rows; every row carries a non-empty `wordOccupancy`,
    `shapeOccupancy`, `verdict` and `backedBy`, and exactly one row's `verdict` begins
    `RECOMMENDED`.
-3. `game/src/shared/Theme.luau`'s `meta.sourceTitle` equals `title.value`, and
-   `grep -rn "Pet Ascend Simulator" game/src` returns nothing.
+3. Either `uiTheme.sourceTitle` equals `title.value`, or `title.authority.revisionRequest` names
+   field `uiTheme.sourceTitle` with `to: "title.value"` and `acceptedInAdvance: true`; and
+   `title.authority.wireExists` is `false` with at least one entry in `requestedChanges`.
 4. No field anywhere in this key is `null`.
 
 ## Flagged to the developer
@@ -201,8 +226,8 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
 *"Needs you"*; `OPEN.md §4` routes the work here. Live options: **(a)** ratify
 `"Stone Under Green"` as recommended; **(b)** promote `A1 Under the Overgrowth` or
 `A2 The Green Ruin`, which costs one field; **(c)** ratify the incumbent `"Ruin Restoration"`,
-which costs zero fields and inherits the three objections above. **I recommend (a).** One thing
-is owed before any of them: `preRatificationChecks P1`/`P2`, an exact-match search per candidate,
+which costs zero fields and inherits grounds 1 and 2 above. **I recommend (a).** One thing is
+owed before any of them: `preRatificationChecks P1`/`P2`, an exact-match search per candidate,
 which I had no tool to run.
 
 ## Not decided here
@@ -211,6 +236,7 @@ What the name field may ever contain, the glyph ruling, the title-tag convention
 bound and the rename policy: sheet `02`, this domain. Whether a tagline exists and what it says:
 sheet `03`, this domain. In-game naming language, the ban list and the term register:
 `theme/vocabulary`, which holds `vocabulary`. The tag set, the genre field, the description and
-every keyword decision: store-listing work. The icon and every thumbnail: store-icon and
-thumbnail work. Whether `title` is promoted into `bridge/schema.mjs`, and whether any emitter
-writes an outward artifact at all (category gap **M6**): contract-and-seam work.
+every keyword decision: store-listing work, which also owns the `T2` reading this sheet adopted.
+The icon and every thumbnail: store-icon and thumbnail work. Whether `title` is promoted into
+`bridge/schema.mjs`, and whether any emitter ever writes an outward artifact (category gap
+**M6**, which this key does not escape): contract-and-seam work.

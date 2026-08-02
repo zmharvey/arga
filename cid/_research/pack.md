@@ -1087,7 +1087,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/hud/02-presence-and-reserved-extent`, `ui-ux/hud/_lead`*
 
-- *Reserved extent is per group and is not boilerplate.** It is only owed where growth would move a neighbour. `currency` grows leftward from a `[1,0]` anchor into empty screen and reserves nothing; the three upgrade groups sit in one vertical stack and each reserves a full row whether or not it has lifted; `collection` reserves the width of its widest reachable string so the `/ 24` denominator lift moves nothing. `AnchorPoint` *"defines the origin point from which an object's position and size change"*, which is why the anchor decides whether a reserve is owed ``.
+- *Reserved extent is per group and is not boilerplate.** It is owed only where growth would move a neighbour. `currency` grows leftward from a `[1,0]` anchor into empty screen and reserves nothing; the three upgrade groups sit in one vertical stack and each reserves a full row whether or not it has lifted; `collection` reserves the width of its widest reachable string so the `/ 24` denominator lift moves nothing. `AnchorPoint` *"defines the origin point from which an object's position and size change"*, which is why the anchor decides whether a reserve is owed ``.
 - `AnchorPoint` *"defines the origin point from which an object's position and size change"*, and `UDim2` scale is *"a percentage of the container's size along the corresponding axis, additive of any Offset values"* `` — the engine vocabulary a derived-position rule has to be expressed in.
 
 ## https://create.roblox.com/docs/ui/size-modifiers

@@ -2,6 +2,17 @@
 
 **Domain:** marketing/thumbnails · **Category:** Discovery & Marketing · **Wave:** 7
 
+> **Revised, round 1** (`cid/marketing/_verified.md`). **RR-2 closed:** acceptance criterion 3
+> asserted `slots[].pixelSize` and `slots[].format`, neither of which is a field in this key, so
+> the criterion returned undefined rather than a verdict. Both live at `platform.*` and the
+> criterion now names them there. **No value moves.** Following `art/vfx/01`'s answer to the same
+> defect class, every cross-key path this domain's four sheets cite is re-resolved against its
+> owning manifest and published as `externalPathsResolved`, so next round's check is mechanical.
+> **Two spellings were wrong and are corrected**: `styleGuide.roleRules[C5]` was a name-keyed
+> lookup into an array (`styleGuide`'s `citeAs` keys it by `.id`), and `effects.beats[findReveal]`
+> named a collection that does not exist — the key is `effects.cues[]`, keyed by `.id`;
+> `beats[]` belongs to `response`. Sheet `03` carries the same correction.
+
 ## Decision
 
 **This game ships exactly one thumbnail, one image, zero videos, zero variants, and never
@@ -60,20 +71,29 @@ permits and which is true. `theme/fantasy/02` narrows the promise's lifetime, no
 later reader cannot mistake it for a standing one.
 
 **What the image may not claim, and one it may.** `endgame.collectionEnds` is `true` and
-`postTerminalArea.buriesFinds` is `0`, so *"a list you can finish"* is backed and *"endless things
-to find"* would be `T1`. `F17` gives the unusual true claim in this genre, that 24/24 is reachable
-owning zero products, and I leave it to `storeListing`, because a sentence like that is copy and
-this surface has no copy (sheet `04` rules `overlayText` empty on every slot).
+`endgame.postTerminalArea.buriesFinds` is `0`, so *"a list you can finish"* is backed and
+*"endless things to find"* would be `T1`. `F17` gives the unusual true claim in this genre, that
+24/24 is reachable owning zero products, and I leave it to `storeListing`, because a sentence like
+that is copy and this surface has no copy (sheet `04` rules `overlayText` empty on every slot).
 
 **Zero videos, stated in order to forbid.** Four games, two of them above 29M visits, ship zero
 videos between them. A video is a trailer, the trailer brief is Hype's, and it inherits the same
 capture gate this key does. I set `videoCount` to `0` and claim nothing about Hype's ruling.
+
+**Every path this domain cites is now published with its resolution.** Round 1 found one criterion
+in this sheet asserting two fields that do not exist, which returns undefined rather than a
+verdict, and the same defect class produced three requests in Art and one in Name.
+`externalPathsResolved` below carries all **26** cross-key paths the four sheets in this domain
+cite, each with its owning key and a `resolves` boolean, on `art/vfx/01`'s precedent. Two were
+wrong and are corrected; the other twenty-four resolve.
 
 ```manifest
 {
   "provides": "storeThumbnails",
   "status": "proposed",
   "value": {
+    "revision": 1,
+    "revisionNote": "round 1 of cid/marketing/_verified.md. RR-2: acceptance criterion 3 named slots[].pixelSize and slots[].format, which are not fields of this key; both live at platform.* and the criterion now names them there. No value moved. externalPathsResolved added, and two cited spellings corrected: styleGuide.roleRules[id=C5] and effects.cues[id=findReveal].",
     "count": 1,
     "activeCount": 1,
     "inactiveCount": 0,
@@ -88,6 +108,8 @@ capture gate this key does. I set `videoCount` to `0` and claim nothing about Hy
       "formatsPermitted": ["jpg", "gif", "png", "tga", "bmp"],
       "formatChosen": "png",
       "formatChosenReason": "lossless, and the frame is flat matte stone and foliage where jpg ringing is visible at sort-row size",
+      "appliesToEverySlot": true,
+      "appliesToEverySlotNote": "aspectRatio, pixelSize and formatChosen are stated once here and are NOT repeated per slot. A criterion or a sibling key citing slots[].pixelSize or slots[].format resolves to nothing; the paths are platform.pixelSize and platform.formatChosen.",
       "allUploadsModerated": true,
       "personalisationActivatesAtActiveCount": 2,
       "personalisationMaxActive": 5,
@@ -131,7 +153,7 @@ capture gate this key does. I set `videoCount` to `0` and claim nothing about Hy
           },
           "halfTwo": {
             "subject": "index-panel",
-            "decidedBy": "sheet 03 of this domain, which replaces 05-OUTWARD.md's 'a relic mid-reveal' and files the revision request",
+            "decidedBy": "sheet 03 of this domain, which replaces 05-OUTWARD.md's second half and files the revision request",
             "content": "set by storeThumbnails.secondHalf"
           },
           "camera": {
@@ -215,15 +237,47 @@ capture gate this key does. I set `videoCount` to `0` and claim nothing about Hy
       { "id": "X12", "what": "big display text, an outlined display number, a percentage badge or a find-count counter drawn on the image", "ruling": "sheet 04; and a counter drawn on an image is a volume claim outside T3's check", "observable": "overlayText is the empty string" },
       { "id": "X13", "what": "a health bar, a damage number, a timer, a countdown or a danger indicator in frame", "ruling": "'Tension is zero by design' HANDOFF.md six-things 4 [brief: binding]; theme/tone/04 D9 bans the timer and countdown; T10", "observable": "the shipped HUD has no such node; grep the captured screen tree for Timer, Countdown, Health" },
       { "id": "X14", "what": "cobwebs, bones, skulls, grave markers, dust sheets, torches, candles, glowing runes or mist", "ruling": "04-PRESENTATION.md — 'warm and unhurried, not spooky. This is reclamation, not a haunted place' [brief: soft]; theme/setting/05 A7 forbids any luminous thing", "observable": "zero instances of any of the nine named objects exist in the place, so none can enter a frame taken from it" },
-      { "id": "X15", "what": "gold, gilding, gemstones, a glinting hoard or a treasure chest", "ruling": "theme/lore/01 — 'art must not add gold, gilding or gemstones'; styleGuide C5 fails fantasy-ornate's own gold token #D4A34A by construction; treasure is in vocabulary.bannedWords", "observable": "no authored Color3 in the place passes C5, so no gilded surface exists to photograph" },
-      { "id": "X16", "what": "an upscaled, AI-generated, retouched, recoloured or composited frame, or any element added after capture", "ruling": "the platform's own rule — 'Graphics shown must be representative of the actual in-game visuals. Avoid artificially enhancing graphics beyond what a player will experience'; T8", "observable": "captureGate.provenance records commit, buildStamp and placeVersion, and the file's pixel size is the native 1920 x 1080" },
+      { "id": "X15", "what": "gold, gilding, gemstones, a glinting hoard or a treasure chest", "ruling": "theme/lore/01 — 'art must not add gold, gilding or gemstones'; styleGuide.roleRules[id=C5] fails fantasy-ornate's own gold token #D4A34A by construction; treasure is in vocabulary.bannedWords", "observable": "no authored Color3 in the place passes C5, so no gilded surface exists to photograph" },
+      { "id": "X16", "what": "an upscaled, AI-generated, retouched, recoloured or composited frame, or any element added after capture", "ruling": "the platform's own rule — 'Graphics shown must be representative of the actual in-game visuals. Avoid artificially enhancing graphics beyond what a player will experience'; T8", "observable": "captureGate.provenance records commit, buildStamp and placeVersion, and the file's pixel size is the native platform.pixelSize" },
       { "id": "X17", "what": "a padlock, a silhouette, a blurred model, a greyed name or a question mark on an empty index slot", "ruling": "theme/tone/04 D11; representation.index-surface — 'an unfound name reads as an empty slot. NOTHING ELSE.'", "observable": "objectArt.find acceptance criterion 4 already checks this in the build, and the frame is a frame of that build" },
       { "id": "X18", "what": "a slot, ordinal, field or file name held open for a future image", "ruling": "03-META.md priority 3, hard as a gate; reservedSlots is 0", "observable": "slots[] has exactly 1 row and count equals slots.length" }
     ],
-    "externalPathsCited": [
-      "collection.sets[].relics[]", "collection.relicsPerArea", "endgame.collectionEnds", "endgame.postTerminalArea.buriesFinds", "endgame.forbidden", "products.storeExists", "products.itemCount", "offerSurface", "vocabulary.bannedWords", "vocabulary.allowedPattern",
-      "styleGuide.roles[\"stone.cleared\"]", "styleGuide.roles[\"stone.built\"]", "styleGuide.roleRules[C5]", "tiers[].rgb", "uiTheme.archetype", "objectArt.find.iconCount", "representation.find", "representation.index-surface", "effects.cues[findReveal]", "release.publishChecklist"
+    "externalPathsResolved": [
+      { "path": "collection.sets[].relics[]", "owningKey": "collection", "citedBy": ["01", "03"], "resolves": true, "note": "an array of bare strings; no name is copied into this key" },
+      { "path": "collection.relicsPerArea", "owningKey": "collection", "citedBy": ["01"], "resolves": true, "note": "3 after ruling R-2" },
+      { "path": "endgame.collectionEnds", "owningKey": "endgame", "citedBy": ["01"], "resolves": true },
+      { "path": "endgame.postTerminalArea.buriesFinds", "owningKey": "endgame", "citedBy": ["01", "04"], "resolves": true },
+      { "path": "endgame.forbidden", "owningKey": "endgame", "citedBy": ["01"], "resolves": true },
+      { "path": "products.storeExists", "owningKey": "products", "citedBy": ["01", "04"], "resolves": true },
+      { "path": "products.itemCount", "owningKey": "products", "citedBy": ["01", "04"], "resolves": true },
+      { "path": "offerSurface", "owningKey": "offerSurface", "citedBy": ["01"], "resolves": true, "note": "an explicit empty set; cited as a whole key, no field named" },
+      { "path": "vocabulary.bannedWords", "owningKey": "vocabulary", "citedBy": ["01", "03", "04"], "resolves": true },
+      { "path": "vocabulary.allowedPattern", "owningKey": "vocabulary", "citedBy": ["01", "04"], "resolves": true, "note": "adopted by sheet 04 rather than inherited; ruling M-B exempts it outward" },
+      { "path": "vocabulary.maxLabelChars", "owningKey": "vocabulary", "citedBy": ["04"], "resolves": true, "note": "cited only to record that it does NOT bind this surface" },
+      { "path": "styleGuide.roles[\"stone.cleared\"]", "owningKey": "styleGuide", "citedBy": ["01", "02", "03"], "resolves": true, "note": "the canonical spelling per styleGuide.citeAs; roles.clearedStone resolves to nothing" },
+      { "path": "styleGuide.roles[\"stone.built\"]", "owningKey": "styleGuide", "citedBy": ["01"], "resolves": true },
+      { "path": "styleGuide.roleRules[id=C5]", "owningKey": "styleGuide", "citedBy": ["01"], "resolves": true, "correctedFrom": "styleGuide.roleRules[C5]", "correctionReason": "roleRules is an ARRAY keyed by .id per styleGuide.citeAs; a name-keyed lookup is the materials[worked-wood-dark] defect repeated" },
+      { "path": "tiers[].rgb", "owningKey": "tiers", "citedBy": ["01", "03"], "resolves": true },
+      { "path": "patch.footprint", "owningKey": "patch", "citedBy": ["03"], "resolves": true, "note": "cited through effects, not measured here" },
+      { "path": "uiTheme.archetype", "owningKey": "uiTheme", "citedBy": ["01", "02"], "resolves": true, "note": "proposed, not merged" },
+      { "path": "objectArt.find.iconCount", "owningKey": "objectArt", "citedBy": ["01"], "resolves": true, "note": "supplied by art/objects/04 as an amends block at path find" },
+      { "path": "objectArt.find.worldInstanceCount", "owningKey": "objectArt", "citedBy": ["01", "03"], "resolves": true },
+      { "path": "representation.find", "owningKey": "representation (architect/06)", "citedBy": ["01", "03", "04"], "resolves": true },
+      { "path": "representation.index-surface", "owningKey": "representation (architect/06)", "citedBy": ["01", "03"], "resolves": true },
+      { "path": "representation.plot", "owningKey": "representation (architect/06)", "citedBy": ["02"], "resolves": true, "note": "the lane slab RR-A1 amends" },
+      { "path": "effects.cues[id=findReveal]", "owningKey": "effects", "citedBy": ["03"], "resolves": true, "correctedFrom": "effects.beats[findReveal]", "correctionReason": "effects holds cues[], keyed by .id; beats[] belongs to response. The old spelling named a collection that exists in neither key." },
+      { "path": "response.beats[findReveal].dwellSeconds", "owningKey": "response", "citedBy": ["03"], "resolves": true, "note": "2.5; effects reads it and this domain reads effects" },
+      { "path": "release.publishChecklist", "owningKey": "release", "citedBy": ["02", "04"], "resolves": true, "note": "four rows today; RR-T1 requests a fifth" },
+      { "path": "budgets.deviceFloor", "owningKey": "budgets", "citedBy": ["02"], "resolves": true },
+      { "path": "depths", "owningKey": "depths", "citedBy": ["01", "04"], "resolves": true, "note": "8 areas; cited as a whole key for the T3 volume bound, no field named" }
     ],
+    "externalPathsResolvedNote": "26 rows, re-resolved against each owning manifest in round 1 on art/vfx/01's precedent, not only the two the verifier named. Two spellings were wrong and are corrected in place with correctedFrom recorded; the other twenty-four resolve. No path in this domain uses a name-keyed lookup into an array, and no path in this domain is collection.total.",
+    "internalPathsAsserted": {
+      "note": "fields of THIS key that an acceptance criterion in this domain asserts. Listed so a criterion naming a field absent from this list is a defect before it is run.",
+      "paths": ["count", "activeCount", "inactiveCount", "videoCount", "personalisationOn", "platform.maxMediaItems", "platform.pixelSize", "platform.formatChosen", "platform.formatsPermitted", "slots[].backedBy", "slots[].claim", "slots[].altText", "slots[].overlayText", "slots[].captureSource", "slots[].uploaded", "variants.abTestSet", "variants.reservedSlots", "forbidden", "externalPathsResolved", "captureGate.allRowsPass", "captureGate.rows", "captureGate.rowsPassingToday", "captureGate.provenance.fields", "secondHalf.subject", "secondHalf.findObjectDepicted", "secondHalf.revealBeatDepicted", "secondHalf.contentRequired.slotsRendered", "secondHalf.framing.maxFrameWidthFraction", "overlayRule.anySlotCarriesOverlayText", "overlayRule.exclusionZone.fractionOfHeight", "overlayRule.ruleIfEverReopened.forbiddenClasses", "altTextRule.rule.forbiddenClasses"],
+      "notFields": ["slots[].pixelSize", "slots[].format"],
+      "notFieldsReason": "RR-2. Aspect ratio, pixel size and format are stated once at platform.* and apply to every slot; a per-slot copy would be a second source for one value."
+    },
     "amendedBy": [
       { "path": "captureGate", "sheet": "cid/marketing/thumbnails/02-the-capture-gate.md" },
       { "path": "secondHalf", "sheet": "cid/marketing/thumbnails/03-no-subject-for-the-second-half.md" },
@@ -242,7 +296,9 @@ capture gate this key does. I set `videoCount` to `0` and claim nothing about Hy
   video slot only*. Whether a trailer exists at all is Hype's, and it inherits the same capture
   gate, so it should read sheet `02` before ruling.
 - **Icon work (`storeIcon`)** owns the sort-row image. This key states plainly that a thumbnail is
-  not it, so neither domain sizes for the other's surface.
+  not it, so neither domain sizes for the other's surface. It may also reuse
+  `externalPathsResolved` rather than re-resolving the same eleven `styleGuide`, `objectArt` and
+  `representation` paths.
 - **Publish-checklist work (`release`)** receives one upload step it does not have today. Sheet
   `02` files it as a named revision request; without it, `activeCount: 1` is a value nothing acts on.
 - **Analytics work** gets a firm answer to a question `E5` would otherwise face at publish time:
@@ -259,11 +315,14 @@ capture gate this key does. I set `videoCount` to `0` and claim nothing about Hy
 2. Every `slots[].backedBy[]` is non-empty and every entry resolves to a merged or proposed key
    path, an approved `cid/**` sheet id, or a file that exists in this repo; no `claim` or `altText`
    matches any `T1`–`T10` predicate in `cid/marketing/_category.md`.
-3. `slots[].pixelSize` is `[1920, 1080]`, `format` is a member of `platform.formatsPermitted`, and
-   `slots[].captureSource` is the string `storeThumbnails.captureGate.allRowsPass`; every slot has
-   `uploaded: false` while that field is `false`.
-4. `storeThumbnails.forbidden[]` has **18** rows, each with an `id`, a `ruling` and an `observable`
-   that is a grep, a count or a manifest comparison; no field anywhere in this key is `null`.
+3. `platform.pixelSize` is `[1920, 1080]` and `platform.formatChosen` is a member of
+   `platform.formatsPermitted`; `slots[].captureSource` is the string
+   `storeThumbnails.captureGate.allRowsPass`; and every slot has `uploaded: false` while
+   `captureGate.allRowsPass` is `false`.
+4. `forbidden[]` has **18** rows, each with an `id`, a `ruling` and an `observable`; every row of
+   `externalPathsResolved` has `resolves: true` and no `path` contains a name-keyed lookup into an
+   array; every field named in an acceptance criterion of this domain appears in
+   `internalPathsAsserted.paths`; and no field anywhere in this key is `null`.
 
 ## Not decided here
 
@@ -276,7 +335,9 @@ the word ceiling, the reading level and the bottom exclusion zone: **sheet `04`*
 game's name: **naming work**, which holds `title`; no string in this key contains it, deliberately.
 The sort-row icon and its count: **Icon work**, which holds `storeIcon`. Every line of description
 copy, the tag set, the genre selection and the pass listing: **Store Page work**, which holds
-`storeListing`. Whether a trailer exists: **Hype**. Whether the platform permits a detail page with
-zero thumbnails, which would matter only if the gate never passes:
+`storeListing`. Whether a trailer exists: **Hype**. The `collection.total` phantom five sheets cite
+in three spellings: **not cited by this domain** — `externalPathsResolved` names `collection` twice
+and neither row is `total`; the cross-category pass owns it. Whether the platform permits a detail
+page with zero thumbnails, which would matter only if the gate never passes:
 `[research owed: whether a Roblox experience detail page requires at least one thumbnail, and what
 it renders when none exists]`.

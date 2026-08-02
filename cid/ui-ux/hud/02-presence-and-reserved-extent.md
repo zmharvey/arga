@@ -1,6 +1,6 @@
 # 02 — Presence and reserved extent
 
-**Domain:** ui-ux/hud · **Category:** UI/UX · **Wave:** 5 · **Revision 1** (RR-13)
+**Domain:** ui-ux/hud · **Category:** UI/UX · **Wave:** 5 · **Revision 3** (the `collection.totalFinds` phantom)
 
 ## Decision
 
@@ -41,26 +41,22 @@ dependency on what a layout happens to do with a hidden child.
 **A reserved interactive group must also stop being pressable, and the shipped code does it the
 one way my ruling forbids.** `Pressables.luau` writes `.Visible` at **three** lines — `:471`
 (purchase buttons hidden at bind), `:485` (`indexButton.Visible = true`) and `:588` (the
-per-snapshot write) `[research: repo — read this run; :485 added in revision 1, found by
-verification]`. Under `composition`'s one-node-per-group realisation a purchase row is a child of
-`Cluster_bottomRight` and the collection group is a child of `Cluster_topLeft`, so `Visible`
-collapses either out of its vertical layout and slides its siblings — the precise failure
-`reflowOnLift` names. Presence therefore has three properties, not one: transparency,
-interactivity, and extent.
+per-snapshot write) `[research: repo — read this run]`. Under `composition`'s one-node-per-group
+realisation a purchase row is a child of `Cluster_bottomRight` and the collection group a child of
+`Cluster_topLeft`, so `Visible` collapses either out of its vertical layout and slides its
+siblings — the precise failure `reflowOnLift` names. Presence therefore has three properties:
+transparency, interactivity, and extent.
 
-**Category gap G7 is moot rather than blocking, and I state why rather than reinterpret it.**
-`onboarding/04` raised *"`hud-overlay` cannot vary the presence of an individual readout by
-state"* as a blocker. Under this ruling the pattern is never asked to: every element is emitted
-unconditionally into the brief and presence is a runtime property of the emitted node. The
-requirement on the pattern reduces to one line — **it must emit every element in `composition`
-unconditionally and must never gate a node's existence on a content flag** — and `hudOverlay()`'s
-corners branch already does exactly that, mapping every entry of `content.readouts` into a cluster
-with no conditional
-`[research: repo — ui-forge/src/compose/patterns/hud-overlay.mjs:264-291, read this run]`. So the
-second of the two `ui-forge` changes `onboarding/04` predicted is **not needed**; only the
-pressable readout is, and that is sheet `03`'s. `[cid: decided]`
+**Category gap G7 is moot rather than blocking.** `onboarding/04` raised *"`hud-overlay` cannot
+vary the presence of an individual readout by state"* as a blocker. Under this ruling the pattern
+is never asked to: every element is emitted unconditionally and presence is a runtime property.
+The requirement reduces to one line — **it must emit every element in `composition`
+unconditionally and never gate a node's existence on a content flag** — and `hudOverlay()`'s
+corners branch already does exactly that
+`[research: repo — ui-forge/src/compose/patterns/hud-overlay.mjs:264-291, read this run]`.
+`[cid: decided]`
 
-**Reserved extent is per group and is not boilerplate.** It is only owed where growth would move a
+**Reserved extent is per group and is not boilerplate.** It is owed only where growth would move a
 neighbour. `currency` grows leftward from a `[1,0]` anchor into empty screen and reserves nothing;
 the three upgrade groups sit in one vertical stack and each reserves a full row whether or not it
 has lifted; `collection` reserves the width of its widest reachable string so the `/ 24`
@@ -68,30 +64,32 @@ denominator lift moves nothing. `AnchorPoint` *"defines the origin point from wh
 position and size change"*, which is why the anchor decides whether a reserve is owed
 `[research: https://create.roblox.com/docs/ui/position-and-size]`.
 
-**The row unit is a `floor`, not a `ceiling`, and revision 1 says so with the real field name.**
-Revision 0 cited `viewport.touchTargetFloorPx`, which does not exist. The field is
+**The row unit is a `floor`, not a `ceiling`.** The field is
 `viewport.classes.<class>.minTargetPx`, tagged `kind: "floor"` by `platform/02`
 `[research: repo — cid/ui-ux/platform/01-device-viewport-rules.md:123-159, :206-209, read this run]`.
-That tag is load-bearing here rather than cosmetic: `platform/02` exists because a size derived
-from a `ceiling` is the exact defect that shipped as the mid-screen purchase buttons, and a
-reserved extent is a derived size. A citation a builder cannot resolve is a prompt, not a seam.
+That tag is load-bearing rather than cosmetic: a size derived from a `ceiling` is the exact defect
+that shipped as the mid-screen purchase buttons, and a reserved extent is a derived size.
 
-**The endgame substitution happens inside one node and adds no element.** `endgame` requires the
-finished-parts count to become the headline with currency still on screen without being it;
-`theme/fantasy/02` requires *"exactly one figure counting the parts the player has finished, with
-no denominator, no fraction and no percent"*. Both hold if `collection-count` substitutes its own
-label and format at `found == totalFinds` and the headline flag moves from `currency-value` to it.
-Substituting rather than adding is also what stops a finished collection re-promising itself: a
-permanent `24 / 24` on screen is the re-promise `theme/fantasy/02` forbids. `[cid: decided]`
+**`config.collection.totalFinds` does not exist, and I wrote it twice as a runtime condition.**
+`collection` holds `className`, `classPlural`, `relicsPerArea`, `areasPerDepth` and `sets` — no
+`total` and no `totalFinds`. In Luau a comparison against a `nil` field is silently falsy, so the
+**terminal state would never fire and the endgame substitution `composition` owns would never
+appear** — a bar-(a) defect with no error to catch it. The correct form is the sum over
+`collection.sets[].relics`, and the repo has been doing it correctly all along:
+`HudBinding.luau:370-376` defines a *local* `totalFinds()` that iterates `GameConfig.RelicSets`
+accumulating `#set.relics`. **My citation was a misreading of a local helper as a config field**,
+which is worse than a stale path because nothing would have thrown. Corrected below, and a derived
+field is *requested* of `collection`'s owner rather than assumed.
+`[research: repo — game/src/client/HudBinding.luau:369-376, re-read this run]` `[cid: decided]`
 
 ## Pushing back
 
-**Against `cid/gameplay/onboarding/04-run-one-withholds.md` `S2` and against the `firstSession`
-acceptance criterion 1 carried by `cid/gameplay/onboarding/02-first-minute-beats.md`.** Both
-require a suppressed upgrade row to have no Instance in the `PlayerGui`. I overrule that clause and
-only that clause. Everything else in the key stands untouched: three present at join, three
-withheld, every lift latched and persisted, `reSuppression` banned, `reflowOnLift` banned, a lift
-silent and still, and the corrected `latchSource` on the denominator.
+**Against `cid/gameplay/onboarding/04-run-one-withholds.md` `S2` and the `firstSession` acceptance
+criterion 1 carried by `cid/gameplay/onboarding/02-first-minute-beats.md`.** Both require a
+suppressed upgrade row to have no Instance in the `PlayerGui`. I overrule that clause and only that
+clause. Everything else in the key stands untouched: three present at join, three withheld, every
+lift latched and persisted, `reSuppression` banned, `reflowOnLift` banned, a lift silent and still,
+and the corrected `latchSource` on the denominator.
 
 ```json
 {
@@ -105,7 +103,19 @@ silent and still, and the corrected `latchSource` on the denominator.
     { "field": "S2", "from": "no instance at all", "to": "no drawn pixel and no accepted press" }
   ],
   "unchanged": ["withheld membership", "presentAtJoin values", "joinValue values", "latched", "latchSource", "suppressionForbidden.reSuppression", "suppressionForbidden.reflowOnLift", "S6", "S7", "S12"],
-  "because": "a UIListLayout collapses a Visible=false child out of its flow, so S2 and reflowOnLift cannot both hold; S2's stated intent (no placeholder, no padlock, no greyed row, no outline) is fully met by the transparency mechanism HudBinding already ships"
+  "because": "a UIListLayout collapses a Visible=false child out of its flow, so S2 and reflowOnLift cannot both hold; S2's stated intent is fully met by the transparency mechanism HudBinding already ships"
+}
+```
+
+```json
+{
+  "revisionRequest": "cid/gameplay/meta/02-the-collection.md",
+  "requested_by": "cid/ui-ux/hud/02-presence-and-reserved-extent.md",
+  "key": "collection",
+  "status": "request, not an assumption — composition uses the sum form and does not depend on this landing",
+  "add": { "field": "totalRelics", "type": "integer", "value": "sum over sets of #sets[i].relics", "derived": true, "emittedTo": "GameConfig.Collection.totalRelics" },
+  "because": "five sheets across four categories independently invented collection.total / collection.totalFinds because the sum is needed at runtime and no field carries it; HudBinding.luau:370-376 already recomputes it per bind. One derived field retires the whole class",
+  "ifRefused": "every call site computes the sum, which is what composition specifies today"
 }
 ```
 
@@ -121,14 +131,14 @@ silent and still, and the corrected `latchSource` on the denominator.
     },
     "interactivityWhenReserved": { "Active": false, "Selectable": false, "Interactable": false, "AutoButtonColor": false, "acceptsActivated": false },
     "visibleIsForbidden": {
-      "statement": "no module may write Visible on a node named in composition.groups[].node or on any descendant of one",
+      "statement": "no module may write Visible on a node named in composition.groups[].node or composition.groups[].controlNode, or on any descendant of one",
       "why": "Visible=false removes the child from the UIListLayout flow and slides its siblings",
       "supersedes": [
         "game/src/client/Pressables.luau:471 — button.Visible = false at bind",
         "game/src/client/Pressables.luau:485 — indexButton.Visible = true",
         "game/src/client/Pressables.luau:588 — binding.button.Visible = snapshot.rowsRevealed[...]"
       ],
-      "alsoSupersedes": "architect/sheets/06-representation.md:290, which specifies the purchase button's Visible as driven by snapshot.rowsRevealed; named rather than revised here, because representation is a technical key with its own owner",
+      "alsoSupersedes": "architect/sheets/06-representation.md:290, which specifies the purchase button's Visible as driven by snapshot.rowsRevealed; named rather than revised, because representation is a technical key with its own owner",
       "replacementWrite": "presence.states[reserved] or [present] applied to the whole group subtree"
     },
     "byElement": [
@@ -147,7 +157,7 @@ silent and still, and the corrected `latchSource` on the denominator.
       { "element": "upg3-state",       "joinState": "reserved", "liftedBy": "snapshot.rowsRevealed[upgrades[2].id]", "latched": true }
     ],
     "byGroup": [
-      { "group": "collection",   "joinState": "present",  "interactiveFrom": "the first snapshot in which countFound(snapshot.found) > 0", "latched": true, "beforeThat": "the node is a readout: composition.groups[collection].affordance.beforeLift, which is zero press affordance rather than a dead button" },
+      { "group": "collection",   "joinState": "present",  "interactiveFrom": "the first snapshot in which foundCount > 0", "latched": true, "beforeThat": "the node is a readout: composition.groups[collection].affordance.beforeLift, which is zero press affordance rather than a dead button" },
       { "group": "currency",     "joinState": "present" },
       { "group": "areaProgress", "joinState": "present" },
       { "group": "upgradeValue", "joinState": "reserved", "interactiveFrom": "snapshot.rowsRevealed[upgrades[0].id]" },
@@ -160,12 +170,11 @@ silent and still, and the corrected `latchSource` on the denominator.
     "unit": "rows, where one row is viewport.classes.<class>.minTargetPx for the live device class plus the pattern's chipPad",
     "unitFieldKind": "floor",
     "unitFieldKindMatters": "platform/02 forbids deriving a size or a reserved extent from a field whose kind is ceiling; minTargetPx is tagged floor, which is why it is the legal source and pressableMaxWidthScale is not",
-    "correctedInRevision1": "revision 0 cited viewport.touchTargetFloorPx, which platform/01 does not publish",
     "byGroup": [
       { "group": "upgradeValue", "rows": 1, "constant": true, "widthBasis": "the widest string the group can ever render, from composition.elements[].maxRenderedChars" },
       { "group": "upgradeReach", "rows": 1, "constant": true, "widthBasis": "the widest string the group can ever render" },
       { "group": "upgradePace",  "rows": 1, "constant": true, "widthBasis": "the widest string the group can ever render" },
-      { "group": "collection",   "rows": 1, "constant": true, "widthBasis": "the width of '{classPlural}' over '24 / 24', reserved from frame one so the denominator lift changes no geometry" },
+      { "group": "collection",   "rows": 1, "constant": true, "widthBasis": "the width of '{classPlural}' over composition.derivedValues.widestCollectionString" },
       { "group": "currency",     "rows": 1, "constant": true, "widthBasis": "none", "why": "anchor [1,0] with justify end: the value grows leftward into empty screen and moves no neighbour" },
       { "group": "areaProgress", "rows": 2, "constant": true, "widthBasis": "the pattern's fixed 220 px ProgressGroup width" }
     ],
@@ -182,9 +191,10 @@ silent and still, and the corrected `latchSource` on the denominator.
     "rule": "exactly one element carries the headline flag at any time; the headline renders one step higher on the type ramp than any other value on the surface",
     "typeRampOwnedBy": "screens",
     "byState": [
-      { "state": "default",  "condition": "countFound(snapshot.found) < config.collection.totalFinds", "element": "currency-value" },
-      { "state": "terminal", "condition": "countFound(snapshot.found) == config.collection.totalFinds", "element": "collection-count" }
+      { "state": "default",  "condition": "composition.derivedValues.foundCount < composition.derivedValues.totalRelics", "element": "currency-value" },
+      { "state": "terminal", "condition": "composition.derivedValues.foundCount == composition.derivedValues.totalRelics", "element": "collection-count" }
     ],
+    "correctedInRevision3": "both conditions read config.collection.totalFinds, which no key emits. In Luau a comparison against a nil field is silently falsy, so the terminal state would never have fired and the endgame substitution would never have appeared",
     "terminalSubstitution": {
       "element": "collection-count",
       "labelBecomes": "Parts",
@@ -203,28 +213,24 @@ silent and still, and the corrected `latchSource` on the denominator.
 
 ## Consequences for other work
 
-- **Whoever holds `firstSession` (`gameplay/onboarding/02`, with `/04`)** takes the revision
-  above. It is one clause in three places and nothing else in the key moves. If it is refused, say
-  so out loud: refusing it means `reflowOnLift` cannot be honoured on the bottom-right cluster and
-  `S12` becomes unimplementable, which is a contradiction inside that key and not a HUD problem I
-  can absorb.
-- **Purchase-control work (`pressables`)** must stop writing `Visible` at all three lines —
-  `:471`, `:485` and `:588`. Its `layoutButtons` comment (*"a hidden button keeps its slot and
-  only `Visible` changes"*) is right in intent and wrong in mechanism under one-node realisation.
-- **The architect pass** should note that `representation:290` still specifies the banned
-  mechanism. I name it rather than revise it: it is a technical key with its own owner.
-- **Readout-writing work (`hud-binding`)** keeps `collectFade` unchanged and gains two things: it
-  applies to the group node rather than to a readout frame, and it drives the four interactivity
-  properties when the group is interactive.
-- **Device-viewport work (`viewport`)** now has a consumer for `classes.<class>.minTargetPx` that
-  is independent of presence: `Cluster_bottomRight` reserves three rows at every snapshot, so the
-  budget check is a constant and never a race with the player's balance.
-- **Feedback and notice work (`notices`)** may not position against a changing reserved extent,
-  and none changes. All four cluster extents are constant for the whole session, which is what
-  makes `composition.anchors[noticeStack]`'s rect checkable once rather than per frame.
-- **Store work (`offerSurface`)** should restate its `moment.rowLift` observable, which currently
-  describes the `Visible` write this sheet bans (RR-14).
-- **Endgame work (`gameplay/meta/07`)** gets its substitution as data and no new surface.
+- **Whoever holds `firstSession` (`gameplay/onboarding/02`, with `/04`)** takes the revision above.
+  It is one clause in three places. If it is refused, say so out loud: refusing it means
+  `reflowOnLift` cannot be honoured on the bottom-right cluster and `S12` becomes unimplementable.
+- **Whoever holds `collection` (`gameplay/meta/02`)** gets a *request* for a derived
+  `totalRelics`, not a dependency. Five sheets in four categories invented a spelling of it; one
+  derived field retires the class. `composition` ships the sum form either way.
+- **Purchase-control work (`pressables`)** must stop writing `Visible` at `:471`, `:485` and
+  `:588`.
+- **The architect pass** should note that `representation:290` still specifies the banned mechanism.
+- **Readout-writing work (`hud-binding`)** keeps `collectFade` unchanged, applies it to the group
+  node, drives the four interactivity properties, and keeps its local `totalFinds()` — which was
+  always right and which my citation misread as a config field.
+- **Device-viewport work (`viewport`)** has a consumer for `classes.<class>.minTargetPx` that is
+  independent of presence: `Cluster_bottomRight` reserves three rows at every snapshot.
+- **Feedback and notice work (`notices`)** may not position against a changing reserved extent, and
+  none changes.
+- **Store work (`offerSurface`)** should restate its `moment.rowLift` observable, which describes
+  the `Visible` write this sheet bans.
 
 ## Acceptance criteria
 
@@ -232,21 +238,22 @@ silent and still, and the corrected `latchSource` on the denominator.
    `composition.presence.states.absent.permitted` is `false`.
 2. `composition.reservedExtent.byCluster[bottomRight]` is 3 at zero, some and all members present;
    a grep of `game/src/client/` finds no assignment to `.Visible` on any node named in
-   `composition.groups[].node`, including `Pressables.luau:471`, `:485` and `:588`.
+   `composition.groups[].node` or `.controlNode`, including `Pressables.luau:471`, `:485`, `:588`.
 3. With `rowsRevealed` all false, a reserved purchase group renders zero opaque pixels and a press
    on it produces no call to `onActivate`; toggling any one row to true changes the
    `AbsolutePosition` of the other two by zero.
-4. At `countFound(snapshot.found) == config.collection.totalFinds`, exactly one element carries the
-   headline flag, it is `collection-count`, and its rendered string contains no `/` and no `%`.
+4. No string in this sheet or in `composition` contains `collection.total` or `collection.totalFinds`;
+   both `headline.byState` conditions resolve through `composition.derivedValues`, and at
+   `foundCount == totalRelics` exactly one element carries the headline flag, it is
+   `collection-count`, and its rendered string contains no `/` and no `%`.
 
 ## Not decided here
 
 The element inventory, ids, labels, value formats, groups, clusters, orders, node names, `zIndex`,
-`groupIndex`, the `noticeStack` rect and the `focusRing` — sheet `01`, this domain, which holds
-`composition`. Whether the pattern can produce a pressable readout, the double-`Cluster_bottomRight`
-emission, the interim realisation and who owns `hud.brief.json` — sheet `03`. The pixel value of
-`minTargetPx`, the safe area, the keepout rects and the per-class budget my extents are measured
-against — `viewport`, `ui-ux/platform/01`. The type ramp the headline flag renders through —
+`groupIndex`, `derivedValues`, `citesKeys`, the `noticeStack` rect and the `focusRing` — sheet
+`01`, this domain, which holds `composition`. The two realisation routes, `LayoutOrder` and who
+owns `hud.brief.json` — sheet `03`. The pixel value of `minTargetPx`, the safe area, the keepout
+rects and the per-class budget — `viewport`. The type ramp the headline renders through —
 `screens`. Which surfaces are withheld and what lifts each — `firstSession`, which I amend in one
-clause and otherwise leave whole. Whether a lift is instrumented — Analytics, Funnels. What happens
-when the index opens — `navigation`.
+clause. Whether `collection` grows a derived `totalRelics` — its owner; I request and do not
+assume. Whether a lift is instrumented — Analytics, Funnels.
