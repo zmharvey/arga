@@ -5,83 +5,104 @@
 ## Decision
 
 **One funnel, six steps, one per `firstSession.beats[]` row in its published order, fired through
-`LogOnboardingFunnelStepEvent` and carrying three custom fields: `sinceJoinBucket`, `ownsSpan`,
-`runOrdinal`.** Origins are per step and inherited verbatim — `firstInput` for `firstClear`, `join`
-for the other five — and the elapsed-second bucket rides every step, because Roblox's funnel
-auto-completes skipped steps and the step graph alone cannot see an out-of-order beat.
+`LogOnboardingFunnelStepEvent`, with three custom fields: `sinceJoinBucket`, `owned`, `saveState`.**
+Origins are per step and inherited verbatim — `firstInput` for `firstClear`, `join` for the other
+five. **The out-of-order defect is detected outside the funnel API**, by one custom event whose
+numeric value is the count of lower-ordinal steps not yet emitted.
+
+> **Revised, round 1** (`cid/analytics/_verified.md`). RR-11: the `O1` bucket-ordering assertion is
+> **withdrawn** — it could not fire in the case it existed to catch — and replaced by the
+> skipped-step counter below. RR-10: `ownsSpan ["owned","notOwned"]` is replaced by `telemetry`'s
+> encoding, `owned ["none","span"]`. RR-15: **both `stateShape` requests are withdrawn**; neither
+> field is needed.
 
 ## Why
 
 **Six steps, and no beat is re-timed.** `firstSession.beats[]` is already an ordered ladder with
 preconditions and ceilings, so a funnel over it measures a published prediction — the category's
 selection principle, *"all three test assumptions this spec rests on rather than reporting vanity"*
-`[brief: soft]` (`OPEN.md §2`). I add no step of my own: the arming transition is not a seventh
-step, it is the observation point standing in for step 2's origin.
+`[brief: soft]` (`OPEN.md §2`). The arming transition is not a seventh step; it is the observation
+point standing in for step 2's origin.
 
-**`LogOnboardingFunnelStepEvent`, for a decisive reason rather than a stylistic one.** The recurring
-method `LogFunnelStepEvent(player, funnelName, funnelSessionId, step, stepName, customFields)`
-**requires a `funnelSessionId`** and nothing in the shipped state shape can produce one; the
-one-time method takes none and is documented for *"conversion events that only occur once per
-user"*
+**`LogOnboardingFunnelStepEvent`, for a decisive reason.** `LogFunnelStepEvent(player, funnelName,
+funnelSessionId, step, stepName, customFields)` **requires a `funnelSessionId`**; the one-time method
+takes none and is documented for *"conversion events that only occur once per user"*
 `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/funnel-events.md]`.
-The first session is once per user by definition, so the method whose semantics match is also the
-only one callable today. *"If a user repeats a step in a funnel, the funnel only considers the
-first instance"* is correct behaviour here, not a limitation.
+The first session is once per user by definition.
 
-**The headline instrument's origin is not observable, and this is the sheet where that gets said.**
+**The headline instrument's origin is not observable, and this is where that gets said.**
 `firstSession.ceilings.secondsToFirstClear` is `measuredFrom: "firstInput"`, and no server-side fact
 in `game/src` is first input. What exists is the arming gate: `arm.armed` flips on the tick
 horizontal XZ displacement from the spawn pivot first exceeds `firstSession.armDistanceStuds`
 `[research: game/src/server/Clearing.luau]`. Displacement is **strictly later** than the input that
-produced it, so the realised measurement is `t(firstClear) − t(armed)`, **smaller** than the
-quantity the ceiling names. **The bias is one-directional and it flatters the design:** the ceiling
-is easier to pass measured this way than measured as specced, by the walk time from input to
-2.0 studs. Event Logging established the observability half; the bias belongs on the instrument.
-`[cid: decided]`
+produced it, so the realised measurement is `t(firstClear) − t(armed)`, **smaller** than the quantity
+the ceiling names. **The bias is one-directional and it flatters the design.** `[cid: decided]`
 
 **Three custom fields, and device is deliberately not one of them.** The platform allows exactly
 three, keyed only as `CustomField01/02/03`
 `[research: https://create.roblox.com/docs/production/analytics/custom-fields]`, with 8,000 combined
 values before the rest group as `Other`
 `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/event-types.md]`.
-The obvious first spend is the brief's `~70/25/5` device split, and it is the wrong spend twice
-over: analytics events *"can only be sent from the server and in published games"*
+The brief's `~70/25/5` device split is the wrong spend twice over: events *"can only be sent from the
+server and in published games"*
 `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/custom-events.md]`
 and no server-side observable of device exists inside a seven-channel protocol; and the Creator
 Dashboard already breaks every metric down by Platform and OS with no developer event
-`[research: https://create.roblox.com/docs/production/analytics/analytics-dashboard]`. A field spent
-on device would be an unobservable duplicate of a free breakdown. `[cid: decided]`
+`[research: https://create.roblox.com/docs/production/analytics/analytics-dashboard]`. Field 2 adopts
+`telemetry`'s `owned ["none","span"]` verbatim — one dimension, one encoding, so a funnel breakdown
+joins to a custom-event breakdown. `[cid: decided]`
 
-**`sinceJoinBucket` exists because of one sourced sentence.** *"If you skip a step in a funnel, the
-earlier steps automatically complete"*
-`[research: https://create.roblox.com/docs/production/analytics/funnel-events]`. So a player who
-becomes able to spend before the two beats specced to precede it produces a dashboard in which
-those two beats are green — the step graph is structurally incapable of showing the defect. What
-shows it is an ordering assertion over a value each step carries: step 6's bucket lower than step
-5's is the violation, visible in the dashboard's breakdown-by-custom-field view. Buckets rather
-than raw seconds, because 8,000 combinations is the whole cardinality budget. `[cid: decided]`
+**`sinceJoinBucket` buys timing distributions and — corrected this round — does not buy step
+ordering.** Funnel step events carry no numeric `value`, so a per-step elapsed distribution can only
+ride a custom field; that is this field's job, and for a session whose steps arrive in order it
+works, because each step's first instance is a real call. **My first draft also claimed it carried
+the ordering assertion, and that was wrong.** Two sourced sentences interact and I used one: *"If
+you skip a step in a funnel, the earlier steps automatically complete"* **and** *"If a user repeats a
+step in a funnel, the funnel only considers the first instance"*
+`[research: https://create.roblox.com/docs/production/analytics/funnel-events]`. In the exact case
+the assertion existed to catch — step 6 before steps 4 and 5 — step 4's first instance is the
+synthetic auto-completion, which is not a call and carries no custom field, and the player's real
+step-4 emission is a discarded repeat. **Whether a synthetic completion counts as the first instance,
+and whether it records any field value, is undocumented** `[unverified]`. Settled by a Roblox staff
+statement on auto-completion semantics, or by the funnel-events page stating what an auto-completed
+step records. **The instrument is withdrawn rather than tagged**, because an assertion that may or
+may not fire is worse than a stated gap.
 
-**What the ordinal table catches that `onboarding/03`'s S3 did not.**
+**Out-of-order detection is achievable, and not inside the funnel API.**
+`LogCustomEvent(player, eventName, value, customFields)` takes a **numeric `value`** and is subject
+to no funnel step semantics
+`[research: https://create.roblox.com/docs/reference/engine/classes/AnalyticsService]`. So: **one
+custom event, fired once per player at the instant step 6 is emitted, whose `value` is the number of
+lower-ordinal steps not yet emitted for this player this session.** Zero in the correct case, one or
+more in exactly the defect case. The dashboard charts a custom event's value by count, average, sum,
+min and max `[research: https://create.roblox.com/docs/production/analytics/custom-events]`. It needs
+no clock, no bucket and no cross-step join, and it is derivable from state the emitter already holds
+— the server must know which steps have fired in order to emit them. **The event name and payload
+are event-catalog work; the value semantics are the instrument and are mine.** `[cid: decided]`
+
+**What the ordinal table still catches that `onboarding/03`'s S3 did not.**
 `pacing.milestones[firstPurchase]` publishes a base and a purchaser second;
 `firstSession.beats[firstSpendAffordable].testRange` has a lower bound above the base figure, and
-`beats[firstOrdinaryClear]` and `beats[tierContrast]` are both specced to precede it.
-`_verified-wave4.md` RR-10 records why nothing caught it: *"Sheet `03`'s S3 only tests
-`firstPurchaseBand`"*, which the value satisfies. **An ordered step table catches it at design
-time**, by comparing ordinals against the seconds attached to them — a check no single-field
-predicate can perform. **It would not have caught it in production**, for the auto-completion reason
-above, which is why the field is on the step rather than the argument left in prose. Wave 4 is FAIL
-and has not released; every figure named here is a field path, never a number.
+`beats[firstOrdinaryClear]` and `beats[tierContrast]` are specced to precede it. `_verified-wave4.md`
+RR-10 records why nothing caught it: *"Sheet `03`'s S3 only tests `firstPurchaseBand`"*. **The
+ordered table catches it at design time**, by comparing ordinals against the seconds attached to
+them. **In production the skipped-step counter catches it and the funnel graph cannot**, which is now
+one statement instead of two contradictory ones. Wave 4 is FAIL and unreleased; every figure named
+here is a field path.
 
-**The state shape cannot form either inherited population, and that is a requirement, not a
-caveat.** `PlayerState` and `StoredState` carry no join instant, no session id and no run ordinal
-`[research: game/src/shared/Types.luau]`, and `Persistence.load` returns `(state, readable)` where
-`readable` is true for a first-time player as well as a real save
-`[research: game/src/server/Persistence.luau]`. So *"all run-1 sessions in which any input
-occurred"* and *"run-1 sessions whose first input arrived by second 5.0"* are **both unformable
-today**, along with every `measuredFrom: "join"` second in `firstSession` and `pacing`. Three
-domains reached this independently and **persistence work is raising the `stateShape` revision
-request**; I name the fields and do not duplicate it. `runOrdinal` is spent as a custom field so the
-funnel fails loudly rather than silently reporting a mixed population.
+**Both `stateShape` requests are withdrawn, and that closes RR-15 without either side conceding.**
+The run-ordinal request is unnecessary: a brand-new save is byte-equal to `defaultState()`, so
+**run 1 is a predicate over the seven fields already persisted** — `currency`, `clearedCount` and
+`areasFinished` all zero, `found`, `upgrades`, `rowsRevealed` and `cleared` all empty, with
+`readable` true `[research: game/src/server/Persistence.luau]`. Field 3 therefore carries
+`saveState ["pristine","progressed","unknown"]`, derived at the join call site, needing no new field
+and no `PlayerState` slot — which `tech/networking/02` already declined. The join clock is likewise
+module-local: a session cannot outlive its server, so a `UserId → clock` map inside the telemetry
+module suffices, which is the technique event-catalog work already used for the session id.
+**The boundary with engagement work, agreed rather than contested:** `saveState` is a property of
+the save and is **not** the platform's new-user cohort; the two may not be joined, and
+`engagement`'s cohort stays the platform's. Its sentence and my field are both true, of different
+things. `[cid: decided]`
 
 | # | step id | stepName | measuredFrom | population | field path it can refute | server-side observation point | site exists | call exists |
 |---|---|---|---|---|---|---|---|---|
@@ -92,19 +113,24 @@ funnel fails loudly rather than silently reporting a mixed population.
 | 5 | `tierContrast` | `tier_contrast` | `join` | P2 | `firstSession.beats[tierContrast].testRange`; `firstSession.placement.tierContrastWithinFirstOrdinals` | `server/Clearing.luau` · `clearPatch`, on the first clear of a second distinct `patch.tierIndex` | yes | no |
 | 6 | `firstSpendAffordable` | `first_spend_affordable` | `join` | P2 | `firstSession.beats[firstSpendAffordable].testRange`; `pacing.milestones[firstPurchase]` | `server/Progression.luau` · `revealRows`, at the cheapest row's latch transition | yes | no |
 
-| field | key | values | why it is worth one of three |
-|---|---|---|---|
-| `sinceJoinBucket` | `CustomField01` | `0-5`, `5-10`, `10-20`, `20-45`, `45-90`, `90-300`, `300+` | the only thing that survives step auto-completion; carries the ordering assertion |
-| `ownsSpan` | `CustomField02` | `owned`, `notOwned` | the split `pacing.milestones[].purchaserSeconds` needs; empty today, see sheet `03` |
-| `runOrdinal` | `CustomField03` | `run1`, `later`, `unknown` | both inherited populations are defined over it; `unknown` is what it reads until state-shape work lands |
-
-| id | population | definition | formable today | what blocks it |
+| field | key | values | what it buys | what it does **not** buy |
 |---|---|---|---|---|
-| P1 | `allSessions` | every join | yes | — |
-| P2 | `run1Sessions` | sessions where `runOrdinal == run1` | **no** | no run ordinal in `StoredState` |
-| P3 | `run1SessionsArmed` | P2 ∩ the arm transition occurred | **no** | P2, plus the arm flag is never emitted |
-| P4 | `run1SessionsArmedByJoinSecond5` | P3 ∩ arm transition at or before join second 5.0 | **no** | P2, plus no join instant |
-| P5 | `spanOwners` | `ownsSpan == owned` at join | definable, **empty** | `products.externalPrerequisite` — sheet `03` |
+| `sinceJoinBucket` | `CustomField01` | `0-5`, `5-10`, `10-20`, `20-45`, `45-90`, `90-300`, `300+` | a per-step elapsed distribution, for sessions whose steps arrive in order | step ordering — an auto-completed step is not a call and carries no field |
+| `owned` | `CustomField02` | `none`, `span` | the base/purchaser split every `pacing.milestones` row is published in; encoding shared with `telemetry.customFields.field02` | anything today — constant `none` while every `gamePassId` is null (sheet `03`) |
+| `saveState` | `CustomField03` | `pristine`, `progressed`, `unknown` | the run-1 populations, as a predicate over the seven persisted fields | the platform's new-user cohort, which is `engagement`'s and may not be joined to this |
+
+| id | population | definition | formable once the telemetry module exists | what blocks it today |
+|---|---|---|---|---|
+| P1 | `allSessions` | every join | yes | the telemetry module does not exist |
+| P2 | `run1Sessions` | `saveState == pristine` at join | yes | the telemetry module does not exist |
+| P3 | `run1SessionsArmed` | P2 ∩ the arm transition occurred | yes | the telemetry module does not exist |
+| P4 | `run1SessionsArmedByJoinSecond5` | P3 ∩ arm transition at or before join second 5.0 | yes | the telemetry module does not exist |
+| P5 | `spanOwners` | `owned == span` at join | definable, **empty** | `products.externalPrerequisite` — sheet `03` |
+
+**The one bias in `saveState`, stated rather than hidden:** a player who joined, did nothing and left
+rejoins with a pristine save and is counted as run 1 again. That over-counts run-1 sessions with
+sessions that produced no progress and under-counts nothing — and those are behaviourally first
+sessions, which is the population `firstSession.ceilings` is about. `[cid: decided]`
 
 ```manifest
 {
@@ -130,13 +156,14 @@ funnel fails loudly rather than silently reporting a mixed population.
       "rejected": "LogFunnelStepEvent",
       "rejectedBecause": "it requires a funnelSessionId string and no field in Types.luau PlayerState or StoredState can produce one",
       "repeatSemantics": "a repeated step counts only its first instance",
-      "skipSemantics": "a skipped earlier step auto-completes, so step order is NOT observable from the funnel graph",
-      "funnelsUsedOfTen": 1
+      "skipSemantics": "a skipped earlier step auto-completes, so step order is NOT observable from the funnel graph and NOT observable from any custom field on a skipped step",
+      "funnelsUsedOfTen": 1,
+      "stepsUsedOfHundred": 6
     },
     "customFields": [
-      { "key": "CustomField01", "name": "sinceJoinBucket", "values": ["0-5","5-10","10-20","20-45","45-90","90-300","300+"], "unit": "seconds since join", "required": true, "purpose": "carries elapsed time onto every step so the ordering assertion survives step auto-completion", "formableToday": false, "blockedBy": "no join instant in stateShape" },
-      { "key": "CustomField02", "name": "ownsSpan", "values": ["owned","notOwned"], "required": true, "purpose": "the base/purchaser split every pacing.milestones row is published in", "formableToday": true, "constantToday": "notOwned" },
-      { "key": "CustomField03", "name": "runOrdinal", "values": ["run1","later","unknown"], "required": true, "purpose": "both inherited populations are defined over it", "formableToday": false, "blockedBy": "no run ordinal in StoredState" }
+      { "key": "CustomField01", "name": "sinceJoinBucket", "values": ["0-5","5-10","10-20","20-45","45-90","90-300","300+"], "unit": "seconds since join", "required": true, "buys": "a per-step elapsed distribution for sessions whose steps arrive in order; funnel step events carry no numeric value, so this is the only carrier for timing", "doesNotBuy": "step ordering: an auto-completed step is not a call and carries no custom field", "formableToday": false, "blockedBy": "the telemetry module does not exist; the join clock is module-local and needs no schema change" },
+      { "key": "CustomField02", "name": "owned", "values": ["none","span"], "required": true, "purpose": "the base/purchaser split every pacing.milestones row is published in", "encodingSharedWith": "telemetry.customFields.field02", "formableToday": true, "constantToday": "none" },
+      { "key": "CustomField03", "name": "saveState", "values": ["pristine","progressed","unknown"], "required": true, "purpose": "carries the run-1 populations firstSession.ceilings defines", "derivation": "pristine when Persistence.load returns readable and the loaded state is byte-equal to defaultState(): currency, clearedCount and areasFinished all 0, and found, upgrades, rowsRevealed and cleared all empty", "requiresNewPersistedField": false, "bias": "a player who joined, did nothing and left rejoins pristine and is counted as run 1 again; this over-counts run-1 sessions with zero-progress sessions and under-counts nothing", "isNotThePlatformNewUserCohort": true, "mayNotBeJoinedTo": "engagement's retention cohort, which is the platform's", "formableToday": false, "blockedBy": "the telemetry module does not exist" }
     ],
     "customFieldsDeclined": [
       { "name": "deviceClass", "reason": "no server-side observable of device exists inside the seven-channel protocol, and the Creator Dashboard already breaks every metric down by Platform and OS with no developer event", "source": "https://create.roblox.com/docs/production/analytics/analytics-dashboard" }
@@ -153,27 +180,44 @@ funnel fails loudly rather than silently reporting a mixed population.
         { "ordinal": 5, "id": "tierContrast", "stepName": "tier_contrast", "measuredFrom": "join", "population": "run1Sessions", "refutes": ["firstSession.beats[tierContrast].testRange", "firstSession.placement.tierContrastWithinFirstOrdinals"], "emitter": "server/Clearing.luau :: clearPatch, on the first clear whose patch.tierIndex differs from every tierIndex cleared so far this session", "observationPointExistsToday": true, "emitterCallExistsToday": false },
         { "ordinal": 6, "id": "firstSpendAffordable", "stepName": "first_spend_affordable", "measuredFrom": "join", "population": "run1Sessions", "refutes": ["firstSession.beats[firstSpendAffordable].testRange", "pacing.milestones[firstPurchase]"], "emitter": "server/Progression.luau :: revealRows, at the cheapest upgrade row's latch transition", "observationPointExistsToday": true, "emitterCallExistsToday": false }
       ],
-      "orderingAssertion": {
+      "orderingInstrument": {
         "id": "O1",
-        "rule": "for every session reaching both steps, bucketIndex(sinceJoinBucket at step N) >= bucketIndex(sinceJoinBucket at step N-1), for N = 2..6",
-        "whyItExists": "Roblox funnels auto-complete skipped earlier steps, so the step graph shows 4 and 5 green for a session that reached 6 first; the ordering defect is visible only in the per-step custom-field breakdown",
-        "liveCase": "pacing.milestones[firstPurchase] against firstSession.beats[firstSpendAffordable].testRange, open as _verified-wave4.md RR-10",
-        "designTimeCatch": "comparing the ordinal column against the bySecond column, which onboarding/03's S3 could not do because it tested one field",
-        "readableToday": false
+        "kind": "customEvent",
+        "insideFunnelApi": false,
+        "firesAt": "the instant funnels.onboarding.steps[firstSpendAffordable] is emitted, once per player per session",
+        "valueSemantics": "the count of funnels.onboarding.steps[] entries with a lower ordinal that have NOT yet been emitted for this player this session; 0 in the correct case, 1 or more in exactly the out-of-order case",
+        "valueRange": [0, 5],
+        "customFieldsRequired": 0,
+        "clockRequired": false,
+        "derivableFrom": "state the emitter already holds, because the server must know which steps have fired in order to emit them",
+        "chartedAs": "count, average, sum, min and max of a custom event's value",
+        "chartSource": "https://create.roblox.com/docs/production/analytics/custom-events",
+        "eventNameOwnedBy": "event-catalog work; this key names the instrument and its value semantics and no event id",
+        "requiresFromOtherKeys": ["telemetry.events[] must carry one LogCustomEvent entry with this value semantics"],
+        "readableToday": false,
+        "supersedes": {
+          "withdrawn": "the bucket-ordering assertion of the first draft, which compared sinceJoinBucket across adjacent steps",
+          "why": "two funnel semantics interact: a skipped step auto-completes, and a repeated step counts only its first instance. In the case the assertion existed to catch, the first instance of the skipped step is the synthetic completion, which is not a call and carries no custom field, and the player's real emission is a discarded repeat. The assertion could not fire in exactly the case it was written for.",
+          "unverified": "whether a synthetic auto-completion counts as the first instance for repeat suppression, and whether it records any custom-field value at all. Neither is documented on any page in the research pack.",
+          "settledBy": "a Roblox staff statement on funnel auto-completion semantics, or the funnel-events page stating what an auto-completed step records",
+          "notTaggedAndKept": "an assertion that may or may not fire is worse than a stated gap, so it is withdrawn rather than carried with a tag"
+        }
       }
     },
     "populations": [
-      { "id": "allSessions", "definition": "every join", "formableToday": true, "blockedBy": null },
-      { "id": "run1Sessions", "definition": "sessions where runOrdinal == run1", "formableToday": false, "blockedBy": "stateShape carries no run ordinal" },
-      { "id": "run1SessionsArmed", "definition": "run1Sessions in which the arm transition occurred", "formableToday": false, "blockedBy": "run1Sessions, plus the arm flag is never emitted", "inheritedFrom": "firstSession.ceilings.secondsToFirstClear.population" },
-      { "id": "run1SessionsArmedByJoinSecond5", "definition": "run1SessionsArmed whose arm transition occurred at or before join second 5.0", "formableToday": false, "blockedBy": "run1Sessions, plus no join instant", "inheritedFrom": "firstSession.ceilings.secondsToFirstReveal.population" },
-      { "id": "spanOwners", "definition": "sessions where ownsSpan == owned at join", "formableToday": true, "empty": true, "blockedBy": "products.externalPrerequisite" }
+      { "id": "allSessions", "definition": "every join", "formableToday": false, "blockedBy": "the telemetry module does not exist" },
+      { "id": "run1Sessions", "definition": "sessions whose saveState is pristine at join", "formableToday": false, "blockedBy": "the telemetry module does not exist", "requiresNewPersistedField": false },
+      { "id": "run1SessionsArmed", "definition": "run1Sessions in which the arm transition occurred", "formableToday": false, "blockedBy": "the telemetry module does not exist", "inheritedFrom": "firstSession.ceilings.secondsToFirstClear.population" },
+      { "id": "run1SessionsArmedByJoinSecond5", "definition": "run1SessionsArmed whose arm transition occurred at or before join second 5.0", "formableToday": false, "blockedBy": "the telemetry module does not exist", "inheritedFrom": "firstSession.ceilings.secondsToFirstReveal.population" },
+      { "id": "spanOwners", "definition": "sessions where owned == span at join", "formableToday": true, "empty": true, "blockedBy": "products.externalPrerequisite" }
     ],
     "requiresFromOtherKeys": [
-      { "key": "stateShape", "field": "sessionStartedAt", "type": "number", "why": "every measuredFrom: join second in firstSession and pacing is unmeasurable without a join instant", "owner": "state-shape work; persistence work is raising the revision request and this sheet does not duplicate it" },
-      { "key": "stateShape", "field": "runOrdinal", "type": "number", "why": "both inherited populations are defined over run 1; Persistence.load's readable boolean is true for a first-time player too, so it cannot stand in", "owner": "state-shape work, same request" },
-      { "key": "stateShape", "field": "sessionId", "type": "string", "why": "only needed if a recurring funnel is ever added; LogOnboardingFunnelStepEvent does not take one", "owner": "state-shape work", "optional": true },
-      { "key": "telemetry", "field": "events[].id for the six emitters above", "why": "event names, payload fields and the required/optional split are event-catalog work; this key names the steps and their order and no event name", "owner": "event-catalog work" }
+      { "key": "telemetry", "field": "a module-local UserId to monotonic-clock map, written at onJoin", "why": "every measuredFrom: join second in firstSession and pacing needs a join instant; a session cannot outlive its server, so this needs no persisted field and no PlayerState slot", "owner": "logging-pipeline work, with event-catalog work holding the module-local convention it already used for the session id", "requiresSchemaChange": false },
+      { "key": "telemetry", "field": "events[].id for the six step emitters and for the ordering instrument", "why": "event names, payload fields and the required/optional split are event-catalog work; this key names the steps, their order and the ordering instrument's value semantics, and no event name", "owner": "event-catalog work", "requiresSchemaChange": false }
+    ],
+    "withdrawnRequests": [
+      { "key": "stateShape", "field": "runOrdinal", "withdrawnBecause": "run 1 is a predicate over the seven fields already persisted, so no new field is needed; this resolves the contradiction with engagement work rather than moving it", "raisedIn": "cid/analytics/_verified.md RR-15" },
+      { "key": "stateShape", "field": "sessionStartedAt", "withdrawnBecause": "a session cannot outlive its server, so a module-local clock is sufficient; tech/networking/02 declined a thirteenth PlayerState field and this sheet no longer asks for one", "raisedIn": "cid/analytics/_verified.md RR-15" }
     ],
     "amendedBy": [
       { "sheet": "cid/analytics/funnels/02-comprehension-instruments.md", "supplies": ["comprehension"] },
@@ -186,22 +230,27 @@ funnel fails loudly rather than silently reporting a mixed population.
 
 ## Consequences for other work
 
-- **Event-catalog work** inherits six call sites with an ordinal, a step name and a custom-field
-  layout, and owns every event name, payload field and sampling rule. **If it names steps, two
-  sheets claim one key** — the boundary I assert is that the sheet deciding a thing names it, and
-  the step order is decided here.
-- **State-shape work** gets three named fields and the reason each exists. `runOrdinal` cannot be
-  derived from `Persistence.load`'s `readable`, which is true for a fresh save.
-- **Protocol and module work** gets one fact and no design: the funnel needs no new channel, because
-  all six observation points are already server-side. It needs a clock.
+- **Event-catalog work** inherits six call sites verbatim as `funnels.onboarding.steps[].emitter`,
+  plus **one new `LogCustomEvent` entry** for the ordering instrument. The value semantics are fixed
+  here; the event id, its field positions and its cadence are theirs. Its funnel-step cap row reads
+  **6**, not 4, and its `funnelCallSites[]` drops `onPurchase` — sheet `03` rules there is no
+  purchase funnel for a step to belong to.
+- **Logging-pipeline work** gets a smaller request than the first draft made: **no schema change at
+  all.** One module-local clock map, and one derived `saveState` predicate at the join call site. If
+  that module is not built, every threshold stays unreadable — the category's shared exposure, not a
+  new one.
+- **State-shape and persistence work: both requests are withdrawn.** Nothing in `PlayerState` or
+  `StoredState` changes for this key, which removes one of the three positions
+  `cid/analytics/_verified.md` records under predicted conflict 4.
+- **Engagement work** and this key no longer contradict: `saveState` is a save predicate,
+  `engagement`'s run-1 cohort is the platform's, and the two are declared unjoinable. Its sentence
+  stands unedited on my account.
 - **Dashboard-and-target work (KPI)** inherits one funnel of the platform's ten and selects from my
   steps. `secondsToFirstReveal` is its headline row and my step 3; **I set the step, the origin and
-  the population, it sets the headline target.**
-- **Number-and-curve work (Balance)** inherits an instrument that reports on
+  the population; it sets the headline target and the pass mark**, which sheet `04` now honours.
+- **Number-and-curve work (Balance)** gets an instrument that reports on
   `pacing.milestones[firstPurchase]` and `firstSession.beats[firstSpendAffordable].testRange`
-  whichever way RR-10 settles, and an ordering assertion that fires on the loser.
-- **Onboarding work** is re-timed by nothing here. Every band, ceiling and precondition is quoted
-  and none is moved.
+  whichever way `_verified-wave4.md` RR-10 settles.
 
 ## Acceptance criteria
 
@@ -210,19 +259,23 @@ funnel fails loudly rather than silently reporting a mixed population.
 2. Exactly one step has `measuredFrom: "firstInput"` and it is `firstClear`; the other five have
    `measuredFrom: "join"`. No step carries a `measuredFrom` value absent from
    `firstSession.ceilings`.
-3. `funnels.customFields[]` has exactly 3 entries, their `key` values are `CustomField01`,
-   `CustomField02` and `CustomField03`, and the product of their `values` lengths is at most 8,000.
-4. Every `refutes` entry names a field path that resolves in the merged manifest, and no `refutes`
-   entry, prose line or manifest field in this sheet contains a numeric value copied from `pacing`,
-   `firstSession` or `solvency`.
+3. `funnels.customFields[]` has exactly 3 entries with keys `CustomField01`, `CustomField02` and
+   `CustomField03`; the product of their `values` lengths is at most 8,000; and field 2's `values`
+   array is identical to `telemetry.customFields.field02`'s.
+4. `funnels.onboarding.orderingInstrument.insideFunnelApi` is `false`, its `clockRequired` is
+   `false`, and no field anywhere in `funnels` asserts that step ordering is observable from the
+   funnel graph or from a custom field carried on a step.
+5. `funnels.requiresFromOtherKeys[]` contains no entry whose `key` is `stateShape`, and every entry
+   has `requiresSchemaChange: false`.
 
 ## Not decided here
 
-Event names, payload fields, the required/optional split and sampling (event-catalog work, which
-owns `telemetry`). Which of the seven `firstSession.teaching[]` rows is instrumented (`02`, this
-domain). Whether a purchase funnel exists at all (`03`, this domain — it does not). Every pass mark,
-alarm and action, and the minimum sample below which no rate may be read (`04`, this domain). The
-shortlist, review cadence and dashboard layout (dashboard-and-target work). The join instant, run
-ordinal and session id as fields (state-shape work; persistence work holds the request). Which way
-RR-10 settles (number-and-curve work). `social.maxPlayers`, the denominator of the rate limit
-(per-server-capacity work).
+Event names, payload fields, the required/optional split and sampling, including the ordering
+instrument's event id (event-catalog work, which owns `telemetry`). Which of the seven
+`firstSession.teaching[]` rows is instrumented (`02`, this domain). Whether a purchase funnel exists
+(`03`, this domain — it does not). Every pass mark, alarm and action, and the minimum sample below
+which no rate may be read (`04`, this domain). The headline target on `secondsToFirstReveal`, the
+shortlist, the cadence and the layout (dashboard-and-target work). Whether the telemetry module is
+built at all (logging-pipeline work). The retention cohort and every session-shape definition
+(engagement work). Which way `_verified-wave4.md` RR-10 settles (number-and-curve work).
+`social.maxPlayers` (per-server-capacity work).

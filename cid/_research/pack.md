@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 195 unique source(s); 109 were
+Extracted from `cid`. 230 unique source(s); 118 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -53,9 +53,9 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 6: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`, `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
 
-- *Focus.** `GuiService` carries `SelectedObject`, `AutoSelectGuiEnabled`, `GuiNavigationEnabled`, `Select()` and `MenuIsOpen` / `MenuOpened` / `MenuClosed` ``. On open, `SelectedObject` becomes the close control (`SelectionOrder` 0 against 10 on the pressables, lower first). On close it returns to `Pressable_INDEX` — the node that opened it — rather than to `nil`, because a gamepad player left with no selection has to re-acquire it by stick flick and lands wherever `AutoSelectGuiEnabled` decides. **Both writes happen on gamepad only**: setting `SelectedObject` for a mouse player draws a…
+- *Focus is one value at one node.** `GuiService` carries `SelectedObject`, `AutoSelectGuiEnabled`, `GuiNavigationEnabled`, `Select()` and `MenuIsOpen` / `MenuOpened` / `MenuClosed` ``. On gamepad, `SelectedObject` is `Pressable_INDEX` immediately after **both** edges: on open it is already there, because that is the control the player just activated and nothing inside the panel is selectable; on close it is written if it is not. A gamepad player is never left with no selection, and no `SelectionOrder` juggling is needed. On touch and mouse the game never writes it — setting it for a mouse…
 - `` — `SelectedObject`, `AutoSelectGuiEnabled`, `MenuIsOpen`, `MenuOpened`/`MenuClosed` exist. `MenuOpened` is the one signal that tells a client the platform menu took the screen.
-- *The safe area needs an instrument and one exists.** `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts, and inset values *"only take effect on ScreenGuis that have their `IgnoreGuiInset` property set to false"* `` ``. `init.client.luau:220-223` sets neither while `docs/hand-written-control/init.client.luau:37` sets `IgnoreGuiInset = true`: the build and its control diverge and no sheet decided it. Once the engine supplies the inset, `hud-overlay`'s `ANCHOR_INSET` (`base: 8`, `mobile: 28`) is a second inset that double-counts, so `anchor: "edge"` becomes…
+- *The safe area needs an instrument and one exists.** `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts, and inset values *"only take effect on ScreenGuis that have their `IgnoreGuiInset` property set to false"* `` ``. `init.client.luau:220-223` sets neither while `docs/hand-written-control/init.client.luau:37` sets `IgnoreGuiInset = true`: the build and its control diverge and no sheet decided it. Once the engine supplies the inset, `ANCHOR_INSET` (`base: 8`, `mobile: 28`) double-counts, so `anchor: "edge"` is the only legal variant here ``.
 - `GuiService:GetGuiInset()` returns `screenAreaTopLeft, screenAreaBottomRight`; `GetInsetArea(Enum.ScreenInsets)` returns a `Rect`, and its values *"only take effect on ScreenGuis that have their `IgnoreGuiInset` property set to false."* Gamepad members are `SelectedObject`, `AutoSelectGuiEnabled`, `GuiNavigationEnabled`, `Select()`. ``
 - *`TextScaled` is banned outright, and the reason is accessibility rather than taste.** Labels with `TextScaled` *"bypass the `PreferredTextSize` value entirely"*, while `AutomaticSize` objects *"resize their bounds as text size changes"* and wrapped text *"flows to additional lines as `PreferredTextSize` increases"* ``. A player who raises Text Size in the Roblox menu must get larger text, and `TextScaled` silently removes that. `Enum.PreferredTextSize` has four members, `Medium` (default), `Large`, `Larger`, `Largest` ``.
 - `Enum.PreferredTextSize` has four members — `Medium` (default), `Large`, `Larger`, `Largest` — reachable via `GetPropertyChangedSignal`. ``
@@ -81,6 +81,16 @@ did not fetch" becomes checkable instead of trusted.
 - Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
 - *A correction to my own domain index, worth making because a builder would otherwise cite the wrong source.** WCAG SC 2.2.2 governs *"any moving, blinking or scrolling information"* that lasts more than five seconds ``. A static plate is outside its scope entirely, so 2.2.2 does not set my dwell. What it does settle is the **motion** ruling: `response` `R5`–`R6` forbid providing a pause or dismiss control, so a moving notice would breach 2.2.2 with no legal remedy available — which is why `motion.animated` is false rather than merely discouraged. The 5.0 s ceiling itself is the platform's…
 - **`[unverified]`** Any duration guidance from Roblox for in-experience messages. `create.roblox.com/docs/ui/notifications` returns 404 and the onboarding page *"does not offer specific guidance about on-screen messages, notifications, popups … or blocking player input"* ``. The WCAG threshold and the CoreScript constant are what 01 has; there is no platform number to defer to.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiObject.yaml
+
+*Cited by 5: `audio/ui/_lead`, `ui-ux/feedback/01-the-notice-channel`, `ui-ux/navigation/02-concurrency-and-suspension`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
+
+- `GuiObject.MouseEnter`/`MouseLeave` are described purely as mouse events; `Selectable` is *"whether the GuiObject can be selected when navigating GUIs using a gamepad"*; `SelectionGained`/`Lost` fire when *"the Gamepad selector starts/stops focusing on"* an object. ``
+- All four booleans false. Realised as `Active = false` — *"Determines whether this UI element sinks input"* — and `Selectable = false` — *"Determine whether the GuiObject can be selected by a gamepad"* ``. **That pair is the whole of *"a notice must never swallow a tap"*, and it holds at every depth**, which is what my withdrawn `zIndexBelow: "pressable"` was redundantly trying to buy. It bought nothing and cost `B2` and `B3` behind an open panel. **Accepted, not contested.**
+- *Z-order was also chosen because it is robust to the one fact this domain could not settle.** `GuiObject.Active` is documented only as *"Determines whether this UI element sinks input"* ``. `[unverified — whether Active sinks a touch tap identically to a mouse click. Settled by the creator-docs input-propagation page for `content/en-us/ui/`, or by a Studio device-emulator run on a phone viewport with a button under an Active frame. It would decide ~70% of the audience's behaviour under a geometry rule, and decides nothing under a z-order rule.]`
+- *With the close control gone, the navigable set never changes size, and that is a gift to `viewport`.** The 24 slots have nothing to activate on them, so every slot frame, slot label and heading is `Selectable = false` — `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``. The selectable set is therefore **exactly the four pressables, open or closed**, so Platform's focus order operates on one constant set and never has to define a fifth position. This ruling holds whether or not `SelectionGroup` turns out to exist as a property: the pack's fetch of the…
+- `` — `Active`: *"Determines whether this UI element sinks input."* `Selectable`: *"Determine whether the GuiObject can be selected by a gamepad."* `SelectionOrder`, `NextSelectionUp` as described. These are the four properties the graph is realised in.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/MarketplaceService.yaml
 
@@ -196,6 +206,24 @@ did not fetch" becomes checkable instead of trusted.
 - **The compliance shape is unusual and worth stating before the rows.** `LogCustomEvent` takes a `Player` ``, so identity is the platform's and this game defines no identifier at all. Every row below is therefore a rule about *fields the game would have to invent*, not about a field it has. That is what makes an 8–14 audience a non-issue rather than a mitigation `[brief: binding]` ← *"8–14, mobile-heavy, short sessions"* (`00-CORE.md`).
 - Method signatures `` — `LogCustomEvent(player, eventName, value, customFields)`, `LogEconomyEvent(player, flowType, currencyType, amount, endingBalance, transactionType, itemSku, customFields)`, `LogFunnelStepEvent(player, funnelName, funnelSessionId, step, stepName, customFields)`, `LogOnboardingFunnelStepEvent(player, step, stepName, customFields)`, `LogProgressionEvent(...)`. The page states no rate limit and no data restriction.
 
+## https://create.roblox.com/docs/reference/engine/classes/GuiObject
+
+*Cited by 4: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
+
+- *(c) The single `SelectionGroup` parent: refused out loud, and replaced (RR-9).** The four interactive groups sit in two clusters, `hud-overlay` emits clusters as siblings of `Root`, so the only common parent is `Root`, which also holds every readout and the notice slot. I request no compiler change for it, because the platform has the mechanism: `GuiService:AddSelectionParent` takes an arbitrary set and needs no shared tree parent ``, and `SelectionGroup` is not a `GuiObject` property in the current reference `` — which is `platform/01`'s own finding against `Pressables.luau:423`.…
+- *With the close control gone, the navigable set never changes size, and that is a gift to `viewport`.** The 24 slots have nothing to activate on them, so every slot frame, slot label and heading is `Selectable = false` — `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``. The selectable set is therefore **exactly the four pressables, open or closed**, so Platform's focus order operates on one constant set and never has to define a fifth position. This ruling holds whether or not `SelectionGroup` turns out to exist as a property: the pack's fetch of the…
+- *Focus is built only from properties the reference documents.** `Selectable`, `SelectionOrder` and `NextSelectionUp/Down/Left/Right` are all confirmed `GuiObject` members ``. `SelectionGroup` is **not** on that page — it appears only in a release thread `` — and `GuiService:AddSelectionParent` is deprecated ``. Building the contract from the documented three costs nothing and removes an `[unverified]` dependency from the one path a console player has to spend currency. **Explicit links also beat a group on the merits here:** the four pressables sit in two opposite corners, so any spatial…
+- `GuiObject` gamepad members: `Selectable`, `SelectionOrder`, `NextSelectionUp/Down/Left/Right`, `SelectionImageObject`. **`SelectionGroup` is not a `GuiObject` property** in the current reference — `Pressables.luau:423` sets `button.SelectionGroup = gamepadSelectable`, which sheet 01 should verify against Studio before `mechanics/03` P5's *"one navigable selection group"* is treated as satisfied. ``
+
+## https://create.roblox.com/docs/reference/engine/classes/GuiService/AddSelectionParent
+
+*Cited by 4: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`, `ui-ux/platform/01-device-viewport-rules`*
+
+- *(c) The single `SelectionGroup` parent: refused out loud, and replaced (RR-9).** The four interactive groups sit in two clusters, `hud-overlay` emits clusters as siblings of `Root`, so the only common parent is `Root`, which also holds every readout and the notice slot. I request no compiler change for it, because the platform has the mechanism: `GuiService:AddSelectionParent` takes an arbitrary set and needs no shared tree parent ``, and `SelectionGroup` is not a `GuiObject` property in the current reference `` — which is `platform/01`'s own finding against `Pressables.luau:423`.…
+- *Gamepad selection is allowed to escape the panel, and that is the ruling rather than an oversight (index contradiction 2).** `SelectionGroup` *"constrain[s] where the UI highlight can move"*, and `SelectionBehaviorUp/Down/Left/Right` default to `Escape` — *"it will then allow selection to 'Escape' the group"* — with `Stop` as the confining alternative; `SelectionOrder` picks the initial selection, *"lower … prioritized first. The default value is 0."* ``. The pre-2022 idiom is not the one to spec: `GuiService:AddSelectionParent` is **deprecated** ``.
+- `` — marked **Deprecated**. The pre-2022 selection-group idiom is not the one to spec.
+- *Focus is built only from properties the reference documents.** `Selectable`, `SelectionOrder` and `NextSelectionUp/Down/Left/Right` are all confirmed `GuiObject` members ``. `SelectionGroup` is **not** on that page — it appears only in a release thread `` — and `GuiService:AddSelectionParent` is deprecated ``. Building the contract from the documented three costs nothing and removes an `[unverified]` dependency from the one path a console player has to spend currency. **Explicit links also beat a group on the merits here:** the four pressables sit in two opposite corners, so any spatial…
+
 ## https://create.roblox.com/docs/scripting/security/network-ownership
 
 *Cited by 4: `tech/security/01-position-authority`, `tech/security/02-channel-admission`, `tech/security/03-violation-response-and-logging`, `tech/security/_lead`*
@@ -224,14 +252,14 @@ did not fetch" becomes checkable instead of trusted.
 - `01-FOUNDATION.md` concedes lap length was unsourceable across three source types and rules the reference's number non-transferable, so this is the first stated number rather than a contradiction of a researched one. The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its smallest early lap is 1.5x this game's entire bound session and it survives that only on long desktop sittings. **It…
 - The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
 
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiObject.yaml
+## https://github.com/Roblox/Core-Scripts/blob/master/PlayerScripts/StarterPlayerScripts_NewStructure/RobloxPlayerScript/ControlScript/TouchJump.lua
 
-*Cited by 4: `ui-ux/feedback/01-the-notice-channel`, `ui-ux/navigation/02-concurrency-and-suspension`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
+*Cited by 4: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/hud/03-pattern-producibility-and-the-brief-seam`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
 
-- All four booleans false. Realised as `Active = false` — *"Determines whether this UI element sinks input"* — and `Selectable = false` — *"Determine whether the GuiObject can be selected by a gamepad"* ``. That is the whole of `response`'s *"a notice that swallows a tap would swallow a purchase"*, expressed as two property writes a build can be failed against rather than as a sentence.
-- *So the mechanism is z-order, not geometry, and that choice is deliberate.** Spatial disjointness cannot be guaranteed from this sheet: the panel's extent is `screens`', the cluster rects are `composition`'s, the safe-area inset is `viewport`'s, and the arithmetic is tight — a 0.9 × 0.72 centred panel leaves 5% of width and 14% of height for four controls and their readouts. Z-order needs nobody's cooperation, is one integer per instance, and **is robust to the one fact this domain could not settle**: whether `Active` sinks a touch tap the way it sinks a mouse click. `GuiObject.Active` is…
-- *The navigable set has to be small, and it is made small by `Selectable`, not by grouping.** The 24 slots have nothing to activate on them; a gamepad that has to traverse 24 dead cells to reach a close control is worse than no gamepad support. `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``, so every slot frame and slot label is `Selectable = false` and the navigable set while the panel is open is exactly five: the close control and the four pressables. **This ruling holds whether or not `SelectionGroup` turns out to exist as a property** — the pack's…
-- `` — `Active`: *"Determines whether this UI element sinks input."* `Selectable`: *"Determine whether the GuiObject can be selected by a gamepad."* `SelectionOrder`, `NextSelectionUp` as described. These are the four properties the graph is realised in.
+- *(a) `noticeStack`: accepted, with a region I derived rather than left to a builder.** `feedback/01` asked me to refuse out loud if no region satisfies its three keepouts on a phone. It does not need refusing. On the 896×414 phone viewport (`cli.mjs:45`) the thumbstick capture frame is `x ∈ [0, 0.4], y ∈ [0.333, 1]` ``, `jumpSmall` is `x ∈ [0.894, 0.972], y ∈ [0.783, 0.952]` ``, and both top clusters are bounded by `viewport.classes.phone.pressableMaxWidthScale` 0.20 to `x ∈ [0, 0.20]` and `x ∈ [0.80, 1]`. **`x ∈ [0.24, 0.76], y ∈ [0, 0.30]` is disjoint from all four keepouts and from both…
+- *And the pattern's only interactive element cannot legally be a pressable on any touch device.** `actionButton()` hard-sizes `52×52`, with an `at.mobile` override of `56×56` (`hud-overlay.mjs:182-183`). The floor is a measurement, not a number: `minTouchTargetRule: "notSmallerThanPlatformJumpButton"`, and the platform's own source gives `isSmallScreen = minAxis <= 500`, `jumpButtonSize = isSmallScreen and 70 or 120` ``. So the floor is **70 on a phone and 120 on a tablet**, and a tablet resolves to `UIBuilder`'s `tablet` breakpoint (`maxWidth 1500`), which has no override at all and gets…
+- *The class boundary and the touch floor are the same number, so only one of them can be wrong.** The platform computes `minAxis = min(parent.AbsoluteSize.X, parent.AbsoluteSize.Y)`, `isSmallScreen = minAxis <= 500`, `jumpButtonSize = isSmallScreen and 70 or 120` ``. Classifying on that predicate makes a class's floor exactly the button the platform will draw. `input.pressable.minTouchTargetRule` names a measurement, `[brief: binding]` in effect via R-1, and `measurePlatformControls` already reads the live button `` — so **70 and 120 are the fallback and the check, never the runtime value.**…
+- Jump button geometry. `minAxis = min(parent.AbsoluteSize.X, parent.AbsoluteSize.Y)`; `isSmallScreen = minAxis <= 500`; `jumpButtonSize = isSmallScreen and 70 or 120`; position `UDim2.new(1, -(size*1.5-10), 1, -size-20)` small, `UDim2.new(1, -(size*1.5-10), 1, -size*1.75)` large. Derived rects: small → `x ∈ [W-95, W-25]`, `y ∈ [H-90, H-20]`; large → `x ∈ [W-170, W-50]`, `y ∈ [H-210, H-90]`. ``
 
 ## https://robloxapi.github.io/ref/class/StarterPlayer.html
 
@@ -281,7 +309,7 @@ did not fetch" becomes checkable instead of trusted.
 
 - *`F3`, gacha.** There is nothing to roll and nothing to bias: `gameplay/systems/03` fixes that one graded rarity ladder exists, it is the overgrowth's, and a Find carries no rank; `gameplay/systems/05` removes duplicates by partitioning the sets across areas, so no discovery *rate* exists either. On top of both, a paid random outcome would oblige this game to publish "all possible outcomes and the actual numerical odds" as percentages summing to exactly 100%, to explain any luck booster's effect numerically with "the new odds … dynamically updated", and to carry a `PolicyService`…
 - **A third, platform-side reason gacha does not belong here**, on top of the content-access ban and `luckShaped: false`: any paid random outcome requires the creator to "indicate all possible outcomes and the actual numerical odds of what they may receive", as percentages summing to exactly 100%, and any purchasable luck booster must have its effect explained numerically with "the new odds … dynamically updated when these items are active". `PolicyService: GetPolicyInfoForPlayerAsync()`'s `ArePaidRandomItemsRestricted` flag can make paid random items unavailable to a given user entirely,…
-- *One finding that meets the two-builders bar, from reading the shipped tree.** `default.project.json` syncs `src/shared` wholesale into `ReplicatedStorage.UIForge` ``, and `src/shared/Screens/` holds **eight** generated screen modules of which `init.client.luau` requires exactly one, `hud`. The other seven ship inside the place and replicate to every client. `shop.luau` and `shop-galaxy.luau` render `"SHOP"`, `"Cosmic Egg"`, `"Void Egg"`, `"Luck Boost"`, price pills `"25,000"` / `"90,000"` / `"1,500"` and `"OPEN 3 EGGS"`; `crates.luau` renders `"COSMIC CRATES"`, `"Starter Crate"`, `"199…
+- *One finding that meets the two-builders bar, and its root cause.** `default.project.json` syncs `src/shared` wholesale into `ReplicatedStorage.UIForge` ``, and `src/shared/Screens/` holds **eight** generated screen modules of which `init.client.luau` requires exactly one, `hud`. The other seven ship inside the place and replicate to every client. `shop.luau` and `shop-galaxy.luau` render `"SHOP"`, `"Cosmic Egg"`, `"Void Egg"`, `"Luck Boost"`, price pills `"25,000"` / `"90,000"` / `"1,500"` and `"OPEN 3 EGGS"`; `crates.luau` renders `"COSMIC CRATES"`, `"Starter Crate"`, `"199 GEMS"`, `"899…
 
 ## https://create.roblox.com/docs/projects/update-games
 
@@ -304,21 +332,20 @@ did not fetch" becomes checkable instead of trusted.
 - ### `cid/tech/persistence/01-the-save-write.md` — a `` tag points at a page that does not carry the claim **Violates:** every `` corresponds to a real fetched source carrying the fact. **Fix:** line 37 cites `` for the 30-second budget. `persistence/_lead` records under "Fetched but incomplete" that this fetch *"returned the Studio note but not the timeout"* and that the sentence came from a search snapshot. `tech/deploy/_lead` fetched a page that does carry it: `https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud-services/data-stores/player-data-purchasing.md`. Re-cite to…
 - *Shutdown gets a second chance, not a redesign.** `BindToClose` callbacks share 30 seconds total `` — 16 parallel saves in one budget. `ServerRestartScheduled` fires before any of it, so saving there makes `BindToClose` a retry. Additive; `wiring.onShutdown` is untouched.
 
-## https://create.roblox.com/docs/reference/engine/classes/GuiObject
+## https://create.roblox.com/docs/reference/engine/classes/Sound
 
-*Cited by 3: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
+*Cited by 3: `audio/ambient/_lead`, `audio/music/_lead`, `audio/stingers/_lead`*
 
-- *The navigable set has to be small, and it is made small by `Selectable`, not by grouping.** The 24 slots have nothing to activate on them; a gamepad that has to traverse 24 dead cells to reach a close control is worse than no gamepad support. `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``, so every slot frame and slot label is `Selectable = false` and the navigable set while the panel is open is exactly five: the close control and the four pressables. **This ruling holds whether or not `SelectionGroup` turns out to exist as a property** — the pack's…
-- *P5's *"one navigable selection group"* is also not satisfied today.** `Pressables.luau:423` sets `button.SelectionGroup = gamepadSelectable` on **each** of the four buttons, which is four groups rather than one, and the four parent straight to the `ScreenGui` with no common frame to hold a group. `SelectionGroup` *"constrain[s] where the UI highlight can move"* and belongs on the container ``; it is absent from the current `GuiObject` reference page ``, so one Studio check is owed before P5 is called satisfied. The deprecated `GuiService:AddSelectionParent` is not the idiom to spec ``.
-- `GuiObject` gamepad members: `Selectable`, `SelectionOrder`, `NextSelectionUp/Down/Left/Right`, `SelectionImageObject`. **`SelectionGroup` is not a `GuiObject` property** in the current reference — `Pressables.luau:423` sets `button.SelectionGroup = gamepadSelectable`, which sheet 01 should verify against Studio before `mechanics/03` P5's *"one navigable selection group"* is treated as satisfied. ``
+- `Sound` playback and looping surface, for the data form a track table would have needed: `Looped`, `LoopRegion` and `PlaybackRegion` are `NumberRange`, `PlaybackRegionsEnabled` is a boolean, `TimeLength` is read-only, `TimePosition` is not replicated; a `Sound` is 3D when parented to a `Part` or `Attachment` and global otherwise. ``
+- `` and the raw reference source — `SoundId` is a **`ContentId`** (a string of the form `rbxassetid://…`), which is why `release`'s `0` sentinel does not transfer; `TimeLength` is read-only and *"If the `Sound` is not loaded, this value will be `0`"*, so an audible-length criterion is checkable at runtime only after `IsLoaded`; `Volume` *"Can be set between `0` and `10` and defaults to `0.5`"*; a `Sound` parented to a `BasePart` or `Attachment` is positional and Doppler-shifted, otherwise global.
 
-## https://create.roblox.com/docs/reference/engine/classes/GuiService/AddSelectionParent
+## https://create.roblox.com/docs/reference/engine/enums/ScreenInsets
 
-*Cited by 3: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`, `ui-ux/platform/01-device-viewport-rules`*
+*Cited by 3: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
 
-- *Gamepad selection is allowed to escape the panel, and that is the ruling rather than an oversight (index contradiction 2).** `SelectionGroup` *"constrain[s] where the UI highlight can move"*, and `SelectionBehaviorUp/Down/Left/Right` default to `Escape` — *"it will then allow selection to 'Escape' the group"* — with `Stop` as the confining alternative; `SelectionOrder` picks the initial selection, *"lower … prioritized first. The default value is 0."* ``. The pre-2022 idiom is not the one to spec: `GuiService:AddSelectionParent` is **deprecated** ``.
-- `` — marked **Deprecated**. The pre-2022 selection-group idiom is not the one to spec.
-- *P5's *"one navigable selection group"* is also not satisfied today.** `Pressables.luau:423` sets `button.SelectionGroup = gamepadSelectable` on **each** of the four buttons, which is four groups rather than one, and the four parent straight to the `ScreenGui` with no common frame to hold a group. `SelectionGroup` *"constrain[s] where the UI highlight can move"* and belongs on the container ``; it is absent from the current `GuiObject` reference page ``, so one Studio check is owed before P5 is called satisfied. The deprecated `GuiService:AddSelectionParent` is not the idiom to spec ``.
+- *`variant.anchor` yields to Platform: `inset` becomes `edge`.** `viewport.safeArea` sets `ScreenInsets = CoreUISafeInsets` with `ignoreGuiInset: false`, and `ANCHOR_INSET` would double-count it ``. My own sheet says I own no pixel, so this is not a contest. **It makes the jump-band problem worse, not better** — the engine's safe area does not clear the platform's *touch controls* — which is why sheet `03`'s `U6` survives, restated as a per-cluster keepout offset.
+- *The safe area needs an instrument and one exists.** `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts, and inset values *"only take effect on ScreenGuis that have their `IgnoreGuiInset` property set to false"* `` ``. `init.client.luau:220-223` sets neither while `docs/hand-written-control/init.client.luau:37` sets `IgnoreGuiInset = true`: the build and its control diverge and no sheet decided it. Once the engine supplies the inset, `ANCHOR_INSET` (`base: 8`, `mobile: 28`) double-counts, so `anchor: "edge"` is the only legal variant here ``.
+- `Enum.ScreenInsets` = `None` (0), `DeviceSafeInsets` (1), `CoreUISafeInsets` (2), `TopbarSafeInsets` (3); `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts. `Enum.SafeAreaCompatibility` = `None` (0), `FullscreenExtension` (1). `` ``
 
 ## https://create.roblox.com/docs/scripting/scheduler
 
@@ -356,15 +383,15 @@ did not fetch" becomes checkable instead of trusted.
 - *Gamepad selection is allowed to escape the panel, and that is the ruling rather than an oversight (index contradiction 2).** `SelectionGroup` *"constrain[s] where the UI highlight can move"*, and `SelectionBehaviorUp/Down/Left/Right` default to `Escape` — *"it will then allow selection to 'Escape' the group"* — with `Stop` as the confining alternative; `SelectionOrder` picks the initial selection, *"lower … prioritized first. The default value is 0."* ``. The pre-2022 idiom is not the one to spec: `GuiService:AddSelectionParent` is **deprecated** ``.
 - 1. **Purchase reachability versus a modal index.** `input.travelRequiredToPurchase` is `"none"`, `input.pressable.roles[purchase].persistent` is true and `core-loop/01` requires buying be reachable *"from anywhere in the area with no travel and no area exit"* — while the same `input` sheet calls the index *"modal: the character stands still while it is open"*. A modal that sinks input is a screen a purchase sits behind. **The shipped code split the difference by assertion** and the assertion does not hold at its own width. → `02` (a). 2. **The same collision on gamepad.** `representation`…
 - `` — `SelectionGroup` *"constrain[s] where the UI highlight can move"*; `SelectionBehaviorUp/Down/ Left/Right` default to **`Escape`** (*"it will then allow selection to 'Escape' the group"*) with `Stop` as the confining alternative; `SelectionOrder` picks the initial selection, *"lower … prioritized first. The default value is 0."* This is the mechanism sheet `03` must use.
-- *P5's *"one navigable selection group"* is also not satisfied today.** `Pressables.luau:423` sets `button.SelectionGroup = gamepadSelectable` on **each** of the four buttons, which is four groups rather than one, and the four parent straight to the `ScreenGui` with no common frame to hold a group. `SelectionGroup` *"constrain[s] where the UI highlight can move"* and belongs on the container ``; it is absent from the current `GuiObject` reference page ``, so one Studio check is owed before P5 is called satisfied. The deprecated `GuiService:AddSelectionParent` is not the idiom to spec ``.
+- *Focus is built only from properties the reference documents.** `Selectable`, `SelectionOrder` and `NextSelectionUp/Down/Left/Right` are all confirmed `GuiObject` members ``. `SelectionGroup` is **not** on that page — it appears only in a release thread `` — and `GuiService:AddSelectionParent` is deprecated ``. Building the contract from the documented three costs nothing and removes an `[unverified]` dependency from the one path a console player has to spend currency. **Explicit links also beat a group on the merits here:** the four pressables sit in two opposite corners, so any spatial…
 
-## https://github.com/Roblox/Core-Scripts/blob/master/PlayerScripts/StarterPlayerScripts_NewStructure/RobloxPlayerScript/ControlScript/TouchJump.lua
+## https://github.com/Roblox/Core-Scripts/blob/master/PlayerScripts/StarterPlayerScripts/ControlScript/MasterControl/DynamicThumbstick.lua
 
-*Cited by 3: `ui-ux/hud/03-pattern-producibility-and-the-brief-seam`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
+*Cited by 3: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
 
-- *And the pattern's only interactive element cannot legally be a pressable on any touch device.** `actionButton()` hard-sizes `52×52`, with an `at.mobile` override of `56×56` (`hud-overlay.mjs:182-183`). The floor is a measurement, not a number: `minTouchTargetRule: "notSmallerThanPlatformJumpButton"`, and the platform's own source gives `isSmallScreen = minAxis <= 500`, `jumpButtonSize = isSmallScreen and 70 or 120` ``. So the floor is **70 on a phone and 120 on a tablet**, and a tablet resolves to `UIBuilder`'s `tablet` breakpoint (`maxWidth 1500`), which has no override at all and gets…
-- *The class boundary and the touch floor are the same number, so only one of them can be wrong.** The platform computes `minAxis = min(parent.AbsoluteSize.X, parent.AbsoluteSize.Y)`, `isSmallScreen = minAxis <= 500`, `jumpButtonSize = isSmallScreen and 70 or 120` ``. Classifying on that same predicate makes a class's floor exactly the button the platform will draw on it. `input.pressable.minTouchTargetRule` names a measurement, `[brief: binding]` in effect via R-1, and `measurePlatformControls` already reads the live button `` — so **70 and 120 are the fallback and the check, never the…
-- Jump button geometry. `minAxis = min(parent.AbsoluteSize.X, parent.AbsoluteSize.Y)`; `isSmallScreen = minAxis <= 500`; `jumpButtonSize = isSmallScreen and 70 or 120`; position `UDim2.new(1, -(size*1.5-10), 1, -size-20)` small, `UDim2.new(1, -(size*1.5-10), 1, -size*1.75)` large. Derived rects: small → `x ∈ [W-95, W-25]`, `y ∈ [H-90, H-20]`; large → `x ∈ [W-170, W-50]`, `y ∈ [H-210, H-90]`. ``
+- *(a) `noticeStack`: accepted, with a region I derived rather than left to a builder.** `feedback/01` asked me to refuse out loud if no region satisfies its three keepouts on a phone. It does not need refusing. On the 896×414 phone viewport (`cli.mjs:45`) the thumbstick capture frame is `x ∈ [0, 0.4], y ∈ [0.333, 1]` ``, `jumpSmall` is `x ∈ [0.894, 0.972], y ∈ [0.783, 0.952]` ``, and both top clusters are bounded by `viewport.classes.phone.pressableMaxWidthScale` 0.20 to `x ∈ [0, 0.20]` and `x ∈ [0.80, 1]`. **`x ∈ [0.24, 0.76], y ∈ [0, 0.30]` is disjoint from all four keepouts and from both…
+- *Orientation was unstated anywhere in the brief and changes the answer completely.** The dynamic thumbstick captures **left 40% × bottom two-thirds** in landscape and **full width × bottom 40%** in portrait ``, and the legacy `Thumbstick`, `DPad` and `Thumbpad` modes are gone, so that is the region that actually exists ``. Portrait swallows the whole bottom band and both bottom clusters with it. I rule landscape `[cid: decided]`: it is what `ui-forge` calibrates against (`cli.mjs:42-46`) and the orientation in which the right half is free. Portrait keepouts ship anyway, because a client…
+- Dynamic thumbstick capture frame — landscape `Size (0.4, 0, 2/3, 0)` at `Position (0, 0, 1/3, 0)`; portrait `Size (1, 0, 0.4, 0)` at `Position (0, 0, 0.6, 0)`. The frame layout does not vary with screen size; only the drawn thumbstick art does. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/performance-optimization/identify.md
 
@@ -405,6 +432,14 @@ did not fetch" becomes checkable instead of trusted.
 - **The error-code split is the documented one.** 301–306 are queue throttle and 501–505 transient, so both retry; 101–107 and 509–513 are validation and permission failures and never retry ``. I classify 401–404 as **never retry**: my domain index summarises them as "internal/transient", but their numbering neighbours are serialisation failures and a retried serialisation failure burns three requests per save forever. The payload is scalars, string-keyed booleans and integers, so 4xx is unreachable either way. `[research owed: the literal text of codes 401–404 on the error-codes-and-limits…
 - **Inside the payload, not beside it, and the arithmetic is why.** A separate lock key makes release a second write: 16 saves plus 16 releases is **32 requests against a 30-request queue** at shutdown, and the queue drops everything past 30 with a 30x error ``. Folding release into the save write is not a style preference; it is the difference between 16 and 32 against a hard 30.
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/input/mobile.md
+
+*Cited by 3: `audio/ui/_lead`, `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
+
+- Roblox mobile input documents touch gestures (`TouchSwipe`, `TouchPinch`), haptics, accelerometer, gyroscope and on-screen buttons, and **no hover, mouse-over or pointer state**. `` → settles the hover ruling for ~70% of the audience.
+- *Every conventional back input on this platform is unavailable, and that is sourced rather than assumed.** Escape *"is exclusively reserved for opening the Roblox menu"* and `ContextActionService` *"ignores all inputs registered by the CoreScripts"* ``. Gamepad **B toggles the Roblox menu** — reported against the UWP client, not reproducing in Studio, merged with no fix `` — enough to forbid B as the *only* gamepad close path and **not** enough to claim B is reserved on every client, so it is permitted as an extra and nothing rests on it. And Roblox's own mobile input surface is touch…
+- `` — Roblox's mobile input surface is touch gestures, motion sensors, haptics and on-screen buttons. **The Android hardware back button appears nowhere.** So on the largest device class there is no platform back input at all, which is why the close control has to be drawn.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/analytics-dashboard.md
 
 *Cited by 3: `analytics/events/01-event-catalog`, `analytics/events/02-never-logged`, `analytics/events/_lead`*
@@ -421,6 +456,15 @@ did not fetch" becomes checkable instead of trusted.
 - *The minimum sample is a real gate and it is set against this project's actual evidence base.** The only empirical reading in existence is `cid/_playtest.md`'s 2026-08-01 session: **n = 1, untimed, four confirmations by feel.** A conversion rate quoted on a handful of sessions would falsify a design sheet on noise, which is worse than not measuring. At n = 200 and a proportion near 0.85 the binomial standard error is `sqrt(0.85 × 0.15 / 200) ≈ 0.025`, so a 95% interval is about ±5 percentage points — finer than the smallest pass-to-alarm gap below, which is 10 points. That is the arithmetic…
 - 1. **The measurement default names a subject and states no unit, no population and no pass mark.** `OPEN.md §2` item (1), `[I assumed]`, at 0 interview questions (`OPEN.md §5` row 8, *"batched by design"*). `onboarding/02` closed the two units and two populations for the ceilings and nothing else. → **01** for populations and origins across the rest of the ladder; **04** for every pass mark. 2. **Nothing in the brief or in any approved sheet says what a drop-off *means* in a game with no failure state, or what may be done about one.** Retention is a declined goal, so the obvious response to…
 - *The platform limits, which are hard ceilings on anything this domain specs:** *"Total `AnalyticsService` requests per minute: 120 + (20 * CCU)"*; 10 funnels; 100 steps per funnel; 3 custom fields per event; 8,000 unique value combinations across them, *"grouped as 'Other' after"*; 100 custom event names; and *"Events remain visible on the Creator Dashboard and automatically expire after 90 days from last data received"* ``. The 10-funnel cardinality is *"on a daily basis"* and an over-limit event *"will succeed but those that exceed the limit will be dropped and will not be shown"* ``.…
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/Sound.yaml
+
+*Cited by 3: `audio/mix/_lead`, `audio/sfx/_lead`, `audio/ui/_lead`*
+
+- `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
+- **`Volume` default is 0.5, range 0 to 10** ``.
+- **One `Sound` cannot overlap itself.** `Play()` *"sets TimePosition to the last value set by a script (or 0 …), then sets Playing to true"* ``, and the community reading is unambiguous — *"doing this restarts the sound if it was already playing"*, overlap requires multiple instances ``. **This is why `response`'s `onOverload: "overlap"` at 8/s is a data requirement and not a note:** a builder handed one row with one id builds a machine-gun restart, which two builders would not converge on.
+- `Sound.SoundId` is type **ContentId** — *"Content ID of the sound file to associate with the Sound"* — and `Sound.IsLoaded` is *"true when the Sound has loaded from Roblox servers and is ready to play. You can use this property and the `Loaded` event to verify a sound has loaded before playing it."* `` → the `0` sentinel `release` uses for a `gamePassId` cannot transfer by type, and a 200 ms budget presumes a resident asset.
 
 ## https://rowatcher.com/news/what-the-roblox-algorithm-actually-rewards-in-2026-not-ccu
 
@@ -496,6 +540,13 @@ did not fetch" becomes checkable instead of trusted.
 - **Passage: one condition, and it is a strike on an approved sheet rather than an absence.** `core-loop/04` ("enterable at the instant one completes, with no threshold, no cooldown and no travel worth measuring") and `core-loop/05` ("nothing may gate depth on throughput") both hold under `previousAreaComplete`: it is not a threshold, not a cooldown, not a purchase and not a throughput test, and an under-buying player is never refused. What it *is* is a condition on an opening, which `theme/setting/04` W5 sets at zero. **DIG's 50%-of-the-journal ferry unlock** `` **is a live shipping…
 - **DIG gates its second island on collection completion, not on power.** "Once you complete 50% of the Cinder Island journal, you'll unlock access to the NPC at the ferry dock… he'll offer you a ferry ticket after asking about your progress." A shipping game in the collection genre uses *fraction of the index* as the unlock, which is a live alternative for sheet `04`'s gating question and is not the one `setting/04` W5 took.
 
+## https://create.roblox.com/docs/audio/assets
+
+*Cited by 2: `audio/ambient/_lead`, `audio/stingers/_lead`*
+
+- **The budget makes it worse rather than deciding it.** `budgets.Sounds` is 20 MB on the floor device, `[playtest unknown]` at ±60%, shared across six domains — and the platform's own per-asset ceiling is *"less than 20 MB in size and 7 minutes in duration"* ``. **One maximum-size audio asset is 100% of this game's entire `Sounds` ceiling.** Multiplying beds by four multiplies the largest continuously-resident asset class in the build against the one number nobody has measured, to buy a distinction three approved sheets say the world does not make.
+- `` — uploads must be *"less than 20 MB in size and 7 minutes in duration"*, `.mp3`/`.ogg`/`.wav`/`.flac`, sample rate ≤ 48 kHz; 2,000 free imports per 30 days ID-verified and 100 unverified; imported audio is private by default and *"the IDs of your imported audio can't be accessed by users without proper permissions"*, granted to specific friends and experiences. Also: the Creator Store holds *"more than 100,000 professionally-produced sound effects and music tracks"* that are free to use, so **a stinger need not be an upload** — which is the cheapest path to a provisioned id and matters…
+
 ## https://create.roblox.com/docs/cloud-services/data-stores
 
 *Cited by 2: `tech/persistence/01-the-save-write`, `tech/persistence/_lead`*
@@ -542,15 +593,22 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
 
-- *Nothing rests on the 70/25/5 split.** It is `[brief: soft]` and uncorroborated by anything fetched. Every rule here is stated per class and none is weighted by share; the *band* — *"8–14, mobile-heavy, short sessions"* `[brief: binding]` (`00-CORE.md`) — is what the floors serve. `[research owed: the experience's own Creator Dashboard platform breakdown, which cannot exist before launch]` Roblox itself publishes no minimum touch-target figure: `adaptive-design` and `console-guidelines` carry principles only `` ``. That is why the rule names a measurement, and why the two classes with…
+- *Nothing rests on the 70/25/5 split.** It is `[brief: soft]` and uncorroborated; every rule here is per class and none is weighted by share. The *band* — *"8–14, mobile-heavy, short sessions"* `[brief: binding]` (`00-CORE.md`) — is what the floors serve. `[research owed: the experience's own Creator Dashboard platform breakdown, which cannot exist before launch]` Roblox publishes no minimum touch-target figure: `adaptive-design` and `console-guidelines` carry principles only `` ``. That is why the rule names a measurement, and why the two classes with nothing to measure need the ruling…
 - **Roblox publishes no minimum touch-target pixel figure.** `create.roblox.com/docs/production/ publishing/adaptive-design` was fetched and carries principles only, no numbers. The console guidelines page likewise gives no TV-safe percentage and no minimum text size. This is *why* `minTouchTargetRule` names a measurement, and it vindicates that choice. `` ``
 
 ## https://create.roblox.com/docs/production/publishing/console-guidelines
 
 *Cited by 2: `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
 
-- *Nothing rests on the 70/25/5 split.** It is `[brief: soft]` and uncorroborated by anything fetched. Every rule here is stated per class and none is weighted by share; the *band* — *"8–14, mobile-heavy, short sessions"* `[brief: binding]` (`00-CORE.md`) — is what the floors serve. `[research owed: the experience's own Creator Dashboard platform breakdown, which cannot exist before launch]` Roblox itself publishes no minimum touch-target figure: `adaptive-design` and `console-guidelines` carry principles only `` ``. That is why the rule names a measurement, and why the two classes with…
+- *Nothing rests on the 70/25/5 split.** It is `[brief: soft]` and uncorroborated; every rule here is per class and none is weighted by share. The *band* — *"8–14, mobile-heavy, short sessions"* `[brief: binding]` (`00-CORE.md`) — is what the floors serve. `[research owed: the experience's own Creator Dashboard platform breakdown, which cannot exist before launch]` Roblox publishes no minimum touch-target figure: `adaptive-design` and `console-guidelines` carry principles only `` ``. That is why the rule names a measurement, and why the two classes with nothing to measure need the ruling…
 - **Roblox publishes no minimum touch-target pixel figure.** `create.roblox.com/docs/production/ publishing/adaptive-design` was fetched and carries principles only, no numbers. The console guidelines page likewise gives no TV-safe percentage and no minimum text size. This is *why* `minTouchTargetRule` names a measurement, and it vindicates that choice. `` ``
+
+## https://create.roblox.com/docs/reference/engine/classes/ContentProvider
+
+*Cited by 2: `audio/stingers/_lead`, `audio/ui/_lead`*
+
+- `` — `PreloadAsync` yields and works on `Sound` instances, which is the mechanism by which three cue assets can be made ready before the first clear without blocking `loadToFirstInputSeconds`.
+- `ContentProvider:PreloadAsync` accepts `Sound` instances and yields. ``
 
 ## https://create.roblox.com/docs/reference/engine/classes/DataModel
 
@@ -583,12 +641,11 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Two rows have no read, differently.** Voice has none at any level: `IsVoiceEnabledForUserIdAsync` is per user, not per experience ``. `ChatVersion` is `[unverified]` — deprecated after legacy chat's removal on 30 Apr 2025, so a place created today cannot be on `LegacyChatService`, which lowers the risk without closing the row `` ``. Two settling fetches ride in the key; until then both rows stand on a human tick and one joined test client, and the row says so rather than implying an assertion exists.
 
-## https://create.roblox.com/docs/reference/engine/enums/ScreenInsets
+## https://create.roblox.com/docs/sound/objects
 
-*Cited by 2: `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
+*Cited by 2: `audio/ambient/_lead`, `audio/stingers/_lead`*
 
-- *The safe area needs an instrument and one exists.** `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts, and inset values *"only take effect on ScreenGuis that have their `IgnoreGuiInset` property set to false"* `` ``. `init.client.luau:220-223` sets neither while `docs/hand-written-control/init.client.luau:37` sets `IgnoreGuiInset = true`: the build and its control diverge and no sheet decided it. Once the engine supplies the inset, `hud-overlay`'s `ANCHOR_INSET` (`base: 8`, `mobile: 28`) is a second inset that double-counts, so `anchor: "edge"` becomes…
-- `Enum.ScreenInsets` = `None` (0), `DeviceSafeInsets` (1), `CoreUISafeInsets` (2), `TopbarSafeInsets` (3); `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts. `Enum.SafeAreaCompatibility` = `None` (0), `FullscreenExtension` (1). `` ``
+- `` — the positional/global rule in the engine's own words: *"Within `SoundService` or `Workspace`. Audio emits throughout the game. Volume and pan position remain the same regardless of the user's sound listener position or rotation."* This is what makes S3 answerable as a property write rather than as a preference.
 
 ## https://create.roblox.com/docs/ui/position-and-size
 
@@ -601,7 +658,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
 
-- *The floor is 14 px at the reference resolution, and I am not pretending it is sourced.** Roblox publishes no minimum text size; the docs advise only against a `MinTextSize` below 9 ``, and 14 to 18 for mobile body text is a **practitioner recommendation, not a platform figure** ``. 14 is the bottom of that band because the surface it binds hardest, the index panel, is width-constrained by six slots across. It is `[playtest unknown]`, test range 12 to 18, settled by one `npm run render` of this screen at phone viewport with the real strings in place, which has never been run `[research…
+- *The floor is 14 px at the reference resolution, and I am not pretending it is sourced.** Roblox publishes no minimum text size; the docs advise only against a `MinTextSize` below 9 ``, and 14 to 18 for mobile body text is a **practitioner recommendation, not a platform figure** ``. 14 is the bottom of that band because the surface it binds hardest, the index panel, is width-constrained by six slots across. It is `[playtest unknown]`, test range 12 to 18, settled by one `npm run render` of that screen at phone viewport with the real strings in place, which has never been run `[research…
 - `` — `UITextSizeConstraint` *"specifies a minimum and maximum font size for a GuiObject with text"*, and the docs advise against `MinTextSize` below 9. `UISizeConstraint` and `UIAspectRatioConstraint` *"override the layout and control the object's size"* when combined with a layout.
 
 ## https://create.roblox.com/docs/workspace/streaming
@@ -635,7 +692,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
 
-- *Every conventional back input on this platform is unavailable, and that is sourced rather than assumed.** Escape *"is exclusively reserved for opening the Roblox menu"* and `ContextActionService` *"ignores all inputs registered by the CoreScripts"* ``. Gamepad **B toggles the Roblox menu** — reported against the UWP client, not reproducing in Studio, merged with no fix `` — which is enough to forbid B as the *only* gamepad close path and **not** enough to claim B is reserved on every client, so this sheet permits B as an extra best-effort path and never relies on it. And Roblox's own…
+- *Every conventional back input on this platform is unavailable, and that is sourced rather than assumed.** Escape *"is exclusively reserved for opening the Roblox menu"* and `ContextActionService` *"ignores all inputs registered by the CoreScripts"* ``. Gamepad **B toggles the Roblox menu** — reported against the UWP client, not reproducing in Studio, merged with no fix `` — enough to forbid B as the *only* gamepad close path and **not** enough to claim B is reserved on every client, so it is permitted as an extra and nothing rests on it. And Roblox's own mobile input surface is touch…
 - `` — *"the Escape key is exclusively reserved for opening the Roblox menu"*; *"ContextActionService ignores all inputs registered by the CoreScripts"*. No staff resolution; still open as of the thread's last activity (Nov 2024). **Escape is not available as a close path.**
 
 ## https://devforum.roblox.com/t/my-day-1-retention-is-awful-23-losing-half-my-players-in-under-2-minutes-what-am-i-doing-wrong-with-onboarding/4186434
@@ -655,14 +712,14 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
 
-- *Orientation was unstated anywhere in the brief and changes the answer completely.** The dynamic thumbstick captures **left 40% × bottom two-thirds** in landscape and **full width × bottom 40%** in portrait ``, and the legacy `Thumbstick`, `DPad` and `Thumbpad` modes are gone, so that is the region that actually exists ``. Portrait swallows the whole bottom band and both bottom clusters with it. I rule landscape `[cid: decided]`: it is what `ui-forge` calibrates against (`cli.mjs:42-46`, phone 896×414 landscape) and the orientation in which the right half of the screen is free. Portrait…
+- *Orientation was unstated anywhere in the brief and changes the answer completely.** The dynamic thumbstick captures **left 40% × bottom two-thirds** in landscape and **full width × bottom 40%** in portrait ``, and the legacy `Thumbstick`, `DPad` and `Thumbpad` modes are gone, so that is the region that actually exists ``. Portrait swallows the whole bottom band and both bottom clusters with it. I rule landscape `[cid: decided]`: it is what `ui-forge` calibrates against (`cli.mjs:42-46`) and the orientation in which the right half is free. Portrait keepouts ship anyway, because a client…
 - The legacy `Thumbstick`, `DPad` and `Thumbpad` touch movement modes have been removed, so the dynamic thumbstick is the region that actually exists. ``
 
 ## https://devforum.roblox.com/t/roblox-menu-being-toggled-by-the-b-button-on-a-gamepad/639726
 
 *Cited by 2: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
 
-- *Every conventional back input on this platform is unavailable, and that is sourced rather than assumed.** Escape *"is exclusively reserved for opening the Roblox menu"* and `ContextActionService` *"ignores all inputs registered by the CoreScripts"* ``. Gamepad **B toggles the Roblox menu** — reported against the UWP client, not reproducing in Studio, merged with no fix `` — which is enough to forbid B as the *only* gamepad close path and **not** enough to claim B is reserved on every client, so this sheet permits B as an extra best-effort path and never relies on it. And Roblox's own…
+- *Every conventional back input on this platform is unavailable, and that is sourced rather than assumed.** Escape *"is exclusively reserved for opening the Roblox menu"* and `ContextActionService` *"ignores all inputs registered by the CoreScripts"* ``. Gamepad **B toggles the Roblox menu** — reported against the UWP client, not reproducing in Studio, merged with no fix `` — enough to forbid B as the *only* gamepad close path and **not** enough to claim B is reserved on every client, so it is permitted as an extra and nothing rests on it. And Roblox's own mobile input surface is touch…
 - `` — gamepad **B toggles the Roblox menu**; reported as specific to the UWP client and not reproducing in Studio, merged by a moderator with no fix. Enough to forbid B as the *only* gamepad close path; **not** enough to claim B is reserved on every client, and `03` must say so.
 
 ## https://devforum.roblox.com/t/uilistlayout-uses-space-even-for-invisible-gui-elements/45323
@@ -691,13 +748,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - *The architecture is real, not invented, and that matters because every line of this sheet is otherwise `[cid: decided]`.** Terraced hillside complexes built as *"at least three terraces, a common practice for large patrician Roman villas in the hills"*, with a terrace level *"reserved for cisterns"*, a cistern *"divided into three communicating chambers"*, vaulted substructure, and *"distinct functional zones across the sloping terrain"*, are a documented building system: platform, cistern and vault are three parts of one thing, on a slope, by ordinary practice. `` **The fiction borrows…
 - `collection.sets[].label` ships **Terrace · Cistern · Vault · Spire** at depths 1–4 (`cid/gameplay/meta/02-the-collection.md`). In the building system `01-the-ruin` borrowed, a cistern and a vault are *substructure* — a terrace level *"reserved for cisterns"* over vaulted substructure `` — and a spire is *superstructure*. **So a vertical depth axis runs down, down, then up, and is falsified by values already on disk.** A horizontal axis is falsified by nothing. `[cid: decided]`
-
-## https://github.com/Roblox/Core-Scripts/blob/master/PlayerScripts/StarterPlayerScripts/ControlScript/MasterControl/DynamicThumbstick.lua
-
-*Cited by 2: `ui-ux/platform/01-device-viewport-rules`, `ui-ux/platform/_lead`*
-
-- *Orientation was unstated anywhere in the brief and changes the answer completely.** The dynamic thumbstick captures **left 40% × bottom two-thirds** in landscape and **full width × bottom 40%** in portrait ``, and the legacy `Thumbstick`, `DPad` and `Thumbpad` modes are gone, so that is the region that actually exists ``. Portrait swallows the whole bottom band and both bottom clusters with it. I rule landscape `[cid: decided]`: it is what `ui-forge` calibrates against (`cli.mjs:42-46`, phone 896×414 landscape) and the orientation in which the right half of the screen is free. Portrait…
-- Dynamic thumbstick capture frame — landscape `Size (0.4, 0, 2/3, 0)` at `Position (0, 0, 1/3, 0)`; portrait `Size (1, 0, 0.4, 0)` at `Position (0, 0, 0.6, 0)`. The frame layout does not vary with screen size; only the drawn thumbstick art does. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/cloud-services/data-stores/player-data-purchasing.md
 
@@ -736,7 +786,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/screens/03-text-policy`, `ui-ux/screens/_lead`*
 
-- *The floor is 14 px at the reference resolution, and I am not pretending it is sourced.** Roblox publishes no minimum text size; the docs advise only against a `MinTextSize` below 9 ``, and 14 to 18 for mobile body text is a **practitioner recommendation, not a platform figure** ``. 14 is the bottom of that band because the surface it binds hardest, the index panel, is width-constrained by six slots across. It is `[playtest unknown]`, test range 12 to 18, settled by one `npm run render` of this screen at phone viewport with the real strings in place, which has never been run `[research…
+- *The floor is 14 px at the reference resolution, and I am not pretending it is sourced.** Roblox publishes no minimum text size; the docs advise only against a `MinTextSize` below 9 ``, and 14 to 18 for mobile body text is a **practitioner recommendation, not a platform figure** ``. 14 is the bottom of that band because the surface it binds hardest, the index panel, is width-constrained by six slots across. It is `[playtest unknown]`, test range 12 to 18, settled by one `npm run render` of that screen at phone viewport with the real strings in place, which has never been run `[research…
 - A repeated third-party recommendation of **a fixed `TextSize` of 14–18 for mobile body text**, on the ground that `TextScaled` shrinks text to fit and often makes it unreadably small. `` — **treat as a practitioner opinion, not a platform figure.** It is the only number I found and Roblox publishes none; sheet 03 must not present it as sourced from Roblox.
 
 ## https://madstudioroblox.github.io/ProfileStore/
@@ -745,12 +795,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - **`ProfileStore` is precedent, not instruction.** It session-locks through `UpdateAsync`, defaults its auto-save to **300 seconds**, and uses `MessagingService` to resolve conflicts faster ``. The `MessagingService` half is unavailable under the scope gate (`03-META.md` priority 3, leaderboards and cross-server state), and **nothing replaces it**: the price is that an ungraceful server death costs the next holder up to `stealAfterSeconds` of deferred writes. That is paid rarely, because a graceful leave releases the lock in its own save, and it is paid by a player who is otherwise playing…
 
-## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/input/mobile.md
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/audio/assets.md
 
-*Cited by 2: `ui-ux/navigation/03-close-and-focus-by-device`, `ui-ux/navigation/_lead`*
+*Cited by 2: `audio/mix/_lead`, `audio/sfx/_lead`*
 
-- *Every conventional back input on this platform is unavailable, and that is sourced rather than assumed.** Escape *"is exclusively reserved for opening the Roblox menu"* and `ContextActionService` *"ignores all inputs registered by the CoreScripts"* ``. Gamepad **B toggles the Roblox menu** — reported against the UWP client, not reproducing in Studio, merged with no fix `` — which is enough to forbid B as the *only* gamepad close path and **not** enough to claim B is reserved on every client, so this sheet permits B as an extra best-effort path and never relies on it. And Roblox's own…
-- `` — Roblox's mobile input surface is touch gestures, motion sensors, haptics and on-screen buttons. **The Android hardware back button appears nowhere.** So on the largest device class there is no platform back input at all, which is why the close control has to be drawn.
+- Audio upload limits: `.mp3`, `.ogg`, `.wav` or `.flac`, *"less than 20 MB in size and 7 minutes in duration"*, ≤ 48 kHz, mono or stereo; import caps 2,000 per 30 days ID-verified, 100 unverified; the Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* free to use ``. **Note the coincidence worth stating in sheet 03:** one file's upload ceiling is the whole category's runtime memory budget.
+- **Audio provisioning.** Imported audio is private by default; *"The asset privacy system automatically ensures that the IDs of your imported audio can't be accessed by users without proper permissions"*, and permission is granted per experience. The Creator Store carries *"more than 100,000 professionally-produced sound effects and music tracks"* that are free-to-use. Formats `.mp3`, `.ogg`, `.wav`, `.flac`; under 20 MB and 7 minutes; sample rate ≤ 48 kHz; 2,000 imports per 30 days if ID-verified, 100 if not; uploads enter moderation and are visible only to the uploader until approved ``.…
+- **A newer API exists.** *"Sound objects don't have the same dynamic functionality as AudioPlayer objects"*, and the docs recommend `AudioPlayer` for new implementations ``. **Not my call** — instance class routes to whoever places the `Sound`/`AudioPlayer` creator (G5, Mix to raise, `representation` to place). Sheet 03 states its rows in fields both APIs have, so the choice does not reopen the key.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/funnel-events.md
 
@@ -766,6 +817,21 @@ did not fetch" becomes checkable instead of trusted.
 - *Growth is uncapped except where the layout physically cannot give.** Sheet 01 rules the index panel has no scroll region, so at `Largest` the 24 slots cannot grow without overflowing. The platform sanctions the cap it needs: a `UITextSizeConstraint` element *"won't expand beyond `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"* ``. So the 24 slot labels and the 4 headings are capped at their computed fit size; everything else in the game, including all prose, is uncapped and grows.
 - `` and its source `` — *"The **Text Size** setting maps to the `GuiService.PreferredTextSize` property which defaults to `Medium`"*; elements using `UITextSizeConstraint` *"won't expand beyond their `MaxTextSize` or shrink below `MinTextSize`, regardless of player preferences"*; labels with `TextScaled` enabled *"bypass the `PreferredTextSize` value entirely"*; `AutomaticSize` objects *"resize their bounds as text size changes"*; when `TextWrapped` is active *"text flows to additional lines as `PreferredTextSize` increases"*. On colour: *"over 5% of people in the world have some form of…
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/SoundService.yaml
+
+*Cited by 2: `audio/mix/_lead`, `audio/ui/_lead`*
+
+- `SoundService` defaults: `RolloffScale` 1, `DistanceFactor` 3.33, `DopplerScale` 1, `AmbientReverb` `NoReverb`, `VolumetricAudio` `Automatic`, `RespectFilteringEnabled` false, `ReverbEnabled` true, `OcclusionEnabled` true, `DiffractionEnabled` true `` ``.
+- `SoundService:PlayLocalSound` — *"Plays a copy of a Sound locally. The Sound will only be heard by the client calling this method, regardless of where it's parented to."* `` → an interface cue needs no world position and no attenuation; the roll-off consequence is `mix`'s.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/sound/objects.md
+
+*Cited by 2: `audio/mix/_lead`, `audio/sfx/_lead`*
+
+- Parenting decides spatialisation: child of a `BasePart` or `Attachment` is positional; *"within `SoundService` or `Workspace`"* is global, *"volume and pan position remain the same regardless of the user's sound listener position"*; and *"low `RollOffMaxDistance` values cause audio to abruptly cut off"* ``.
+- **Positional vs global is decided by parent.** *"Volume changes depending on the distance between the user's sound listener and the position of the part"* when parented to a BasePart or Attachment; parented to `SoundService` or `Workspace`, *"Volume and pan position remain the same regardless of the user's sound listener position or rotation"*. A BasePart parent emits from the whole surface; an Attachment emits from a point ``.
+- **`RollOffMode` defaults to `Inverse`; `EmitterSize` is deprecated — use `RollOffMinDistance` and `RollOffMaxDistance`** ``.
+
 ## https://readable.com/readability/flesch-reading-ease-flesch-kincaid-grade-level/
 
 *Cited by 2: `theme/tone/01-register`, `theme/tone/_lead`*
@@ -779,6 +845,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - `ChatWindowConfiguration.Enabled` defaults to **`true`** — "Whether to show the default chat window. Set to `false` to hide." ``
 
+## https://robloxapi.github.io/ref/class/Sound.html
+
+*Cited by 2: `audio/ambient/_lead`, `audio/mix/_lead`*
+
+- 1. **The `SoundId` sentinel.** `mix` rules it once for six domains and my rows must adopt whatever it picks. My research narrows it — the field is `ContentId` with an empty default ``, so `release`'s numeric `0` demonstrably does not transfer — but the choice between `""` and a sentinel string is theirs. 2. **The 20 MB `Sounds` allocation.** If `mix` splits the budget six ways, a continuously resident looping bed is the largest single claim in the category and the split may not fund the loop length sheet `01` needs. The residue then routes to loop length, not to layer count. 3. **Roll-off…
+- `Sound` defaults: `SoundId` empty, `Volume` 0.5 (range 0–10), `RollOffMode` `Inverse`, `RollOffMinDistance` 10, `RollOffMaxDistance` 10000, `EmitterSize` 10, `PlaybackSpeed` 1, `Looped` false ``; `Volume` *"can be set between 0 and 10"*, `RollOffMinDistance` is *"the minimum distance, in studs, at which a Sound which is parented to a BasePart or Attachment will begin to attenuate"* ``.
+
 ## https://rolearn.dev/guidance/roblox-gamepass-pricing-strategy-guide/
 
 *Cited by 2: `gameplay/monetization/01-the-offer-ladder`, `gameplay/monetization/_lead`*
@@ -790,7 +863,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `ui-ux/hud/01-persistent-surface-composition`, `ui-ux/hud/_lead`*
 
-- *The defect is a missing unit, not a wrong number.** The playtest recorded six boxes where three belong and the cause on record is *"no contract key owns the composition"* ``. `Pressables.luau:167-169` names the same thing from the other side: *"NO CONTRACT KEY OWNS THE HUD'S CLUSTER GEOMETRY"* ``. Proximity is the mechanism: *"Items close together are likely to be perceived as part of the same group"*, and proximity **overrides** colour and shape similarity ``. So two nodes half a screen apart read as two objects however they are captioned, and adjacency alone would be a geometry rule I…
+- *The defect is a missing unit, not a wrong number.** The playtest recorded six boxes where three belong and the cause on record is *"no contract key owns the composition"* ``; `Pressables.luau:167-169` says the same from the other side. Proximity is the mechanism: *"Items close together are likely to be perceived as part of the same group"*, and proximity **overrides** colour and shape similarity ``. Two nodes half a screen apart read as two objects however they are captioned. `[cid: decided]`
 - The grouping rule has a source rather than being taste: *"Items close together are likely to be perceived as part of the same group — sharing similar functionality or traits"*, with minimal spacing within a group and larger whitespace between groups, and the note that proximity **overrides colour and shape similarity** ``. This is the argument for why one readout and one control drawn half a screen apart read as two objects and not as one row, which is the defect in the player's own words.
 
 ## https://www.nngroup.com/articles/glanceable-fonts/
@@ -798,7 +871,7 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 2: `theme/tone/01-register`, `ui-ux/hud/01-persistent-surface-composition`*
 
 - *P9 is decided against the one piece of evidence that contradicts it.** For glanceable isolated words, *"Lowercase lettering required 26% more time for accurate reading than uppercase"*, though character size dominates case ``. P9 still forbids stored all-caps, because `theme/vocabulary/01-naming-form` (pack §4) already fixed Title Case, uppercase is lossy, and rendered case is typography that UI/UX can apply to a whole class of label at draw time. `[cid: decided]`
-- *Rendered case equals stored case; no `string.upper` anywhere on this surface.** The one piece of evidence against says lowercase cost *"26% more time for accurate reading than uppercase"* for glanceable isolated words ``. I overrule it here: these labels are static furniture beside a changing number, read once and then never again, so label read-time is not the binding cost — while a second spelling of a term is permanent and is what `theme/vocabulary/03`'s one-spelling invariant exists to catch. Five mismatches ship today. `[cid: decided]`
+- *Rendered case equals stored case.** The evidence against says lowercase costs *"26% more time for accurate reading than uppercase"* for glanceable isolated words ``. Overruled: these labels are static furniture beside a changing number, read once, so label read-time is not the binding cost, while a second spelling is permanent and is what `theme/vocabulary/03`'s one-spelling invariant exists to catch. `[cid: decided]`
 
 ## https://www.roblox.com/games/123639373205511/Pressure-Wash-Incremental
 
@@ -972,6 +1045,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `tech/deploy/_lead`*
 
 
+## https://create.roblox.com/docs/reference/engine/classes/SoundService
+
+*Cited by 1: `audio/ambient/_lead`*
+
+- **A reverb or space sheet.** `SoundService.AmbientReverb` is a real global with real audible reach ``, but it colours **every** sound in the game including all five beats. That is a mix-bus decision by construction and it belongs to `mix`. Named here so nobody reads its absence as an oversight, and routed rather than taken.
+
 ## https://create.roblox.com/docs/reference/engine/classes/Stats
 
 *Cited by 1: `tech/networking/_lead`*
@@ -1012,6 +1091,17 @@ did not fetch" becomes checkable instead of trusted.
 
 - `https://create.roblox.com/docs/scripting/security/security-tactics` — "The server must be the ultimate source of truth"; exploiters can "Fire or invoke RemoteEvents and RemoteFunctions at any frequency with arbitrary arguments (besides the first Player argument)"; "Never trust the client".
 
+## https://create.roblox.com/docs/sound/assets
+
+*Cited by 1: `audio/ui/_lead`*
+
+- Audio assets: imported audio must be *"less than 20 MB in size and 7 minutes in duration"*; the asset privacy system *"automatically ensures that the IDs of your imported audio can't be accessed by users without proper permissions"*; the Creator Store carries free-to-use audio. `` → provisioning input for `mix`; my rows may not name an id the creator does not own.
+
+## https://create.roblox.com/docs/studio/optimization/memory-usage
+
+*Cited by 1: `audio/ambient/_lead`*
+
+
 ## https://create.roblox.com/docs/studio/optimization/memory-usage`
 
 *Cited by 1: `tech/performance/_lead`*
@@ -1036,11 +1126,23 @@ did not fetch" becomes checkable instead of trusted.
 
 - `https://create.roblox.com/docs/workspace/streaming` — `StreamingMinRadius` default 64 studs, `StreamingTargetRadius` default 1024 studs; the four `ModelStreamingMode` values with their descriptions; `StreamingIntegrityMode` recommended `PauseOutsideLoadedArea`.
 
+## https://devforum.roblox.com/t/action-needed-upcoming-changes-to-asset-privacy-for-audio/1701697
+
+*Cited by 1: `audio/music/_lead`*
+
+- Audio privacy: since 22 March 2022 uploaded audio over 6 seconds is private to its uploader, with per-experience permissions grantable; only audio of 6 seconds or less can be made public. **Consequence the category has not stated: a Creator Store music or long-form asset already has a live id, so it does not pass through an upload gate at all** — which bears directly on `G2` (Mix's missing provisioning gate) and on whether a sentinel is needed for a long asset. ``
+
 ## https://devforum.roblox.com/t/balancing-exponential-upgrade-progression/2434950
 
 *Cited by 1: `gameplay/balance/_lead`*
 
 - **Negative evidence, recorded so nobody re-searches it.** Two Roblox DevForum threads on simulator cost curves give ad-hoc formulas (`value = 6*level^3`, `price = steepness^rebirth`) and explicitly **no** multipliers, level-span guidance, income-to-cost ratios or time-to-afford targets; the advice given is "use desmos … to see what you like" `` ``. **There is no Roblox-native cost-curve convention to cite.** Every cost figure in `03` is therefore `[playtest unknown]` by necessity, not by laziness.
+
+## https://devforum.roblox.com/t/change-default-sounds-in-rbxcharactersounds/1162202
+
+*Cited by 1: `audio/sfx/_lead`*
+
+- **The override is a name collision, not an API.** *"create a new LocalScript inside StarterPlayerScripts, rename it to RbxCharacterSounds"*, which supersedes the CoreScript ``. Corroborated: the recommended method is copying the default script into `StarterPlayerScripts` and editing ids there rather than reaching into character descendants ``.
 
 ## https://devforum.roblox.com/t/chat-in-places-with-chatversion-as-legacychatservice-broken-completely/3904561`
 
@@ -1048,11 +1150,30 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Could not verify, marked `[unverified]` for the writer:** whether `TextChatService.ChatVersion` can be *read* from a server script post-migration. The deprecation notice confirms the property still exists on the class but no page I retrieved states its runtime read behaviour under compatibility mode, and the architect's "no reliable read" is an assertion I could neither confirm nor overturn. The fetch that would settle it is the full property detail on `https://create.roblox.com/docs/reference/engine/classes/TextChatService#ChatVersion` with the deprecation panel expanded, or a devforum…
 
+## https://devforum.roblox.com/t/disabling-default-footsteps-sounds/1342744
+
+*Cited by 1: `audio/sfx/_lead`*
+
+- **They are created client-side, not by the place.** *"those sounds in the humanoidrootpart are created on the player client, not on the server"*, so a server script cannot silence another player's footsteps ``.
+- **The override is a name collision, not an API.** *"create a new LocalScript inside StarterPlayerScripts, rename it to RbxCharacterSounds"*, which supersedes the CoreScript ``. Corroborated: the recommended method is copying the default script into `StarterPlayerScripts` and editing ids there rather than reaching into character descendants ``.
+
+## https://devforum.roblox.com/t/failed-to-load-soundid-error-spam-extreme-log-file-sizes/2225682
+
+*Cited by 1: `audio/ui/_lead`*
+
+- A sound whose id will not load errors in the console rather than failing silently — *"Currently if an audio is played but it won't load (such as the sound id being zero), Roblox will CONSTANTLY error it in the console"*; staff acknowledged and the **spam** was fixed in 2023, not the error itself. `` → the sentinel guard must sit at the play site, not at the id.
+
 ## https://devforum.roblox.com/t/full-release-build-cross-platform-ui-with-the-viewportdisplaysize-api/3880384
 
 *Cited by 1: `ui-ux/platform/_lead`*
 
 - `GuiService.ViewportDisplaySize` (`Small`/`Medium`/`Large`) exists and is the platform's own device-class instrument. ``
+
+## https://devforum.roblox.com/t/how-do-you-play-a-sound-without-restarting-it/1101216
+
+*Cited by 1: `audio/sfx/_lead`*
+
+- **One `Sound` cannot overlap itself.** `Play()` *"sets TimePosition to the last value set by a script (or 0 …), then sets Playing to true"* ``, and the community reading is unambiguous — *"doing this restarts the sound if it was already playing"*, overlap requires multiple instances ``. **This is why `response`'s `onOverload: "overlap"` at 8/s is a data requirement and not a note:** a builder handed one row with one id builds a machine-gun restart, which two builders would not converge on.
 
 ## https://devforum.roblox.com/t/how-would-i-go-about-making-a-index-like-find-the-markers/1715824
 
@@ -1070,6 +1191,23 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/fantasy/_lead`*
 
 
+## https://devforum.roblox.com/t/new-asset-privacy-and-permissions-features-for-audio-and-video/2725248
+
+*Cited by 1: `audio/mix/_lead`*
+
+- Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
+
+## https://devforum.roblox.com/t/public-sound-effects-upload-are-now-available-for-creators/2980704
+
+*Cited by 1: `audio/stingers/_lead`*
+
+- `` (2024-05-23) — a creator may distribute a sound effect publicly only if *"the audio length must be <10 sec"* and they are 13+, ID-verified and in good moderation standing, and a consumer *"will need to acquire the asset from the Creator Store and add to your inventory"*. All three of my cues are inside 10 s by construction, so nothing here bounds the design.
+
+## https://devforum.roblox.com/t/roblox-audio-api-exits-beta-enhanced-sound-controls-now-available/3153454
+
+*Cited by 1: `audio/ambient/_lead`*
+
+
 ## https://devforum.roblox.com/t/setcore-sendnotification-help/764252
 
 *Cited by 1: `ui-ux/feedback/_lead`*
@@ -1081,6 +1219,18 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `gameplay/balance/_lead`*
 
 - **Negative evidence, recorded so nobody re-searches it.** Two Roblox DevForum threads on simulator cost curves give ad-hoc formulas (`value = 6*level^3`, `price = steepness^rebirth`) and explicitly **no** multipliers, level-span guidance, income-to-cost ratios or time-to-afford targets; the advice given is "use desmos … to see what you like" `` ``. **There is no Roblox-native cost-curve convention to cite.** Every cost figure in `03` is therefore `[playtest unknown]` by necessity, not by laziness.
+
+## https://devforum.roblox.com/t/sound-play-limitations/552486
+
+*Cited by 1: `audio/mix/_lead`*
+
+- **Roblox publishes no simultaneous-sound limit, at any device tier, anywhere.** Four fetches found only community measurement: one benchmark reporting normal operation to ~400 synchronised instances, desync at 401–500 and progressive cutout above, explicitly on an Intel i5-12500H with 16 GB and *"no Roblox staff confirmation"* ``; and one report of a background music track silently entering a playing-but-inaudible state at *"maybe around 25"* rapid GUI one-shots, also unconfirmed ``. **Neither is a phone and neither is a platform statement.** The second is the only phone-adjacent evidence…
+
+## https://devforum.roblox.com/t/total-sound-instance-limit/3736250
+
+*Cited by 1: `audio/mix/_lead`*
+
+- **Roblox publishes no simultaneous-sound limit, at any device tier, anywhere.** Four fetches found only community measurement: one benchmark reporting normal operation to ~400 synchronised instances, desync at 401–500 and progressive cutout above, explicitly on an Intel i5-12500H with 16 GB and *"no Roblox staff confirmation"* ``; and one report of a background music track silently entering a playing-but-inaudible state at *"maybe around 25"* rapid GUI one-shots, also unconfirmed ``. **Neither is a phone and neither is a platform statement.** The second is the only phone-adjacent evidence…
 
 ## https://devforum.roblox.com/t/tycoon-button-system/1923669
 
@@ -1097,6 +1247,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `tech/performance/_lead`*
 
 - **The official Roblox mobile minimum specification.** `https://en.help.roblox.com/hc/en-us/articles/203625474-Roblox-Mobile-System-Requirements` returned HTTP 403 on direct fetch and the Fandom mirror returned HTTP 402. Search snapshots of the official page give iOS 14 / iPadOS 14 and iPhone 6s class, Android 8.0 with OpenGL ES 3.0; a dated secondary (`https://bloxboom.com/blog/roblox-system-requirements`, 2025-05-21) gives iOS 11 / Android 5.0 and 2 GB RAM, which **contradicts the snapshot on both OS versions**. `[unverified]`. The fetch that settles it is that help-centre article from a…
+
+## https://en.help.roblox.com/hc/en-us/articles/360000927163-Using-Licensed-Music-on-Roblox
+
+*Cited by 1: `audio/music/_lead`*
+
+- Licensed-music terms: APM Music catalogue, royalty-free on-platform, **up to 250 licensed tracks at a time in a single experience**, boom-box use counted. ``
 
 ## https://en.wikipedia.org/wiki/Basilica_Cistern
 
@@ -1144,6 +1300,13 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `gameplay/monetization/_lead`*
 
 - **Two independent third-party pricing guides agree on the rung structure**, which is the only corroboration available for "impulse to whale" as a shape: impulse **"25 - 75"** / **"25–75 R$ — reflex buy"**; mid **"99 - 249"** / **"100–250 R$ — considered buy"**; premium **"249 - 499"** / **"400–1,000+ R$ — commitment buy"**; and a whale band of **"999 - 4,999"**. One adds that round numbers (100, 250, 500) perform marginally better than charm prices on Roblox. `` ``
+
+## https://github.com/Roblox/creator-docs/blob/main/content/en-us/audio/assets.md
+
+*Cited by 1: `audio/music/_lead`*
+
+- *The cost of the other answer, so the ruling is a trade and not a preference.** A permanent tonal pad establishes a fixed harmonic centre, and every pitched cue in the game — `OPEN.md §2`'s per-tier note, `B1`, `B4` — must then be tuned to it or trip `theme/tone/04` `D3`'s ban on *"a dissonant or detuned interval"*. That is a constraint imposed on three other domains in exchange for one asset's worth of warmth. It is also the largest single asset class this build could hold: a Roblox audio upload may itself be up to **20 MB**, against a `budgets.memoryCeilingsByCategory.Sounds` ceiling of…
+- Roblox audio asset limits and the Creator Store library — uploads must be *"less than 20 MB in size"*, *"less than 7 minutes in duration"*, mp3/ogg/wav/flac, ≤48 kHz; the store carries *"more than 100,000 professionally-produced sound effects and music tracks from top audio and music partners"* free to use. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/characters/appearance.md
 
@@ -1203,11 +1366,29 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/fantasy/_lead`*
 
 
+## https://raw.githubusercontent.com/Roblox/Core-Scripts/master/PlayerScripts/StarterCharacterScripts/Sound/LocalSound.client.lua
+
+*Cited by 1: `audio/sfx/_lead`*
+
+- **They exist and they are ten.** The default set is `"Died, Running, Swimming, Climbing, Jumping, GettingUp, FreeFalling, FallingDown, Landing, Splash"`, with Running, Swimming and Climbing looped and Jumping, GettingUp and Died one-shot; Landing and Splash scale volume with vertical speed, FreeFalling fades in over 1.1 s above 75 studs/s ``.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/cloud-services/data-stores/error-codes-and-limits.md`
 
 *Cited by 1: `tech/persistence/_lead`*
 
 - `https://create.roblox.com/docs/cloud-services/data-stores/error-codes-and-limits` and its source `https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/cloud-services/data-stores/error-codes-and-limits.md` — fetched separately and cross-checked; the numbers agree. Server-level standard per minute: read `60 + numPlayers × 40`, write `60 + numPlayers × 40`, list `5 + numPlayers × 2`, remove `60 + numPlayers × 40`. Experience-level per minute: read `300 + concurrentUsers × 40`, write `300 + concurrentUsers × 20`, list `300 + concurrentUsers × 2`, remove `300 +…
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/performance-optimization/improve.md
+
+*Cited by 1: `audio/mix/_lead`*
+
+- *"Audio files can be a surprising contributor to memory usage, particularly if you load all of them into the client at once rather than only loading what you need for a portion of the game"* — the platform's only guidance on audio memory, and it is a sentence, not a number ``. The same page also supplies the `CanTouch`/`CanQuery` guidance `tech/performance/01` recorded as owed.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/creator-store.md
+
+*Cited by 1: `audio/mix/_lead`*
+
+- Audio privacy: uploaded audio is private, *"only you can view and use it"*, and usage permission is granted per experience; the flow is Creator Hub → Creations → Asset Details → Permissions and *"your friend will need to insert it into their experience to grant that experience access"* ``. A restricted asset without permission *"cannot load in Studio or at runtime"* ``. **This is the provisioning finding:** granting an experience permission requires the experience to exist, so audio inherits `release` gate 1 (publish first) and needs two gates, not one.
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/game-design/core-loops.md
 
@@ -1220,6 +1401,43 @@ did not fetch" becomes checkable instead of trusted.
 
 - Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
 
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/ContentProvider.yaml
+
+*Cited by 1: `audio/mix/_lead`*
+
+- `ContentProvider:PreloadAsync` *"yields until all of the assets associated with the given Instances have loaded"* and handles instances with content links *"such as `Decal` and `Sound`"*; best practice is *"only preload essential assets, not the entire Workspace… You might get occasional pop-in, but it decreases load times"* ``.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/GuiButton.yaml
+
+*Cited by 1: `audio/ui/_lead`*
+
+- `GuiButton.Activated` — *"Fires when a left click press-and-release is detected on desktop, touch release is detected on mobile, or **A**/cross is activated in UI navigation mode on console."* `MouseButton1Down`/`Up` are mouse-only. `` → settles press-versus-release across all three device classes in one fact.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/classes/SoundGroup.yaml
+
+*Cited by 1: `audio/mix/_lead`*
+
+- `SoundGroup` is *"used to manage the volume and sound effects on multiple Sounds at once"*, its `Volume` is a 0–10 multiplier applied to member sounds, membership is by the `Sound.SoundGroup` property and **not** by parenting, and groups nest `` ``.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/reference/engine/enums/RollOffMode.yaml
+
+*Cited by 1: `audio/mix/_lead`*
+
+- `RollOffMode`: `Inverse` (0) attenuates as `RollOffMinDistance/distance` and **does not use `RollOffMaxDistance`**; `Linear` (1) and `LinearSquare` (2) attenuate *between* min and max; `InverseTapered` (3) is the lesser of the two ``. **This is the load-bearing one for the cap:** at the engine default nothing is ever culled by distance.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/sound/groups.md
+
+*Cited by 1: `audio/mix/_lead`*
+
+- `SoundGroup` is *"used to manage the volume and sound effects on multiple Sounds at once"*, its `Volume` is a 0–10 multiplier applied to member sounds, membership is by the `Sound.SoundGroup` property and **not** by parenting, and groups nest `` ``.
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/optimization/memory-usage.md
+
+*Cited by 1: `audio/mix/_lead`*
+
+- 1. **No loudness, level or dynamic-range position exists anywhere in the brief or either contract.** `OPEN.md §2` describes character and nothing else. → sheet `01`, as `[cid: decided]` values flagged to the developer. 2. **Nothing states whether another player's work is audible, or from how far.** `social/02` B3 is a *sight* requirement; `social/03` X10 permits *"A's own patches clearing — the instance disappearing and the clear cue that accompanies it"* to reach a second client without saying whether that cue exists or how far it carries; `plots.pitchStuds` 122 and `budgets.streaming`…
+- PlaceMemory reports **two** audio categories — `Sounds` (*"in-memory sounds"*) and `StreamingSounds` (*"streaming sounds"*) — among 22 ``. This also closes `tech/performance/01`'s own `[research owed:]` for the PlaceMemory category tree.
+
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/ui/...`
 
 *Cited by 1: `ui-ux/navigation/_lead`*
@@ -1230,6 +1448,12 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `theme/fantasy/_lead`*
 
+
+## https://robloxapi.github.io/ref/class/SoundService.html
+
+*Cited by 1: `audio/mix/_lead`*
+
+- `SoundService` defaults: `RolloffScale` 1, `DistanceFactor` 3.33, `DopplerScale` 1, `AmbientReverb` `NoReverb`, `VolumetricAudio` `Automatic`, `RespectFilteringEnabled` false, `ReverbEnabled` true, `OcclusionEnabled` true, `DiffractionEnabled` true `` ``.
 
 ## https://rolearn.dev/guidance/first-week-retention-optimization/
 
@@ -1281,6 +1505,13 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `gameplay/systems/05-the-find-ledger`*
 
 - **Draw-without-replacement is a shipped, named mechanic.** `` — the box gacha, a prize "permanently removed from the gacha prize pool", no currency anywhere in the mechanism.
+
+## https://www.international-sound-directory.com/2025/12/07/do-people-really-play-mobile-games-without-sound-myth-or-reality/
+
+*Cited by 1: `audio/music/_lead`*
+
+- *This ruling does not rest on muted play, and I will not let it.** The category derives its muted-player invariant from *"a large share of sessions run with no sound at all"*, which no source in this repo supports. The one survey I could find reports **34.9% always / 23.6% often / 19% sometimes / 9.3% never** playing with sound, n=541 `` — general mobile, neither Roblox-specific nor 8–14, so directional only. A silence ruling built on an unevidenced muting reflex would be the comfortable answer this pipeline exists to remove. **What carries when sound is off is unaffected by me either…
+- Mobile muted-play figures, cited above with their limits. ``
 
 ## https://www.roblox.com/games/126244816328678/DIG
 
