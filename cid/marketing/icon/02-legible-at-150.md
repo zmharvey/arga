@@ -11,7 +11,7 @@ a greyscale silhouette test on the downsampled image requiring exactly **2** con
 Evaluated at **512**, **150** and **64** px; the 64 is `[unverified]`. A failure changes the crop,
 the camera pitch, the boundary angle or the area split, and **never a lighting or palette value.**
 
-**This sheet carries no `manifest` block**, on `art/lighting/02`'s precedent: it enforces
+**This sheet carries no manifest block**, on `art/lighting/02`'s precedent: it enforces
 **`storeIcon.legibility`**, which sheet `01` supplies, and a procedure constraining one key is not a
 second key.
 
@@ -55,12 +55,18 @@ sibling]` **The cap is deliberately conservative because the floor is unknown**,
 that would relax it is that fetch: if 150 is the true floor, `maxRegions` rises to 3 and every other
 threshold below is unchanged. `[cid: decided]`
 
-**Two arithmetic facts do most of the work here and both come from the palette, not from me.**
+**`L3` is what excludes the canopy from this icon, and it is worth naming which rule does the work.**
+`canopy.leaf` 59.31 against the `tiers[0]` 123.11 sheet `01` actually shows is a separation of
+**63.80** — it clears `L4`'s 40 floor comfortably, so the canopy is excluded by the **region budget
+and nothing else**. What is true about its colour is a standing note rather than the reason:
+`canopy.leaf` sits only **10.26** below `tiers[3]` 69.57, so anyone who later shows a darker tier
+alongside canopy fails `L4` as well as `L3`.
+
+**One arithmetic fact does come straight from the palette and it is the reason `L10` exists.**
 `stone.cleared` 201.84 and `stone.built` 195.84 differ by **6.00** — inside the 40 floor by
 `styleGuide` `C8`'s design, *"they are one stone"* — so the tread and the riser are **one region**
-and the icon does not get a free third band by including built stone. And `canopy.leaf` 59.31 sits
-**10.26** below `tiers[3]` 69.57, so canopy and dark overgrowth are also one region in greyscale,
-which is why sheet `01` set canopy area to 0. **Neither exclusion is taste; both are subtraction.**
+and the icon does not get a free third band by including built stone. That is subtraction, not
+taste, and `L10`'s second half is what stops a shadowed riser quietly restoring the band at render.
 
 **The rendered half of the check has no owner, and this sheet says so rather than pretending.**
 `L2`–`L5` and `L10` run **today**, on the merged manifest, with no image and no device. `L6`–`L9`
@@ -86,7 +92,7 @@ lighting.
 |---|---|---|---|
 | L1 | The metric is **Rec.601 luma**, `Y = 0.299R + 0.587G + 0.114B` on 0–255 gamma-encoded sRGB. No sheet substitutes sRGB relative luminance, a WCAG ratio, HSL lightness or perceptual L\* | `art/lighting/02` `V1`; `V13` forbids a WCAG conformance claim on this palette | `storeIcon.legibility.metric == "rec601-luma"` |
 | L2 | A **band** is a luma interval of width ≤ 40. A **region** is a connected pixel set of area ≥ **10%** of the image whose pixels all lie in one band | makes "region" countable rather than described | region extraction from the image; on the manifest, `storeIcon.composition.regions[]` has 2 entries |
-| L3 | **At most 2 regions.** `[unverified]` on the size that sets it — see `L6`. If the true render floor is 150 px, this becomes 3 and nothing else moves | a third band at 64 px is ~410 px and reads as an edge artifact | `storeIcon.legibility.maxRegions == 2`; the extracted region count at each `L6` size is ≤ 2 |
+| L3 | **At most 2 regions.** `[unverified]` on the size that sets it — see `L6`. If the true render floor is 150 px, this becomes 3 and nothing else moves | a third band at 64 px is ~410 px and reads as an edge artifact. **This is the rule that excludes the canopy, the sky, the tool and a text block from sheet `01`'s composition** | `storeIcon.legibility.maxRegions == 2`; the extracted region count at each `L6` size is ≤ 2 |
 | L4 | Every **adjacent** region pair is separated by ≥ **40** luma | `styleGuide`'s own required-40 figure; realised **72.73** worst case | arithmetic on `styleGuide.roles[*].luma` and `tiers[0].rgb`; runs with no image |
 | L5 | The pass rule is the **minimum** over adjacent region pairs — never the mean, never a percentile. One pair below 40 fails the icon | one muddy edge is the entire reason the rule exists | `storeIcon.legibility.passRule == "minimum"` |
 | L6 | Evaluated at **512** px (sourced: the platform's upload floor and template), **150** px (sourced as an *example*, not a published floor) and **64** px (**`[unverified]`**; `[research owed: the mobile app's per-surface rendered-size table for Home, Search and Discover]`). All three must pass | the size the icon is actually seen at is not published | `storeIcon.legibility.evaluatedAtPx == [512, 150, 64]`, and each entry in `evaluatedSizeStatus` carries `sourced`, `sourced-as-example` or `unverified` with a `settlingFetch` |
@@ -101,8 +107,10 @@ lighting.
 
 - **Icon composition (sheet `01`, `storeIcon`)** is constrained, not described: `maxRegions: 2` is
   what forbids the tool, the canopy, the sky, a text block and a second overgrowth tier from ever
-  being added to that composition without this sheet moving first. Every threshold above already
-  sits in `storeIcon.legibility`; **this sheet sets no value sheet `01` does not carry.**
+  being added to that composition without this sheet moving first — **`L3`, not a luma failure, is
+  the rule that does it in every one of those five cases except the sky**, which is excluded because
+  its luma is unmeasurable. Every threshold above already sits in `storeIcon.legibility`; **this
+  sheet sets no value sheet `01` does not carry.**
 - **Thumbnails work** is **not bound by any rule here.** `L3`'s cap of 2 is derived from a *square*
   icon downsampled toward 64 px; a 16:9 thumbnail is rendered far larger and its region budget is
   its own decision. If thumbnails work wants a shared instrument, `L1`, `L5`, `L7` and `L11` are the
@@ -132,8 +140,9 @@ lighting.
    (and `styleGuide.roles["stone.cleared"]` − `tiers[0]` `== 78.73`).
 3. `|luma601(styleGuide.roles["stone.cleared"].rgb) − luma601(styleGuide.roles["stone.built"].rgb)|`
    is **6.00**, strictly under 40, which is the condition under which `L10` treats both as one
-   region; and `|luma601(styleGuide.roles["canopy.leaf"].rgb) − luma601(tiers[3].rgb)|` is **10.26**,
-   also under 40, which is the arithmetic that puts canopy area at 0 in `storeIcon.composition`.
+   region. The canopy's exclusion is **not** checked as a separation failure:
+   `|luma601(styleGuide.roles["canopy.leaf"].rgb) − luma601(tiers[0].rgb)|` is **63.80** and
+   **passes** `L4`, so `storeIcon.composition.canopyAreaPct == 0` must cite `L3`'s `maxRegions: 2`.
 4. `storeIcon.legibility.evaluatedAtPx` has exactly three entries and the 64 px entry carries
    `status: "unverified"` with a non-empty `settlingFetch`; this sheet records **no** contrast-ratio
    claim, and the string `3:1` appears in it only as a quantity that **cannot** be reached.
@@ -141,12 +150,12 @@ lighting.
 ## Not decided here
 
 **Every value this sheet enforces** — sheet `01`, which supplies `storeIcon` and holds
-`storeIcon.legibility`; this sheet proposes no key and carries no manifest. **The focal subject, the
-crop, the camera pitch, the region area split and the production route** — sheet `01`; I state a
-rule they must satisfy and choose no composition. **The stone's rgb triple, the tier greens and the
-canopy colour** — `styleGuide` (`art/style/01`); read by field, chosen nowhere. **Every `Lighting`
-property, and the rendered-luma retention question the world-side floor rests on** —
-`lighting` (`art/lighting/01`) and its `V1`–`V13`; `L11` protects them and reopens none.
+`storeIcon.legibility`; this sheet proposes no key and carries no manifest block. **The focal
+subject, the crop, the camera pitch, the region area split and the production route** — sheet `01`;
+I state a rule they must satisfy and choose no composition. **The stone's rgb triple, the tier
+greens and the canopy colour** — `styleGuide` (`art/style/01`); read by field, chosen nowhere.
+**Every `Lighting` property, and the rendered-luma retention question the world-side floor rests
+on** — `lighting` (`art/lighting/01`) and its `V1`–`V13`; `L11` protects them and reopens none.
 **Whether the accessibility requirement is met** — `tiers`, by four shapes at four heights, per
 `V13`; this icon shows **one** tier and makes no rarity claim at all. **Who takes a rendered
 reading, on what device, and whether an in-engine pixel route ever becomes legal** — unowned today,

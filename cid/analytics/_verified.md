@@ -778,3 +778,32 @@ both ends rather than arbitrated, and the payoff-gap split reached independently
 had not read each other. The category's remaining exposure is not internal: it is that all seven keys
 describe instruments for a game with **zero analytics calls in `game/src`**, and whether any of them
 is ever readable is one decision by logging-pipeline work that no sheet here can make.
+
+## Round 3 (continued) — closed
+
+**Status: PASS.** The `area_cleared` field-3 defect is closed exactly as ruled, in four files
+rather than the three I named — `events/03` hard-coded the spelling too and would have kept a
+stale `U8` claim. Verified on disk: field 3 is `lap`, five values in `lapClock`'s order,
+byte-identical to `lapClock.originField.values`, so `engagement/02`'s criterion 1 now passes and
+that sheet needed no edit, as the tie-break predicted. `distinctValuesAcrossCatalog` 49→52 and
+`combinedValuesUsed` 900→954 (`9 × 2 × 53`), 7,046 headroom — the +3 is exactly the field's
+cardinality change and reconciles against rounds 1 and 2. `U8` deleted in both sheets. The
+session record's `lapWasSpanned` / `lapHadReset` / `loadWasFallback` lifecycle matches `X1`, `X2`
+and `X4`'s scopes respectively, including `fallback` dominating.
+
+**`telemetry.sharedPredicate` closes the structural finding, not just this instance.** It mirrors
+`funnels.sharedPredicate` and adds the rule that neither key may restate the list or adopt the
+other's field in place of citing the block — which is precisely what makes a third mutual-deference
+inversion impossible rather than merely unlikely. `settles` naming RR-14 and both inversions is the
+right record.
+
+**`U4` corrected unprompted, and it is the same class caught a third time:** a stale `unproducible`
+row that a sibling domain had made producible. Now scoped to an integer run count, with the binary
+declared producible over persisted fields.
+
+**Two checks remain escalated, not failed:** check 1 reassigned to the final Cross-Category pass as
+mis-scoped for a wave-5 category, check 2 narrowed to "a consumer or a resolving `refutes`". PASS
+holds under those narrowings; PARTIAL if either is declined, with no sheet changing either way.
+
+*Appended by the orchestrator from the verifier's text: it had no `Edit` tool in that context and
+judged reproducing ~900 lines by full-file write a worse risk than a missing addendum. Correct call.*

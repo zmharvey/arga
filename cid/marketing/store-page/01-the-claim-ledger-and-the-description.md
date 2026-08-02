@@ -1,6 +1,7 @@
 # 01 — The claim ledger and the description
 
-**Domain:** marketing/store-page · **Category:** Discovery & Marketing · **Wave:** 7
+**Domain:** marketing/store-page · **Category:** Discovery & Marketing · **Wave:** 7 ·
+**Revised:** verification round 1, `RR-4` (the mirror) and `RR-7` (the `restoration` predicate)
 
 ## Decision
 
@@ -36,13 +37,14 @@ breach. Rows `E6` and `E7` forbid each by name.
 **P4 closed: no duration appears, and that is a field rather than a silence.** There are two live
 figures, not none. `meta/04`'s eight-lap table sums to **1,265 s ≈ 21.1 min** at zero products
 `[research: cid/gameplay/meta/04-the-depth-ladder.md]`; `monetization/01`'s same table at `Span`
-×1.75 sums to **723 s ≈ 12.1 min** `[research: cid/gameplay/monetization/01-the-offer-ladder.md]`.
-**A duration in outward copy is therefore a claim whose truth depends on a purchase**, and a
-sentence true only for purchasers is the sharpest `T0` failure available to this category. Both
-figures are also hostage to `LAP_TARGET`, which `meta/04` publishes as `[playtest unknown]` inside
-120–200 s with every footprint rescaling; Balance & Tuning has not run. `core-loop/04`'s
-*"minute 11"* is pre-R-2 and dead and appears nowhere here. **Content volume is stated instead** —
-24, 4, 6 — because R-3 fixed it by ruling and no tuning value moves it.
+×1.75 sums to **723.1 s ≈ 12.1 min**
+`[research: cid/gameplay/monetization/01-the-offer-ladder.md]`. **A duration in outward copy is
+therefore a claim whose truth depends on a purchase**, and a sentence true only for purchasers is
+the sharpest `T0` failure available to this category. Both figures are also hostage to
+`LAP_TARGET`, which `meta/04` publishes as `[playtest unknown]` inside 120–200 s with every
+footprint rescaling; Balance & Tuning has not run. `core-loop/04`'s *"minute 11"* is pre-R-2 and
+dead and appears nowhere here. **Content volume is stated instead** — 24, 4, 6 — because R-3 fixed
+it by ruling and no tuning value moves it.
 
 **P5 closed: the absence is stated, once, and never as a denial.** `CONCEPT.md` argues it must be
 said plainly because *"genre-literate players will otherwise arrive expecting rebirth and idle and
@@ -56,6 +58,17 @@ clear"* is `theme/fantasy/02`'s outward form of *"finished work is never asked f
 `[brief: binding]` ← `[you chose: R2 Q1]`. *"All 24 finds can be reached without buying anything"*
 is `products` `F17`, and in a genre where the reference sells a 2,500-Robux tool it is unusual
 enough to be worth its own block.
+
+**`T2` had two readings inside one category and now has a test (`RR-7`).** The predicate reads
+*"any claim that the world ends up restored, reclaimed or finished"*, and *ends up* is doing all
+the work: it falsifies an **outcome**, not a **kind-term**. So the discriminator is grammatical and
+it is grepable — **the noun fails `T2` when it takes a definite object or a completion adjunct**
+(`Ruin Restoration`, *restore the ruin*, *restored*, *reclaimed*, *fully restored*) **and clears it
+when it is a bare kind-term in a sentence carrying no perfective verb** (*a restoration game*,
+exactly as *a racing game* claims nobody finishes a race). `S1.L2` is the second form and the rest
+of its sentence is continuous present — *you walk*, *clears where you pass*, *goes into*. Carried
+as `t2Predicate` so the cross-category pass has one test rather than two readings, and pushed back
+on below, because `name/01`'s ground 3 states the first form as though it were the word.
 
 **The description makes no claim about what exists after the 24th find.** `theme/fantasy/02`
 forbids promising endless new things to find and a world that ends up reclaimed; the ground does
@@ -128,7 +141,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       ],
       "durationClaim": {
         "stated": false,
-        "reason": "two live figures exist and they differ by a purchase: 1265 s (21.1 min) at zero products from meta/04's eight-lap table, and 723 s (12.1 min) with Span owned from monetization/01's. A duration in outward copy is a claim whose truth depends on whether the reader has bought something.",
+        "reason": "two live figures exist and they differ by a purchase: 1265 s (21.1 min) at zero products from meta/04's eight-lap table, and 723.1 s (12.1 min) with Span owned from monetization/01's. A duration in outward copy is a claim whose truth depends on whether the reader has bought something.",
         "alsoUnstableBecause": "meta/04 publishes LAP_TARGET as playtest unknown inside 120 to 200 s and states every footprint rescales with it. pacing is Balance and Tuning's (wave 4) and has not run.",
         "staleFigureNeverUsed": "core-loop/04's minute 11 of session 1 is pre-R-2 and appears nowhere in this key.",
         "reopeningCondition": "Balance and Tuning fixes LAP_TARGET and pacing merges. A duration may then be stated only if it is qualified by product ownership, or if the two figures converge."
@@ -149,7 +162,30 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       "truthCondition": "the condition under which the row stays true. 'always' means no key, tuning value or purchase can falsify it.",
       "tCleared": "the T1 to T10 ids this row was diffed against. A row clearing zero predicates has not been checked.",
       "imageRowsAlsoRequire": ["captureSource"],
-      "imageRowRule": "no captureSource may be game/src/shared/Theme.luau as it ships today (G2, T8). Image rows belong to storeIcon and storeThumbnails, not to this key."
+      "imageRowRule": "no captureSource may be game/src/shared/Theme.luau as it ships today (G2, T8). Image rows belong to storeIcon and storeThumbnails, not to this key.",
+      "countPathRule": "a row stating the collection total uses sum(len(collection.sets[i].relics)). The collection key holds className, classPlural, relicsPerArea, areasPerDepth and sets, and no total or totalFinds field exists."
+    },
+    "t2Predicate": {
+      "proposedAt": "cid/marketing/store-page/01, verification round 1, request RR-7",
+      "why": "T2 reads 'any claim that the world ends up restored, reclaimed or finished'. Two leaf sheets in one category read one word two ways: name/01 ground 3 treats restoration as falsifying T2 on sight, while storeListing.description.S1.L2 and storeListing.discovery both carry it. The predicate needed a test rather than a verdict.",
+      "operativeWords": "ends up. T2 falsifies an OUTCOME, not a KIND-TERM.",
+      "failsT2": {
+        "rule": "the restoration noun takes a definite object, or the sentence carries a completion adjunct or a perfective verb",
+        "examples": ["Ruin Restoration", "the restoration of the ruin", "restore the ruin", "restored", "fully restored", "reclaimed", "the finished ruin", "complete the restoration", "brought back"],
+        "grep": "/restor(e|es|ed|ing) the|restoration of|fully restored|reclaim(ed)?|the finished|complete[ds]? the|brought back/i"
+      },
+      "clearsT2": {
+        "rule": "the noun is a bare kind-term with no object attached, AND the sentence it sits in carries no perfective or terminal verb",
+        "examples": ["A restoration game."],
+        "analogy": "a racing game claims nobody finishes a race, and a cooking game claims no meal is finished. The kind-term names the activity, not its completion.",
+        "grep": "the sentence matches /\\ba restoration game\\b/ and returns 0 matches for failsT2.grep"
+      },
+      "positionMatters": "a description sentence can qualify the noun with the clause that follows it; a two-word title cannot. That is the whole of the difference between S1.L2 and the Ruin Restoration candidate, and it is why name/01's ground 3 is right about the title and wrong about the word.",
+      "appliedTo": [
+        { "surface": "storeListing.description.S1.L2", "text": "A restoration game.", "verdict": "clears T2", "because": "no object attached to the noun, and the rest of the sentence is continuous present: you walk, clears where you pass, goes into" },
+        { "surface": "storeListing.discovery keyword restoration", "verdict": "clears T2", "because": "a keyword is not a sentence and asserts nothing on its own. It inherits the verdict of the line it sits in, which is S1.L2" },
+        { "surface": "name/01 alternate A3, the title Ruin Restoration", "verdict": "fails T2", "because": "the noun takes a definite object and a two-word title has no room to qualify it. This is what name/01 ground 3 should say" }
+      ]
     },
     "claims": [
       {
@@ -165,9 +201,10 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
         "id": "C2",
         "text": "A restoration game. You walk an old ruin, the green clears where you pass, and what was buried under it goes into a permanent index.",
         "surface": "storeListing.description.S1.L2",
-        "backedBy": ["05-OUTWARD.md positioning [you chose: R4 Q2]", "cid/theme/setting/01-the-ruin.md", "cid/gameplay/mechanics/01-reach-and-pace.md", "collection"],
-        "check": "storeListing.discovery.subgenre is not 'Incremental Simulator'; the substrings 'simulator', 'incremental' and 'idle' appear 0 times across every line in storeListing.description.",
-        "truthCondition": "always. Clearing on contact and the permanent index are both merged keys.",
+        "backedBy": ["05-OUTWARD.md positioning [you chose: R4 Q2]", "cid/theme/setting/01-the-ruin.md", "cid/gameplay/mechanics/01-reach-and-pace.md", "collection", "storeListing.t2Predicate"],
+        "check": "storeListing.discovery.subgenre is not 'Incremental Simulator'; the substrings 'simulator', 'incremental' and 'idle' appear 0 times across every line in storeListing.description; and this line returns 0 matches for t2Predicate.failsT2.grep while matching t2Predicate.clearsT2.grep.",
+        "truthCondition": "always. Clearing on contact and the permanent index are both merged keys, and the restoration noun is a bare kind-term with no object, so it names an activity and not an end state.",
+        "t2Diff": "re-diffed at verification round 1 against t2Predicate. Clears: no object attached to the noun, no perfective verb in the sentence, and no clause says the ruin ends up restored, reclaimed or finished. If t2Predicate is ever narrowed so the bare kind-term also fails, this line is struck and the binding positioning word leaves the description entirely, which is a bar-(a) outcome and is flagged to the developer rather than inherited.",
         "tCleared": ["T1", "T2", "T4"]
       },
       {
@@ -175,7 +212,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
         "text": "24 finds sit in 4 sets of 6. Every set you complete grants a permanent bonus.",
         "surface": "storeListing.description.S2.L3",
         "backedBy": ["collection.sets", "setBonus", "cid/_state.md ruling R-3"],
-        "check": "len(collection.sets) == 4; every set's relics array has length 6; the sum is 24; setBonus assigns a permanent axis factor to each of the 4. Every numeral in the description appears in collection and none exceeds it.",
+        "check": "len(collection.sets) == 4; every set's relics array has length 6; sum(len(collection.sets[i].relics)) == 24; setBonus assigns a permanent axis factor to each of the 4. Every numeral in the description appears in collection and none exceeds it.",
         "truthCondition": "always, by ruling R-3, which declined to grow any of them and said why.",
         "tCleared": ["T1", "T3"]
       },
@@ -211,7 +248,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
         "text": "All 24 finds can be reached without buying anything.",
         "surface": "storeListing.description.S4.L7",
         "backedBy": ["products.forbidden F17", "products.itemCount", "products.axesSold", "03-META.md 'Permanent multipliers only. Never content access.'"],
-        "check": "products.items[].axis is never a collection entry, an area id or a set; products.itemCount == 1 and axesSold == ['radius']; F17's own check passes, i.e. no product clears a patch, completes an area or grants a Find.",
+        "check": "products.items[].axis is never a collection entry, an area id or a set; products.itemCount == 1 and axesSold == ['radius']; F17's own check passes, i.e. no product clears a patch, completes an area or grants a Find; sum(len(collection.sets[i].relics)) == 24.",
         "truthCondition": "always while 03-META.md's content-access ban holds. It is the one claim in this ledger that no surveyed competitor can make.",
         "tCleared": ["T3", "T10"]
       }
@@ -230,12 +267,15 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       { "id": "E11", "thing": "the pass name, a Robux figure, a price, or any reference to the Store tab", "why": "sheet 04 owns every outward string about Span. A price in the description would go stale on a roadmap X1 move, which ships with no revision." },
       { "id": "E12", "thing": "an update, changelog, patch-notes, roadmap or 'coming soon' section", "why": "sheet 05. No slot is held open for one." },
       { "id": "E13", "thing": "the game's own name", "why": "title has no value. Every line here survives whatever the Name lead recommends and the developer ratifies." },
-      { "id": "E14", "thing": "'as shown', 'pictured' or any reference to a screenshot", "why": "G2 and T8. No capture is legitimate from any build that exists." }
+      { "id": "E14", "thing": "'as shown', 'pictured' or any reference to a screenshot", "why": "G2 and T8. No capture is legitimate from any build that exists." },
+      { "id": "E15", "thing": "any form of the restoration noun taking a definite object or a completion adjunct", "why": "storeListing.t2Predicate.failsT2. The bare kind-term is permitted at S1.L2; restore the ruin, restored, reclaimed and fully restored are not, on any surface in this key." }
     ],
     "blocksMirrored": {
-      "rule": "storeListing.discovery, .contentMaturity, .passListing and .updateNotes are amended by sheets 02, 03, 04 and 05. The amending sheet carries the complete block and governs every field in it. The copy below is a deliberate STRICT SUBSET, carrying only the fields a reader of the description needs; on any difference on a shared field, the amending sheet governs and this sheet is revised.",
+      "rule": "storeListing.discovery, .contentMaturity, .passListing and .updateNotes are amended by sheets 02, 03, 04 and 05. The amending sheet carries the complete block and governs every field in it. What appears below is a deliberate STRICT SUBSET carrying only the fields a reader of the description needs.",
       "mirrorIsStrictSubset": true,
-      "checkedBy": "for every field present in both, the values are equal; no field exists here that is absent from the amending sheet",
+      "checkedBy": "every leaf in the mirror exists at an identical path in its amending sheet with an identical value and an identical type. The mirror adds no field, no array and no nested object that the amending sheet does not carry at that same path.",
+      "arraysOfObjectsNotMirrored": "discovery.keywords, contentMaturity.questionnaire, passListing.claims, passListing.forbidden and updateNotes.forbidden live only in their amending sheets, because element-wise subset equality is not checkable in one pass.",
+      "revisedAt": "verification round 1, request RR-4. Four leaves failed the rule as first written: contentMaturity.analyticsUnder13Suppression was a string here and an object at /03, now dropped from the mirror; passListing.published and .publishedGate sat one level above /04's passListing.provisioning.*, now nested; passListing.statesFactorNumber and .statesPrice sat one level above /04's passListing.description.*, now nested; and discovery.keywordSurface carried a truncated string, now byte-identical to /02's.",
       "amendedBy": {
         "discovery": "cid/marketing/store-page/02-genre-and-where-keywords-live.md",
         "contentMaturity": "cid/marketing/store-page/03-age-and-content-settings.md",
@@ -248,18 +288,8 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       "subgenre": "Scavenger Hunt",
       "changeFrequencyLimit": "once every three months",
       "tagField": { "exists": "unverified", "selectableTagCount": 0 },
-      "keywordSurface": "storeListing.description.S1",
-      "keywordMaxRepeatsPerWord": 1,
-      "keywords": [
-        { "word": "restoration", "sitsIn": "S1.L2", "status": "true" },
-        { "word": "ruin",        "sitsIn": "S1.L2", "status": "true" },
-        { "word": "overgrowth",  "sitsIn": "S1.L1", "status": "true" },
-        { "word": "clear",       "sitsIn": "S1.L1", "status": "true" },
-        { "word": "buried",      "sitsIn": "S1.L1", "status": "true" },
-        { "word": "find",        "sitsIn": "S1.L1", "status": "true" },
-        { "word": "index",       "sitsIn": "S1.L2", "status": "true" },
-        { "word": "sets",        "sitsIn": "S2.L3", "status": "true" }
-      ]
+      "keywordSurface": "storeListing.description.S1, the summary block, because the platform states the first sentence is where genre and content are read",
+      "keywordMaxRepeatsPerWord": 1
     },
     "contentMaturity": {
       "label": "Minimal",
@@ -268,16 +298,19 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
       "audienceBand": "8-14",
       "categoryCount": 15,
       "categoriesAtNone": 15,
-      "unsetConsequence": "Roblox restricts the playability of the experience on the platform for all players.",
-      "analyticsUnder13Suppression": "unverified"
+      "unsetConsequence": "Roblox restricts the playability of the experience on the platform for all players."
     },
     "passListing": {
       "surface": "the Store tab of the experience page",
       "itemCount": 1,
-      "statesFactorNumber": false,
-      "statesPrice": false,
-      "published": false,
-      "publishedGate": 4
+      "description": {
+        "statesFactorNumber": false,
+        "statesPrice": false
+      },
+      "provisioning": {
+        "published": false,
+        "publishedGate": 4
+      }
     },
     "updateNotes": {
       "published": false,
@@ -294,11 +327,11 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
 
 | subject | what this forces or forbids |
 |---|---|
-| Naming work (`title`) | Every line here survives any name. **No line contains the game's name and none reserves a slot for it**, so a title recommendation moves zero strings in this key. If you rule a tagline exists as a separate artifact, `S1.L1` is that tagline's text and must not be published twice on one page. |
-| Thumbnail and icon work (`storeThumbnails`, `storeIcon`) | Reuse `claimRowShape` unchanged, and add `captureSource` to every image row. **Do not restate a claim this ledger already carries** — an overlay repeating `C1` is one claim on two surfaces with two `backedBy` arrays that can drift. `E14` forbids any description line referring to an image. |
+| Naming work (`title`) | **`t2Predicate` settles `RR-7` and it costs you one clause, not a candidate.** Ground 3 narrows to *"`<Noun> Restoration` reads as a finished-state claim in a title, where a description sentence can qualify the noun and a two-word title cannot"* — `t2Predicate.appliedTo[2]` verbatim. `Stone Under Green` survives on grounds 1 and 2 either way and `Ruin Restoration` stays alternate `A3` on the same reasoning. Separately, `claimRowShape.countPathRule` is the form to adopt for `G1`: `sum(len(collection.sets[i].relics))`, because `collection.total` does not exist. |
+| Thumbnail and icon work (`storeThumbnails`, `storeIcon`) | Reuse `claimRowShape` unchanged, add `captureSource` to every image row, and diff any overlay carrying the restoration noun against `t2Predicate.failsT2.grep`. **Do not restate a claim this ledger already carries** — an overlay repeating `C1` is one claim on two surfaces with two `backedBy` arrays that can drift. |
 | Social and Hype work (`channels`, `launchBeats`) | `E6` and `E7` are the description's half of the same closure. If either key ever names a channel, `E6` becomes false and this sheet is revised, not quietly widened. |
 | Balance & Tuning (`pacing`) | `durationClaim.reopeningCondition` is the one thing that would let a time figure into outward copy. Until `LAP_TARGET` is fixed, **do not hand this domain a number to publish**. |
-| Contract-and-seam work | `storeListing` is proposed with no shape. The rows a schema author needs are `claims[].backedBy` non-empty, `claims[].check` non-empty, `emojiCount == 0`, `exclamationMarkCount == 0`, and the `blocksMirrored` strict-subset equality. **Nothing in this key may emit into `GameConfig`** — it is human-typed at `release.provisioning` gates 1 and 4. |
+| Contract-and-seam work | `storeListing` is proposed with no shape. A schema author needs `claims[].backedBy` non-empty, `claims[].check` non-empty, `emojiCount == 0`, `exclamationMarkCount == 0`, and the `blocksMirrored.checkedBy` leaf-equality walk. **`t2Predicate` belongs at the category, not in one key**, if a second category ever collects `T1`–`T10` rows. Nothing here may emit into `GameConfig`. |
 | Release work (`release.publishChecklist`) | The checklist covers place settings and does not cover the description, the genre or the maturity questionnaire. **Three publish-time steps have no owner**, and gate 1 cannot legitimately complete without them. Requested as new rows there; not written here. |
 
 ## Acceptance criteria
@@ -306,13 +339,30 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
 1. `storeListing.description` renders exactly 7 lines in 4 sections; the concatenation contains
    **0** emoji, **0** codepoints above U+007E, **0** `!` characters, and **0** whole-word matches
    against `vocabulary.bannedWords` case-insensitively.
-2. `storeListing.claims` has exactly one row per line id in `description.sections[].lines[]`, and
-   every row has a non-empty `backedBy` array, a non-empty `check`, and a non-empty `tCleared`.
+2. `storeListing.claims` has exactly one row per line id in `description.sections[].lines[]`, every
+   row carries a non-empty `backedBy` array, a non-empty `check` and a non-empty `tCleared`, and the
+   concatenated description returns **0** matches for `t2Predicate.failsT2.grep`.
 3. The concatenated description contains **0** case-insensitive matches for
    `/relaxing|simulator|incremental|idle|rebirth|prestige|code|discord|group|favou?rite|limited|today only|minute|minutes|hour/`,
    and **0** numerals other than `24`, `4` and `6`.
-4. Every numeral in the description resolves against a merged key: `24 == sum(len(collection.sets[i].relics))`,
-   `4 == len(collection.sets)`, `6 == len(collection.sets[0].relics)`.
+4. Every leaf under the four mirrored blocks exists at an identical path, value and type in the
+   sheet named by `blocksMirrored.amendedBy`; and every numeral in the description resolves:
+   `24 == sum(len(collection.sets[i].relics))`, `4 == len(collection.sets)`,
+   `6 == len(collection.sets[0].relics)`.
+
+## Pushing back
+
+**Overruled: `name/01`'s ground 3 as written** — *"Restoration asserts an end state, and `T2`
+falsifies it."* Not the ruling, not the recommendation, and not `Ruin Restoration`'s rejection: the
+**scope of the word**. As written it applies `T2` to a lexeme rather than to a claim, and the
+consequence is that a reader enforcing it must strike `S1.L2`, and with it the `[brief: binding]`
+positioning word, from the platform's highest-value discovery slot — a bar-(a) outcome reached by a
+reasoning error rather than by a decision. `t2Predicate` supplies the discriminator, and under it
+**ground 3 is right about `Ruin Restoration` and wrong about the word**: a title binds the noun to a
+definite object and has no room to qualify it, which is exactly `failsT2`. **Grounds 1 and 2 were
+not contested and carry the recommendation on their own**, so this costs Name one clause and no
+candidate. I do not edit their sheet; the narrowing sits in `## Consequences` as a one-field change
+for them to make.
 
 ## Flagged to the developer
 
@@ -320,6 +370,7 @@ nothing today and gate 4 of `release.provisioning` is where a human types it in.
 |---|---|
 | **The listing does not call itself *relaxing*.** | `[cid: decided]`, the brief is silent and `theme/tone/01` explicitly released the word. Live alternatives: **(a)** as decided; **(b)** open `S1.L2` with it, which puts the first three words inside the four-game shared sentence; **(c)** use it once in `S3`, away from the summary. I recommend (a). One-line reversal. |
 | **No duration is published.** | `[cid: decided]`. The two current figures differ by a purchase (21.1 min unowned, 12.1 min with `Span`), and `pacing` has not run. If you want a figure outward, the honest form is *"about twenty minutes to find all 24, less if you own the pass"*, which advertises the pass inside the description and collides with `E11`. I recommend keeping the field at `stated: false`. |
+| **`T2` now has a test, and I wrote it.** | `[cid: decided]` under `RR-7`. `T2` is a category ruling and this refines what it catches: an outcome claim, not a lexeme. **If you read `T2` as banning the word outright, say so** — `S1.L2` loses its genre sentence, `restoration` leaves `storeListing.discovery`'s keyword set, and the binding positioning line then has no carrier anywhere on the page. That is the cost of the stricter reading and it should be chosen rather than inherited. |
 | **No character ceiling is set on the description.** | `[unverified]`. Nothing fetched states one and M-B forbids borrowing `vocabulary`'s. If the field truncates, the loss is `S4.L7`, which is the one claim no competitor can make — so if you can read the counter, tell me the number and I will reorder the blocks. |
 
 ## Not decided here
@@ -328,9 +379,10 @@ The genre and subgenre values, the keyword set and where each keyword sits — s
 content-maturity answers, the label and the eligibility band — sheet **03**. Every outward string
 about `Span`, including the Store tab name, description, icon constraints and the provisioning
 gate — sheet **04**; this sheet's `E11` forbids the description from mentioning any of it. The
-update-notes format — sheet **05**. The experience name and any tagline (Name). The icon
-(Icon). Every thumbnail, its composition and its `captureSource` (Thumbnails). Whether any channel
-or beat exists (Social, Hype). What is in an update (Live Ops — Roadmap). What `Span` costs, what
-it multiplies and whether it is sold (`products`). Every lap, footprint and completion figure
-(`depths`, `pacing`). Whether `bridge/schema.mjs` grows a shape for `storeListing` and what emitter
-would read it (contract-and-seam work).
+update-notes format — sheet **05**. **The title, and whether `name/01`'s ground 3 is narrowed or
+withdrawn — Name; I supply the predicate and change none of their fields.** The icon (Icon). Every
+thumbnail, its composition and its `captureSource` (Thumbnails). Whether any channel or beat exists
+(Social, Hype). What is in an update (Live Ops — Roadmap). What `Span` costs, what it multiplies
+and whether it is sold (`products`). Every lap, footprint and completion figure (`depths`,
+`pacing`). Whether `bridge/schema.mjs` grows a shape for `storeListing`, and whether `t2Predicate`
+is lifted from this key into `cid/marketing/_category.md` (contract-and-seam work).
