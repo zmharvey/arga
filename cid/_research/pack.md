@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 250 unique source(s); 164 were
+Extracted from `cid`. 258 unique source(s); 164 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -36,6 +36,20 @@ did not fetch" becomes checkable instead of trusted.
 - **Zero children closes O5, and the arithmetic is not close.** No key forbids a child on a patch — `representation.patch.properties` lists properties, not children. One `Decal` per patch at the merged deepest bay takes a lane from `patchCount + 6` = **646** to **1,286**, which is 20,576 Instances across `runtime.maxPlayers` 16 against `serverWorldInstanceCeiling` **12,000** — **171% of the ceiling**, from 86% today. That breaks at every batching factor, so it needs no measurement to rule. A `Decal` or `Texture` is separately an uploaded image asset, which…
 - `` — the distinction the enum page omits. A `MaterialVariant`'s texture maps require that you *"paste an asset ID or import a new texture from your computer"*; `SurfaceAppearance` uses the same PBR texture route; built-in base materials require no upload, their *"texture assets are bundled with Studio instead of being accessible as a typical asset ID."* **This settles that any custom material in this game is an uploaded image asset, which `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry: 0` forbids outright.** It is the sourced half of sheet 03's constraint.
 - *A limestone world costs zero uploaded assets.** `Limestone`, `Sandstone`, `Concrete`, `Cobblestone`, `Pavement`, `Rock`, `Slate` and `Granite` are base materials applicable to a `BasePart`, and built-in base material textures *"are bundled with Studio instead of being accessible as a typical asset ID"* ``. `MaterialVariant` and `SurfaceAppearance` both take a PBR texture you *"paste an asset ID or import"* for ``, which is what makes both forbidden under `budgets.textureCeilings.uploadedImageAssetsInWorldGeometry` 0 and `N17` — sourced, not assumed. `Enum.Material` has 47 members including…
+
+## https://www.rolimons.com/game/133086043677134
+
+*Cited by 8: `gameplay/meta/_lead`, `gameplay/monetization/01-the-offer-ladder`, `gameplay/monetization/_lead`, `liveops/codes/_lead`, `liveops/events/_lead`, `liveops/seasons/_lead`, `theme/fantasy/_lead`, `theme/tone/_lead`*
+
+- **The reference ships one badge and no completion structure at all.** Refetched: 38,488,789 visits, 578,470 favourites, 96.198% likes, all-time peak 10,435 CCU, current 1,659 (the brief recorded 819, so the decay has partially reversed). Its only badge is Welcome, awarded 16,306,690 times at a 100% win rate. Passes unchanged at 29 / 99 / 99 / 199 / 2,500 Robux, plus a 495,130-Robux "Test" pass that is plainly not a product.
+- *499, restated without the ladder-ratio clause it no longer has.** 499 is the top of the corroborated premium band and the observed ceiling of both Faith and DIG `` `` ``. The two single-item comparables sit above it — Carpet Cleaning at 1,499, and the reference's own oversized tool at 2,500 `` — and both bands were declined on `00-CORE.md` grounds, because the only argument either source gives for them is revenue concentration. `[cid: decided]`
+- The brief's reference **`[🌱] Grass Incremental Simulator`** still ships exactly the pass list the brief recorded, so the brief's monetization numbers are current rather than stale: **2x Walkspeed 29 · 2x Rebirths 99 · 2x Grass Luck 99 · 2x EXP 99 · 2x Bronze 199 · [OP] Giant Trimmer 2,500**, offsale "2x Grass" and "Nothing", at 38,488,889 visits, 135,478 upvotes and 1,659 current CCU. One extra entry appears that is **not a price point and must not be averaged into anything** — a pass named "Test" listed at 495,130 Robux, which is a developer artifact. ``
+- The reference at 38,571,201 visits, all-time peak CCU 10,435, past-24h CCU 1,259, seven passes listed, description advertising the group boost, **codes nowhere on the page** ``
+- 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
+- *And the genre does not require it.** The direct reference `[🌱] Grass Incremental Simulator` ships **six real passes — 2x Walkspeed 29, 2x Rebirths 99, 2x Grass Luck 99, 2x EXP 99, 2x Bronze 199, [OP] Giant Trimmer 2,500 — plus a "Test" pass at 495,130 R$ that is a developer artifact, and not one of them is a season pass, battle pass or reward track**, at 38,571,201 visits, 96.187% likes and 1,259 current CCU, refetched this run ``. Unlike Codes, this domain has **no** sourced counter-evidence of the *"its absence reads as an unfinished game"* kind, and the sheet should say that plainly…
+- **The reference's live pass list, refetched:** 2x Walkspeed 29 · 2x Rebirths 99 · 2x Grass Luck 99 · 2x Bronze 199 · 2x EXP 99 · [OP] Giant Trimmer 2,500, plus an offsale "Nothing" and "2x Grass" and a "Test" pass at 495,130 R$ that is a developer artifact and must not be averaged into anything. **None is a season pass, battle pass or reward track.** 38,571,201 visits, 96.187% likes, 1,259 current CCU — visits and CCU both moved since the last banking (38,488,789 / 1,659), so the figures are live rather than stale. ``
+- *Two research facts from the brief that bear directly on my subject.** The reference decayed *"10,435 peak to 819 current, while still being actively updated weekly ... satisfaction is not the same as retention"*, and *"Any spin-off inherits this shape by default"*; and its players already expect *"a luck/rarity roll to chase, and **a visible collection of what they have found**"* (`research/grass-incremental.md`) ``.
+- **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
 
 ## https://create.roblox.com/docs/production/analytics/analytics-dashboard
 
@@ -102,6 +116,18 @@ did not fetch" becomes checkable instead of trusted.
 - *Z-order was chosen in the first place because it is robust to the one fact this domain could not settle.** `GuiObject.Active` is documented only as *"Determines whether this UI element sinks input"* ``. `[unverified — whether Active sinks a touch tap identically to a mouse click. Settled by the creator-docs input-propagation page for `content/en-us/ui/`, or by a Studio device-emulator run on a phone viewport with a button under an Active frame. It would decide ~70% of the audience's behaviour under a geometry rule and decides nothing under a z-order rule — which now carries the exit as…
 - *With the close control gone the navigable set never changes size, and that is a gift to `viewport`.** The 24 slots have nothing to activate, so every slot frame, slot label and heading is `Selectable = false` — `Selectable` *"determine[s] whether the GuiObject can be selected by a gamepad"* ``. The selectable set is therefore **exactly the four pressables, open or closed**, so Platform's focus order operates on one constant set and never needs a fifth position. This holds whether or not `SelectionGroup` exists as a property: the pack's fetch of the rendered `GuiObject` reference lists…
 - `` — `Active`: *"Determines whether this UI element sinks input."* `Selectable`: *"Determine whether the GuiObject can be selected by a gamepad."* `SelectionOrder`, `NextSelectionUp` as described. These are the four properties the graph is realised in.
+
+## https://www.rosenberryrooms.com/grass-incremental/
+
+*Cited by 6: `gameplay/onboarding/02-first-minute-beats`, `gameplay/onboarding/03-teaching-order`, `gameplay/onboarding/_lead`, `liveops/events/_lead`, `theme/tone/02-flavour-and-humor`, `theme/tone/_lead`*
+
+- *The reference is a model for shape, not for order.** It teaches cut → currency → upgrades → rarity → zones → rebirth `` `` — exactly the *economy first, finds later* alternative `02-GAMEPLAY.md` declined, and it has no discovery layer to teach. **Position 2 is the whole divergence and this sheet puts a Find there.**
+- *Rank 2 is the divergence and it is deliberate.** The reference teaches cut → currency → upgrades → rarity → zones → rebirth `` ``, the *economy first, finds later* order `02-GAMEPLAY.md` **declined** *"because a new player could quit before ever seeing what makes this game different"*. It has no discovery layer to teach; this game puts the Find at position 2 in *time*, riding `firstClear`.
+- The reference's teaching order is **cut → currency → upgrades → rarity → zones → rebirth**. The beginner guide's own priority is "Grass Value" then "Grass Growth Speed" then "Blade Size"; mutations (Silver, Gold, Diamond) are met after upgrades; islands and rebirth come last, with its Phase 1 covering the "First Hour" ``
+- **Structurally, immediately, and that part is sourced.** The player "spawn[s] on a small grassy platform with a basic saw blade attached to your character", and grass appears "as green blocks that you can walk through to cut and collect" ``; the action is "Simply walk through grass blocks to cut them automatically", with no animation or interaction ``. Tool equipped at spawn, standing in the resource, proximity harvest: **the first payoff is the first blade touched.** Our design inherits that shape and adds a Find to the same instant.
+- **In wall-clock seconds, `[unverified]`.** No source I reached states a measured time to first currency or to first upgrade. The two milestone figures I did get are thresholds, not durations: a first rebirth "usually around 1,000 grass" and Island 2 after "5 rebirths" ``, and they disagree with the other guide's advice to grind "approximately 10-15 rebirths before seriously pursuing the second island" ``, which is a strategy claim rather than a gate. **The specific fetch that would settle it:** a transcript or timestamped capture of the first 120 seconds of game id 133086043677134 — the…
+- *Whether this genre ships item text at all could not be established.** Two of three source types failed (HTTP 402, HTTP 405) and the third characterises the reference rather than quoting it, offering only a *"relaxing, meditative quality"* ``. Recorded as unavailable, not as absent. `[research owed: an in-client screenshot of the reference's collection panel, or a fan wiki page in this family that reproduces item text]`
+- 1. **How the register actually reads to 8–14 year olds.** Nothing fetchable settles this; it is reception, not fact. `[playtest unknown]`, starting position whatever sheet 01 sets. What would settle it: a read-back comprehension check with players in the band against the written copy, and as a cheap proxy available before any playtest, a Flesch-Kincaid score computed on the actual copy once it exists. 2. **Whether any game in this family ships item-level flavour text at all**, which would tell sheet 02 whether the surface it needs has genre precedent. Three source types were tried and two…
 
 ## https://create.roblox.com/docs/production/game-design/onboarding
 
@@ -185,27 +211,15 @@ did not fetch" becomes checkable instead of trusted.
 - *Muted play, honestly.** `B4` carries `readout` as well as `audio`, so `audioOnlyBeats: 0` survives on `response`'s own channel arrays and needs no motive from me. The category's *"a large share of sessions run muted"* premise is **unsourced**; the one survey available reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile, neither Roblox-specific nor 8–14 ``. The invariant holds on the channel arrays; the motive is not restated as fact.
 - *Not decided on the muted-player premise, in either direction.** The category's *"a large share of sessions run muted"* line is unsourced; the one available survey reports 34.9% always / 23.6% often / 19% sometimes / **9.3% never** playing with sound, n=541, general mobile and neither Roblox-specific nor 8–14 ``. That figure would be an argument *for* a sound as often as against one, and the ruling rests on `D3`/`D6` and on unactionability instead. `audioOnlyBeats: 0` is unaffected either way: this is not a beat and the plate is its only channel, so a sound could only ever have been a…
 
-## https://www.rolimons.com/game/133086043677134
+## https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator
 
-*Cited by 5: `gameplay/meta/_lead`, `gameplay/monetization/01-the-offer-ladder`, `gameplay/monetization/_lead`, `theme/fantasy/_lead`, `theme/tone/_lead`*
+*Cited by 5: `gameplay/onboarding/_lead`, `liveops/codes/_lead`, `liveops/events/_lead`, `theme/tone/01-register`, `theme/tone/_lead`*
 
-- **The reference ships one badge and no completion structure at all.** Refetched: 38,488,789 visits, 578,470 favourites, 96.198% likes, all-time peak 10,435 CCU, current 1,659 (the brief recorded 819, so the decay has partially reversed). Its only badge is Welcome, awarded 16,306,690 times at a 100% win rate. Passes unchanged at 29 / 99 / 99 / 199 / 2,500 Robux, plus a 495,130-Robux "Test" pass that is plainly not a product.
-- *499, restated without the ladder-ratio clause it no longer has.** 499 is the top of the corroborated premium band and the observed ceiling of both Faith and DIG `` `` ``. The two single-item comparables sit above it — Carpet Cleaning at 1,499, and the reference's own oversized tool at 2,500 `` — and both bands were declined on `00-CORE.md` grounds, because the only argument either source gives for them is revenue concentration. `[cid: decided]`
-- The brief's reference **`[🌱] Grass Incremental Simulator`** still ships exactly the pass list the brief recorded, so the brief's monetization numbers are current rather than stale: **2x Walkspeed 29 · 2x Rebirths 99 · 2x Grass Luck 99 · 2x EXP 99 · 2x Bronze 199 · [OP] Giant Trimmer 2,500**, offsale "2x Grass" and "Nothing", at 38,488,889 visits, 135,478 upvotes and 1,659 current CCU. One extra entry appears that is **not a price point and must not be averaged into anything** — a pass named "Test" listed at 495,130 Robux, which is a developer artifact. ``
-- *Two research facts from the brief that bear directly on my subject.** The reference decayed *"10,435 peak to 819 current, while still being actively updated weekly ... satisfaction is not the same as retention"*, and *"Any spin-off inherits this shape by default"*; and its players already expect *"a luck/rarity roll to chase, and **a visible collection of what they have found**"* (`research/grass-incremental.md`) ``.
+- **The reference has no discovery layer, so it never teaches one.** Its store page describes it as "A relaxing lawn-trimming simulator game 🌿 The more you rebirth and upgrade, the more fun the game becomes!" `` **This is the finding that matters: the reference's teaching order is exactly the economy-first, finds-later alternative `02-GAMEPLAY.md` explicitly declined.** It is not a model to copy in order, only in shape, and the item at position 2 is the entire divergence.
+- The reference's own experience description, primary source: *"👍 Enjoying the game? Leave a Like and Favorite! ❤️ Join the Unequal Games group for in-game boosts!"* — **a group-join boost and a like/favourite prompt, and no mention of codes or of redeeming anything** ``
+- 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
+- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
 - **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
-
-## https://www.rosenberryrooms.com/grass-incremental/
-
-*Cited by 5: `gameplay/onboarding/02-first-minute-beats`, `gameplay/onboarding/03-teaching-order`, `gameplay/onboarding/_lead`, `theme/tone/02-flavour-and-humor`, `theme/tone/_lead`*
-
-- *The reference is a model for shape, not for order.** It teaches cut → currency → upgrades → rarity → zones → rebirth `` `` — exactly the *economy first, finds later* alternative `02-GAMEPLAY.md` declined, and it has no discovery layer to teach. **Position 2 is the whole divergence and this sheet puts a Find there.**
-- *Rank 2 is the divergence and it is deliberate.** The reference teaches cut → currency → upgrades → rarity → zones → rebirth `` ``, the *economy first, finds later* order `02-GAMEPLAY.md` **declined** *"because a new player could quit before ever seeing what makes this game different"*. It has no discovery layer to teach; this game puts the Find at position 2 in *time*, riding `firstClear`.
-- The reference's teaching order is **cut → currency → upgrades → rarity → zones → rebirth**. The beginner guide's own priority is "Grass Value" then "Grass Growth Speed" then "Blade Size"; mutations (Silver, Gold, Diamond) are met after upgrades; islands and rebirth come last, with its Phase 1 covering the "First Hour" ``
-- **Structurally, immediately, and that part is sourced.** The player "spawn[s] on a small grassy platform with a basic saw blade attached to your character", and grass appears "as green blocks that you can walk through to cut and collect" ``; the action is "Simply walk through grass blocks to cut them automatically", with no animation or interaction ``. Tool equipped at spawn, standing in the resource, proximity harvest: **the first payoff is the first blade touched.** Our design inherits that shape and adds a Find to the same instant.
-- **In wall-clock seconds, `[unverified]`.** No source I reached states a measured time to first currency or to first upgrade. The two milestone figures I did get are thresholds, not durations: a first rebirth "usually around 1,000 grass" and Island 2 after "5 rebirths" ``, and they disagree with the other guide's advice to grind "approximately 10-15 rebirths before seriously pursuing the second island" ``, which is a strategy claim rather than a gate. **The specific fetch that would settle it:** a transcript or timestamped capture of the first 120 seconds of game id 133086043677134 — the…
-- *Whether this genre ships item text at all could not be established.** Two of three source types failed (HTTP 402, HTTP 405) and the third characterises the reference rather than quoting it, offering only a *"relaxing, meditative quality"* ``. Recorded as unavailable, not as absent. `[research owed: an in-client screenshot of the reference's collection panel, or a fan wiki page in this family that reproduces item text]`
-- 1. **How the register actually reads to 8–14 year olds.** Nothing fetchable settles this; it is reception, not fact. `[playtest unknown]`, starting position whatever sheet 01 sets. What would settle it: a read-back comprehension check with players in the band against the written copy, and as a cheap proxy available before any playtest, a Flesch-Kincaid score computed on the actual copy once it exists. 2. **Whether any game in this family ships item-level flavour text at all**, which would tell sheet 02 whether the surface it needs has genre precedent. Three source types were tried and two…
 
 ## https://create.roblox.com/docs/audio/assets
 
@@ -267,7 +281,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 4: `analytics/economy/01-currency-flow-and-holdings`, `analytics/events/02-never-logged`, `analytics/events/03-emission-budget`, `analytics/events/_lead`*
 
-- *Per-clear emission does not fit and the arithmetic is not close.** The faucet pays per patch (`economy.faucets[patch-clear].perEvent: true`) and the per-server allowance is `telemetry.budget.perServerRequestsPerMinute`, which `events/03` rules is `20 × runtime.maxPlayers` with the flat 120 of `120 + (20 × CCU)` excluded because the `CCU` scope is `[unverified]` and the conservative reading is taken ``. I read that field rather than re-deriving it — the same rule I apply to Balance's numbers, applied to a sibling's. The faucet's per-clear rate is `60 × runtime.maxPlayers ×…
+- *Per-clear emission does not fit and the arithmetic is not close.** The faucet pays per patch (`economy.faucets[patch-clear].perEvent: true`) and the per-server allowance is `telemetry.budget.perServerRequestsPerMinute`, which `events/03` rules is `20 × runtime.maxPlayers` with the flat 120 of `120 + (20 × CCU)` excluded because the `CCU` scope is `[unverified]` and the conservative reading is taken ``. I read that field rather than re-deriving it. The faucet's per-clear rate is `60 × runtime.maxPlayers × max_k(solvency.areaLedger[k].patchCount / pacing.laps[k].realisedLapSeconds)`, which…
 - **`N23` and `N24` are cardinality and privacy rules that look like housekeeping and are not.** An absolute timestamp beside a `Player` is closer to identifying a person than an elapsed second and answers no question an elapsed second does not `[cid: decided]`. An unbounded field silently destroys every breakdown in the experience, because past *"8,000 combined values across all custom fields, values will be grouped as 'Other'"* `` — one free-text field would exhaust that budget alone and take the other twelve events' breakdowns with it.
 - **The rule is `120 + (20 × CCU)` total `AnalyticsService` requests per minute** ``. `runtime.maxPlayers` is **16**, picked by `architect/01-runtime` and recorded in `cid/_state.md` as a figure assigned to nobody inside `social.maxPlayers`'s 12-to-20 band ``.
 - Rate limit, cardinality, retention, funnel and economy caps `` — global rate `120 + (20 * CCU)` requests per minute; custom fields max **3**; unique values *"Unlimited — After 8,000 combined values across all custom fields, values will be grouped as 'Other'"*; economy resource types **10**; transactionTypes grouped past **20**; itemSkus past **100**; funnels **10**, steps per funnel **100**; eventNames **100**; retention *"90 days from the last data received"*.
@@ -421,6 +435,15 @@ did not fetch" becomes checkable instead of trusted.
 - The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
 - **`Leaves Incremental`** (PrestigeLabs Studios, a different studio, and the one game in the family that ships without rebirth). Description: *"A relaxing leaf-gathering simulator! Collect, upgrade, and explore colorful autumn worlds!"* plus *"Gather fallen leaves!"*, *"Unlock new areas and discover rare leaf types!"*, *"USE CODE: RELEASE"* and *"Enjoying the game?"*. Register: glyph-dense including an update badge and a leaf glyph inside the title itself, every feature line exclamatory, engagement prompts and a code promo in the description. ``
 
+## https://www.roblox.com/games/92876036717311/Scrap-Incremental
+
+*Cited by 4: `liveops/codes/_lead`, `theme/tone/01-register`, `theme/tone/04-do-nots`, `theme/tone/_lead`*
+
+- The same studio's sibling title, the one `theme/tone/04` `D10` already cites, carrying a **byte-identical** description template: group boost, like/favourite, **no codes** ``
+- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
+- **`Scrap Incremental`** (third, taken for triangulation). Description: *"A relaxing magnet simulator game"* with a sunglasses glyph, then the same *"The more you rebirth and upgrade..."* sentence, with seven distinct glyphs, numbered feature brackets, *"Enjoying the game? Leave a Like and Favorite!"* and *"Join the Unequal Games group for in-game boosts!"*. ``
+- *A refinement to the brief's landscape research, from that last quote.** `research/landscape.md` attributes the shared marketing sentence to *"at least two different studios"* and lists Grass and Scrap as separate entries. Scrap Incremental's own description sends players to *"the Unequal Games group"*, which is the reference's studio, so Grass and Scrap are very likely one studio's template rather than two independent shippers. The independent same-sentence shipper is PrestigeLabs (Leaves). This does not weaken the brief's conclusion, it sharpens it: the genre's register norm is more…
+
 ## https://create.roblox.com/docs/cloud-services/data-stores/versioning-listing-and-caching
 
 *Cited by 3: `tech/deploy/01-the-release-contract`, `tech/deploy/_lead`, `tech/persistence/03-store-versions-and-migration`*
@@ -448,6 +471,13 @@ did not fetch" becomes checkable instead of trusted.
 - **Two free savings, already sourced.** *"For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"*, and *"Use the `BasePart.CastShadow` property to disable shadow casting on small parts where shadows are unlikely to be visible"* ``. Also from the same page, and it is the sentence a set-dressing sheet should read twice: *"If a large number of objects are concentrated with a high density, then rendering this area of the scene requires more draw calls."*
 - `https://create.roblox.com/docs/performance-optimization/improve` — batching is documented for *meshes* sharing content and texture and is **not addressed for primitives**, which corroborates `budgets.renderCeilings.batchingFactor`'s stated uncertainty from the source rather than from another sheet; plus the `CanCollide`/`CanTouch`/`CanQuery` guidance, the `CastShadow` guidance, and the object-density-raises-draw-calls warning. **This page is one of `tech/performance/01`'s open `[research owed:]` items** and it is now banked.
 - `https://create.roblox.com/docs/performance-optimization/improve` — "For parts that do not need collisions, disable their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery` to false"; `CastShadow` guidance; draw-call instancing described for *meshes* sharing content and texture. Note for **01**: `Plots.luau` already sets `CanCollide` false and `CastShadow` false on patches but sets **neither `CanTouch` nor `CanQuery`**, which is a one-property saving available at no design cost and is a consequence for whoever holds `representation`.
+
+## https://create.roblox.com/docs/production/monetization
+
+*Cited by 3: `gameplay/monetization/02-what-is-never-sold`, `gameplay/monetization/_lead`, `marketing/_category`*
+
+- *`F11`, manufactured scarcity — the one prohibition no sheet has stated.** `theme/tone/04` `D9` bans the timer and the countdown, from the brief's zero-tension rule; the platform independently advises that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims ``. `D9` catches the widget; `F11` catches the sentence — *"only 3 left"*, *"1,204 players own this"*, a waitlist, a queue — which is the same manipulation with no clock attached. `[cid: decided]`, flagged below.
+- **Roblox's own monetization overview independently corroborates `theme/tone/04` `D9` from the platform side**, advising that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims. `D9` was written from the brief's zero-tension rule; it is also platform guidance. ``
 
 ## https://create.roblox.com/docs/production/monetization/paid-random-items
 
@@ -691,27 +721,11 @@ did not fetch" becomes checkable instead of trusted.
 - **165 seconds is derived, not chosen.** `core-loop/04` fixes a bound session at three to seven complete laps and the brief fixes the session at **10 to 20 minutes** `[brief: binding]` ← `[you chose: R1 Q4]` (`00-CORE.md`). 600 / 165 = 3.6 and 1200 / 165 = 7.3, so on arrival throughput 165 hits both ends exactly and nothing else in its 120-to-200 range does. It is also inside the only external session evidence the project has: a simulator's core loop should be completable in under five minutes, and over fifteen "is a design problem" ``.
 - **Session-shape evidence for the milestone table.** "The core loop of a simulator is completable in under five minutes"; if one satisfying cycle takes over 15 minutes "that's a design problem"; sessions-per-user below 1.2 is "a structural re-engagement problem"; the 24-hour return window is weighted most heavily ``. This is the first external corroboration the project has for a sub-five-minute lap, and it supports the current 93-second lap far better than it supports `core-loop/04`'s original 165.
 
-## https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator
-
-*Cited by 3: `gameplay/onboarding/_lead`, `theme/tone/01-register`, `theme/tone/_lead`*
-
-- **The reference has no discovery layer, so it never teaches one.** Its store page describes it as "A relaxing lawn-trimming simulator game 🌿 The more you rebirth and upgrade, the more fun the game becomes!" `` **This is the finding that matters: the reference's teaching order is exactly the economy-first, finds-later alternative `02-GAMEPLAY.md` explicitly declined.** It is not a model to copy in order, only in shape, and the item at position 2 is the entire divergence.
-- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
-- **`Grass Incremental Simulator`** (Unequal Games, the direct reference). Description: *"A relaxing lawn-trimming simulator game"* with a foliage glyph, then *"The more you rebirth and upgrade, the more fun the game becomes!"*, followed by imperative bulleted features (*"Trim the grass!"*, *"Upgrade for faster trimming!"*) and an early-access note. Register: a glyph in the title and in the first line, exclamatory, second-person imperative, enthusiastic rather than jokey. No humor and no puns surfaced in the store copy. `` Numbers re-confirmed on a second source: 38.3M visits, 96.2% likes,…
-
 ## https://www.roblox.com/games/87179205054038/reStore
 
 *Cited by 3: `theme/fantasy/_lead`, `theme/vocabulary/02-banned-words`, `theme/vocabulary/_lead`*
 
 - **Substitutes were checked and are also occupied.** `artifact` is a shipping Roblox title with *"70+ artifacts to collect"*; `antique` belongs to `reStore`.
-
-## https://www.roblox.com/games/92876036717311/Scrap-Incremental
-
-*Cited by 3: `theme/tone/01-register`, `theme/tone/04-do-nots`, `theme/tone/_lead`*
-
-- The register has to be executed at the punctuation level or it is not a register. All three games in this family open with the word *relaxing* and then punctuate like a trailer: *"Trim the grass!"*, *"Gather fallen leaves!"*, *"Enjoying the game?"*, glyphs in the title `` `` ``. Claiming the adjective is the genre norm; declining to claim it, and writing flat, is the departure. That is the whole content of `[brief: soft]` *"Tone: warm, aged, unhurried"* (`01-FOUNDATION.md`) once it is made checkable.
-- **`Scrap Incremental`** (third, taken for triangulation). Description: *"A relaxing magnet simulator game"* with a sunglasses glyph, then the same *"The more you rebirth and upgrade..."* sentence, with seven distinct glyphs, numbered feature brackets, *"Enjoying the game? Leave a Like and Favorite!"* and *"Join the Unequal Games group for in-game boosts!"*. ``
-- *A refinement to the brief's landscape research, from that last quote.** `research/landscape.md` attributes the shared marketing sentence to *"at least two different studios"* and lists Grass and Scrap as separate entries. Scrap Incremental's own description sends players to *"the Unequal Games group"*, which is the reference's studio, so Grass and Scrap are very likely one studio's template rather than two independent shippers. The independent same-sentence shipper is PrestigeLabs (Leaves). This does not weaken the brief's conclusion, it sharpens it: the genre's register norm is more…
 
 ## https://www.rolimons.com/game/126244816328678
 
@@ -769,7 +783,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `analytics/economy/01-currency-flow-and-holdings`, `analytics/economy/_lead`*
 
-- *A window never straddles an area, a short window is a different `itemSku`, and both records use `transactionType: Gameplay`.** The two SKUs `patch-clear` / `patch-clear-partial` make every full window known to be exactly `N` patches at zero custom-field cost, and a missing `itemSku` displays as N/A, so leaving it unset throws away a free dimension. `Shop` would assert a store that does not exist — `products.storeExists` is `false` under ruling R-4 and `promptGamePassPurchaseCalls` is `0` — and with `economy.faucetCount` 1 against `economy.sinkCount` 1 the transaction-type breakdown…
+- *A window never straddles an area, a short window is a different `itemSku`, and both records use `transactionType: Gameplay`.** The two SKUs `patch-clear` / `patch-clear-partial` make every full window known to be exactly `N` patches at zero custom-field cost, and a missing `itemSku` displays as N/A. `Shop` would assert a store that does not exist — `products.storeExists` is `false` under ruling R-4 and `promptGamePassPurchaseCalls` is `0` — and with `economy.faucetCount` 1 against `economy.sinkCount` 1 the transaction-type breakdown separates nothing `flowType` and the SKU do not ``.
 - *The balance series costs nothing extra.** `endingBalance` rides in the same call as `amount`, which is why the flow record and the currency-held series are one decision and not two, and the dashboard already charts **average wallet balance** ``. A second, zero-instrumentation route exists: `currency` is one of the seven persisted fields `` and a standard data store's entries are listable through Open Cloud ``.
 - **The economy schema and its limits.** `Enum.AnalyticsEconomyFlowType` is `Source` / `Sink`; the default `Enum.AnalyticsEconomyTransactionType` values are `IAP`, `TimedReward`, `Onboarding`, `Shop`, `Gameplay`, `ContextualPurchase`. The dashboard shows total sources and sinks by category, **average wallet balance**, top sources and sinks, and all sources and sinks by date range. Up to five currencies; up to three custom-field breakdowns; **events send only from the server and only in a published game — not from the client and not from Studio**; a missing `itemSku` displays as N/A; `amount`…
 
@@ -779,13 +793,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - *Zero game-defined events, verified rather than assumed.** D1/D7/D30 arrive from the Retention page with daily and weekly cohorts and no developer setup ``, broken down by acquisition source and comparable against a selectable benchmark set covering average playtime and D1/D7/D30 ``, with the standard filter dimensions available ``. **This half of the domain asks logging-pipeline work for nothing at all.**
 - Roblox creator-docs, retention — D1/D7/D30 definitions verbatim, daily and weekly cohorts, and the statement that the core metrics require no developer setup. ``
-
-## https://create.roblox.com/docs/production/monetization
-
-*Cited by 2: `gameplay/monetization/02-what-is-never-sold`, `gameplay/monetization/_lead`*
-
-- *`F11`, manufactured scarcity — the one prohibition no sheet has stated.** `theme/tone/04` `D9` bans the timer and the countdown, from the brief's zero-tension rule; the platform independently advises that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims ``. `D9` catches the widget; `F11` catches the sentence — *"only 3 left"*, *"1,204 players own this"*, a waitlist, a queue — which is the same manipulation with no clock attached. `[cid: decided]`, flagged below.
-- **Roblox's own monetization overview independently corroborates `theme/tone/04` `D9` from the platform side**, advising that discounts be "genuine and fair" and against creating a "false sense of urgency" through misleading countdown timers or artificial scarcity claims. `D9` was written from the brief's zero-tension rule; it is also platform guidance. ``
 
 ## https://create.roblox.com/docs/production/monetization/developer-products
 
@@ -1070,7 +1077,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 2: `analytics/economy/01-currency-flow-and-holdings`, `analytics/economy/_lead`*
 
-- *The three custom fields are spent on the dimensions that make Balance's predictions separable and on nothing else.** `areaOrdinal` because every prediction in `solvency.areaLedger[]` and `tierMix.byDepth[]` is indexed by it; `entitlement` because every wall-clock and lap figure in `pacing` is published in a base and a purchaser population and there is no other way to split them; and the third field is the multiplier confound — `valueLevel` on the source, `heldLevelAfter` on the sink. Without `valueLevel`, `amount / N` is not comparable to `tierMix.byDepth[d].expectedValuePerPatch` at all,…
+- *The three custom fields are spent on the dimensions that make Balance's predictions separable and on nothing else.** `areaOrdinal` because every prediction in `solvency.areaLedger[]` and `tierMix.byDepth[]` is indexed by it; `entitlement` because every wall-clock and lap figure in `pacing` is published in a base and a purchaser population; and the third field is the multiplier confound — `valueLevel` on the source, `heldLevelAfter` on the sink. Without `valueLevel`, `amount / N` is not comparable to `tierMix.byDepth[*].expectedValuePerPatch` at all, because…
 - **The custom-field budget**, which is the whole dimensioning constraint on sheet `01`: three fields, **values must be strings**, **up to 8,000 unique value combinations across all three**, and anything past `CustomField03.Name` is ignored rather than erroring. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/studio/avatar-settings.md
@@ -1376,11 +1383,30 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Recorded once so nobody re-derives it, and used for nothing:** "Creators generally earn 70% of anything they sell in Robux in their game", and DevEx converts 10,000 Robux to $38 USD. Revenue is a declined non-goal, so no sheet in this domain may turn a price into an earnings argument. ``
 
+## https://create.roblox.com/docs/production/monetization/subscriptions
+
+*Cited by 1: `liveops/seasons/_lead`*
+
+- 3. **A paid track has no vehicle, and the platform's only recurring one is forbidden by name.** Ruling **R-4** removed the in-game store: `products.storeExists: false`, `itemCount: 1`, `devProductCount: 0`, `gamePassId: null`, `promptGamePassPurchaseCalls: 0`, `F19` forbidding a product being *"named, shown, priced or referred to anywhere inside the game"*, and `F15` closing text entry by grep. `F18` forbids *"subscription… recurring charge"*, and Roblox's own subscriptions are *"auto-renewing, not one-time purchases"* `` — so the one platform product that recurs on a period is the one…
+- **Roblox subscriptions are recurring by construction** — *"auto-renewing, not one-time purchases"*, benefits persist only while payment is maintained, mutually exclusive subscriptions are not supported, local-currency subscriptions require an ID- or phone-verified account and are unavailable in eleven listed countries. This is the only platform vehicle for a paid track that expires, and `products` `F18` bans it by name. ``
+
 ## https://create.roblox.com/docs/production/promotion/chat-settings
 
 *Cited by 1: `gameplay/social/_lead`*
 
 - **Whether `TextChatService` has an experience-level enable/disable distinct from `ChatWindowConfiguration.Enabled`, and how Roblox's age-based communication settings interact with an 8–14 audience.** Four fetches returned property lists with no defaults and no policy text. `[unverified]` The fetch that would settle it is Roblox's chat *policy* page rather than its API reference — `https://create.roblox.com/docs/production/promotion/chat-settings` or the parental-controls documentation — plus the `TextChatService` page rendered with its default column. Sheet `01` should decide the chat…
+
+## https://create.roblox.com/docs/production/promotion/deeplinking
+
+*Cited by 1: `liveops/codes/_lead`*
+
+- **A redemption path that needs no text entry exists, and it is documented.** Deep-link launch data: *"the LaunchData key contains the string that you specified in the launchData parameter"*, read via `Player:GetJoinData()`, *"can't exceed 200 bytes"*, and *"Users can modify the URL, so the data might not be authentic"* ``
+
+## https://create.roblox.com/docs/production/promotion/experience-events
+
+*Cited by 1: `liveops/events/_lead`*
+
+- 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
 
 ## https://create.roblox.com/docs/projects/server-authority
 
@@ -1400,6 +1426,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `tech/persistence/_lead`*
 
 - `https://create.roblox.com/docs/reference/engine/classes/DataStoreService` — `GetRequestBudgetForRequestType(requestType)` exists and returns the current budget; `Enum.DataStoreRequestType` members appearing in the samples are `StandardRead`, `StandardWrite`, `StandardList`, `StandardRemove`, `SetIncrementAsync`.
+
+## https://create.roblox.com/docs/reference/engine/classes/Player
+
+*Cited by 1: `liveops/codes/_lead`*
+
+- A second one: group membership is readable with no prompt and no input. `Player:IsInGroup` and `Player:GetRankInGroup` are **deprecated** in favour of `IsInGroupAsync` / `GetRankInGroupAsync`; neither form requires player input ``
 
 ## https://create.roblox.com/docs/reference/engine/classes/Players
 
@@ -1446,6 +1478,13 @@ did not fetch" becomes checkable instead of trusted.
 
 - `Enum.ScreenInsets` = `None` (0), `DeviceSafeInsets` (1), `CoreUISafeInsets` (2), `TopbarSafeInsets` (3); `CoreUISafeInsets` keeps descendants clear of the Roblox top bar and of device cutouts. `Enum.SafeAreaCompatibility` = `None` (0), `FullscreenExtension` (1). `` ``
 
+## https://create.roblox.com/docs/resources/feature-packages/season-passes
+
+*Cited by 1: `liveops/seasons/_lead`*
+
+- *The strongest counter-argument, found rather than assumed.** Roblox ships a **first-party Season Passes feature package**: *"a limited-time, quest-based progression system"* with free and premium tracks, tiers carrying an `upperBoundXP` threshold, `startUtc`/`endUtc` driving a season countdown, a game-pass id for premium access, and DataStore-backed XP, requiring the Core and Missions packages alongside it ``. **So the build cost of a season here is genuinely low, and the sheet must say so rather than imply the opposite.** It is still not takeable, and the package's own component list is…
+- **Roblox's first-party Season Passes feature package** — *"a limited-time, quest-based progression system in which players can complete quest objectives to earn rewards"*, free and premium tracks, tiers with an `upperBoundXP` threshold, `startUtc`/`endUtc` driving a season countdown, a game-pass id for premium access, DataStore-backed XP, and a hard dependency on the Core and Missions packages. The docs do **not** state what happens to progress at season end, which is itself worth recording: the package's own carry-over behaviour is unspecified on the page I read. ``
+
 ## https://create.roblox.com/docs/scripting/security/security-tactics
 
 *Cited by 1: `tech/security/_lead`*
@@ -1463,6 +1502,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `ui-ux/navigation/_lead`*
 
 - *Could not fetch:** `https://create.roblox.com/docs/ui/selection` returned 404, and the rendered `GuiObject` and `GuiService/SelectedObject` reference pages returned member lists without their descriptions. Routed around via the creator-docs YAML and the API announcement above.
+
+## https://deltiasgaming.com/roblox-grass-incremental-codes/
+
+*Cited by 1: `liveops/codes/_lead`*
+
+- A codes aggregator maintaining a page *for this exact game* and reporting **no active codes as of March 2026** — a codes site with an empty list for a 38M-visit incremental ``
 
 ## https://devforum.roblox.com/t/action-needed-upcoming-changes-to-asset-privacy-for-audio/1701697
 
@@ -1589,6 +1634,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - **Fisch** (~4.5bn visits, ~90%, 1.2M+ peak CCU): the Bestiary is *"a detailed, in-game logbook that records the different types of fish and items fishers have caught"*, with per-page completion rewards and thresholds at 70% and 100%. `` ``
 
+## https://gamerant.com/roblox-garden-incremental-codes/
+
+*Cited by 1: `liveops/codes/_lead`*
+
+- The contrary case, and it is the useful one because it prices the reversal: a shipping incremental that **does** have codes, redeemed by *"click on the Shop button… Scroll down until you see the line where you can enter codes, or click the Codes button… Enter the promo code… Click on the Redeem button"* — **four surfaces this game does not have**: a store node (`navigation.notNodes[shop]`, R-4), a fifth pressable (`input.gameDrawnPressables: 4`), a text field (`screens.elementTree` has none), and a submit control (a sixth) ``
+
 ## https://generalistprogrammer.com/tutorials/roblox-game-pass-pricing-guide
 
 *Cited by 1: `gameplay/monetization/_lead`*
@@ -1657,6 +1708,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `gameplay/onboarding/_lead`*
 
 - Roblox's own FTUE guidance defines onboarding as "the first few minutes of gameplay that new players experience", sets three goals — teach the essentials (both controls and the core loop, and both *what* to do and *why*), get to the fun quickly because "New players typically decide their interest in a game within minutes", and leave players wanting more via short/mid/long goals plus "moments of joy" — and measures it with Day 1 retention and a player funnel that shows drop-off at each step. It offers "a guided arrow" as an alternative to dialogue and **states no time threshold at all** `` ``
+
+## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md
+
+*Cited by 1: `liveops/events/_lead`*
+
+- 1. https://create.roblox.com/docs/production/promotion/experience-events — the platform *does* have a scheduled-events system, which is the fact that stops this ruling resting on *"the mechanism does not exist."* It does exist, at the platform level, and what closes it is scope and the binding non-goal. Verified against the creator-docs source at https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/experience-events.md — *"Currently, you can publish a maximum of 10 ongoing or upcoming events"*, *"The best events run for 7-30 days and highlight…
 
 ## https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/studio/avatar-settings.md
 

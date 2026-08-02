@@ -107,8 +107,8 @@ This sheet carries no manifest block: it decides the values of `telemetry.budget
 | limit | value | source | what it forbids here |
 |---|---|---|---|
 | distinct custom event names | **100** per experience | `[research: https://create.roblox.com/docs/production/analytics/event-types]`, restated as *"You can add up to 100 custom events to your game"* `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/custom-events.md]` | 13 used. Nothing forbidden today; the rule is that a dimension becomes a field, never a name — the same page says *"You should use custom fields whenever possible instead of event names"* |
-| custom fields per event | **3**, and only `CustomField01/02/03.Name` are honoured — *"Anything other than CustomField01.Name, CustomField02.Name, and CustomField03.Name is ignored"* | `[research: https://create.roblox.com/docs/production/analytics/custom-fields]` | a fourth field is not an error, it is silent data loss. This is the cap that binds the whole catalog, and it is why `area_cleared`'s `lap` field is a five-value composite |
-| combined unique values | **8,000** across all custom fields, after which *"values will be grouped as 'Other'"* | `[research: https://create.roblox.com/docs/production/analytics/event-types]` | 954 used (`9 × 2 × 53`). Forbids any free-text or unbounded field — sheet `02` `N24` |
+| custom fields per event | **3**, and only `CustomField01/02/03.Name` are honoured — *"Anything other than CustomField01.Name, CustomField02.Name, and CustomField03.Name is ignored"* | `[research: https://create.roblox.com/docs/production/analytics/custom-fields]` | a fourth field is not an error, it is silent data loss. This is the cap that binds the whole catalog: it is why `slot_claimed` is a second event name rather than a fourth field on `session_start`, and why `lapClock`'s `X4` exclusion has no carrier at all (sheet `01`, `U8`) |
+| combined unique values | **8,000** across all custom fields, after which *"values will be grouped as 'Other'"* | `[research: https://create.roblox.com/docs/production/analytics/event-types]` | 900 used (`9 × 2 × 50`). Forbids any free-text or unbounded field — sheet `02` `N24` |
 | retention | **90 days** *"from the last data received"* | `[research: https://create.roblox.com/docs/production/analytics/event-types]` | no instrument may be defined over a window longer than 90 days, and a comparison across a 90-day gap in play is impossible. Every reading this catalog supports is within-session or within-cohort, never longitudinal |
 
 Three further ceilings are relayed rather than spent: **10 funnels and 100 steps per funnel** to
@@ -131,7 +131,7 @@ funnel-definition work, and **10 economy resource types, `transactionType` group
 | `defect_unknown_tier` | per occurrence, **capped** | 1 per player per session |
 | `save_written` | **aggregated** | the last successful save of a session, plus every failure |
 | the `LogEconomyEvent` sink at `onPurchase` | per occurrence | bounded by `solvency.areaLedger[].rungsBought` |
-| onboarding funnel steps | per occurrence | **at most 6 per player ever** — `funnels.onboarding.steps[]` is six, and `LogOnboardingFunnelStepEvent` is once-per-user by construction. Two more once-per-user requests than the first draft assumed; the rate verdict is unchanged |
+| onboarding funnel steps | per occurrence | **at most 6 per player ever** — `funnels.onboarding.steps[]` is six, and `LogOnboardingFunnelStepEvent` is once-per-user by construction |
 
 ## Consequences for other work
 
@@ -142,6 +142,9 @@ funnel-definition work, and **10 economy resource types, `transactionType` group
   105 and 128 still satisfies it — but the published denominator must not disagree.
 - **Funnel-definition work** inherits 10 funnels and 100 steps per funnel, and the fact that its six
   steps are six requests against the same 320-per-minute server budget as everything else.
+- **Session and lap-clock work** should read the custom-fields row above as the reason its `X4`
+  exclusion is unproducible: the cap is three per event and all three are spent, so a per-lap
+  store-fallback flag has nowhere to ride.
 - **Per-server-capacity work** owns `runtime.maxPlayers`. If it ratifies anything other than 16,
   every server figure here moves linearly and the two tick-gap thresholds (3.0 s and 2.18 s) do not
   — they are per-player and independent of population, which is why the inequality is written over
@@ -178,7 +181,8 @@ clock, the gap derivation, what resets it and the per-session pass predicate —
 `batchPatchCount`, its flush list and every `LogEconomyEvent` argument value — economy-flow work;
 this sheet supplies the share and the denominator and sets no window. `runtime.maxPlayers` —
 per-server-capacity work. Funnel names, step ordinals and pass marks — funnel-definition work.
-Whether the transport is `AnalyticsService` at all, and how the pipe batches, stores or fails —
+`lapOrigin`'s spelling and its exclusion verdicts — session and lap-clock work. Whether the
+transport is `AnalyticsService` at all, and how the pipe batches, stores or fails —
 logging-pipeline work. Whether `ingressLimits` `I2` should expose a counter — networking work.
 Every figure in `pacing`, `solvency` and `collection` this inequality is evaluated over — Balance
 and Meta, and wave 4 has not released.

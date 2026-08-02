@@ -96,3 +96,149 @@ Not failures now. Recorded for the final pass.
 3. **R7–R9 are corrections of record** and may close in the same round without re-verification of the arithmetic they sit beside.
 4. **Re-run `npm run cid:verify --category audio` and `npm run bridge`** after the edits; both passed before this pass and the changes are within-fence values, so a regression would be a merge-shape error rather than a design one.
 5. **Nothing here waits on another category to release.** G1, G5, RR-M1 and RR-M2 are all correctly filed as requests against keys with one owner each, and every sheet in this category is written to be legal under either resolution. That is the property that lets Audio release with four open requests outstanding, and it is the best work in the category.
+
+---
+
+# Round 2
+
+**Status: FAIL**
+All nine round-1 requests close, and the three domains that went further mostly went further
+correctly. But the round's own headline rule, `M16`, is over-broad in a way that condemns
+compliant work its own category already does — and while writing it, nobody noticed that
+`uiSound` carries **two explicit nulls inside its own manifest value**, which is the defect
+`M16` generalises, one directory closer to home. Two blocking, three not.
+
+## Round-1 requests — disposition
+
+| # | request | closed | evidence |
+|---|---|---|---|
+| R1 | `perDomain[sfx].maxRows` 6 → 12 | **YES** | `mix/03:51` — 12, `maxRowsShape` "4 tierIndex notes x 3 transient variants", `fileMB` held at 2.5 with the duration argument stated in the row. The argument is sound: 12 × 0.30 s = 3.6 s = 6 × 0.6 s. New criterion 1 makes it self-enforcing — `perDomain[].maxRows >= assetRowsInOwningKey`, plus an `assetRowsInOwningKey` column on every row — which is a better fix than the one I asked for, because it catches the next divergence rather than this one. |
+| R2 | `poolSize` 6 → 8 | **YES** | `mix/03:67` — 8, and `poolDerivation` now quotes the source rather than an average (`rise = clearedCount - previous`, `for _ = 1, rise do begin(...)`, one frame, one shared `arrivedAt`). `poolDerivationSupersedes` records the wrong figure instead of erasing it. `mix/02:130` adds `ownWorkHeadroom: 10` and criterion 1 checks 10 ≥ 8. `mix/02:125` `theBurstIsNotSpread` correctly states that the burst changes pool depth and **no** figure in the concurrency block — re-derived: a rise of 8 is 8 voices against `World`'s 15, and the 29/10 worst cases are per-second averages that do not move. |
+| R3 | both clear rows → `source: "upload"` | **YES** | `mix/03:67,68` — both `upload` with `whyNotCreatorStore` (scale degrees at one fixed length and peak, which the store does not sell). `:23` states the failure my request named, in its own words: marking them `creatorStore` *"left the build with no upload-class asset at all, and made RR-M1's two gates decorative: a finding filed against a case that never fires."* `appliesToThisBuild` plus criterion 4's `> 0` test stops it recurring. |
+| R4 | delete `sfx` level fields | **YES, and further** | `sfx/03:111` `levelsOwnedBy` names `mix` as sole writer; `:127` `levelRequirement` replaces five fields with an ownership pointer and three constraints; criterion 4 greps for `volume`, `db`, `decibels`. `sfx/03:69` records what was deleted and why. See N4 for the one field that survived by rename. |
+| R5 | delete `nonBeats[systemNotice]` | **YES** | `mix/01:75` `nonBeatsDeleted` carries `hadRealised: 0.360` and the reason; `Interface`'s route string no longer names it; `nonBeatCeilingRule` and criterion 2 now read `uiPress`/`indexOpenClose` at 0.270, and criterion 2 adds *"no row exists for a cue whose owning key rules it does not fire"*, which generalises the fix past this one row. |
+| R6 | scope `ui/03` criterion 2 | **YES, and mirrored** | `ui/03:221–224` scopes to *"no module that plays a `uiSound` cue"* and names `mix`'s boot writes as outside it; `F17`'s observable carried the same unqualified phrase and was scoped too, which I did not ask for and which was the actual duplicate. `mix/01:89` `theseTwoWritesAreRequired` adds the reciprocal note from the other side, so the pair cannot drift apart again. |
+| R7 | `worstCaseDuckedWindowSeconds` | **YES, and better than asked** | 3.7 → **3.55**, split into `heldAtDuckedLevelSeconds` 3.2 + `envelope.releaseSeconds` 0.35. Re-derived: onsets at 0.0 / 0.6 / 1.2; `stingers.cues[].audibleSeconds` 1.2 / 2.6 / 1.8; last voice ends at 0.6 + 2.6 = **3.2**; + 0.35 = **3.55**. Correct. Deriving by field over `stingers.cues[*]` rather than over `notices`' caps is the substantive improvement — the old figure used a 2.5 s cap where the cue is 1.8 s. |
+| R8 | null count 37 → 42 | **YES, and widened** | 43 across seven sheets in two categories, after reading `ui-ux/feedback/01:265` directly. See N5 for the count as it stands today. The published grep post-mortem — `"[a-zA-Z]+": null` cannot match a key containing a digit, which is exactly why `d7ByBucket` and `d30ByBucket` were missed — is the most useful thing in the revision. |
+| R9 | `stingers/02` criterion 4 | **YES** | Criterion 4 now tests `endgame.extinctPayoffKinds` / `survivingPayoffKinds` and names no `notices` field. Verified those arrays exist and are populated: `gameplay/meta/07:91–92`, `survivingPayoffKinds: ["currencyTick","areaCompletion"]`, `extinctPayoffKinds: ["upgradePurchase","findReveal","setCompletion"]`. `extinctAuthority` correctly claims only the two that are stingers' and leaves `upgradePurchase` to `uiSound`. |
+
+## Ruling — the neighbour-pool exemption (partly refused, and the refusal is right)
+
+**Upheld.** `cue.patchClear.neighbour.poolSize` stays 5 while its twin goes to 8, and the
+asymmetry is correct rather than an oversight of the burst argument. `WorldNeighbour`'s
+reservation is 5 and `stealing.order` step 1 takes those voices before anything else, so
+instances 6, 7 and 8 could never sound; buying them is buying `Sound` objects the cap forbids
+using. Pool depth should track the **reservation** for a class that is stolen from first and the
+**burst** for a class that is not, and after this revision each row does the right one.
+`poolSizeExemption` states it in the row rather than leaving a reader to find a discrepancy,
+which is the difference between a decision and a mistake.
+
+**One consequence it did not follow through**, filed as N3. The exemption means a neighbour onset
+arriving with all five voices aged under 0.08 s is **not played** — no free instance, nothing
+stealable. That is a refusal, and `M11` forbids *"dropping, refusing, queuing, batching,
+delaying, shortening or fading out an onset for load"* with no scope qualifier. The refusal is
+legal on the merits — a neighbour's clear is not one of this client's `response` beats, `N14`
+does not reach it, and `social/02` makes a neighbour a **sight** requirement, which
+`stealing.order` step 1 already says in as many words — but `M11` as written does not carve it
+out, so the key forbids in one row what it permits in another.
+
+## Ruling — `M16`'s scope
+
+**The exemption cannot be widened, and that half is tight.** `ownSentinelIsExempt` reads *"a key
+may test its own declared sentinel, because it owns both the field and the sentinel"*, and names
+`mix.assets.rows[].soundId == ""` as legal *"for exactly that reason and for no other."* Both
+conditions are load-bearing and neither is reachable from outside: a key cannot own a field it
+does not declare, and `deploy/02` requires the sentinel be declared in place. `sfx`, `stingers`,
+`ambience` and `uiSound` all test `soundId == ""` against a sentinel `mix` declares for them —
+but each names `mix` as owner and **adopts** rather than declares, so the exemption does not
+stretch to cover them by analogy. Nothing here widens.
+
+**The rule itself is over-broad in the other direction, and it fails its own observable.**
+`M16` forbids any Audio field or criterion depending on an unowned value being *"null, absent,
+`"none"` or 0."* The first two are the real defect. The last two are not: a `0` or a `"none"`
+that an owning key **positively declares** is the stable form `deploy/02` mandates — it is what
+the replacement produces, not what the replacement destroys — and it is exactly what this
+category correctly rests on today:
+
+- `response.negativeBeats: 0` — cited by `ui/03` `F1`, `sfx/03` `F12`, `stingers/03` `A6`
+- `input.rejectionCueOnFailedPrecondition: "none"` — cited by the same three
+- `traversal.death.authoredCue: "none"` — cited by `sfx/02` row 1 and `sfx/03` `F11`
+- `input.worldObjectsTriggeringAVerb: 0` — cited by `sfx/03` `F4` and `F9`
+- `release.provisioning.unprovisionedIdValue` `0` — cited by `mix/03` itself, twice
+
+Read literally, `M16` condemns all of them, and they are among the best-sourced rulings in the
+category. The distinction that does the work is **absence versus a declared value**, not the
+particular token: `negativeBeats: 0` will still be `0` after `deploy/02` lands, whereas
+`extinctAfter: null` will not survive it.
+
+And the observable does not hold as written. It claims *"no acceptance criterion under
+`cid/audio/` tests a field owned outside this category for null, absence, `"none"` or 0."*
+`ui/04` criterion 3 tests that `notices.members[saveNotLoaded]` **carries no `soundId` field** —
+an absence test on a key Audio does not own, and the one place in the category where `M16`'s
+narrow, correct reading actually bites. Its positive restatement already sits in the same
+criterion (`notices.forbidden.noticeSound` is unchanged), so the fix is to drop the first clause,
+not to add machinery.
+
+## Ruling — are SFX's retained constraints value-free?
+
+**Three of four, yes. One is a renamed number.**
+
+- `belowBeat: "upgradePurchased (B4)…"` — an ordering, no figure. **Value-free.**
+- `identicalAcrossTierIndexes: true` — a boolean. **Value-free.**
+- `againstPlatformLocomotion` — states that CoreScript character sounds carry no `SoundGroup`, so
+  no bus relation exists between them and this cue and their relative level is a listening test
+  with no owner in either contract. **Value-free, and the most useful of the four**, because it
+  names a level relation `mix` structurally cannot own.
+- `spreadAcrossTierIndexes: 1.0` and `spreadCeiling: "2.0, from gameplay/core-loop/02"` —
+  **not value-free.** These are round 1's `levelSpreadAcrossTierIndexes` and `levelSpreadCeiling`
+  with the `level` prefix dropped and the pair moved inside `levelRequirement`. They survive
+  criterion 4's grep precisely *because* the prefix was dropped: the pattern is `volume`, `db`,
+  `decibels`, which no longer matches the field that was renamed out from under it.
+
+In substance this is benign — a spread of 1.0 means *no spread*, it duplicates the boolean beside
+it, and `mix` holds no per-tier level for it to contradict. **The defect is the criterion, not the
+value.** Criterion 4 asserts *"the `sfx` manifest contains **no numeric level anywhere**"*, and
+that claim is false while a numeric ratio in a field named `levelRequirement.spread…` sits inside
+it. A check narrowed to the three names that survive a rename is a check fitted to its answer.
+
+## New findings
+
+### N1 — `cid/audio/ui/02-index-open-and-close.md` — `uiSound` carries two explicit nulls in its own manifest
+**Blocking. Violates:** `tech/deploy/02` (*"an emitted value may never be an explicit null"*; its criterion 3 requires `bridge --emit` to exit non-zero on a null anywhere inside a key's value), and the spirit of `M16`.
+**Current:** `:91` `"beat": null` (`indexOpen`), `:120` `"beat": null` (`indexClose`), both inside the `amends: uiSound` fence — and criterion 1 at `:187` **requires** them: *"exactly two rows with `isBeat: false` and `beat: null`."*
+**Required:** `"beat": "none"` — `deploy/02`'s declared scalar sentinel — with `isBeat: false` left beside it, and criterion 1 restated to test `beat == "none"`.
+**Why:** this is the same defect the category spent the round generalising into `M16`, one directory closer than the sheets it was aimed at. It is harmless today for exactly the reason the analytics nulls are — `uiSound` is `proposed` and never emitted — and it becomes a hard emit failure the day the key merges. It also means `mix/03:109`'s worked example cites `cid/ui-ux/feedback/01:265` as the cautionary case while an Audio sheet two directories away carries two of them. **Not introduced by this round; exposed by it, and it survived round 1 undetected here too.**
+
+### N2 — `cid/audio/mix/01-bus-tree-and-levels.md` — `M16` forbids depending on a declared sentinel, and its observable already fails
+**Blocking. Violates:** check 4 — a `forbidden` row whose observable does not hold against its own category.
+**Current:** `M16`'s `thing` names *"null, absent, `"none"` or 0"*; its observable claims no Audio criterion tests an unowned field for any of the four.
+**Required:** narrow the `thing` to absence-shaped tests — *null, a missing key, or a field its owner has not declared* — and add one clause permitting dependence on a value the owning key **positively declares**, whatever that value is. Then either drop `ui/04` criterion 3's *"carries no `soundId` field"* clause (its positive restatement, `notices.forbidden.noticeSound` unchanged, is already in the same criterion) or record it as the single stated exception.
+**Why:** as written, `M16` condemns the five well-sourced dependencies listed above, and a builder applying it literally would have to unpick `sfx` `F12`, `ui/03` `F1` and `stingers/03` `A6`. The three-step restatement test, the `secondRule` (*two keys agreeing on one fact each cite the key that owns it*) and the exemption are all correct and should survive the narrowing untouched — only the token list moves.
+
+### N3 — `cid/audio/mix/01-bus-tree-and-levels.md` — `M11` forbids the refusal the neighbour exemption creates
+**Non-blocking. Violates:** internal consistency between `M11` and `mix/03`'s `poolSizeExemption`.
+**Current:** `M11` bans *"dropping, refusing, queuing, batching, delaying, shortening or fading out an onset for load"*, unscoped.
+**Required:** scope it to onsets of **this client's own `response` beats**, and add one clause stating that a neighbour onset arriving with no free `WorldNeighbour` voice and none past `minAudibleBeforeStealSeconds` is not played — legal because it is not one of this client's beats, `N14` does not reach it, and `social/02` makes a neighbour a sight requirement. The argument is already in `stealing.order` step 1; it just is not carried into `M11`.
+
+### N4 — `cid/audio/sfx/03-the-sfx-key.md` — criterion 4 claims more than it checks
+**Non-blocking. Violates:** check 4.
+**Current:** criterion 4 asserts *"no numeric level anywhere"* and greps three field names; `levelRequirement.spreadAcrossTierIndexes: 1.0` is a numeric the round-1 field name (`levelSpreadAcrossTierIndexes`) would have caught.
+**Required:** either delete `spreadAcrossTierIndexes` and `spreadCeiling` as redundant with `identicalAcrossTierIndexes: true` beside them — my recommendation, since a spread of 1.0 carries no information the boolean does not — or add `spread` and `level` to the grep and soften the claim to *no level value this key owns*.
+
+### N5 — `cid/audio/music/01-whether-music-exists.md` — the floor is correct and has already moved
+**Non-blocking. Not a defect in the sheet.** Recomputed today across all of `cid/`: `funnels/02` 13, `kpis/02` 13, `engagement/03` 8, `engagement/02` 2, `economy/03` 1, `feedback/01` 1 — all matching the published table — but **`engagement/01` now carries 8, not 5.** That file has been edited since round 1 (my round-1 sites were 114 / 205 / 208 / 211×2; they are now 123 / 198 / 201 / 204 / 206×2 / 209×2), and the three new ones are inside the same manifest fence: `notDerivableFromGameState[].derivableIf`, `.todayReplacedBy`, and `verdictRules`. **So the current floor is 46, not 43** — and a repo-wide `:\s*null` sweep returns further hits inside manifest fences under `gameplay/`, `art/`, `ui-ux/` and `tech/`, so the true total is well above either figure.
+**Required:** nothing, and that is the point. Music labelled the table *"a floor and not a total: no pattern run so far proves an upper bound"*, and the number moved inside one round. **The framing is vindicated; only the `engagement/01` row is stale.** Correct it to 8 (subtotal 45, total 46) if the sheet is reopened for another reason; do not spend a round on it.
+
+## Round-2 knock-ons, checked
+
+- **`M5` made absolute** (no key writes `PlaybackSpeed`; the `sfx` exception removed because four pitches are baked into four files at `PlaybackSpeed` 1.0). Consistent with `sfx/03` `playbackSpeedEverWritten: false` and `variation.byTierIndex`'s four `hz` values. The observable is now a clean `grep -rn "PlaybackSpeed" game/src returns nothing`, stronger than the round-1 version that had to except one play site. **Correct.**
+- **Instance count 19 → 21.** Re-derived from the ledger: 2 + 2 + 2 + 2 + 8 + 5 = **21**. Correct as a count of *pool* instances. It excludes `ambience`'s permanently-held voice, which is parented to `SoundService` and not pooled, and the two index cues below; `mix/03:159` scopes the figure to `poolSize`, so this is a boundary and not an error.
+- **`assetFileCount: 16` and the Decision line disagree, and both undercount.** `mix/03:7` reads *"thirteen assets in the build and twelve of them uploads"*, while the manifest says `assetFileCount: 16` (12 upload + 4 creatorStore) and `assetFilesPreloaded: 13`. **Thirteen is the preload count, not the build count.** Separately, `assetFileCountDerivation` is *"3 stingers + 1 uiSound + 12 sfx"* — but `ui/02` rules `indexOpen` and `indexClose` at `assetCount: 1` each, so the build holds **18** files, `creatorStoreClassAssetCount` is 6, and RR-M1 applies to 12 of 18. `rowsNotEnumeratedHere` acknowledges the two rows exist; the totals then count as though they did not. Fold into N1/N4's round; no criterion depends on the figure and `appliesToThisBuild > 0` holds either way.
+
+## What must happen before this category can release
+
+1. **N1 and N2 close.** Two field values and one criterion clause in `ui/02`; one `thing` string, one observable and one added clause in `mix/01`; optionally one clause in `ui/04`. Neither touches an arithmetic verified in either round.
+2. **N3 and N4 are one clause each** and ride the same round. The `mix/03` count corrections above can ride with them.
+3. **N5 needs nothing.**
+4. **Round 3 should be the last.** Every remaining item is a string, a token list or a count. Nothing in this round changed a level, a distance, a cap, a reservation or a budget, so the arithmetic verified in round 1 and re-verified above does not need a third pass.
+5. **Still outbound and still unanswered:** G1 against `gameplay/mechanics/05`, G5 against `architect/sheets/06-representation.md`, RR-M1 against `tech/deploy/01`, RR-M2 against `tech/performance/01`, `ambience`'s RR1–RR3 against three wave-1 Setting sheets, and Music's `RR-M1` against `cid/audio/_category.md`'s unsourced muted-play motive. None blocks Audio; all block somebody.

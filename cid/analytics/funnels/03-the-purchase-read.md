@@ -10,9 +10,9 @@ below. **One live reading exists** — the join-time ownership boolean `Entitlem
 to `state.owned` — and it is **specced-but-dormant**, a structural constant while every
 `products.items[].gamePassId` is `null`.
 
-> **Revised, round 1** (`cid/analytics/_verified.md` RR-10). The ownership dimension is encoded
-> `owned ["none","span"]`, adopted from `telemetry.customFields.field02`; the first draft's
-> `ownsSpan ["owned","notOwned"]` is withdrawn. No row, closure or conclusion moves.
+> **Revised, round 1** (`cid/analytics/_verified.md` RR-10): the ownership dimension is encoded
+> `owned ["none","span"]`, adopted from `telemetry.customFields.field02`. **Round 2:** five
+> acceptance criteria become four; no row, closure or conclusion moves in either round.
 
 ## Why
 
@@ -159,7 +159,7 @@ reason to build one.
 - **Economy-flow work (Analytics — Economy Health)** should read this sheet's `liveReading` block as
   the definition and not restate it: payer share and ARPDAU are structurally zero for the same
   single cause, and two keys carrying two descriptions of one boolean is the divergence to avoid.
-- **Event-catalog work** and this sheet now share one encoding for one dimension,
+- **Event-catalog work** and this sheet share one encoding for one dimension,
   `owned ["none","span"]`. A funnel-step breakdown and a custom-event breakdown join with no mapping
   table.
 - **Networking work and store-UI work** are ruling on the `[unverified]` above and disagree. The tag
@@ -167,8 +167,8 @@ reason to build one.
 - **Offer-ladder work (`products`)** is contradicted by nothing here. No surface, no prompt and no
   store is proposed, and `04` forbids one as a threshold action.
 - **Dashboard-and-target work (KPI)** already declined DAU, ARPDAU and payer share as structurally
-  constant; this sheet is the derivation behind that, and the alarm on `ownedAtJoin` is the one
-  purchase-side number that can move — as a build defect, not as a player behaviour.
+  constant; this sheet is the derivation behind that, and `04`'s `T17` alarm on this reading is the
+  one purchase-side number that can move — as a build defect, not as a player behaviour.
 
 ## Acceptance criteria
 
@@ -177,11 +177,10 @@ reason to build one.
 2. Exactly one step carries an `unverified` field and it is `promptAccepted`; that field names the
    fetch that would settle it in `settledBy`.
 3. `funnels.purchase.suspendedInstruments.count` equals the number of `pacing.milestones[]` rows
-   carrying a `purchaserSeconds` field.
-4. `funnels.purchase.liveReading.encoding` is identical to `funnels.customFields[owned].values` and
-   to `telemetry.customFields.field02`'s values, and the string `ownsSpan` appears inside no
-   `manifest` or `amends` block under `cid/analytics/`.
-5. No file in `cid/analytics/funnels/` names a purchase surface, a store screen, an offer row, a
+   carrying a `purchaserSeconds` field; `funnels.purchase.liveReading.encoding` is identical to both
+   `funnels.customFields[owned].values` and `telemetry.customFields.field02`'s values; and the string
+   `ownsSpan` appears inside no `manifest` or `amends` block under `cid/analytics/`.
+4. No file in `cid/analytics/funnels/` names a purchase surface, a store screen, an offer row, a
    price string or a `PromptGamePassPurchase` call as something to build.
 
 ## Not decided here

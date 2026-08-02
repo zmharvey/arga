@@ -40,10 +40,10 @@ supplied by sheet `01`.
   natural way to summarise a distribution, and a "days since last session" field is the natural way
   to read return — the first is a leaderboard in a developer-facing coat, the second is defined
   over an offline period `03-META.md` cut `[brief: binding]` ← `[you chose: R2 Q1]`.
-- **Two rows now have to survive a field the revision round added.** `area_cleared`'s `lap` field
-  carries `spanned`, which marks a lap begun in a previous session, and `character_reset` names a
+- **Two rows have to survive fields the revision rounds added.** `area_cleared`'s `lapOrigin` field
+  carries `join`, which marks a lap begun in a previous session, and `character_reset` names a
   Roblox menu action. Neither is a priority-3 metric and both are one careless sentence away from
-  reading as one: `spanned` is an **exclusion flag with no duration attached** — it says which laps
+  reading as one: **`join` is an exclusion flag with no duration attached** — it says which laps
   `lapClock` drops, never how long the player was away, which is what `N20` forbids. And
   `character_reset` is a respawn, not a progress reset; `N19` holds because no event in the catalog
   describes a decrease in any persisted field.
@@ -88,10 +88,10 @@ supplied by sheet `01`.
 | N17 | any code, code redemption or promo state | priority 3 — codes | no field name matches `/code|promo|redeem|voucher/i` |
 | N18 | any trade, gift or transfer between players | priority 3 — trading, and `social.forbidden` | no field name matches `/trade|gift|transfer|send.?to/i` |
 | N19 | any rebirth, prestige or reset cycle | priority 3 — rebirth `[brief: binding]` ← `[you chose: R2 Q2]`; *"Cleared is permanent"* makes progress monotonic | no field name matches `/rebirth|prestige|reset.?count|ascend/i`; no event describes a decrease in any persisted field; `character_reset` names a Roblox menu action, not a progress reset |
-| N20 | any offline-accrual period or time-away figure | priority 3 — offline accrual, following `[you chose: R2 Q1]` | no field name matches `/offline|away|idle.?time|since.?last/i`; `area_cleared`'s `lap` value `spanned` is an exclusion flag with no duration attached and carries no offline period |
+| N20 | any offline-accrual period or time-away figure | priority 3 — offline accrual, following `[you chose: R2 Q1]` | no field name matches `/offline|away|idle.?time|since.?last/i`; `area_cleared`'s `lapOrigin` value `join` is an exclusion flag with no duration attached and carries no offline period |
 | N21 | any figure a player could be shown comparing them to another player | `X10` plus priority-3 leaderboards; two independent closures | no event's `value` or field is a function of more than one player |
 | N22 | a custom field spent on Platform, OS, device class or Age Group | the dashboard supplies all four with no developer event `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/analytics/analytics-dashboard.md]` | no field name matches `/platform|device|^os$|age|viewport|fps/i`; the catalog's three field names are `area`, `owned` and one per-event `detail` |
-| N23 | an absolute wall-clock date, time of day or Unix timestamp | `[cid: decided]` — a date beside a `Player` narrows identity and answers nothing an elapsed second does not | every `valueUnit` in `telemetry.events[]` reading in seconds says *since session start*, *since the previous above-tick payoff*, or *from `lapClock.origins.entry`*; none says *epoch*, *date* or *clock* |
+| N23 | an absolute wall-clock date, time of day or Unix timestamp | `[cid: decided]` — a date beside a `Player` narrows identity and answers nothing an elapsed second does not | every `valueUnit` in `telemetry.events[]` reading in seconds says *since session start*, *since the previous above-tick payoff*, or *from entering this area*; none says *epoch*, *date* or *clock* |
 | N24 | any free-text or unbounded-cardinality field | *"After 8,000 combined values across all custom fields, values will be grouped as 'Other'"* `[research: https://create.roblox.com/docs/production/analytics/event-types]` | `telemetry.customFields.combinedValuesUsed` is a finite integer and every `fields[].cardinality` is a number, never `"unbounded"` |
 
 ## Consequences for other work
@@ -102,9 +102,9 @@ supplied by sheet `01`.
 - **Economy-flow work** inherits `N1`–`N9` and `N22`–`N24` on `LogEconomyEvent`'s `itemSku`,
   `transactionType` and custom fields. `itemSku` is a design value from `upgrades[].id` or
   `products.items[].id`; it may never be a constructed string.
-- **Session and lap-clock work** inherits `N20` on the field it shares with sheet `01`: `spanned`
-  marks a lap for exclusion and may never be widened into a time-away figure, and `spannedLapCount`
-  is a count of laps, never of minutes anyone was gone.
+- **Session and lap-clock work** inherits `N20` on the field it shares with sheet `01`: `lapOrigin`
+  `join` marks a lap for exclusion and may never be widened into a time-away figure, and
+  `spannedLapCount` is a count of laps, never of minutes anyone was gone.
 - **KPI-shortlist work** inherits `N13`, `N14` and `N21` as a bound on what a headline row may be,
   which is a second closure on the same conclusion its own index reached.
 - **Session and retention work** inherits `N15` and `N20`: a return reading may be a platform cohort
@@ -133,7 +133,8 @@ supplied by sheet `01`.
 
 Which events exist, their ids, their sites and their payload fields — sheet `01`, this domain,
 which holds the key these rows ride in. How much may be emitted and what a dropped event means —
-sheet `03`. The gap derivation, the clock and the per-session pass predicate — sheet `04`. Whether
+sheet `03`. The gap derivation, the clock and the per-session pass predicate — sheet `04`.
+`lapOrigin`'s spelling and its exclusion verdicts — session and lap-clock work. Whether
 `AnalyticsService` custom events are permitted for an under-13 audience without additional consent
 beyond the community standards above — `[unverified]`, and the settling fetch is Roblox's Terms of
 Use or Privacy Policy retrieved with a browser-class user agent. Whether any of these greps becomes
