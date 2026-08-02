@@ -39,19 +39,22 @@ four heights are Block 1.6, Cylinder 2.4, Ball 2.8, Wedge 3.4
 problem correctly: if `Ball` is expensive, the fix is a **shape swap**, which keeps four
 distinct silhouettes, never a distance collapse, which does not.
 
-**`N10` is amended this round, and the reason is that its observable overshot its own rule.**
-Its stated subject is **layout determinism** — randomness, reordering, reindexing — because
-`state.cleared` is keyed by patch array index and `architect/01-runtime` makes the seed a
-save-migration boundary. Its grep also caught `os.clock()`, which introduces none of the three
-and touches nothing `layout` produces: a monotonic elapsed-time read cannot move a patch. Both
-Security (RR-S1) and Networking (RR-N8) need one for rate limiting and reconciliation, and both
-were right on the substance, so **I amend it rather than make them escalate against a peer
-sheet they cannot edit.** The wording below keeps `os.time()` and `tick()` forbidden by name,
-because a wall clock *can* reach an award — `01-FOUNDATION.md`'s *"no offline accumulation"*
-`[brief: binding]` is exactly the rule a `lastSeen` read would break — so this is a narrowing,
-not a clock amnesty. **It is also not cosmetic: acceptance criterion 2 runs `N10`'s grep against
-current `game/src`, so the unamended row would have failed my own sheet the moment Security and
-Networking built as specified.**
+**`N10`'s observable has now overshot its own rule twice, and both overshoots were the same
+mistake.** The row's stated subject is **layout determinism** — randomness, reordering,
+reindexing — because `state.cleared` is keyed by patch array index and `architect/01-runtime`
+makes the seed a save-migration boundary. Round 3 removed `os.clock`, which introduces none of
+the three. This round removes **`table.sort`**, which matches two real sites and violates
+nothing at either: `Layout.luau:428` sorts a **separate `order` index array** built from
+`patches` and leaves `patches` itself untouched, and `Beats.luau:505` sorts a client-side
+presentation queue that no persisted index exists in.
+
+**The `table.sort` case is worse than a false positive, which is why it is a named exemption
+and not a deletion.** `Layout.luau:428`'s ordinal is precisely what `firstSession.placement`
+and `discovery` read to decide which patch carries the first Find. A builder who runs
+acceptance criterion 2, sees two failures and reaches for the one inside `layout` **moves the
+first Find** — so the observable as written instructed the violation the rule forbids. Deleting
+the token outright would lose the check; naming the two sites keeps a match at a **third** site
+a finding. `[cid: decided]`
 
 **`N15` and `N16` exist because the burst budget in `02` is the one place a performance
 decision touches a beat.** A bay build lands on the tick that fires the game's largest payoff.
@@ -79,7 +82,7 @@ change and it goes back to the sheet that owns the constraint, not to this domai
 | N7 | Making the inter-plot boundary opaque, or adding fog, `Atmosphere` or occlusion that obstructs the spawn-to-spawn sightline | `mechanics/06` (stops the body, not the eye); `social/02` criterion 3 | every instance intersecting the segment between two neighbouring spawn points has `Transparency == 1`; `grep -rn "Atmosphere\|FogEnd\|FogStart" game/src` returns nothing |
 | N8 | Removing, hiding, un-replicating or transparency-fading another player's character inside 128 studs | `social/02` B2 and B3 (a body in motion whose ground is visibly being cleared) | `grep -rn "LocalTransparencyModifier\|ReplicationFocus\|PersistentPerPlayer\|Archivable = false" game/src` returns nothing |
 | N9 | Reserving, stubbing, defaulting or holding open any `budgets` or `serverCost` field for procedural generation, rebirth, offline accrual, codes, daily rewards, leaderboards, trading, or seasons and events | `03-META.md` priority 3 | `grep -in "rebirth\|offline\|streak\|daily\|leaderboard\|OrderedDataStore\|MessagingService\|season\|promo\|procedural" cid/tech/performance/*.md` matches only this row and sheet `01`'s scope line |
-| **N10** *(amended, round 3)* | **Deriving a placement, an award amount or a grant from an unseeded RNG or from a wall clock; or reordering, re-sorting, compacting or reindexing `layout`'s patch array. A monotonic elapsed-time read is permitted. `math.random`, an unseeded `Random.new()`, `os.time()` and `tick()` remain forbidden.** | `architect/01-runtime` (one `LayoutSeed`, and its AC3); `layout` R9; `state.cleared` is keyed by array index and is a save-migration boundary; `01-FOUNDATION.md`'s *"no offline accumulation"* `[brief: binding]`, which is what keeps `os.time()` banned | `grep -rn "math.random\|Random.new()\|os.time()\|tick()\|table.sort" game/src` matches nothing outside a `Random.new(seed)` derived from `GameConfig.LayoutSeed`. **`os.clock()` is deliberately absent from the pattern**, and no `os.clock()` return value may appear in an argument to `Progression.award`, in a patch position, or in a `layout` call |
+| **N10** *(amended rounds 3 and 4)* | **Deriving a placement, an award amount or a grant from an unseeded RNG or from a wall clock; or reordering, re-sorting, compacting or reindexing `layout`'s patch array itself. A monotonic elapsed-time read is permitted, and so is sorting a separate index or presentation array that leaves `patches` untouched. `math.random`, an unseeded `Random.new()`, `os.time()` and `tick()` remain forbidden.** | `architect/01-runtime` (one `LayoutSeed`, and its AC3); `layout` R9; `state.cleared` is keyed by array index and is a save-migration boundary; `01-FOUNDATION.md`'s *"no offline accumulation"* `[brief: binding]`, which is what keeps `os.time()` banned | `grep -rn "math.random\|Random.new()\|os.time()\|tick()" game/src` returns nothing outside a `Random.new(seed)` derived from `GameConfig.LayoutSeed` — **verified clean against the shipped tree, zero code matches on all four.** `os.clock` and `table.sort` are deliberately absent from the pattern; `table.sort` is instead bounded by the two-site exemption below, and a match at any third site is a finding |
 | N11 | Pooling, recycling or re-parenting a patch Instance across bays or across areas | *"Cleared is permanent"* `[brief: binding]` ← `[you chose: R2 Q1]`; a reused Instance carries a stale index | a lane teardown is one `Destroy` on the slab (`representation`); no patch Instance is ever assigned a second `Parent` or a second `Name` |
 | N12 | Reducing the four tier heights toward each other, clamping `tier.height` at distance, or writing `.Size` on a patch after creation | `04-PRESENTATION.md`; `art/objects/01` criterion 3 (four distinct heights) | the four `tiers[].height` values in `GameConfig.luau` are pairwise distinct; `grep -rn "\.Size = " game/src/server/Plots.luau` matches only the creation path, the slab and the four boundary parts |
 | N13 | Making a patch collidable, touchable or queryable in order to reuse an engine query as the proximity test | `art/objects/01` (does not collide); `mechanics/06` (nothing on a lane to climb or jump from) | `grep -rn "CanCollide = true" game/src/server/Plots.luau` matches only the slab and the boundary parts; no patch has a `Touched` connection |
@@ -88,32 +91,51 @@ change and it goes back to the sheet that owns the constraint, not to this domai
 | N16 | Staggering, fading, tweening or animating patches into existence across frames in a way another client can observe | `theme/identity/03` (*"a plot appears and disappears whole; nothing may stagger or animate its patches into existence"*) | the bay container's `Parent` is assigned exactly once per build (`serverCost.burstBudget.buildRule`); `grep -rn "TweenService\|Transparency = " game/src/server/Plots.luau` returns nothing |
 | N17 | Adding an uploaded image, mesh or sound asset to world geometry in order to reduce part count | `representation` (*"assembled from primitives; no asset ids"*); `budgets.textureCeilings` | `grep -rn "rbxassetid" game/src` returns nothing outside client UI files |
 
+### `N10` · `table.sort` — the two permitted sites, and nothing else
+
+| site | what it sorts | what it leaves alone | why it is not a reindex |
+|---|---|---|---|
+| `game/src/shared/Layout.luau:428` | a local `order: {number}` array of patch **indices**, ascending by squared XZ distance from the bay spawn, ties to the lower index so the ordering is total and deterministic | `patches` itself — the array `state.cleared` is keyed against is never touched, reordered or compacted | it **produces** an ordinal, it does not renumber one. `firstSession.placement.ordering` and `discovery` both read this ordinal, so changing or removing this call is what would move the first Find |
+| `game/src/client/Beats.luau:505` | a client-side beat presentation `queue`, by rank then arrival | nothing persisted or replicated; no patch index exists in this table | it is a **client display order** on the drain path, on the far side of the wire from any save data |
+
+**A `table.sort` at any third site in `game/src` is a finding against this row.** These two are
+named because they exist and are correct, not because sorting is generally permitted.
+
 ## Amends
 
-**`N10`, round 3, closing RR-P9 and adopting Security's RR-S1 and Networking's RR-N8 in the
-sheet that owns the row.** Both escalated correctly on substance and incorrectly on route — a
-peer sheet in the same category, revised in the same round, cannot be told to amend mine, so I
-amended it. `os.clock()` moves from forbidden to permitted; `math.random`, an unseeded
-`Random.new()`, `os.time()` and `tick()` are unchanged, and the grep pattern is narrowed by
-exactly one token. **The same one-token narrowing is owed to `architect/01-runtime` acceptance
-criterion 3**, which carries the identical pattern and which neither Security nor Networking
-can edit either — that one is a legitimate upstream escalation and both of theirs stand.
+**`N10`, round 4 erratum, closing the round-3 verification's one open cell.** `table.sort`
+matched `Layout.luau:428` and `Beats.luau:505`, so acceptance criterion 2 failed against this
+project's own artifact — and the failure pointed a builder at the one call whose removal would
+move the first Find. Token dropped from the pattern, replaced by the two-site exemption table
+above. **Verified against the shipped tree: `math.random`, `Random.new()`, `os.time()` and
+`tick()` now return zero code matches** (the only hits are the prose comments at
+`Layout.luau:70`, `Beats.luau:378` and two `.report.md` lines), so `N10` passes as written.
+
+**`N10`, round 3**, closing RR-P9 and adopting Security's RR-S1 and Networking's RR-N8 in the
+sheet that owns the row: `os.clock()` moved from forbidden to permitted. Both escalated
+correctly on substance and incorrectly on route — a peer sheet revised in the same round cannot
+amend mine. **The same two narrowings are owed to `architect/01-runtime` acceptance criterion 3**,
+which carries the identical pattern; that is a legitimate upstream escalation and rides in
+`serverCost` RR-P4 alongside Security's and Networking's.
 
 ## Consequences for other work
 
-- **Rate-limiting work (`integrity`) and reconciliation work (`prediction`)** are unblocked:
-  a monotonic elapsed-time read is permitted, so an ingress counter and a restore timer need no
-  new field and no waiver. Neither may read `os.time()` or `tick()`.
-- **Runtime work (`architect/01-runtime`)** should narrow acceptance criterion 3's grep by the
-  same token, per Security's RR-S1 and Networking's RR-N8. Until it does, that criterion and
-  this row disagree by one string and the build fails the stricter of the two.
+- **Runtime work (`architect/01-runtime`)** should narrow acceptance criterion 3's grep by
+  **both** tokens, not one. Until it does, that criterion and this row disagree, and AC3 fails
+  against the shipped tree on two counts rather than one.
+- **Area-layout work (`layout`) and onboarding-placement work (`firstSession`)** may treat
+  `Layout.luau:428` as protected: it is named as permitted here, and removing it is what would
+  break `firstSession.placement.ordering`. It was previously at risk from my own check.
+- **Rate-limiting work (`integrity`) and reconciliation work (`prediction`)** are unblocked: a
+  monotonic elapsed-time read is permitted. Neither may read `os.time()` or `tick()`.
 - **Whoever implements `budgets`' render ceilings** learns that `N1`, `N2` and `N12` remove
   every standard lever for a draw-call problem. If primitive parts do not batch, the remaining
   lever is `depths.areas[].patchCount` — a content decision, escalated to `depths`, never an
   optimisation.
 - **Clearing-module work (`modules`/`clearing`)** inherits `N3`, `N4`, `N10` and `N14` as
   constraints on any loop rewrite, including `serverCost` RR-P5's conditional bucketing: a
-  bucket index is an index over the same array, in the same order, with no removal.
+  bucket index is a **separate index array** over the same `patches`, which the exemption above
+  now makes explicitly legal, with no removal and no renumbering of `patches` itself.
 - **Plot-and-lane work (`plots`, `representation`)** inherits `N11`, `N13` and `N16`: teardown
   is one `Destroy`, a patch is never reused, and a bay is parented once.
 - **Area-boundary and set-dressing work (Art & Visuals — Environment)** inherits `N7`: the
@@ -121,10 +143,8 @@ can edit either — that one is a legitimate upstream escalation and both of the
   shorten the draw distance.
 - **Publish-checklist work (Build & Deploy)** inherits `N5` and `N6` as two properties that may
   not be tuned downward at publish time to fix a frame-rate complaint.
-- **Feedback, VFX and audio work** inherits `N14` and `N15`: no beat may be batched or delayed
-  for frame budget, and no build may interrupt one.
-- **Live-ops and roadmap work** inherits `N9` — this domain holds no space for any of the eight
-  excluded systems, so adding one later is new budget work, not a field that is already there.
+- **Feedback, VFX and audio work** inherits `N14` and `N15`. **Live-ops and roadmap work**
+  inherits `N9`.
 
 ## Acceptance criteria
 
@@ -133,25 +153,23 @@ can edit either — that one is a legitimate upstream escalation and both of the
    running: 17 of 17 are a grep, a manifest comparison or a static instance count.
 2. Running every `grep` in the check column against the current `game/src` produces the stated
    result for all rows that name one (`N1`, `N3`, `N4`, `N7`, `N8`, `N9`, `N10`, `N12`, `N13`,
-   `N15`, `N16`, `N17`). **`N10`'s pattern contains no `os.clock` token**, so a build that uses
-   a monotonic elapsed-time read for rate limiting or reconciliation passes it.
-3. This file contains zero fenced blocks tagged `manifest`, and `npm run bridge` reports no key
+   `N15`, `N16`, `N17`). **`N10`'s pattern contains neither an `os.clock` nor a `table.sort`
+   token**, and returns zero code matches against the shipped tree.
+3. `grep -rn "table.sort" game/src` returns exactly the two sites named in the `N10` exemption
+   table, plus comment and `.report.md` lines. A third code site is a finding.
+4. This file contains zero fenced blocks tagged `manifest`, and `npm run bridge` reports no key
    provided or proposed by it.
-4. `budgets.streaming.StreamingIntegrityMode != "Disabled"` and
-   `budgets.streaming.StreamingMinRadius >= social.maxCoPresenceSeparationStuds.value` both
-   hold in the merged manifest (`N5`, `N6`).
 
 ## Not decided here
 
-Every ceiling these rows constrain — sheet `01`, which holds `budgets`. Every cost model,
-tick figure and burst rule these rows constrain — sheet `02`, which holds `serverCost`. **This
-sheet supplies neither key and proposes none; the key it would need does not exist, because a
+Every ceiling these rows constrain — sheet `01`, which holds `budgets`. Every cost model, tick
+figure and burst rule these rows constrain — sheet `02`, which holds `serverCost`. **This sheet
+supplies neither key and proposes none; the key it would need does not exist, because a
 prohibition set is a constraint on two keys rather than a third thing.** What a patch, a
 boundary or a bay looks like inside the ceilings — Art & Visuals. Whether the bucketed scan in
 `serverCost` RR-P5 is adopted — `architect`, `modules`/`clearing`. **Whether
-`architect/01-runtime` acceptance criterion 3 takes the same one-token narrowing — `architect`,
-on Security's RR-S1 and Networking's RR-N8; I amended my row and cannot amend theirs.** Whether
-the checks above become a `bridge/merge.mjs` lint or stay build-report greps —
-contract-and-seam work; three wave-1 sheets have already asked for the same machinery. Which
-savings a *client* may take that never touch the server table — sheet `01` already takes two of
-them and nothing here forbids a third that leaves `state.patches` alone.
+`architect/01-runtime` acceptance criterion 3 takes both narrowings — `architect`, on RR-P4,
+Security's RR-S1 and Networking's RR-N8; I amended my row and cannot amend theirs.** Whether
+these checks become a `bridge/merge.mjs` lint or stay build-report greps — contract-and-seam
+work. Which savings a *client* may take that never touch the server table — sheet `01` already
+takes two of them and nothing here forbids a third that leaves `state.patches` alone.

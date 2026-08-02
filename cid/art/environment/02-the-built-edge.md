@@ -28,8 +28,8 @@ values**. `N7`'s check fails the moment a parapet exists, the requirement behind
 - **Why the opening is a channel gap and not a stair.** `theme/setting/04` `W3` gives three
   permitted forms and the channel gap is the cheapest of the three — it costs **zero parts**,
   because an opening is an absence — and it ties `P2` to `P1` so the works reads as one system.
-  A stair run would need three parts of a six-part allowance to read as a run at all. `Never a
-  doorway, an arch with a frame, a gateway` is satisfied by construction: there is no frame, no
+  A stair run would need three parts of a six-part allowance to read as a run at all. The
+  prohibition on a framed or hinged opening is satisfied by construction: there is no frame, no
   head, no jamb and no fitting, only a length of wall that is not there.
 - **Why 16 studs wide.** `plots.openings.centredOnX` is 0 and `barrierInOpening` is false, so a
   player walks the lane centre line through it. 16 studs is wide enough that a player moving at
@@ -85,6 +85,7 @@ is the **boundary** wall it shares with the bay below; the inward pair of the li
 | E5 | any height difference between the mouth wall, a boundary wall and the retaining wall | `theme/setting/02`, one crew one design |
 | E6 | a parapet, wall or kerb standing on the inter-plot boundary rectangle itself | `representation.plot-boundary` is four invisible parts and stays that way |
 | E7 | a wall or parapet in any bay other than the live one | `environment.residency` |
+| E8 | a doorway, arch with a frame, gateway, portal or anything a hinge would belong to | `theme/setting/04` `W3`, verbatim |
 
 ```manifest
 {
@@ -105,7 +106,7 @@ is the **boundary** wall it shares with the bay below; the inward pair of the li
       "lengthRule": "plots.bays[k].lengthStuds",
       "innerFaceX": "plots.laneWidthStuds/2 - 1.5",
       "clearanceToPatchFieldStuds": 10.5,
-      "openings": 0
+      "openingsInIt": 0
     },
     "crossWall": {
       "classId": "crossWall",
@@ -132,8 +133,9 @@ is the **boundary** wall it shares with the bay below; the inward pair of the li
       "form": "the length of wall where the channel runs through, absent",
       "partsInside": 0,
       "sillLintelOrThreshold": false,
-      "isNeverADoorwayArchOrGateway": true,
+      "framedOrHingedOpening": false,
       "readsAs": "construction that was always open",
+      "formRuling": "an absence in a wall, with no frame, head, jamb, ring or fitting of any kind, per theme/setting/04 W3",
       "perBayField": "plots.openings.perBay"
     },
     "sightline": {
@@ -153,6 +155,7 @@ is the **boundary** wall it shares with the bay below; the inward pair of the li
       }
     },
     "residency": "live bay only, per environment.residency; a wall at a shared boundary is destroyed with the bay that owned it and rebuilt identically by the next",
+    "variesByDepthFamily": false,
     "playerFacingStrings": 0
   }
 }

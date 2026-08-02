@@ -14,54 +14,45 @@ carry tier.
 
 - **The mesh path has a stated price and it is not worth paying.** `representation`: *"If Art later
   specs actual foliage meshes, `patch.kind` becomes `mesh`, this contract starts requiring an asset
-  per tier, and the build blocks until four assets exist."* That also breaks
-  `budgets.uploadedMeshAssetsInWorldGeometry` (0) and `N17` (*no uploaded asset added to world
-  geometry to reduce part count*), against *"content design is the primary creative work on this
-  project, **not art**"* `[brief: binding]`, `00-CORE.md`. Four assets buy a species read that the
-  binding legibility requirement does not ask for: the hard constraint is *"rarity tiers must
-  differ by shape or silhouette, not only hue"*, and four primitives already satisfy it.
-- **So I state the honest limit rather than claim a resemblance.** `theme/setting/05` `P5` names
-  four plants — a creeping surface mat, a fronded plant, a thorned scrambler, a woody climber — and
-  the four shipped primitives are a 3 × 1.6 × 3 block, an upright 2.4-long cylinder of 3 diameter, a
-  2.8 sphere and a 3 × 3.4 × 3 wedge. The block genuinely reads as a mat; **the other three read as
-  a drum, a ball and a ramp, and no colour or material choice available to me changes that.**
-  `[cid: decided]`. Recording `botanicalReadability: "silhouette-distinct, not species-distinct"`
-  is the useful output, because it tells Environment and VFX what they are composing against and
-  tells a later reader exactly what four assets would buy.
-- **Zero children closes O5, and the arithmetic is not close.** No key forbids a child Instance on
-  a patch: `representation.patch.properties` lists properties, not children. One `Decal` per patch
-  at the merged deepest bay takes a lane from `patchCount + 6` = **646** to **1,286**, which is
-  20,576 Instances across `runtime.maxPlayers` 16 against
-  `budgets.instanceCeilings.serverWorldInstanceCeiling` **12,000** — **171% of the ceiling**, from
-  86% today. That breaks at every value of the batching factor, so it needs no measurement to rule.
-- **A `Decal` or `Texture` is also an uploaded image asset**, which
-  `budgets.uploadedImageAssetsInWorldGeometry` 0 forbids outright — the same sourced ground as the
-  custom-material ban `[research: https://create.roblox.com/docs/parts/materials]`.
+  per tier, and the build blocks until four assets exist."* It also breaks
+  `budgets.uploadedMeshAssetsInWorldGeometry` (0) and `N17`, against *"content design is the primary
+  creative work on this project, **not art**"* `[brief: binding]`, `00-CORE.md`. Four assets buy a
+  species read the binding legibility requirement never asked for: the hard constraint is *"rarity
+  tiers must differ by shape or silhouette, not only hue"*, and four primitives already satisfy it.
+- **So I state the limit rather than claim a resemblance.** `theme/setting/05` `P5` names a creeping
+  surface mat, a fronded plant, a thorned scrambler and a woody climber; the shipped primitives are
+  a 3 × 1.6 × 3 block, an upright 2.4-long cylinder of 3 diameter, a 2.8 sphere and a 3 × 3.4 × 3
+  wedge. The block reads as a mat; **the other three read as a drum, a ball and a ramp, and no
+  colour or material choice available to me changes that.** `[cid: decided]`. Recording it tells
+  Environment and VFX what they compose against, and tells a later reader what four assets buy.
+- **Zero children closes O5, and the arithmetic is not close.** No key forbids a child on a patch —
+  `representation.patch.properties` lists properties, not children. One `Decal` per patch at the
+  merged deepest bay takes a lane from `patchCount + 6` = **646** to **1,286**, which is 20,576
+  Instances across `runtime.maxPlayers` 16 against `serverWorldInstanceCeiling` **12,000** — **171%
+  of the ceiling**, from 86% today. That breaks at every batching factor, so it needs no measurement
+  to rule. A `Decal` or `Texture` is separately an uploaded image asset, which
+  `budgets.uploadedImageAssetsInWorldGeometry` 0 forbids outright
+  `[research: https://create.roblox.com/docs/parts/materials]`.
 - **`Reflectance` and `Transparency` are genuinely unstated and I am closing them.**
-  `representation.patch.properties` names `Shape`, `Size`, `Orientation`, `Position`, `Color`,
-  `Material`, `Anchored`, `CanCollide`, `CastShadow`, `Name` and `Parent` — and neither of these
-  two. Both are 0: `theme/setting/05` `A6` forbids a wet or reflective surface and `A7` forbids a
-  luminous plant, and a semi-transparent patch would let the slab's colour through and flatten the
-  green ladder the accessibility constraint depends on. `[cid: decided]`.
-- **The legibility requirement is owed a promise, not a channel.** `rarity` ships one graded ladder,
-  read from `patch.tierIndex`, *"silhouette first, colour second"*, and `N12` forbids reducing the
-  four heights toward each other. What this domain owes it is that **no second channel is added**:
-  no property of a patch other than the three `tiers` already ships may be a function of
-  `tierIndex`. That is the whole of my answer to *"rarity read at a glance"* — `rarity.findRarityField`
-  is `null` and `perObjectVisualGrade` is `false`, so there is no per-item rank to read anywhere.
-- **The triangle total is stated with its unknown named.** A box is 12 triangles and a wedge is 8;
-  those are geometric facts about the solids, not platform claims. `Cylinder` and `Ball` are
-  tessellated at a segment count **Roblox does not publish** — `[unverified]`, and the settling
-  instrument is a Developer Console render-stats reading of one of each shape in an empty place,
-  which is the same instrument `tech/performance/01` names and **nobody owns** (G4). The budget is
-  `trianglesPerPatchBudget` 100 each and ≤ 400 for all four together, so 20 is spent and **380
-  remains for the two round shapes**. If `Ball` overruns, the stated fix is *"a shape swap in
-  `representation.patch.geometryByShape` or `tiers[].shape` — never an LOD"*, which is a revision
-  request against `gameplay/systems/01` and not a decision here.
-- **`patch.material` stays `Grass` because `01` fixes it.** A per-tier material would give the
-  ladder a fourth channel, cost four material strings where one now ships, and require rewriting a
-  key the running build reads. If anyone wants it, it is a revision request against
-  `art/objects/01`, filed there, not taken here.
+  `representation.patch.properties` names ten properties and neither of these. Both are 0:
+  `theme/setting/05` `A6` forbids a wet or reflective surface, `A7` forbids a luminous plant, and a
+  see-through patch would let the slab through and flatten the green ladder the accessibility
+  constraint depends on. `[cid: decided]`.
+- **What the legibility requirement is owed is a promise, not a channel.** `rarity` ships one graded
+  ladder from `patch.tierIndex`, *"silhouette first, colour second"*, and `N12` forbids collapsing
+  the four heights. So: **no property of a patch other than the three `tiers` already ships may be
+  a function of `tierIndex`.** `rarity.findRarityField` is `null` and `perObjectVisualGrade` false,
+  so there is no per-item rank to read anywhere in this game.
+- **The triangle total is stated with its unknown named.** A box is 12 triangles and a wedge is 8 —
+  geometric facts about the solids, not platform claims. `Cylinder` and `Ball` are tessellated at a
+  segment count Roblox does not publish; `[unverified]`, settled by a Developer Console render-stats
+  reading of one of each in an empty place, the instrument `tech/performance/01` names and **nobody
+  owns** (G4). 20 of the 400-triangle allowance is spent and **380 remains for the two round
+  shapes**. If `Ball` overruns, the stated fix is *"a shape swap … never an LOD"*, a revision
+  request against `gameplay/systems/01`.
+- **`patch.material` stays `Grass` because sheet `01` fixes it** and the running build reads it. A
+  per-tier material would add a fourth channel and rewrite a shipped key; it is a revision request
+  against `01`, not a decision here.
 
 ### The patch, property by property
 
@@ -85,16 +76,16 @@ Zero means zero. Named because a build agent cannot count "nothing extra".
 | class | why it is named |
 |---|---|
 | `Decal`, `Texture` | an uploaded image asset; `budgets.uploadedImageAssetsInWorldGeometry` 0 |
-| `SurfaceGui`, `BillboardGui` | `N1` forbids a billboard on a patch; both are also a second draw call each |
+| `SurfaceGui`, `BillboardGui` | `N1` forbids a billboard on a patch; each is also a second draw call |
 | `SpecialMesh`, `MeshPart` | `budgets.uploadedMeshAssetsInWorldGeometry` 0; `N17` |
-| `ParticleEmitter`, `Beam`, `Trail`, `Fire`, `Smoke`, `Sparkles` | `theme/setting/05` `A14` criterion 2 — zero of each as ambience; a per-patch emitter is ambience by definition |
+| `ParticleEmitter`, `Beam`, `Trail`, `Fire`, `Smoke`, `Sparkles` | `theme/setting/05` `A14` criterion 2 — zero of each as ambience, and a resident per-patch emitter is ambience by definition |
 | `PointLight`, `SpotLight`, `SurfaceLight` | `A7` — no light source but daylight |
 | `Attachment` | the cheapest one to add and still 640 per lane; nothing reads it |
 | a second `Part` or `WedgePart` | doubles the instance and draw-call count; the silhouette is one solid |
 | `Highlight`, `SelectionBox` | an outline is a rarity border by another name — `rarity.forbidden` |
 | `ClickDetector`, `ProximityPrompt` | `N13` — a patch is never touchable or queryable; input is movement only |
 | `Sound` | audio at the patch is Audio's channel on `response.patchClear`, not a resident child |
-| `Motor6D`, `Weld`, any `Tween` target child | `N16` — nothing may stagger, fade or animate patches into existence observably |
+| `Motor6D`, `Weld`, any tween target child | `N16` — nothing may stagger, fade or animate patches into existence observably |
 
 ### The triangle total, and both ends of the batching factor
 
@@ -110,11 +101,11 @@ Zero means zero. Named because a build agent cannot count "nothing extra".
 |---|---|---|
 | **1** (bottom of the 1–500 range) | the nine-lane worst case renders `9 × 645` = **5,805** draw calls against a 1,000 ceiling. **No art budget exists at any size**, and one child per patch would add up to 5,760 more | `depths.areas[].patchCount` — **a finding against `depths`, not an optimisation request and not an art decision** |
 | **≈ 5.8** | the nine-lane case becomes feasible with zero art parts | as above |
-| **50** (current value, `[playtest unknown]`) | patches cost ~116 draw calls; the instance ceiling binds instead of draw calls | `budgets`; the reading is unowned (G4) |
+| **50** (current value, `[playtest unknown]`) | patches cost ~116 draw calls; the instance ceiling binds instead | `budgets`; the reading is unowned (G4) |
 | **500** (top of range) | patches cost ~12 draw calls; neither ceiling is near | — |
 
-**Nothing in this sheet is designed around 50.** `childInstancesPerPatch: 0` is ruled on the
-instance ceiling, which breaks at every value in the range.
+**Nothing here is designed around 50.** `childInstancesPerPatch: 0` is ruled on the instance
+ceiling, which breaks at every value in the range.
 
 ```json
 {
@@ -186,26 +177,21 @@ instance ceiling, which breaks at every value in the range.
 
 ## Consequences for other work
 
-- **Performance work** gets two figures it can hold to: this domain adds **zero** Instances and
-  zero triangles beyond what `plots` already creates, and the child-instance question that was
-  legal yesterday is closed. It also inherits `Reflectance` and `Transparency` as newly stated
-  properties, and the request that whoever takes a render-stats reading report `Cylinder` and
-  `Ball` triangle counts — G4's instrument, still unowned.
+- **Performance work** gets two figures it can hold to — this domain adds zero Instances and zero
+  triangles beyond what `plots` already creates — plus two newly stated properties, and the request
+  that whoever takes a render-stats reading report `Cylinder` and `Ball` triangle counts.
 - **Area-authoring work (`depths`)** is the lever at a low batching factor and this sheet says so
-  rather than proposing an art fix. If the factor comes back below ≈ 5.8, the finding is against
-  `depths.areas[].patchCount`, not against anything here.
-- **VFX work** may not leave a resident child on a patch. `response.patchClear` has
-  `residueLifetimeSeconds` 0.4 and `findReveal` has `dwellSeconds` 2.5 — a transient Instance
-  created and destroyed inside those windows is not a child of a patch under this rule, because the
-  patch is gone. A per-patch emitter that exists before the clear **is** forbidden here.
-- **Environment work** inherits the botanical honesty: the four shapes do not read as four plants,
-  so if the place is to read as overgrown that load sits on the built stone, the litter layer
-  (`P6`) and the canopy (`P9`), not on the patch.
-- **Systems work (`tiers`)** gets one conditional revision request and no unconditional one: if the
-  `Ball` triangle count overruns, the fix is a shape swap in `tiers[].shape`, never an LOD, and it
-  is theirs. Nothing here recolours, resizes or re-heights any tier.
-- **Objects sheet `01`** is unchanged: `patch.material` stays `Grass`, and a per-tier material
-  would be a revision request against that sheet rather than a decision in this one.
+  rather than proposing an art fix. Below ≈ 5.8 the finding is against `depths.areas[].patchCount`.
+- **VFX work** may not leave a *resident* child on a patch. A transient Instance created and
+  destroyed inside `residueLifetimeSeconds` 0.4 or `dwellSeconds` 2.5 is not a child under this rule,
+  because the patch is gone; an emitter that exists before the clear is forbidden here.
+- **Environment work** inherits the botanical honesty: if the place is to read as overgrown, that
+  load sits on the built stone, the litter layer (`P6`) and the canopy (`P9`), not on the patch.
+- **Systems work (`tiers`)** gets one *conditional* revision request and no unconditional one: if
+  the `Ball` count overruns, the fix is a shape swap in `tiers[].shape`, never an LOD, and it is
+  theirs. Nothing here recolours, resizes or re-heights any tier.
+- **Objects sheet `01`** is unchanged: `patch.material` stays `Grass`, and a per-tier material is a
+  revision request against that sheet rather than a decision in this one.
 
 ## Acceptance criteria
 
@@ -225,7 +211,7 @@ Every shape, height, footprint, rgb and `Orientation` — `tiers`, `patch` and
 spacing and lane geometry — `depths`, `layout` and `plots`. Whether `CanTouch` and `CanQuery` are
 set false on a patch, which the research pack flags as a free saving — **performance work** and
 **representation work**; it is a physics property, not an appearance one. What the clear and the
-reveal are made of inside 0.4 s and 2.5 s — **VFX work**, which holds `effects`. The `Cylinder`
-and `Ball` triangle counts and the batching factor itself — **performance work**, once someone owns
-the instrument. The litter layer, the canopy and everything else that makes the place read as
-overgrown — **Environment work**, which holds `environment`.
+reveal are made of — **VFX work**, which holds `effects`. The `Cylinder` and `Ball` triangle counts
+and the batching factor itself — **performance work**, once someone owns the instrument. The litter
+layer, the canopy, and everything else that makes the place read as overgrown — **Environment
+work**, which holds `environment`.

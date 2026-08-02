@@ -59,18 +59,21 @@ unrenderable**, which is a finding against `depths.areas[].patchCount` and not a
   one edit. `[cid: decided]` on the shape; the seam ruling is not mine.
 - **Colour is a role reference, never a value.** `styleGuide` owns hue. I name the five role ids
   I require and a fallback for each, so a builder is never blocked on a key that has not merged.
+- **Orientation is not part of a tuple.** A class may be placed rotated 90° about Y, which swaps
+  which axis its length rule drives. That is one draw class placed two ways, not two classes, and
+  sheet `04`'s Terrace signature depends on it.
 - **Two free savings taken on every class.** *"For parts that do not need collisions, disable
   their collisions by setting `BasePart.CanCollide`, `BasePart.CanTouch` and `BasePart.CanQuery`
   to false"* and *"Use the `BasePart.CastShadow` property to disable shadow casting on small
   parts"* `[research: https://create.roblox.com/docs/performance-optimization/improve]`. Only
-  `paving`, `kerb`, `parapet`, `crossWall` and `pier` collide, because a player walks on or into
-  them; everything else is set false on all three.
+  `paving`, `kerb`, `parapet`, `crossWall`, `pier` and `basin` collide, because a player walks on
+  them or into them; everything else is set false on all three. `CanTouch` is false on all eleven.
 
 ### The tuple vocabulary — eleven entries, and adding a twelfth is a revision against this sheet
 
-Section is `[X, Y, Z]` in studs. `*` means that axis is parametric and its rule is named; a
-parametric axis never introduces a second tuple. Every entry is `Anchored`, `Reflectance` 0,
-`Transparency` 0.
+Size is `[X, Y, Z]` in studs. `*` means that axis is parametric and its rule is named where the
+class is spent; a parametric axis never introduces a second tuple. Every entry is `Anchored`,
+`Reflectance` 0, `Transparency` 0, `CanTouch` false.
 
 | # | classId | roster | Size (studs) | Material | colourRole | collides | shadow | spent by |
 |---|---|---|---|---|---|---|---|---|
@@ -80,8 +83,8 @@ parametric axis never introduces a second tuple. Every entry is `Anchored`, `Ref
 | 4 | `crossWall` | `P1` | `*` × 4 × 2 | `Limestone` | `stone.built` | yes | yes | 02 |
 | 5 | `pier` | `P1` | 4 × 12 × 4 | `Limestone` | `stone.built` | yes | yes | 04 |
 | 6 | `vaultStrip` | `P1` | `laneWidthStuds` × 2 × 6 | `Limestone` | `stone.built` | no | yes | 04 |
-| 7 | `channel` | `P2` | 6 × 0.6 × `*` | `Limestone` | `stone.built` | no | no | 03 |
-| 8 | `basin` | `P2` | 10 × 0.8 × 10 | `Limestone` | `stone.built` | no | no | 03, 04 |
+| 7 | `channel` | `P2` | 6 × 0.2 × `*` | `Limestone` | `stone.built` | no | no | 03 |
+| 8 | `basin` | `P2` | 10 × 0.8 × 10 | `Limestone` | `stone.built` | yes | no | 03, 04 |
 | 9 | `litter` | `P6` | 14 × 0.15 × 14 | `Grass` | `litter.leaf` | no | no | 03 |
 | 10 | `canopy` | `P9` | `*` × 60 × 40 | `Grass` | `canopy.leaf` | no | yes | 05 |
 | 11 | `trunk` | `P9` | 5 × 44 × 5 | `Wood` | `canopy.trunk` | no | yes | 05 |
@@ -94,6 +97,7 @@ parametric axis never introduces a second tuple. Every entry is `Anchored`, `Ref
 | `P7` weathering | **0 parts** | carried by `Material` alone; every other route is an uploaded image asset |
 | `P8` open sky | **0 parts** | sheet `05`; no `Sky` instance ships |
 | restored-versus-overgrown second look | **0 parts** | `theme/setting/04` narrowed it to *"the same stone, with and without plants on it"*; `W1` gives a finished part no dressing of any kind |
+| landmark, hero part, monument | **0 parts** | ruled to zero by four sheets; recorded as data in sheet `04` |
 
 ### Exclusions — countable objects and mechanisms, not a register
 
@@ -130,26 +134,28 @@ parametric axis never introduces a second tuple. Every entry is `Anchored`, `Ref
       { "id": "canopy.trunk", "requiredOf": "styleGuide", "lumaFloor": null, "fallback": "canopy.leaf" }
     ],
     "distinctDrawClasses": 11,
-    "tupleRule": "one classId, one tuple, forever. A parametric axis is a length rule, never a second tuple. A twelfth tuple is a revision against this sheet.",
+    "tupleRule": "one classId, one tuple, forever. A parametric axis is a length rule, never a second tuple, and a 90-degree rotation about Y is an orientation, not a second tuple. A twelfth tuple is a revision against this sheet.",
+    "parametricAxisMayRotate90AboutY": true,
     "tuples": [
-      { "classId": "paving",     "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 1, "plots.bays[k].lengthStuds summed from bay 1 to the live bay"], "material": "Cobblestone", "colourRole": "stone.cleared", "canCollide": true,  "canTouch": false, "canQuery": true,  "castShadow": true,  "newInstances": 0 },
+      { "classId": "paving",     "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 1, "the summed lengths of plots.bays[1..live]"], "material": "Cobblestone", "colourRole": "stone.cleared", "canCollide": true,  "canTouch": false, "canQuery": true,  "castShadow": true,  "newInstances": 0 },
       { "classId": "kerb",       "roster": "P1", "sizeStuds": [1.5, 0.4, "parametric"],  "material": "Limestone",  "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": false },
       { "classId": "parapet",    "roster": "P1", "sizeStuds": [1.5, 2.5, "parametric"],  "material": "Limestone",  "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true },
       { "classId": "crossWall",  "roster": "P1", "sizeStuds": ["parametric", 4, 2],      "material": "Limestone",  "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true },
       { "classId": "pier",       "roster": "P1", "sizeStuds": [4, 12, 4],                "material": "Limestone",  "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": true },
       { "classId": "vaultStrip", "roster": "P1", "sizeStuds": ["plots.laneWidthStuds", 2, 6], "material": "Limestone", "colourRole": "stone.built", "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true },
-      { "classId": "channel",    "roster": "P2", "sizeStuds": [6, 0.6, "parametric"],    "material": "Limestone",  "colourRole": "stone.built",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": false },
-      { "classId": "basin",      "roster": "P2", "sizeStuds": [10, 0.8, 10],             "material": "Limestone",  "colourRole": "stone.built",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": false },
+      { "classId": "channel",    "roster": "P2", "sizeStuds": [6, 0.2, "parametric"],    "material": "Limestone",  "colourRole": "stone.built",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": false },
+      { "classId": "basin",      "roster": "P2", "sizeStuds": [10, 0.8, 10],             "material": "Limestone",  "colourRole": "stone.built",   "canCollide": true,  "canTouch": false, "canQuery": false, "castShadow": false },
       { "classId": "litter",     "roster": "P6", "sizeStuds": [14, 0.15, 14],            "material": "Grass",      "colourRole": "litter.leaf",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": false },
       { "classId": "canopy",     "roster": "P9", "sizeStuds": ["parametric", 60, 40],    "material": "Grass",      "colourRole": "canopy.leaf",   "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true },
       { "classId": "trunk",      "roster": "P9", "sizeStuds": [5, 44, 5],                "material": "Wood",       "colourRole": "canopy.trunk",  "canCollide": false, "canTouch": false, "canQuery": false, "castShadow": true }
     ],
-    "commonPartProperties": { "anchored": true, "reflectance": 0, "transparency": 0 },
+    "commonPartProperties": { "anchored": true, "reflectance": 0, "transparency": 0, "canTouch": false },
     "residency": {
       "rule": "every dressing instance belongs to the live bay and to no other. It is created when plots.liveGeometry.bayBuiltAt fires and destroyed with the bay it dressed; a bay below the live one holds paving and nothing else.",
       "residentBays": 1,
       "independentOfBayOrdinal": true,
       "endgameCost": 0,
+      "exemption": "backdrop, which is place-wide, built once and never rebuilt",
       "reopensPlotsField": "plots.liveGeometry.torndownBeyond"
     },
     "allowance": {
@@ -183,6 +189,7 @@ parametric axis never introduces a second tuple. Every entry is `Anchored`, `Ref
     "forbiddenMechanisms": ["Decal", "Texture", "MaterialVariant", "SurfaceAppearance", "ParticleEmitter", "Beam", "Trail", "Fire", "Smoke", "Sparkles", "PointLight", "SpotLight", "SurfaceLight", "Atmosphere", "Clouds", "Sky", "rbxassetid"],
     "playerFacingStrings": 0,
     "landmarks": 0,
+    "seasonalEventOrHourChannels": 0,
     "schemaNote": "environment, builtEdge, groundwork, chunkDressing and backdrop are five keys because bridge/merge.mjs gives a key exactly one supplying sheet. If the schema maintainer prefers one key, they are its five top-level blocks and no sheet's content changes."
   }
 }
@@ -205,11 +212,12 @@ parametric axis never introduces a second tuple. Every entry is `Anchored`, `Ref
   a substitution inside my tuple table and never a class change. It owns every hue; I own none.
 - **Device-ceiling work (`budgets`)** inherits a materials-list widening from three built-in
   materials to four at **zero uploaded-asset cost**, and the first `environmentInstancesPerLane`
-  figure that has ever existed. It should carry it as a field rather than let five art sheets
-  restate it.
+  figure that has ever existed, in two columns — per-lane and shared. It should carry both as
+  fields rather than let five art sheets restate them.
 - **Optimisation-limit work (`N1`–`N17`)** gets one class of saving pre-taken rather than
-  requested: `CanTouch` and `CanQuery` false on every class, `CastShadow` false on six of eleven.
-  None of them is an LOD, a merge, a pool or a height collapse.
+  requested: `CanTouch` false on all eleven classes, `CanQuery` false on ten, `CastShadow` false
+  on five. None of them is an LOD, a merge, a pool or a height collapse, so none touches `N1`,
+  `N2`, `N11` or `N12`.
 - **VFX, Objects, Lighting and Characters work** inherit `distinctDrawClasses` as the shape their
   own budgets should take, and inherit that no world token layer exists, so their values are
   literals too.
@@ -227,8 +235,8 @@ parametric axis never introduces a second tuple. Every entry is `Anchored`, `Ref
    `runtime.maxPlayers × (max(depths.areas[].patchCount) + 6 + 18) + 24 ≤
    budgets.instanceCeilings.serverWorldInstanceCeiling`.
 3. The four values of `environment.allowance.perConsumerPerLane` sum to
-   `residentInstancesPerLane`, and sheets 02, 03 and 04 each place exactly their stated count for
-   one live bay.
+   `residentInstancesPerLane`, and sheets `02`, `03` and `04` each create exactly their stated
+   count for one live bay and zero in any bay below it.
 4. `environment.weathering.channels` is exactly `["material"]`, and a grep for
    `rbxassetid|MaterialVariant|SurfaceAppearance|Decal|Texture` over every value in the five keys
    this domain supplies returns zero matches.

@@ -554,3 +554,197 @@ has to be agreed between the two of you before either pointer is worth having. A
    asked for, and no revision broke anything I had previously passed — I re-checked the Kick trio,
    the studio-guard/release-counter interaction, both ceiling ranges and every restated cost figure
    against the artifact.
+
+---
+
+# Round 3
+
+**Status: FAIL** — one defect, one cell, mechanically determined, and **it is mine as much as
+theirs.** Both round-2 items closed correctly and well. The amended `N10` fixed the token it was
+asked to fix and left a second token in the same pattern that fails against the shipped artifact —
+a defect present in the first draft, that I passed in rounds 1 and 2, and that is not a regression
+caused by any revision in this wave.
+
+## The amended N10 grep does not pass, and the reason is not the clock
+
+The new pattern is
+`grep -rn "math.random\|Random.new()\|os.time()\|tick()\|table.sort" game/src`, expected to match
+nothing outside a `Random.new(seed)` derived from `GameConfig.LayoutSeed`. I ran every token against
+the current tree:
+
+| token | matches in `game/src` | verdict |
+|---|---|---|
+| `math.random` | none | passes |
+| `Random.new()` | none — `Layout.luau:175, 299, 386, 597, 635` are all `Random.new(seedFor(...))`, which the literal pattern does not match and the exemption covers anyway | passes |
+| `os.time()` | none | passes |
+| `tick()` | none | passes |
+| `os.clock()` | **out of the pattern, deliberately** — it would have matched `Pressables.luau:447, 548, 557` and `Beats.luau:416, 458, 500, 553` | the narrowing is correct; see below |
+| `table.sort` | **`Layout.luau:428` and `Beats.luau:505`** | **fails** |
+
+**So the grep returns two matches where the stated result is "nothing".** `performance/03` AC2 names
+`N10` explicitly among the rows that must produce their stated result against the current
+`game/src`, so **this sheet's own AC2 fails on this sheet's own artifact.**
+
+**Neither match violates N10's rule, and that is what makes it dangerous rather than cosmetic.**
+`Beats.luau:505` sorts a client-side beat queue and touches nothing `layout` produces.
+`Layout.luau:428` is the sharp one: it builds a separate `order` array of *indices* and sorts it by
+squared spawn distance, returning `order` while leaving `patches` untouched. That is the
+spawn-distance ordinal `firstSession.placement` reads ("patch ordinal in spawn-distance order") and
+that `discovery` reads for where the first Find sits. It is not a reordering of `layout`'s patch
+array — but it is the single line in the repository that most *looks* like one. **A builder running
+AC2, finding two failures, and reaching for the one inside `layout` would change which patch is
+first by spawn distance, which moves the first Find.** That is player-visible and index-relevant,
+and it is the outcome N10 exists to prevent. The observable, followed literally, instructs the
+violation the rule forbids — the same disease as the `os.clock` case, one token over.
+
+**Fix, and there is no judgement left in it:** drop `table.sort` from the pattern and carry it as a
+named-site exemption instead — *"`table.sort` is permitted only on an index array derived from
+`state.patches`, never on `state.patches` itself; `Layout.luau:428` (spawn-distance ordinal) and
+`Beats.luau:505` (client beat queue) are the two permitted sites and no third may be added."* That
+is checkable, it is narrower than the rule, and it protects what the rule protects.
+
+## The narrowing is more justified than Performance argued
+
+Worth recording because nobody said it: **`architect/01-runtime` AC3 has been failing against the
+shipped build since before wave 5 ran.** Its pattern includes `os.clock()`, and
+`game/src/client/Pressables.luau` and `game/src/client/Beats.luau` carry seven `os.clock()` calls
+between them, shipped, type-checking, passing every gate. `Pressables.luau:436` even carries the
+comment *"os.clock, not tick or DateTime: a monotonic clock cannot be moved by the system"* — an
+earlier builder reached the same conclusion Security and Networking reached, independently, and the
+criterion has been silently false ever since. So the one-token narrowing does not merely permit two
+new uses; **it makes a merged acceptance criterion true for the first time.** Carrying it into
+`architect/01-runtime` AC3 as a fourth change inside RR-P4 is the right route — only `architect` can
+edit that pattern — and RR-S1/RR-N8 standing beside it is correct rather than redundant, because
+they are the two sheets that have to cite something.
+
+Tying the surviving `os.time()` ban to `01-FOUNDATION.md`'s *"no offline accumulation"*
+`[brief: binding]` is the right anchor: it makes the ban a consequence of a binding brief line
+rather than of a grep, so the narrowing cannot be read as a general clock amnesty. Good move.
+
+## The pointer, and both original spellings
+
+**Resolved correctly, and the verification method was right.** Both writers read the released
+manifest rather than negotiating: `balance/03:96` declares `solvency`, `:124-125` carries
+`postTerminalBay.patchCount: 1680`, `:115-122` carries the ledger with area 8 at **1,120**. I
+confirmed the residue in `persistence/01`: `pointersThatDoNotResolve` records all four dead or stale
+spellings with the reason each fails, including the two that *do* resolve but carry the superseded
+640 (`depths.areas[].patchCount`, `endgame.postTerminalArea.patchCount`). Recording a pointer that
+resolves-but-is-stale beside one that does not resolve at all is the more useful of the two facts
+and it was not asked for.
+
+`clearedMaxKeysSource` now reads
+`max(solvency.areaLedger[].patchCount, solvency.postTerminalBay.patchCount)` — both halves inside
+one manifest block, which is why one pointer suffices where the round-2 draft needed two. Correct.
+
+## Spot-check of the re-derived character count: correct, and it explains my round-1 nit
+
+`worstCaseChars` 22,100 → **19,700**, at 681 four-digit keys.
+
+- **The key census is right.** 1,000…1,680 is 681 keys; 9 + 90 + 900 + 681 = 1,680 exactly.
+- **The delta is exactly right.** 881 − 681 = 200 four-digit keys × 12 chars = **2,400**, and
+  22,100 − 19,700 = 2,400.
+- **My round-1 "arithmetic nit" was wrong and I withdraw it.** I computed the `cleared` term as
+  21,453 against a stated 21,465 and called the 12-char gap a slip. The re-derivation makes the
+  missing term explicit — *"plus a 12-char wrapper"* — so 19,053 + 12 = 19,065 and 21,453 + 12 =
+  21,465. The sheet was right both times and I had missed a documented term. Recorded so the final
+  pass does not inherit my error.
+- **Every dependent figure moved with it, which is the part most often missed.**
+  `worstCasePercentOfValueCap` 0.53 → **0.47** (19,700 / 4,194,304 = 0.470%),
+  `perKeyUsedKBPerMin` 29.5 → **26.3** (19.7 KB × 60/45 = 26.27), `perKeyPercentOfThroughput`
+  0.72 → **0.64** (26.3 / 4,096 = 0.642%), `supersedes` 2.94× → **2.625×** (1,680 / 640). All four
+  reproduce.
+- **One cosmetic residue, sub-bar and not acted on:** the component sum is 19,739 and the published
+  total is 19,700, i.e. rounded *down* to the nearest hundred. A worst-case bound should round up.
+  It is 0.2% on a figure with 5,261 characters of margin against AC4's 25,000, so nothing turns on
+  it; the same rounding was in the 22,100.
+
+Performance's middle row also reproduces at the released area-8 count of **1,120**:
+1,120 × 16 × 7.5 / 20 / 30 = **134,400 / 358,400 / 537,600**. The bay row holds at
+201,600 / 537,600 / 806,400. Both sides now compute from the same released ledger.
+
+## Ruling on the RR-P8 timing change: right, and it prevents a gratuitous wipe
+
+**`B1`/`B2` fire when `solvency`'s revision table lands in `depths` and `endgame`, not when
+`solvency` released.** That is correct, and the reasoning is the load-bearing part: the index space
+`state.cleared` is keyed to is whatever `layout.build(k)` actually produces, and `layout.build`
+reads `depths.areas[].chunkCount` and `layout.composition`. `solvency` is a proposed key that no
+module reads. Approving it changes **no byte** of `game/src/shared/GameConfig.luau`; editing
+`depths`/`endgame` and re-emitting does. The sheet's own evidence proves it —
+`endgame.postTerminalArea.patchCount` still reads 640, so the shipped build demonstrably still has
+the old index space while `solvency` is released.
+
+Getting this wrong in the other direction is expensive: a bump owed on *approval* would take
+`ArgaRuin_v3` → `v4` for a change the build had not taken, and since `translate.discard` throws away
+`cleared` on every migration, that is a gratuitous wipe of every player's current-area progress to
+track a number nothing reads. Making RR-P8 conditional on the edit is the right call and it is the
+kind of precision the trigger list was written for.
+
+**One residual, named not raised:** `B2`'s field path is `depths.areas[].patchCount` and
+`.chunkCount`. If any module ever begins reading `solvency`'s counts directly, the index space would
+move without `B2`'s named field moving, and neither `B6` (semantic change) nor `B7` (encoding
+change) names it either. Unreachable today because nothing reads `solvency`; worth one clause
+whenever that key is promoted.
+
+## The withdrawn `runOrdinal` request
+
+**Withdrawing it was right for Persistence** — the request was never Persistence's to justify, the
+seven persisted fields are untouched, `stateShape` stays at twelve, and reinforcing the withdrawal
+in three places (`payload.runOrdinalDerivable: false`, `D9` banning a session or join counter by
+name, and a `Not decided here` route) is the correct way to stop a withdrawn field being quietly
+re-added by a later sheet. Nothing in this category depends on it.
+
+**The predicate Analytics settled on is not quite what they think it is, and it is theirs to fix.**
+"A brand-new save is byte-equal to `defaultState()`" is true, but so is the save of a player who
+joined, cleared nothing, and left inside the first few seconds — `wiring.onLeave` step 2 saves
+unconditionally, and every one of the seven fields is still at its default. So the predicate is
+*"has never made progress"*, not *"run 1"*, and the two differ for exactly the join-and-bounce
+population, who are counted as new on every return. That population is the one a first-session
+funnel cares most about. Routed to Funnels and Engagement; it is not Tech's field and it bears on no
+Tech decision.
+
+## Carried to the final cross-category pass
+
+1. **Wave 4 released at PASS with a post-terminal bay that breaches wave 5's server instance ceiling
+   by 2.25×** — 16 × (1,680 + 6) = 26,976 against `budgets.serverWorldInstanceCeiling` 12,000. Wave 4
+   could not see the ceiling because it did not exist when wave 4 ran; wave 5 cannot move the count
+   because `solvency.postTerminalBay.patchCount` is not its field; and `performance/03` correctly
+   forbids every optimisation that would close it, because each one breaks a binding constraint.
+   Three chunk reductions have moved it 251% → 225%, so trimming is not converging. **Neither gate
+   can close this alone and both have discharged their part.**
+2. **42 explicit nulls across six Analytics sheets** — `funnels/02` 13, `kpis/02` 13,
+   `engagement/03` 8, `engagement/01` 5, `engagement/02` 2, `economy/03` 1 — against
+   `tech/deploy/02`'s rule that an emitted null is a **hard error**, with a 16-row remediation table
+   naming none of them. Harmless while those keys are `proposed`, because a proposal is not emitted.
+   **It becomes a promotion blocker the instant any one of them is promoted**, and it blocks in two
+   places at once: `deploy/02` AC1 (`grep -n "= nil" GameConfig.luau` returns nothing) and AC3
+   (`bridge --emit` must exit non-zero on any null). Either those 42 sites get sentinels under
+   `deploy/02`'s per-type convention, or `deploy/02`'s rule is relaxed — and relaxing it re-opens
+   the `gamePassId` → `0` decision that `release.provisioning`'s "the build runs at every gate"
+   depends on. A dated conflict, not a latent one.
+
+## Verdict
+
+**FAIL**, on one defect: `performance/03` `N10`'s check retains `table.sort`, which matches
+`Layout.luau:428` and `Beats.luau:505`, so `performance/03` AC2 does not pass against the artifact,
+and the observable followed literally points a builder at the spawn-distance ordinal.
+
+**It is a defect, not a design disagreement.** N10's *rule* is right and nobody disputes it; only
+the observable over-matches, and the correction is one token plus a two-site exemption with no
+judgement in it. Three qualifications belong on the record:
+
+- **It is not a regression.** `table.sort` was in N10's pattern in the first draft and
+  `Layout.luau:428` shipped long before wave 5. Nothing done in rounds 2 or 3 caused it.
+- **I passed it twice.** I verified N10's clock token in both prior rounds and never ran the rest of
+  its own pattern. The round-1 report should have caught this and did not.
+- **Everything requiring judgement is settled.** All fourteen round-1 requests and both round-2
+  requests are closed, several better than asked; both clock escalations are correct; both cost
+  models now compute from the same released ledger; the pointer resolves; the character
+  re-derivation is right; the RR-P8 timing change is right. This is the last mechanical thread in an
+  otherwise closed category.
+
+The three-round cap being spent is a fact about scheduling, not evidence about the artifact, and I
+will not pass a criterion that fails against the shipped tree because I am out of rounds. If the
+coordinator's process admits an erratum outside the round count, **this is erratum-class**: one
+cell, one token, a two-site exemption, zero design content, and it needs no further verification
+pass because there is nothing left to judge. If it does not, the category re-runs on this one cell
+alone.

@@ -25,22 +25,21 @@ role later without a rewrite.
   building is `P3` and must read as fixed; anything loose must be a `Find`."* `representation.find`
   is `kind: none`, `class: null`, `createdBy: "nothing"`, count **0**. Composing the two: the loose
   half of the closed dressing list has zero rendered members. `[cid: decided]` on stating it; both
-  inputs are approved. This is O7 and it is the check below, not a paragraph.
-- **A builder dressing a bay from the present column would otherwise build P4.** That is the whole
-  reason it is a check and not a note: `P4` reads like an instruction and is not one.
+  inputs are approved. This is O7, and it is the check below rather than a paragraph, because `P4`
+  reads like an instruction to a builder dressing a bay and is not one.
 - **The zeros are output, not absence.** `CLAUDE.md`: *"a domain that runs and correctly concludes
   nothing is information; a silently skipped one is not."* Pets and companions are zero by
   `theme/identity/04` (*"nine classes of entity: none of them"*) and by there being no system to
   attach one to — `input`'s verb roster has no equip or summon and `response.controlEverAffected`
   is false. Per-item rarity is zero because `rarity.findRarityField` is `null` and
-  `perObjectVisualGrade` is `false`.
+  `perObjectVisualGrade` is `false`, so no object in this game carries a rank of its own.
 - **Role-plus-resolved-value is forced by G3.** No token layer exists for anything rendered in the
-  world (`cid/art/_category.md` G3), `cid/art/style/_lead.md` is on disk but **none of its three
-  sheets is**, and `CLAUDE.md` binds *"arbitrary values enter through tokens, never as literals in
-  a spec."* A bare literal would have to be rewritten when `styleGuide` lands; a role carrying its
-  current resolution would not. `[cid: decided]` on the shape.
-- **Every value in this domain answers a question the brief never asked.** `O1`: no material,
-  colour, finish or proportion word appears for any object in the eight brief sheets.
+  world, `cid/art/style/_lead.md` is on disk but **none of its three sheets is**, and `CLAUDE.md`
+  binds *"arbitrary values enter through tokens, never as literals in a spec."* A bare literal
+  would have to be rewritten when `styleGuide` lands; a role carrying its current resolution would
+  not. `[cid: decided]` on the shape.
+- **Every value in this domain answers a question the brief never asked.** O1: no material, colour,
+  finish or proportion word appears for any object in the eight brief sheets, and
   `theme/setting/05` `G9` records the same silence for the place. Tagged `[cid: decided]`
   throughout rather than dressed as inherited.
 
@@ -91,11 +90,11 @@ carries any of the 24 strings in `collection.sets[].relics[]`.**
 | Z7 | uploaded mesh assets in world geometry | 0 | `budgets.uploadedMeshAssetsInWorldGeometry` 0; `N17` | `grep -rn "MeshPart\|SpecialMesh\|MeshId" game/src` returns nothing |
 | Z8 | uploaded image assets in world geometry | 0 | `budgets.uploadedImageAssetsInWorldGeometry` 0; both PBR routes require an upload `[research: https://create.roblox.com/docs/parts/materials]` | zero `Decal`, `Texture`, `MaterialVariant`, `SurfaceAppearance` in `game/src` |
 | Z9 | icon renders of any object | 0 | sheet 04's ruling; `representation`'s *"no asset needs to be produced to build this game"* | `grep -rn "rbxassetid" game/src` returns nothing |
-| Z10 | cobwebs, skulls, bones, graves, chains, blood, scorch | 0 | `theme/tone/04` `D1` | zero Instances so named; zero materials in the banned list of sheet 03 |
+| Z10 | cobwebs, skulls, bones, graves, chains, blood, scorch | 0 | `theme/tone/04` `D1` | zero Instances so named; zero materials from sheet 03's banned list |
 | Z11 | a face, eyes or mouth on any object; a mascot | 0 | `theme/tone/04` `D13`; `theme/identity/04` row 9 | no roster entry carries a facial feature |
 | Z12 | plinth, podium, pedestal, scoreboard, rank badge | 0 | `03-META.md` priority 3 — leaderboards | roster has no display furniture |
 | Z13 | chest, cache, container, gift box, stall, trade counter | 0 | `03-META.md` priority 3 — trading and daily rewards; `theme/setting/05` `A17`–`A23` | no roster entry accepts or holds an object |
-| Z14 | seasonal, festival or anniversary object; seed, sapling, new-growth marker | 0 | `03-META.md` priority 3 — seasons and events, rebirth; `rebirth` is in `vocabulary.bannedWords` | no roster entry varies with a date, and no reserved corner is held for one |
+| Z14 | seasonal, festival or anniversary object; seed, sapling, new-growth marker | 0 | `03-META.md` priority 3 — seasons and events, rebirth; `rebirth` is in `vocabulary.bannedWords` | no roster entry varies with a date, and no corner is reserved for one |
 
 ### The expression shape every sheet in this domain uses
 
@@ -169,45 +168,51 @@ without touching the value:
     "zeroCount": 14,
     "playerFacingStringsProducedByThisDomain": 0,
     "tool": {
-      "note": "decided in art/objects sheet 03 and folded here",
+      "foldedFrom": "art/objects sheet 03",
       "instanceClass": "Model",
       "partCount": 2,
       "sizesAreShippedAndNotReopened": "representation.tool — handle 0.3 x 0.3 x 1.4, head headWidth x 0.2 x 0.6",
       "allowedMaterials": ["Wood"],
       "parts": [
-        { "part": "Handle", "role": "tool-grip-timber", "material": "Wood", "rgb": [122, 88, 58], "luma601": 94.7, "reflectance": 0, "transparency": 0, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-dark]" },
-        { "part": "Head", "role": "tool-head-timber-pale", "material": "Wood", "rgb": [190, 158, 118], "luma601": 163.0, "reflectance": 0, "transparency": 0, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-pale]" }
+        { "part": "Handle", "role": "tool-grip-timber", "material": "Wood", "rgb": [118, 88, 66], "luma601": 94.5, "blueOverRed": 0.559, "reflectance": 0, "transparency": 0, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-dark]" },
+        { "part": "Head", "role": "tool-head-timber-pale", "material": "Wood", "rgb": [190, 158, 118], "luma601": 163.0, "blueOverRed": 0.621, "reflectance": 0, "transparency": 0, "roleOwnerWhenStyleGuideExists": "styleGuide.materials[worked-wood-pale]" }
       ],
       "invariants": {
         "headLumaMinusGripLumaAtLeast": 60,
+        "headLumaMinusGripLumaActual": 68.5,
+        "headIsPalerThanGrip": true,
         "headLumaVsEveryTierGreenAtLeast": 20,
         "headLumaVsClearedStoneAtLeast": 25,
         "clearedStoneLumaRequiredAtLeast": 188,
         "noGildingTest": "reflectance is 0 and blue divided by red is at least 0.55 on every part",
-        "headIsPalerThanGrip": true
+        "singleColourPerPart": true
       },
       "bannedMaterials": ["Neon", "ForceField", "Foil", "Metal", "DiamondPlate", "CorrodedMetal", "Glass", "Ice", "Glacier", "Marble", "Basalt", "CrackedLava", "Plastic", "SmoothPlastic", "Grass", "LeafyGrass", "Fabric", "Leather"],
       "bannedMaterialCount": 18,
       "findingO6": {
         "rule": "tool T9 forbids a blade edge longer than the grip",
         "gripLengthStuds": 1.4,
-        "headWidthStuds": "1.2 plus 0.35 per equivalent Reach level",
+        "headWidthExpression": "1.2 plus 0.35 per equivalent Reach level",
         "firstViolatingLevel": 1,
         "headWidthAtTopStuds": 4.0,
         "ratioAtTop": 2.86,
         "leverHeldByThisDomain": "material and colour only",
-        "geometryRoutesTo": ["tool-behaviour work, which owns tool.headWidthPerLevelStuds", "representation work, which owns head.Size"]
+        "routedTo": ["tool-behaviour work, which owns tool.headWidthPerLevelStuds", "representation work, which owns head.Size"],
+        "recommendedOption": "A — restate T9 as no edge highlight and no tapered profile rather than a length rule"
       }
     },
     "find": {
-      "note": "decided in art/objects sheet 04 and folded here",
+      "foldedFrom": "art/objects sheet 04",
       "worldForm": "none",
       "worldInstanceCount": 0,
+      "instanceClass": null,
+      "createdBy": "nothing",
       "iconCount": 0,
       "imageAssetCount": 0,
-      "uploadedAssetCount": 0,
       "meshCount": 0,
+      "uploadedAssetCount": 0,
       "marksAndFiguresCount": 0,
+      "rarityTreatmentCount": 0,
       "panelFormFieldReference": "screens.screens[id=index].tree[node=Name].textFrom, rendered into screens.screens[id=index].mutableProperties[0]",
       "panelFormIsCitedNotCopied": true,
       "materialRegisterIsAuthoringConstraintOnly": true,
@@ -215,21 +220,25 @@ without touching the value:
       "technologyCeiling": "Orrery — gears cut by hand are in, anything powered is out",
       "iconPathPrice": {
         "uploads": 24,
-        "contractRevision": "collection.sets[].relics[] must become objects rather than bare strings",
+        "contractRevision": "collection.sets[].relics[] must become objects with an art field, and gameplay/meta owns that key",
         "buildBlocksUntilAssetsExist": true,
         "keysBroken": ["representation.find", "budgets.uploadedImageAssetsInWorldGeometry", "theme/tone/04 D11", "rarity.forbidden"]
       }
     },
     "foliage": {
-      "note": "decided in art/objects sheet 05 and folded here",
+      "foldedFrom": "art/objects sheet 05",
       "kind": "primitive",
       "kindIsPermanent": true,
       "childInstancesPerPatch": 0,
+      "forbiddenChildClassCount": 25,
       "reflectance": 0,
       "transparency": 0,
       "materialIsGrassForAllFour": true,
       "botanicalReadability": "silhouette-distinct, not species-distinct",
-      "secondVisualChannelAdded": 0
+      "secondVisualChannelAdded": 0,
+      "trianglesKnownSubtotal": 20,
+      "trianglesBudgetForAllFour": 400,
+      "meshPathBlocksTheBuildOn": 4
     }
   }
 }
@@ -240,12 +249,12 @@ without touching the value:
 - **Environment work** owns rows `R7` and `R8` and inherits `F1`, `F6` and the closed roster: every
   part it adds must be fixed to the building, and it may not add a twelfth class. It also inherits
   the negative half — **`P4` is not work waiting for it either.** Nobody builds `P4`.
-- **Style-guide work** inherits the expression shape. When `styleGuide.materials` exists, it takes
-  the four `roleOwnerWhenStyleGuideExists` paths above and the values in this key become its
-  fallback, not its competitor. Two keys describing one `Part` is the failure the seam must avoid.
+- **Style-guide work** inherits the expression shape. When `styleGuide.materials` exists it takes
+  the four `roleOwnerWhenStyleGuideExists` paths above, and the values here become its fallback
+  rather than its competitor. Two keys describing one `Part` is the failure that seam must avoid.
 - **Meta and content work (`collection`)** gets the check that keeps `Z5` honest: the 24 names must
   stay strings in a slot label and must never become an Instance name.
-- **Tone and setting work (`theme/setting/05`)** should note that `P4` is recorded here as a present
+- **Tone and setting work (`theme/setting/05`)** should note `P4` is recorded here as a present
   class with zero rendered members. That is a consequence, not a revision request: the class is
   correctly described and correctly renders nothing.
 - **Performance work** gets an instance figure it can hold to: this domain adds **zero** Instances
@@ -258,8 +267,8 @@ without touching the value:
 
 1. `objectArt.roster` has exactly **11** entries and `objectArt.zeros` exactly **14**, and every
    entry in `zeros` carries a non-empty `reason` and a non-empty `check`.
-2. `objectArt.looseObjectInstanceCount` is `0`, and no Instance created anywhere in `game/src`
-   is named with, or has a property set to, any of the 24 strings in `collection.sets[].relics[]`.
+2. `objectArt.looseObjectInstanceCount` is `0`, and no Instance created anywhere in `game/src` is
+   named with, or has a property set to, any of the 24 strings in `collection.sets[].relics[]`.
 3. Zero Instances in `game/src` are parented to a character other than the one `Tool` `Model`
    (`Z1`, `Z2`).
 4. Every `Instance.new` call in `game/src` creates a class that appears in
@@ -267,8 +276,8 @@ without touching the value:
 
 ## Not decided here
 
-What built stone is made of, how it is composed and how it is distributed across `layout`'s
-families — **Environment work**, which holds `environment`; row `R7` and `R8` are named, not
+What built stone is made of, how it is composed, and how it is distributed across `layout`'s
+families — **Environment work**, which holds `environment`; rows `R7` and `R8` are named, not
 specified. The world palette, the closed `Enum.Material` list for the whole game, and whether a
 world token layer exists — **style-guide work**, which holds `styleGuide`; I state the expression
 shape and resolve four values inside it. What the clear and the reveal are made of — **VFX work**,
