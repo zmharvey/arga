@@ -73,6 +73,17 @@ test('the key exists and the field does not — the census case, five sheets, th
   assert.match(problems[0], /does not resolve. The key exists; the field does not/);
 });
 
+test('the head segment keeps its subscript — `upgrades[*].costBase` is not `costBase` on the array', () => {
+  // Descending into `universe[head]` and walking `segs.slice(1)` drops the head's OWN
+  // subscript, so an array-valued key could never be indexed and every citation of one
+  // reported as unresolvable. Two of the resolver's first three real findings were this.
+  const universe = {
+    upgrades: [{ costBase: 25, costGrowth: 1.6 }, { costBase: 40, costGrowth: 1.5 }],
+    kpis: citer([field('upgrades[*].costBase'), field('upgrades[1].costGrowth')]),
+  };
+  assert.deepEqual(resolveRefs(universe, []).problems, []);
+});
+
 test('a path naming a key nobody supplies or proposes says so, rather than "does not resolve"', () => {
   const { problems } = resolveRefs({ ...UNIVERSE, kpis: citer([field('environment.perLaneInstances')]) }, []);
   assert.match(problems[0], /names key "environment", which no sheet supplies or proposes/);
@@ -91,6 +102,39 @@ test('[*] is ALL and fails if any element lacks the remainder; [?] is ANY and do
 test('[?] over an empty array is absent — there is no element to carry the remainder', () => {
   const { problems } = resolveRefs({ zones: { areas: [] }, kpis: citer([field('zones.areas[?].tag')]) }, []);
   assert.equal(problems.length, 1);
+});
+
+test('a string subscript may be bare or quoted, but a bare NUMBER stays illegal', () => {
+  // Four sites across two domains wrote `customFields[saveState]`; none quoted. Bare is
+  // unambiguous against *, ? and digits. `[0]` is not — it could be the index or a row whose
+  // id is "0" — so that one stays a parse error.
+  assert.equal(parsePath('funnels.customFields[saveState]').error, undefined);
+  assert.equal(parsePath('telemetry.events[area_cleared].fields[3]').error, undefined);
+  assert.match(parsePath('areas.0.patchCount').error, /not IDENT/);
+
+  const universe = {
+    funnels: { customFields: [{ id: 'saveState', values: ['pristine'] }] },
+    kpis: citer([field('funnels.customFields[saveState].values[*]')]),
+  };
+  assert.deepEqual(resolveRefs(universe, []).problems, []);
+});
+
+test('commandOutput takes a bundle as well as a single assertion', () => {
+  // The KPI sheet registers one site carrying the five gate assertions, rather than five sites
+  // saying the same thing about the same run. That is the better shape; the resolver insisted
+  // on the flat form and was wrong.
+  const bundle = {
+    kind: 'commandOutput',
+    assertions: [
+      { command: 'npm run bridge', field: 'status', target: 'COMPLETE with 0 problems' },
+      { command: 'npm test', field: 'failing', target: '0' },
+    ],
+  };
+  assert.deepEqual(resolveRefs({ ...UNIVERSE, kpis: citer([bundle]) }, []).problems, []);
+
+  const holed = { kind: 'commandOutput', assertions: [{ command: 'npm test' }] };
+  const { problems } = resolveRefs({ ...UNIVERSE, kpis: citer([holed]) }, []);
+  assert.match(problems[0], /assertions\[0\] kind commandOutput needs both/);
 });
 
 test('a quoted subscript selects a row by id, name or key', () => {
@@ -238,12 +282,12 @@ test('readBy paths are resolved, not just parsed', () => {
       sharedPredicate: {
         definedBy: 'funnels',
         field: 'funnels.gate',
-        readBy: ['collection.className', 'collection.total', 'funnels.populations[run1Sessions]'],
+        readBy: ['collection.className', 'collection.total', 'funnels.rows.0.gate'],
       },
     },
     ...UNIVERSE,
   });
   assert.equal(problems.length, 2);
   assert.ok(problems.some((p) => /"collection.total" does not resolve/.test(p)));
-  assert.ok(problems.some((p) => /"funnels.populations\[run1Sessions\]" is not a legal path/.test(p)));
+  assert.ok(problems.some((p) => /"funnels.rows.0.gate" is not a legal path/.test(p)));
 });

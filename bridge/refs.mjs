@@ -53,7 +53,7 @@
  */
 
 /** A path segment: an identifier, optionally subscripted. */
-const SEGMENT = /^([A-Za-z_][A-Za-z0-9_]*)(?:\[(\*|\?|\d+|"[^"]*")\])?$/;
+const SEGMENT = /^([A-Za-z_][A-Za-z0-9_]*)(?:\[(\*|\?|\d+|"[^"]*"|[A-Za-z_][A-Za-z0-9_]*)\])?$/;
 
 /**
  * Sentinels `tech/deploy/02` mandates for "this field has no value", by type.
@@ -93,6 +93,16 @@ export function parsePath(path) {
  *   [*]  ALL   — every element must carry the remainder
  *   [?]  ANY   — at least one must
  *   [n]  EXACT — that index, or that key for a string subscript
+ *
+ * A string subscript may be written bare (`customFields[saveState]`) or quoted
+ * (`events["area cleared"]`). Bare is unambiguous against all three other forms, and it is
+ * what every author independently reached for — four sites across two domains, zero quoted.
+ * When the whole population writes one spelling the grammar is wrong, not the population.
+ * Quoting stays for ids that are not identifiers, exactly as JS property access works.
+ *
+ * A BARE NUMBER is still a parse error (`areas.0.patchCount`), and that is not inconsistent:
+ * `0` would be ambiguous between the index and a row whose id is "0", which is the class of
+ * two-spellings-that-both-work this grammar exists to forbid.
  */
 function walk(root, segs) {
   let cursors = [root];
@@ -122,9 +132,9 @@ function walk(root, segs) {
         if (v[+sub] === undefined) return { status: 'absent' };
         next.push(v[+sub]);
       } else {
-        // A quoted subscript selects by a row's `id`, `name` or `key` — the three spellings
-        // the sheets actually use for a row's identity.
-        const want = sub.slice(1, -1);
+        // A string subscript selects by a row's `id`, `name` or `key` — the three spellings
+        // the sheets actually use for a row's identity. Quotes are stripped if present.
+        const want = sub.startsWith('"') ? sub.slice(1, -1) : sub;
         const row = v.find((r) => r && (r.id === want || r.name === want || r.key === want));
         if (row === undefined) return { status: 'absent' };
         next.push(row);
@@ -214,7 +224,18 @@ function checkRef(key, site, ref, universe) {
     return problems;
   }
   if (kind === 'commandOutput') {
-    if (!ref.command || !ref.field) problems.push(`${where}: kind commandOutput needs both "command" and "field"`);
+    // Two legal forms. The flat one is a single assertion; `assertions[]` is a bundle, which is
+    // what the KPI sheet actually wrote — one registered site carrying five gate assertions
+    // rather than five sites saying the same thing about the same run. The bundle is the better
+    // shape and the resolver was wrong to insist on the flat one.
+    const rows = Array.isArray(ref.assertions) ? ref.assertions : [ref];
+    if (!rows.length) problems.push(`${where}: kind commandOutput carries an empty assertions[]`);
+    for (const [i, a] of rows.entries()) {
+      if (!a.command || !a.field) {
+        const at = Array.isArray(ref.assertions) ? ` assertions[${i}]` : '';
+        problems.push(`${where}:${at} kind commandOutput needs both "command" and "field"`);
+      }
+    }
     return problems;
   }
   if (kind !== 'manifestField') {
@@ -241,7 +262,7 @@ function checkRef(key, site, ref, universe) {
     return problems;
   }
 
-  const at = walk(universe[head], parsed.segs.slice(1));
+  const at = walk(universe, parsed.segs);
   if (at.status === 'absent') {
     problems.push(`${where}: path "${ref.path}" does not resolve. The key exists; the field does not.`);
   } else if (at.status === 'absentByDesign' && ref.requireNonNull) {
@@ -255,7 +276,7 @@ function checkRef(key, site, ref, universe) {
     if (p2.error) { problems.push(`${where}: alsoReads "${also}" is not legal — ${p2.error}`); continue; }
     const h2 = p2.segs[0].ident;
     if (!(h2 in universe)) { problems.push(`${where}: alsoReads "${also}" names unknown key "${h2}"`); continue; }
-    if (walk(universe[h2], p2.segs.slice(1)).status === 'absent') {
+    if (walk(universe, p2.segs).status === 'absent') {
       problems.push(`${where}: alsoReads "${also}" does not resolve`);
     }
   }
@@ -303,7 +324,7 @@ export function sharedPredicateProblems(merged, proposals = []) {
       if (p2.error) { problems.push(`${key}.sharedPredicate.readBy "${r}" is not a legal path`); continue; }
       const h = p2.segs[0].ident;
       if (!(h in universe)) problems.push(`${key}.sharedPredicate.readBy "${r}" names unknown key "${h}"`);
-      else if (walk(universe[h], p2.segs.slice(1)).status === 'absent') {
+      else if (walk(universe, p2.segs).status === 'absent') {
         problems.push(`${key}.sharedPredicate.readBy "${r}" does not resolve`);
       }
     }
