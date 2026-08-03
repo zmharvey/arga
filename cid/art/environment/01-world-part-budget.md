@@ -313,8 +313,11 @@ below are mine, and each reverses with one field.
    `runtime.maxPlayers × (max(depths.areas[].patchCount) + 6 + 16) +
    environment.allowance.sharedPlaceInstances ≤
    budgets.instanceCeilings.serverWorldInstanceCeiling` (10,612 ≤ 12,000).
-3. `environment.budgetAtBatchingFactor.batchingFactorFloor` is **5.966**, equals `styleGuide`'s
-   re-derived floor, and is the only floor value asserted anywhere in this domain's five sheets;
+3. `environment.budgetAtBatchingFactor.batchingFactorFloor` is **5.966** and equals
+   `detailBudget.drawCalls.minimumBatchingFactorAtMergedTotals`, which is where the Style Guide
+   domain's re-derivation actually merges — an earlier version of this criterion said "equals
+   `styleGuide`'s re-derived floor", and `styleGuide` is a different key holding roles, luma and
+   materials with no draw-call field at all. It is the only floor value asserted anywhere in this domain's five sheets;
    every occurrence of a superseded figure sits inside a `supersedes` field or the sentence that
    strikes it, and zero occurrences assert one as live.
 4. `environment.allowance.perConsumerPerLane` sums to `residentInstancesPerLane`; every placement

@@ -57,10 +57,20 @@ at all: that is `A4`, the **third** petition against the same `ok && --emit` gat
 **Scope it as one job, not three.**
 
 **One string is now held by two keys, so the seam is stated here rather than discovered at build
-time.** `title.value` → `ctx.title` → `generate.mjs:116` → `Theme.luau`'s `meta.sourceTitle` is a
-real path. Wave 7's proposed `title` **decides** the value; `uiTheme.sourceTitle` **emits and
+time.** `ctx.title` → `generate.mjs:116` → `Theme.luau`'s `meta.sourceTitle` is a real path,
+verified this run. **The step before it is not.** `game-context.mjs:136` reads `title:
+concept.title` — the *stage-0 concept object* — and nothing in this repo reads a merged
+`title.value`. An earlier version of this line wrote the chain as `title.value → ctx.title → …`
+and called the whole thing real; the first arrow does not exist, and no wave creates it by
+running. Recorded in the same form the Marketing domains use for the same hole:
+`title` reaches nothing today. Closing it is one step in `game-context.mjs`, owned by whoever
+takes the `ok && --emit` job in `A4` — which makes this a *third* petition against that owner,
+alongside `hud/03` and `theme/vocabulary/03`.
+
+Wave 7's proposed `title` **decides** the value; `uiTheme.sourceTitle` **emits and
 checks** it. So `title` is authoritative, `uiTheme.sourceTitle` mirrors it, and the check reads
-`title.value` when that key is merged and falls back to my field while wave 7 has not run.
+my field until that step exists — merging `title` alone does not redirect it, which is what the
+superseded wording implied.
 **If the Name lead recommends something other than `"Ruin Restoration"`, that revision against
 this approved key is accepted in advance**, it moves one field and criterion 1's literal, and it
 requires no new round.
