@@ -220,8 +220,12 @@ row is already green shows the rows are real conditions and not a wall.
    `manualInstanceEdits` 0 and `gateRowsPassingAtCapture` 10.
 4. `revisionRequests[RR-T1]` carries `rowIdAssignedBy: "release"`, a `rowCountEffect` of exactly
    `"at least one row beyond P4"`, and an `otherLiveRequestsAgainstThisChecklist` array of **3**
-   rows; it carries no field named `rowId`, `row`, `newRowId` or `newRow`, and its only `id` field
-   is `"RR-T1"`. And `grep -rn "rbxassetid" game/src` returns nothing after the image exists, with
+   rows; it carries no field named `rowId`, `row`, `newRowId` or `newRow`, and **no `id` field
+   anywhere in it names a checklist row** — its own `id` is `"RR-T1"` and the three inside
+   `otherLiveRequestsAgainstThisChecklist` are `"RR-C1"`, `"RR-H1"` and `"unnumbered"`, which name
+   other *requests*. An earlier wording said "its only `id` field is `RR-T1`", which was false as
+   read: the object nests three more, and the distinction the criterion is about is request ids
+   versus row ids, not how many `id` keys exist. And `grep -rn "rbxassetid" game/src` returns nothing after the image exists, with
    no path under `assets/marketing/` in `game/default.project.json`.
 
 ## Not decided here

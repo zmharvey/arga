@@ -92,7 +92,7 @@ holds eight entries, none of them from those lists** — so four of my nine rule
 a reviewer must remember. The block below is the request that closes that gap. It amends a key
 this domain does not own, so it is a request against `theme/vocabulary`, not a merge.
 
-```json
+```manifest
 {
   "amends": "vocabulary",
   "from": "theme/tone/01-register.md",
@@ -109,7 +109,7 @@ this domain does not own, so it is a request against `theme/vocabulary`, not a m
     "maxSentencesPerString": 2,
     "maxSentencesOutsideProsePaths": 1
   },
-  "mergeNote": "requestedBannedWords is grouped by rule so one reason is not repeated 81 times. Flatten each group to {word, reason} pairs, using the group's reason, before merging into vocabulary.bannedWords. Phrases containing a space work under the existing \\b<word>\\b test.",
+  "mergeNote": "requestedBannedWords is grouped by rule so one reason is not repeated 81 times. Flatten each group to {word, reason} pairs, using the group's reason, before merging into vocabulary.bannedWords. Phrases containing a space work under the existing word-boundary test.",
   "requestedBannedWords": [
     {
       "rule": "P1",
@@ -133,7 +133,7 @@ this domain does not own, so it is a request against `theme/vocabulary`, not a m
     }
   ],
   "heldBack": [
-    { "word": "I", "rule": "P1", "reason": "one letter; the \\bI\\b test is case-insensitive and would fire on any stray initial. Reviewer-enforced" },
+    { "word": "I", "rule": "P1", "reason": "one letter, and the ban test is case-insensitive, so it would fire on any stray initial. Reviewer-enforced" },
     { "word": "mine", "rule": "P1", "reason": "also a physical place a later area or Find could legitimately name" },
     { "words": ["screen", "press", "hold", "drag", "tap", "lobby"], "rule": "P6", "reason": "each is also a physical object or a physical verb this fiction may need: a fire screen, an olive press, a bowl that holds water, a cistern tap, a lobby of a ruined house. Banned as interface words, reviewer-enforced, deliberately not machine-banned" }
   ],
@@ -141,7 +141,7 @@ this domain does not own, so it is a request against `theme/vocabulary`, not a m
     {
       "path": "upgrades[1].blurb",
       "value": "Clear a wider sweep as you walk",
-      "violates": "P1, the word \"you\"",
+      "violates": "P1, the word you",
       "replacement": "Clear a wider sweep while walking",
       "owner": "gameplay/balance",
       "note": "6 words, inside maxSentenceWords 12 and inside the grade ceiling. This is the only string in the merged manifest that any requested word hits; the other 80 requests are inert today"

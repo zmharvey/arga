@@ -177,9 +177,13 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
   or `totalRelics` — and the ground is duplication, not cost.
 - **HUD readout work** loses the `collection.totalRelics` field it records as `"requested"`. The
   substitute is the sum, which `HudBinding.luau:370-376` already computes locally.
-- **The cross-category pass** carries what is left: read this run, every leaf sheet has moved to
-  the sum form, and one domain index — `liveops/events/_lead:101` — still cites
-  `collection.total == 24` as a check. That is the last live occurrence in `cid/`.
+- **Closed, and nothing is left for the cross-category pass to carry.** Every leaf sheet moved
+  to the sum form, and the one domain index that still cited `collection.total == 24` as a check
+  — `liveops/events/_lead` — was fixed in the same round. **Zero live citations of the phantom
+  remain anywhere in `cid/`**; the surviving occurrences are all inside `replacedPhantom` and
+  `correctedAtRound2` records, which name it in order to forbid it. An earlier version of this
+  bullet said `_lead` was "the last live occurrence", which was true when written and stopped
+  being true an hour later — the hazard of publishing a count of someone else's open items.
 
 ## Acceptance criteria
 

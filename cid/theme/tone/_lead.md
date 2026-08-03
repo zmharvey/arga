@@ -14,40 +14,41 @@ justified against the build contract rather than against thoroughness.
 
 ---
 
-## Contract keys I own: none
+## Contract keys: one amendment, three proposals
 
-I read `SCHEMA` in `/Users/zachsmacbook/Desktop/Code/arga/bridge/schema.mjs`. It has ten keys:
-`area`, `tiers`, `upgrades`, `currency`, `movement`, `patch`, `collection`, `onboarding`,
-`modules`, `runtime`. Their `owner` fields are `gameplay/*` (seven), `tech/architecture` (two)
-and `art/objects` (one). **Not one key is owned by `theme/*`, and none is owned by tone.**
+**The original version of this section was wrong, and it was wrong in the way this pipeline
+exists to catch.** It said *"no sheet in this index carries a manifest block, and that is the
+correct result"*, reasoning from the fact that no `SCHEMA` key was owned by `theme/*`. Owning
+no key was never the same as producing no data, and the rule is now explicit: a domain does not
+need a contract key to run, it needs to produce one. All four sheets now carry a block.
 
-So **no sheet in this index carries a manifest block, and that is the correct result, not an
-omission.** This domain produces zero values a build reads. Its entire output is a bound on
-values other domains supply. Stated plainly so verification does not read the absence as a gap
-and so nobody adds a manifest block to make a tone sheet look load-bearing.
-
-**Where that bound actually lands.** The contract contains exactly six player-facing string
-fields, and my register sheet constrains all six without owning any of them:
-
-| contract field | owner per `SCHEMA` | what this domain bounds |
+| sheet | block | key |
 |---|---|---|
-| `currency.name`, `currency.plural` | `gameplay/systems` | register; and note the schema already hard-checks `plural.length > 10` |
-| `tiers[].name` | `gameplay/systems` | register; and `04-PRESENTATION.md`'s shape-not-hue rule reaches these too (Vocabulary Lead's row, not mine) |
-| `upgrades[].label`, `upgrades[].blurb` | `gameplay/balance` | register. `blurb` is the only free-prose field in the whole contract |
-| `collection.sets[].id` and the relic name strings inside `sets[].relics` | `gameplay/meta` | register, plus the binding pun ban |
-| `area.label` | `gameplay/meta` | register |
-| `patch.material` | `art/objects` | not bounded: an engine material name, not player-facing copy |
+| `01-register` | `amends` | `vocabulary` (owned by `theme/vocabulary/02`) |
+| `02-flavour-and-humor` | `provides`, proposed | `flavourText` |
+| `03-beat-map` | `provides`, proposed | `peakPolicy` |
+| `04-do-nots` | `provides`, proposed | `tonalExclusions` |
 
-`modules[].responsibility`, `modules[].criteria` and `runtime.dataStoreName` are technical
-strings a player never sees. **My register does not bound them, and a sheet that tries to has
-overreached.** Said here because "register applies to all copy" is the obvious wrong reading.
+**Three of this domain's rules already reached the build and the record of that was overstated.**
+`vocabulary.casing` is `title`, `vocabulary.maxSentenceWords` is `12` and
+`vocabulary.allowedPattern` is `^[A-Za-z0-9 ,.'%%/-]+$`, all merged and all enforced by
+`crossCuttingProblems()` over every player-facing string. Those are sheet `01`'s P9, P3 and P4.
+**P1, P6, P7 and P8 are word lists and none of them reached `vocabulary.bannedWords`**, which
+holds eight entries, all of them `theme/vocabulary`'s own competitor-collision bans. Sheet `01`
+now carries the request that closes that, including the one merged string it would break and
+the replacement for it.
 
-**Two consequences for other subjects, stated not acted on.** (1) The `SCHEMA` header says the
-six relic names are *"literally CID's job"*, yet assigns `collection` to `gameplay/meta`. Whether
-this category's naming output has any manifest slot at all is *contract-key ownership work*
-[currently: whoever maintains `SCHEMA`'s `owner` fields], not mine. (2) No contract key carries
-relic flavour text, item text, system copy or error copy in any form. See gap 1: the one surface
-the binding humor decision names is absent from the build contract as well as from the brief.
+`allowedPattern` has also moved since sheet `01` wrote P4: `theme/vocabulary/02` added `/` on
+2026-08-01 so the collection readout `0 / 24` is legal, and wrote `%` as `%%` so the pattern
+means the same thing to Lua's `string.match` as to JavaScript's `RegExp`. Sheet `01` accepts
+both and its P4 row is restated to the enforced value, because a register that disagrees with
+the regex enforcing it is worse than no register.
+
+**Where the bound lands.** `playerFacingStrings()` exposes eleven player-facing path classes,
+not the six this index originally listed; `collection.sets[].label` and the `{name, flavour}`
+Find shape were added later. The per-path table lives in sheet `01`. `modules[].responsibility`,
+`modules[].criteria` and `runtime.dataStoreName` are technical strings a player never sees, are
+**not** bound by the register, and a sheet that tries to has overreached.
 
 ---
 
@@ -83,22 +84,23 @@ survive that.
 
 | # | gap | routed to |
 |---|---|---|
-| 1 | **No surface exists for flavour text, in the brief or in the build contract.** The binding humor decision names *relic flavour text* as the one place humor lives. `04-PRESENTATION.md`'s screen list is `collection-index`, `upgrades`, `areas`, `shop`; the build stage produces only *"centred dismissible panels holding a grid of items"*; and `SCHEMA` has no key holding item text of any kind. **The one thing the humor level applies to currently cannot be built and cannot be delivered through the manifest.** | **Sheet 02**, which states a delivery requirement and does not assume the surface. Deciding whether it exists is *on-screen-copy-surface design* [currently: UI/UX, wave 4] plus the pattern registry, and, newly, *contract-key ownership work* [whoever maintains `SCHEMA`]. If none of the three produces a surface, the humor level has nowhere to live, and that is a finding about stage 0 and the seam, not a tone problem. |
+| 1 | **No surface exists for flavour text, in the brief or in the build contract.** The binding humor decision names *relic flavour text* as the one place humor lives. `04-PRESENTATION.md`'s screen list is `collection-index`, `upgrades`, `areas`, `shop`; the build stage produces only *"centred dismissible panels holding a grid of items"*. | **Sheet 02.** Partly closed since: `playerFacingStrings()` reads `r.flavour` and `PROSE_PATHS` exempts it, so the *checker* is ready. `collection.sets[].relics` is still 24 bare strings, so the *data* is not. `flavourText.deliveryStatus` carries this. |
 | 2 | **The humor decision constrains a surface the brief says does not exist.** It forbids funny *"tutorial text"*; `02-GAMEPLAY.md` says *"No text, no tutorial."* | **Sheet 02.** State the ban per surface and conditional on the surface existing, so it neither invents a tutorial nor leaves a hole if onboarding copy later appears. |
-| 3 | **No reading level, word budget or per-label length exists anywhere for the 8–14 band.** The band is binding and text is permitted, yet nothing sets a target. The only length rule in the entire pipeline is `SCHEMA`'s `currency.plural` check at 10 characters with a stated comfortable target of 8, and that is a HUD-fit rule, not a register. | **Sheet 01** states this domain's requirement as a bound. The global on-screen copy budget is *screen-copy budgeting* [currently: UI/UX — Screens]; Vocabulary Lead states its own. Sourced brackets are in Research owed; the choice is the sheet's. |
-| 4 | **There is no beat map.** The brief names two peaks only inside an `[I assumed]` audio default. Nothing states what the baseline between peaks feels like, whether a third beat exists, or whether the ceiling rises with depth. With no failure, timer or decay, this is the only artifact telling audio, effects and UI feedback where the game is permitted to peak. | **Sheet 03.** Its output is `[cid: decided]` over a `[brief: soft]` default and must say so on its face. |
-| 5 | **Whether the game may state its own mood to the player is unaddressed.** All three genre games fetched self-describe as *"relaxing"*; this brief's hook line is *"Clear the overgrowth, find what's buried"* and claims no mood. Nothing says whether the fiction is allowed to tell the player it is calm. | **Sheet 01** (this arrived from the merged `seriousness` subject). Store copy itself is *store-listing copy* [currently: Discovery & Marketing, wave 5] and is not decided here. |
-| 6 | **System and error copy has no register at all.** The humor decision forbids funny error messages, so error copy is presumed to exist, but no sheet gives it a voice, the brief has no failure state to hang one on, and no contract key carries it. | **Sheet 01**, which owns the default voice for every non-flavour surface. It must note that most of what it bounds is copy the manifest does not carry, so the bridge cannot validate it and a human reviewer is the only check. |
-| 7 | **Zero tension is, by the brief's own admission, untested.** `OPEN.md §6`: *"Possibly correct for a relaxing restoration game; **entirely unverified**."* | **Sheet 03**, as `[playtest unknown]` with a starting value and a test range. It may not resolve the doubt by adding tension. |
-| 8 | **Nothing this category writes has a slot in the build contract.** Every player-facing string in `SCHEMA` is owned by a gameplay or art domain. A register, a humor level and a beat ordering are unrepresentable in the manifest, so they can only reach the build as prose a builder chooses to honour. That is the exact failure mode `bridge/schema.mjs` was written to eliminate. | Not mine to fix, and not a sheet. Routed to *contract-key ownership work* and to whoever sequences CID. Recorded because the honest answer to "what value does Tone hand the build" is "none, by construction of the contract", and that should be a visible decision rather than a discovered surprise. |
+| 3 | **No reading level, word budget or per-label length exists anywhere for the 8–14 band.** | **Sheet 01.** Closed for word count: `vocabulary.maxSentenceWords` is 12 and enforced. Still open for reading level, which sheet 01 requests as `maxFleschKincaidGrade` 6.0 and `targetFleschKincaidGrade` 5.0. |
+| 4 | **There is no beat map.** The brief names two peaks only inside an `[I assumed]` audio default. Nothing states what the baseline between peaks feels like, whether a third beat exists, or whether the ceiling rises with depth. | **Sheet 03**, now `peakPolicy`. `response.beats` has since taken the four ranks, channels and timings; `peakPolicy` keeps the fifth beat, the masking rule, the forbidden peaks and the flatness invariants, and does not restate the ladder. |
+| 5 | **Whether the game may state its own mood to the player is unaddressed.** All three genre games fetched self-describe as *"relaxing"*. | **Sheet 01** (this arrived from the merged `seriousness` subject). Store copy itself is *store-listing copy* [Discovery & Marketing] and is not decided here. |
+| 6 | **System and error copy has no register at all.** The humor decision forbids funny error messages, so error copy is presumed to exist, but no contract key carries it. | **Sheet 01**, which owns the default voice for every non-flavour surface, and which states that most of what it bounds is copy the manifest does not carry. |
+| 7 | **Zero tension is, by the brief's own admission, untested.** `OPEN.md §6`: *"Possibly correct for a relaxing restoration game; **entirely unverified**."* | **Sheet 03**, as `[playtest unknown]` with a starting value and a test range, carried in `peakPolicy.playtest`. It may not resolve the doubt by adding tension. |
+| 8 | **Nothing this category writes has a slot in the build contract.** | **Superseded.** It had a slot the day `vocabulary` gained `casing`, `maxSentenceWords` and `allowedPattern`, and this domain now proposes three more keys. Recorded rather than deleted, because the conclusion it drew — that a Tone sheet cannot reach a builder — was the reason four sheets shipped as pure prose. |
 
 ### Consequences other subjects must absorb
 
-- **Feedback and celebration design for the completely-clear moment** [currently: Mechanics, wave 2] inherits a ceiling from sheet 03, relative to a relic reveal. The ceiling is tonal; the celebration is theirs.
-- **Audio intent** [currently: Audio, wave 4] holds the `OPEN.md §2` default that already ranks the two peaks. Sheet 03 either ratifies or overrides that ranking; either way Audio inherits a ranking it did not set.
-- **Naming** [Vocabulary Lead, this category] inherits *"No relic name is a pun"* directly, and inherits sheet 01's sentence-length and reading-level bound as a bound on term length. Sheet 01 must be checkable against the six contract string fields listed above, because that is where naming lands.
-- **Emotional promise at minute 1 versus hour 10** [Fantasy Lead, this category] is not sheet 03's. Sheet 03 owns beats inside a session and their relative intensity, and must stay compatible with whatever long arc Fantasy writes.
-- **Store-listing copy** [currently: Discovery & Marketing, wave 5] gets a measured fact rather than an instruction: the genre's store register is exclamatory, emoji-dense and imperative (three games fetched), while this game's positioning is *restoration, not incremental*. A quiet listing in a market where every neighbour shouts is a discoverability question, not a tone question. Sheet 01 bounds the game's voice and must say it does not bound the listing.
+- **Feedback and celebration design for the completely-clear moment** [Mechanics] inherits a ceiling from sheet 03, relative to a relic reveal. The ceiling is tonal; the celebration is theirs.
+- **Audio intent** [Audio] holds the `OPEN.md §2` default that already ranks the two peaks. Sheet 03 either ratifies or overrides that ranking; either way Audio inherits a ranking it did not set.
+- **Naming** [Vocabulary Lead, this category] inherits *"No relic name is a pun"* directly, and inherits sheet 01's amendment request against the key it owns: four grouped word lists, a held-back list, and one merged string that must be rewritten before P1 can be merged.
+- **Upgrade copy** [`gameplay/balance`] owns the one string in the merged manifest that sheet 01's own rules fail: `upgrades[1].blurb` reads *"Clear a wider sweep as you walk"*. The replacement is supplied.
+- **Emotional promise at minute 1 versus hour 10** [Fantasy Lead, this category] is not sheet 03's. Sheet 03 owns beats inside a session and their relative intensity.
+- **Store-listing copy** [Discovery & Marketing] gets a measured fact rather than an instruction: the genre's store register is exclamatory, emoji-dense and imperative (three games fetched), while this game's positioning is *restoration, not incremental*.
 
 ### Scope check
 
@@ -106,45 +108,40 @@ Nothing in this subject is priority 3, so nothing here is excluded and all four 
 assignable. One live risk: a beat map is exactly where excluded systems get smuggled back in.
 **No sheet may name a beat that presumes a daily visit, a streak, a returning benefactor, a
 festival or calendar moment, a season, another player's progress, or anything the world did while
-the player was away.** Each imports a priority-3 system by implication. Stated here so sheet 03's
-writer inherits it rather than discovering it in review.
+the player was away.** Each imports a priority-3 system by implication.
 
 ---
 
 ## Why 4 sheets
 
-Under the contract rule I own no keys, so every sheet here is a rule or a prohibition and the
-count has to be earned on separation of decisions alone. Three separations are real. Verification
-demands *"a register and a humor level, not an adjective"* as two distinct things, and the binding
-humor decision draws the line itself: humor is permitted in exactly one surface and banned in
-every other, so 01 and 02 are written to opposite polarities and merging them would let a writer
-smear a dry joke into an error string. 03 is orthogonal to both, because *how a sentence is
-written* and *when the game is allowed to be loud* are settled independently, and the handoff makes
-it load-bearing: with no failure, timer or decay, the beat ordering is the only thing telling
-Audio, Art and UI feedback where this game peaks, and it must be redoable without touching the
-voice work. 04 is prohibitions only, and it earns a file because it is the artifact five other
-domains and the category verifier cite; an exclusion list buried as the last heading of a register
-sheet is read by nobody. Three merges were made or rejected deliberately. **`seriousness` was
-merged into 01** (it was a separate sheet in the previous index): fourth-wall stance, whether the
-fiction may claim its own mood, and how much reverence the ruin's age gets are properties of one
-voice, not a second spec, and the previous justification (*"they are independently settable"*) is
-not the test. A depth-escalation sheet stays folded into 03, because a beat map that does not say
-whether the ceiling rises deeper in is unfinished. A voice-inventory sheet stays folded into 01
-and 02, because the humor decision already forces that split and counting it again is one
-decision described twice.
+Three separations are real. Verification demands *"a register and a humor level, not an
+adjective"* as two distinct things, and the binding humor decision draws the line itself: humor
+is permitted in exactly one surface and banned in every other, so 01 and 02 are written to
+opposite polarities and merging them would let a writer smear a dry joke into an error string.
+03 is orthogonal to both, because *how a sentence is written* and *when the game is allowed to
+be loud* are settled independently. 04 is prohibitions only, and it earns a file because it is
+the artifact five other domains cite by id. **`seriousness` was merged into 01**: fourth-wall
+stance, whether the fiction may claim its own mood, and how much reverence the ruin's age gets
+are properties of one voice, not a second spec. A depth-escalation sheet stays folded into 03,
+because a beat map that does not say whether the ceiling rises deeper in is unfinished.
 
-| # | sheet | must decide |
-|---|---|---|
-| 01 | `register` | The default voice for every surface that is not relic flavour text, as measurable properties (person, mood, sentence-length ceiling, punctuation and emoji policy, a reading-level target picked from the two sourced brackets, fourth-wall stance, whether the fiction may claim its own mood, reverence toward the ruin's age), whether *"warm, aged, unhurried"* survives or is overruled with its `fantasy-ornate` cascade acknowledged, and the bound stated so it is checkable against the six contract string fields. No manifest block: this sheet bounds strings other domains own. |
-| 02 | `flavour-and-humor` | What *"dry and sparse"* means as a rule a writer is held to and a reviewer fails copy against: which form of dryness, what proportion of flavour entries carry any humor at all, how the pun ban is checked, and the containment boundary keeping humor out of every surface the binding decision names, plus the delivery requirement for a surface that exists neither in the brief nor in the contract. May not name relics or write example entries for objects nobody has invented. No manifest block. |
-| 03 | `beat-map` | The inventory of moments the fiction may peak at, their relative intensity ordering, which single moment is the loudest, how flat the baseline between peaks must be, and whether the ceiling rises with depth. Orderings only: no seconds, no rates, no assets. Everything `[cid: decided]` over a `[brief: soft]` audio default, and it must name the two kinds of work that can overturn it. No manifest block. |
-| 04 | `do-nots` | The tonal exclusion list as an audit instrument: every entry an observable violation another category can be failed against, each marked inherited-and-binding or decided-here, each citing its source. Must contain **only** exclusions not derivable from 01 to 03 and must cite rather than restate them; a paraphrase of 01 is a duplicate and fails. No manifest block, and no new tonal position: this sheet converts prohibitions into checks, it does not invent them. |
+**The boundary between the four, stated rather than discovered.** 01 owns the form of every
+string and **every request against `vocabulary`**, including the ones that only bite inside a
+flavour line's neighbours. 02 owns what goes *inside* a flavour line, the humor proportion, and
+the words banned at that one path only — scoped there because `rare` is wrong in a flavour line
+and may be right in a rarity tier name, and a global ban cannot express that. 03 owns which
+moments may be loud and owns no words. 04 owns what may not be built and owns no words and no
+ranks.
+
+| # | sheet | must decide | key |
+|---|---|---|---|
+| 01 | `register` | The default voice for every surface that is not relic flavour text, as measurable properties (person, mood, sentence-length ceiling, punctuation and emoji policy, a reading-level target picked from the two sourced brackets, fourth-wall stance, whether the fiction may claim its own mood, reverence toward the ruin's age), whether *"warm, aged, unhurried"* survives, and the bound stated so it is checkable against the eleven contract string paths | `amends: vocabulary` |
+| 02 | `flavour-and-humor` | What *"dry and sparse"* means as a rule a writer is held to: which form of dryness, what proportion of flavour entries carry any humor, how the pun ban is checked, and the containment boundary keeping humor out of every surface the binding decision names, plus the delivery requirement for a surface the contract can check but nothing has populated. May not name relics or write example entries | `flavourText`, proposed |
+| 03 | `beat-map` | The inventory of moments the fiction may peak at, their relative intensity ordering, which single moment is the loudest, how flat the baseline between peaks must be, and whether the ceiling rises with depth. Orderings and invariants only: no seconds, no rates, no assets, and no restatement of what `response` already merged | `peakPolicy`, proposed |
+| 04 | `do-nots` | The tonal exclusion list as an audit instrument: every entry an observable violation another category can be failed against, each marked inherited or decided, each citing its source. Must contain **only** exclusions not derivable from 01 to 03 | `tonalExclusions`, proposed |
 
 **Every sheet ends in 2 to 4 checkable criteria** (a value, a count, a state, or an observable
-behaviour), per the category verification bar. *"Feels calm"* fails. For this domain that means
-criteria of the form "no sentence in this spec's example copy exceeds N words", "this sheet names
-zero sounds and zero colours", "the exclusion list contains N entries and each names an observable
-violation", "the beat inventory contains exactly N beats and ranks them".
+behaviour), per the category verification bar. *"Feels calm"* fails.
 
 **Boundary all four share:** name no sound, no instrument, no colour, no animation, no timing
 number, no asset, no mechanic, no economy value, no pacing number. Where the tone forces something
@@ -154,30 +151,28 @@ audible or visible, write it as a requirement on that subject and let its owner 
 
 ## Verification note
 
-**Sheet 03 is the most likely to be contradicted, and the contradiction is already scheduled.**
-Two other pieces of work hold overlapping authority over the same two moments. *Feedback and
-celebration design for the completely-clear moment* [currently: Mechanics, wave 2] decides how that
-moment is celebrated, and *audio intent* [currently: Audio, wave 4] holds the `OPEN.md §2` default
-that already ranks a relic reveal above an area completion. Sheet 03 ranks those two beats in wave
-1, two and three waves before either writes. If Mechanics builds a large completion celebration or
-Audio overrides its own default, the ladder inverts and 03 is wrong rather than merely overruled.
-The mitigation is in the sheet's construction and is carried forward unchanged from the previous
-index: state the ranking as `[cid: decided]` over a `[brief: soft]` default, and name the two kinds
-of work that can overturn it, so a later wave overrides deliberately instead of quietly diverging.
+**Sheet 03 was the most likely to be contradicted, and it has been, exactly as scheduled.**
+`art/vfx/01` overruled its grant of VFX to `B3` on the ground that `response.beats[areaComplete]`
+forbids the `atPatch` channel, so no surface exists to draw it on. It named the beat, cited the
+file and stated the override in its own `Pushing back` section, which is the procedure this
+sheet asked for. `peakPolicy` records the withdrawal; the **rank** is untouched.
 
-Second-most exposed is **01**, and it now has a machine-checkable failure mode it did not have
-before: `SCHEMA` hard-fails `currency.plural` over 10 characters and states a comfortable target of
-8. If 01's register implies longer or more ornate labels than that, the bridge rejects the manifest
-the moment `gameplay/systems` names the currency. It will also be contradicted by *screen-copy
-budgeting* [currently: UI/UX, wave 4] if that sets a label length shorter than the register's
-sentence ceiling allows, and by *naming* [Vocabulary Lead, this category] if a canonical term is
-longer than the register can carry on a phone-width label. All three are cheap to reconcile if 01
-states its requirement as a bound rather than a preference.
+**01's exposure was machine-checkable and one of the checks now fires.** `SCHEMA` hard-fails
+`currency.plural` over 10 characters, and `crossCuttingProblems()` now runs casing, character
+set and sentence length over every player-facing string. The live failure is not there: it is
+that sheet 01's own P1 cannot be merged into `bannedWords` without failing `upgrades[1].blurb`.
+That is stated on the sheet with its fix rather than discovered at merge time.
 
-**Least exposed is 02**, and only because its subject is binding. Its risk is not contradiction but
-irrelevance: gap 1 means it may specify a voice with nowhere to speak. **04's risk is the opposite
-and it is the one to watch in review**: a do-nots sheet that restates 01 looks complete and adds
-nothing, which is why its uniqueness rule is written into its own criteria.
+**A defect found in this domain's own work, on 2026-08-02.** Sheet 02's `F1` set a 14-word
+flavour line while `vocabulary.maxSentenceWords` is 12 and the merger applies it to
+`/\.flavour$/`. Every flavour line written to 02's own rule would have been rejected by the
+bridge. `F1` is now 12 and tracks the key.
+
+**Least exposed is 02**, and only because its subject is binding. Its risk is not contradiction
+but irrelevance: gap 1 means it specifies a voice with nowhere to speak until `collection`
+ships `{name, flavour}` objects. **04's risk is the opposite**: a do-nots sheet that restates 01
+looks complete and adds nothing, which is why its uniqueness rule is written into its own
+criteria.
 
 ---
 
@@ -238,13 +233,13 @@ older"*, averaged over the seven days ended 31 January 2026 across the 45% of 14
 age-verified. Primary source, not an aggregator.
 `[research: https://about.roblox.com/newsroom/2026/02/moving-beyond-self-reported-age]`
 
-**Reading level, sourced, decision not taken.** On the standard Flesch-Kincaid mapping, ages 8–11
-fall in the 3–6 band and ages 11–14 in the 6–9 band, and *"text intended for readership by the
+**Reading level, sourced, decision taken in sheet 01.** On the standard Flesch-Kincaid mapping, ages
+8–11 fall in the 3–6 band and ages 11–14 in the 6–9 band, and *"text intended for readership by the
 general public should aim for a grade level of around 8, schooling age 13 to 14."*
 `[research: https://readable.com/readability/flesch-reading-ease-flesch-kincaid-grade-level/]`
-**Consequence, not a choice I am making:** an 8–14 band spans two brackets, so no single target
-serves all of it, and the general-public default of 8 sits at the *top* of the band rather than the
-middle. Sheet 01 picks the target and says which end of the band it is serving.
+An 8–14 band spans two brackets, so no single target serves all of it, and the general-public
+default of 8 sits at the *top* of the band rather than the middle. Sheet 01 serves the bottom:
+target 5.0, ceiling 6.0.
 
 **What I could not verify.**
 

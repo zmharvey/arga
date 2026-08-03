@@ -93,7 +93,7 @@ run), so that arrow has no input either. The next arrow is real —
 feeds it from here. `bridge/test/theme-archetype.test.mjs` **does not exist**; `bridge/test/`
 holds `bridge.test.mjs`, `context.test.mjs` and `refs.test.mjs`. The four sites asserting the
 missing first arrow are this domain's `_lead` (corrected this run), `art/ui-art/01:60`,
-`bridge/schema.mjs:710-711` (*"except `title`, which reaches `Theme.luau` through `generate.mjs`
+`bridge/schema.mjs` — **closed this round**; the comment now states the opposite and is quoted below (*"except `title`, which reaches `Theme.luau` through `generate.mjs`
 and is therefore build-read"*), and this sheet's own earlier draft. Only two are mine.
 **So `emitter.keyReachesNothingToday` is `true` here**, the same record `storeIcon` (`G-I3`),
 `storeThumbnails`, `storeListing`, `channels` and `launchBeats` each make.
@@ -131,7 +131,7 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
         { "site": "cid/marketing/name/_lead.md", "status": "corrected this run" },
         { "site": "cid/marketing/name/01-the-title.md, earlier draft", "status": "corrected this run" },
         { "site": "cid/art/ui-art/01-archetype-and-lock.md:60", "status": "approved wave 6, not this domain's to edit, routed to the cross-category pass" },
-        { "site": "bridge/schema.mjs:710-711", "status": "a code comment asserting title 'reaches Theme.luau through generate.mjs and is therefore build-read'; title is not in SCHEMA's 25 keys. Routed to contract-and-seam work." }
+        { "site": "bridge/schema.mjs, the documentation-only comment block", "status": "CLOSED. It asserted title 'reaches Theme.luau through generate.mjs and is therefore build-read'; contract-and-seam work corrected it, and it now records that generate.mjs reads ctx.title, filled from concept.title at stage 0, so title is documentation-only for the same reason as its five siblings rather than despite being different from them. Cited by content rather than by line, because a line number into a file under edit expires." }
       ],
       "closedBy": ["N-A", "N-B"]
     },
@@ -146,13 +146,13 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
         "themeGenerator": "ui-forge/src/theme/generate.mjs:116 is 'sourceTitle: ctx.title ?? Untitled'. Real code; its input is ctx.title, never title.value.",
         "archetypeTest": "bridge/test/theme-archetype.test.mjs does not exist. It is a test art/ui-art/01 proposed. Nothing asserts sourceTitle against anything today.",
         "emittedArtifact": "game/src/shared/Theme.luau meta.sourceTitle currently holds Pet Ascend Simulator, which is the defect art/ui-art/01 exists to close.",
-        "schemaKeyList": "bridge/schema.mjs holds 25 keys and title is not one of them."
+        "schemaKeyList": "bridge/schema.mjs holds 26 keys as of the styleGuide promotion, and title is not one of them. The count moves; the absence is the claim."
       },
       "emitterGap": "category gap M6. No emitter writes an outward artifact and no code path carries this key to Theme.luau. title is not exempt from that gap and this sheet claims no exemption.",
       "requestedChanges": [
         { "id": "N-A", "owner": "contract-and-seam work", "change": "carry title.value into whatever game-context this project actually uses, so ctx.title stops depending on a concept.json that does not exist", "isSameRequestAs": "art/ui-art/01 A4", "blocksNothingShippingToday": true },
         { "id": "N-B", "owner": "contract-and-seam work, jointly with art/ui-art/01's own request", "change": "write bridge/test/theme-archetype.test.mjs and have it read title.value when title is merged, falling back to uiTheme.sourceTitle until then", "blocksNothingShippingToday": true },
-        { "id": "N-C", "owner": "contract-and-seam work", "change": "correct or delete the bridge/schema.mjs:710-711 comment claiming title is build-read; either build the wire it describes or stop describing it", "blocksNothingShippingToday": true }
+        { "id": "N-C", "owner": "contract-and-seam work", "status": "CLOSED", "change": "correct or delete the bridge/schema.mjs comment claiming title is build-read; either build the wire it describes or stop describing it", "closedBy": "the comment was corrected: it now names generate.mjs reading ctx.title from concept.title at stage 0, and stops claiming a merged title.value is read anywhere", "blocksNothingShippingToday": true }
       ],
       "interimSourceTitle": "Ruin Restoration",
       "interimEndsWhen": "title merges",

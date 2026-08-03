@@ -15,7 +15,7 @@ Six rules, `R1`–`R6`, each stated so another sheet can cite it by id.
 | **R1** | **One hour, and it never advances.** The game has a single lighting state. No dawn, dusk, night, sunset, moonrise or second hour exists anywhere in it, at any depth, on any screen, in any promotional image. | count of distinct lighting states the game can be in: **1** |
 | **R2** | **No weather, ever, as a depicted event.** No rain, drizzle, snow, mist, gust, cloud shadow, thunder or falling anything. Rain remains a fact about the climate and the reason the works was built (`01-the-ruin`); it is never shown, sounded, or left on a surface. | count of precipitation, wind and cloud-shadow effects: **0** |
 | **R3** | **The sky is a backdrop, not a system.** Above the unroofed parts it is open, bright and unchanging, holds no moving element, and holds no body that reads as positioned for a time — no moon, no stars, no sun near a horizon. It is seen upward only; `02-extent`'s short sightline is untouched. | count of `Clouds` instances: **0**; count of moon/star/low-sun sky textures: **0** |
-| **R4** | **Nothing about the place is a function of time.** Not wall-clock time, not the date, not server uptime, not elapsed session time, not time since anyone was last here, and not a draw resolved after a player arrives. Every property of the place is either constant for the life of the server or a consequence of a player clearing a patch. | count of properties inside a plot that differ at second N from second 0 for any reason but a player's clearing: **0** |
+| **R4** | **Nothing about the place is a function of time.** Not wall-clock time, not the date, not server uptime, not elapsed session time, not time since anyone was last here, and not a draw resolved after a player arrives. Every property of the place is either constant for the life of the server or a consequence of a player clearing a patch or passing through an opening. | count of properties inside a plot that differ at second N from second 0 for any other reason: **0** |
 | **R5** | **Continuous is not a change; intermittent is.** A constant, unvarying ambient bed (the one Audio was granted in `01-the-ruin`) asserts no event and passes this law. Anything scheduled, intermittent, randomised over time, or varying with anything but a player's action is a change of state and fails. | this is `tone/04-do-nots` `X1`'s trigger count, given its reason here rather than restated |
 | **R6** | **Nothing here is more than ordinary. The supernatural budget is zero and is spent nowhere.** No force, virtue, residue, blessing, luck, animating principle or awareness exists in the stone, the green, the air, or the `Finds`. Whatever a completed set grants is never attributed to the objects, to the place, or to any party. | see criterion 4 and the `RW` token list |
 
@@ -24,7 +24,8 @@ changes constantly (collection, currency, upgrade levels) and is not the place. 
 leave, which is `identity/03-co-present-stranger`'s subject and not matter. And the shuffle picks
 *which part you meet next*, resolved on a player's arrival — under `02-extent` the part that appears
 is a different part, never a part that changed, so the shuffle is a player-caused read and not a
-timer.
+timer. **`R4`'s carve-out now also names passage**, which is the one-clause amendment
+`04-permanence-and-passage` requested against this sheet and which I grant in the block below.
 
 **The hour already on disk is ratified, and I request no change to it.** `game/default.project.json`
 ships `Lighting.ClockTime` `15.5` at `GeographicLatitude` `20`, `Brightness` `2`, with zero
@@ -33,7 +34,9 @@ ships `Lighting.ClockTime` `15.5` at `GeographicLatitude` `20`, `Brightness` `2`
 well clear of any horizon: that is inside this ruling's band and it stays. **The band, as a
 requirement rather than a value:** the hour must be one at which cleared stone holds
 `01-the-ruin`'s luma floor of ≥ 165 **in every part, including the vaulted ones** — which is what
-excludes every low-sun hour without my setting a number. Art owns the value inside that band.
+excludes every low-sun hour without my setting a number. Art owns the value inside that band, and
+has taken it: `lighting` ships `stateCount` 1 at the same `ClockTime` 15.5
+`[research: repo — cid/art/lighting/01-the-one-daylight-state.md, read this run]`.
 
 **Nothing here overrules anything.** `tone/04-do-nots` `X2` (*"The hour is not night, dusk or
 overcast"*) is ratified and narrowed — I hold the subject by assignment and did not need to argue,
@@ -41,16 +44,86 @@ so that sheet needs no revision. `lore/02-the-silences` `S4` asked me not to spe
 budget on the currency; the budget is zero, so **`S4` survives intact and its wave-1 collision case
 never fires.**
 
-**No manifest block: Setting owns no contract key.** This session has no shell tool, so
-`npm run bridge -- --contract` could not be executed; I read `SCHEMA` in `bridge/schema.mjs`
-directly, which is what `contract()` prints from. Eleven keys (`area`, `tiers`, `upgrades`,
-`vocabulary`, `currency`, `movement`, `patch`, `collection`, `onboarding`, `modules`, `runtime`),
-owners `gameplay/*` ×7, `tech/architecture` ×2, `art/objects` ×1, `theme/vocabulary` ×1. **None
-holds an hour, a sky, a weather state, or a lighting value** — the nearest is `runtime`
-(`clearTickRate`, `saveIntervalSeconds`, `dataStoreName`), which is cadence, not time of day.
-`[research: repo — bridge/schema.mjs:29-322 and :499, read this run]`
+**This sheet amends `setting.law`; `01-the-ruin` carries the key.** No merged key holds an hour, a
+weather state or a supernatural budget — the nearest, `lighting`, holds the *values* my `R1`–`R3`
+bound and none of the rules `[research: repo — bridge/schema.mjs, read this run]`. So the six rules,
+their counts and the `RW` token list go into the block below in the form a lint could read, rather
+than staying as six table rows a wave-4 writer has to re-read.
 
 **This sheet coins zero terms and requests zero renames.**
+
+```json
+{
+  "amends": "setting",
+  "requested_by": "cid/theme/setting/03-physical-law.md",
+  "law": {
+    "rules": [
+      { "id": "R1", "rule": "one hour, and it never advances", "counts": "distinct lighting states the game can be in", "required": 1 },
+      { "id": "R2", "rule": "no weather, ever, as a depicted event", "counts": "precipitation, wind, cloud-shadow, storm and falling-particle effects", "required": 0 },
+      { "id": "R3", "rule": "the sky is a backdrop, not a system", "counts": "Clouds instances, plus sky textures depicting a moon, stars, or a sun at or below the horizon", "required": 0 },
+      { "id": "R4", "rule": "nothing about the place is a function of time", "counts": "properties of any instance inside a plot whose value at second N differs from its value at second 0, outside the carve-outs", "required": 0 },
+      { "id": "R5", "rule": "continuous is not a change; intermittent is", "counts": "ambient beds that are scheduled, intermittent, randomised over time, or varying with anything but a player's action", "required": 0 },
+      { "id": "R6", "rule": "nothing here is more than ordinary; the supernatural budget is zero", "counts": "RW token hits in manifest string values and artPrompt values", "required": 0 }
+    ],
+    "r4CarveOuts": [
+      "a player clearing a patch",
+      "a player passing through an opening — the one-clause amendment theme/setting/04 requested, granted here",
+      "a player's own state: collection, currency, upgrade levels",
+      "players arriving and leaving"
+    ],
+    "r4ForbiddenInputs": ["wall-clock time", "the date", "server uptime", "elapsed session time", "time since anyone was last here", "a random draw resolved after a player arrives"],
+    "hourBand": "the hour must be one at which cleared stone holds setting.readability.clearedStoneLumaFloor in every part, including the vaulted ones. That excludes every low-sun hour without setting a number.",
+    "hourValuesOwnedBy": "lighting (art/lighting), which ships stateCount 1, ClockTime 15.5, GeographicLatitude 20, Brightness 2 — inside this band. Changes requested: 0.",
+    "vaultLightingInstrument": "the openings in the construction, which is authored geometry rather than a lighting value. A dim vault may not be solved by moving the sun.",
+    "counts": {
+      "distinctLightingStates": 1,
+      "cloudsInstances": 0,
+      "atmosphereInstances": 0,
+      "codePathsWritingLightingAfterInit": 0,
+      "repeatingServerJobsThatMutateThePlace": 0,
+      "wetDampReflectiveOrRainDarkenedMaterials": 0,
+      "idleAttractOrLoopAnimationsInThePlace": 0
+    },
+    "runtimeCadencesThatPass": {
+      "clearTickRate": "reads player position; writes nothing in the place",
+      "saveIntervalSeconds": "writes a save record, not the world"
+    },
+    "supernaturalBudget": 0,
+    "setBonusFiction": {
+      "mayExist": true,
+      "mayBeAPermanentMultiplier": true,
+      "mayBeExplainedBy": "the player's own working, or by nothing at all",
+      "mayNotBeAttributedTo": ["the objects", "the place", "any party"],
+      "costStatedPlainly": "set-completion bonuses have no fictional mechanism available, symmetrically with the currency (lore/02 S4). Both are un-narrated numbers."
+    },
+    "liveOpsChannels": { "hour": 0, "weather": 0, "season": 0 },
+    "RW": {
+      "scope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt.",
+      "aHitIs": "a question a reviewer answers, not an automatic failure — the convention is lore/02-the-silences' and is adopted rather than reinvented",
+      "tokens": ["dawn", "daybreak", "sunrise", "sunset", "nightfall", "starlight", "moon", "moons", "rain", "rains", "rainy", "rainfall", "drizzle", "storm", "storms", "stormy", "thunder", "lightning", "snowfall", "breeze", "gust", "gale", "weather", "season", "seasons", "seasonal", "glow", "glowing", "glimmer", "shimmer", "aura", "halo", "blessing", "spirit", "spirits", "awaken", "awakens", "awakening", "stir", "stirs", "animate", "animates", "sentient", "watches", "watching", "remembers", "answers", "hums", "thrums", "pulses", "breathes"],
+      "wholeWordIsLoadBearing": "weather must be run whole-word or it hits weathered and weathering, which are required vocabulary in every environment prompt. A check that forces a rewrite of required words is a check that failed.",
+      "denotingIsNotAsserting": "Sundial, Gnomon, Vane and Orrery are shipped collection.sets[].relics values that denote time, weather and sky. They match no token and they pass. A prompt saying the vane turns fails; a prompt saying a vane is fixed to a parapet passes.",
+      "sharesZeroTokensWith": ["tone/04 XW", "lore L1/L3/L5", "lore S1-S6", "vocabulary.bannedWords"],
+      "deliberatelyAbsentBecauseBannedElsewhere": ["night", "dusk", "twilight", "mist", "fog", "overcast", "moonlit", "magic", "blessed", "power", "rune", "charm"],
+      "shippedValuesAtRenameRisk": 0
+    },
+    "playtestUnknowns": [
+      {
+        "question": "whether one unchanging hour reads as warm or as flat to 8-14s",
+        "startingValue": "1 lighting state, 1 sky, no weather",
+        "escalationInOrder": [
+          "warmth goes into stone hue, ornament and litter dressing, inside the luma band",
+          "raise the granted off-screen ambience and the canopy's motion beyond the built edge",
+          "a per-part constant hour inside the daylight band, chosen on arrival and unchanged for the whole lap, uncorrelated with depth",
+          "a developer ruling introduces a cycle"
+        ],
+        "step3RequiresRevising": "criterion 1 of this sheet, from written once at build to written only on a player's arrival in a part. That revision is the whole cost.",
+        "whatWouldSettleIt": "ask a second-session player whether the place looks the same as it did yesterday. Yes passes; I don't know passes; it got boring to look at spends step 1."
+      }
+    ]
+  }
+}
+```
 
 ---
 
@@ -200,7 +273,8 @@ second-session player whether the place looks the same as it did yesterday. *"Ye
 
 **Scope: `manifest` string values and `artPrompt` values, not prose.** A hit is a question a reviewer
 answers, not an automatic failure — the convention is `lore/02-the-silences`'s and is adopted rather
-than reinvented.
+than reinvented. The tokens are carried as data in `setting.law.RW.tokens` above; this fence is the
+runnable form of the same list.
 
 ```
 grep -iwE 'dawn|daybreak|sunrise|sunset|nightfall|starlight|moon|moons|rain|rains|rainy|rainfall|drizzle|storm|storms|stormy|thunder|lightning|snowfall|breeze|gust|gale|weather|season|seasons|seasonal|glow|glowing|glimmer|shimmer|aura|halo|blessing|spirit|spirits|awaken|awakens|awakening|stir|stirs|animate|animates|sentient|watches|watching|remembers|answers|hums|thrums|pulses|breathes'
@@ -223,15 +297,15 @@ maintenance defect. **Filed as an offer to naming work, not a claim on the `voca
 
 ## Consequences for other work
 
-- **Environment lighting work** *[Art & Visuals — Environment, wave 4; the fallback owner
-  `tone/04-do-nots` `X2` named if this sheet did not exist]*: **you have one lighting state and the
-  values on disk are ratified.** Do not add a second. The luma floor is the binding requirement and it
-  must be met **at this one hour in every part, including the vaulted ones** — the check is
-  `01-the-ruin`'s criterion 3 run once per part, not once per game. **You may not solve a dim vault by
-  moving the sun**: `02-extent` handed the vault-light question here, and the answer is that the
-  openings in the construction are the instrument, which makes it authored geometry rather than a
-  lighting value. No `Atmosphere`, no `Clouds`, no moon or star texture, no sky whose sun sits near a
-  horizon. Everything about hue, angle and intensity inside the band stays yours.
+- **Environment lighting work** *[Art & Visuals — Environment and Lighting, wave 4]*: **you have one
+  lighting state and the values on disk are ratified.** Do not add a second. The luma floor is the
+  binding requirement and it must be met **at this one hour in every part, including the vaulted
+  ones** — the check is `01-the-ruin`'s criterion 3 run once per part, not once per game. **You may
+  not solve a dim vault by moving the sun**: `02-extent` handed the vault-light question here, and
+  the answer is that the openings in the construction are the instrument, which makes it authored
+  geometry rather than a lighting value. No `Atmosphere`, no `Clouds`, no moon or star texture, no
+  sky whose sun sits near a horizon. Everything about hue, angle and intensity inside the band stays
+  yours, and `lighting` has already taken it at `stateCount` 1.
 - **Audio work** *[Audio, wave 4]*: `R5` is the reason behind a rule you already have. The one granted
   bed is **continuous and unvarying** — no weather bed, no gust, no thunder, no dawn chorus, and
   **nothing randomised over time**, which is the idiomatic way an ambient bed is built and is
@@ -243,12 +317,11 @@ maintenance defect. **Filed as an offer to naming work, not a claim on the `voca
   permitted register is the player's own working. If your answer genuinely needs a fictional
   mechanism, the route is a `## Pushing back` naming `R6` and citing this file; **the cheapest
   reversal is a bonus explained as the player's familiarity, which needs no world rule at all.**
-- **Server-cadence and persistence work** *[Tech & Data — `cid/tech/architecture/01-server-cadences.md`]*:
-  `R4` is a rule about scheduled jobs. **Count of repeating jobs that mutate any part, material,
-  colour, position, light or sound of the place: 0.** Your shipped values pass and need no change: a
-  `clearTickRate` of `0.12` **reads** player position, and a `saveIntervalSeconds` of `45` **writes a
-  save record**, not the world. Nothing in the place may be keyed to `os.time`, a date, or server
-  uptime.
+- **Server-cadence and persistence work** *[Tech & Data]*: `R4` is a rule about scheduled jobs.
+  **Count of repeating jobs that mutate any part, material, colour, position, light or sound of the
+  place: 0.** Your shipped cadences pass and need no change: a clear tick **reads** player position,
+  and a save interval **writes a save record**, not the world. Nothing in the place may be keyed to
+  `os.time`, a date, or server uptime.
 - **Area-authoring and depth-theming work** *[Meta & Content, wave 3]*: **no part may be dressed as a
   different hour, and depth may not read as darker or later** — that would be depth reaching a
   lighting parameter, which `tone/03-beat-map` `B3` forbids and which the luma floor forbids
@@ -269,11 +342,13 @@ maintenance defect. **Filed as an offer to naming work, not a claim on the `voca
   world are always in the same light, so nothing about the hour can differ between them and no sky
   needs replicating. A slot handed to a new player is a different part, not a part that changed
   (`02-extent`).
-- **Cleared-area and passage work** *[Setting — `04-permanence-and-passage`, this domain, not yet
-  written]*: `R4` says the place has one mutable property, cleared-or-not. **A cleared part therefore
-  cannot become something over time** — no settling in, no gradual return of anything, and no state a
-  finished part reaches later. Whether it persists as a place or collapses to a flag is entirely yours
-  and this sheet constrains neither.
+- **Cleared-area and passage work** *[Setting — `04-permanence-and-passage`, this domain]*: `R4` says
+  the place has one mutable property, cleared-or-not. **A cleared part therefore cannot become
+  something over time** — no settling in, no gradual return of anything, and no state a finished part
+  reaches later. Whether it persists as a place or collapses to a flag is entirely yours and this
+  sheet constrains neither. **Your requested one-clause amendment is granted:** `R4`'s carve-out now
+  reads *a player clearing a patch or passing through an opening*, in the rule row, in criterion 2,
+  and in `setting.law.r4CarveOuts`.
 - **Place-inventory work** *[Setting — `05-inventory`, ruled]*: **all four inheritances honoured and
   zero rows licensed back.** The water range is closed at dry and I add nothing wet; the hour ruling is
   about daylight only; no cycling sky is delivered by moving anything on the ground, because there is
@@ -283,7 +358,7 @@ maintenance defect. **Filed as an offer to naming work, not a claim on the `voca
   identical at every depth"* gains a second guarantee, because with one hour there is no lighting
   difference between depths to read a chronology off either.
 - **Naming work** *[Vocabulary, this wave, last writer]*: **nothing owed. This sheet coins zero
-  terms.** The `RW` list above is offered for `vocabulary.bannedWords` with the whole-word caveat
+  terms.** `setting.law.RW.tokens` is offered for `vocabulary.bannedWords` with the whole-word caveat
   attached; it collides with no shipped value and duplicates no other list's tokens.
 - **Fantasy work** *[Fantasy, this wave]*: nothing here depends on the occupancy search. A fixed hour
   and no weather survive any finding about who else ships a ruin.
@@ -295,39 +370,37 @@ maintenance defect. **Filed as an offer to naming work, not a claim on the `voca
    `Lighting.TimeOfDay`, `Lighting.GeographicLatitude`, or any property of a `Sky`, `Atmosphere` or
    `Clouds` instance after initialisation: **0**. Count of `Clouds` instances: **0**. Count of sky
    textures depicting a moon, stars, or a sun at or below the horizon: **0**. The values shipped in
-   `game/default.project.json` (`ClockTime` `15.5`, `GeographicLatitude` `20`) satisfy this sheet;
-   changes requested: **0**.
+   `game/default.project.json` and carried by `lighting` (`stateCount` 1, `ClockTime` 15.5,
+   `GeographicLatitude` 20) satisfy this sheet; changes requested: **0**.
 2. **Nothing in the place is a function of time.** Count of properties of any instance inside a plot
    whose value at second N differs from its value at second 0 for any reason other than a player
-   clearing a patch: **0**. Count of repeating or scheduled server jobs that mutate any part of the
-   place: **0**. Count of uses of wall-clock time, the date, server uptime, or elapsed session time as
-   an input to any property of the place: **0**. Count of random draws affecting the place resolved
-   after a player's arrival in a part: **0**. `runtime.clearTickRate` `0.12` and
-   `saveIntervalSeconds` `45` pass and are unchanged.
+   clearing a patch **or passing through an opening**: **0**. Count of repeating or scheduled server
+   jobs that mutate any part of the place: **0**. Count of uses of wall-clock time, the date, server
+   uptime, or elapsed session time as an input to any property of the place: **0**. Count of random
+   draws affecting the place resolved after a player's arrival in a part: **0**.
 3. **No weather, and no second sky.** Count of precipitation, wind, cloud-shadow, storm and
    falling-particle effects in the build: **0**. Count of wet, damp, reflective or rain-darkened
    surface materials: **0** (agrees with `05-inventory` `A6`, adds nothing to it). Count of distinct
    lighting or sky states the game can be in: **1**.
 4. **Zero supernatural budget, checked as words.** Run whole-word and case-insensitive over every
    `manifest` string value and every `artPrompt` under `cid/`, the `RW` pattern returns **0** hits, and
-   every hit that ever appears is resolved as a question rather than ignored. Verified **0** today
-   against the 43 player-facing strings on disk and the 0 `artPrompt` values; `Sundial`, `Gnomon`,
+   every hit that ever appears is resolved as a question rather than ignored. `Sundial`, `Gnomon`,
    `Vane` and `Orrery` are not matched by any token, so this sheet puts **0** shipped values at risk
    and requests **0** renames.
 
 ## Not decided here
 
 Every colour, hue, angle, intensity, shadow setting and material value inside the daylight band, and
-what the one lighting state actually looks like *(Art & Visuals — Environment, wave 4)*. Whether the
-granted ambient bed is taken and what it is made of *(Audio, wave 4)*. What a completed set grants
+what the one lighting state actually looks like *(Art & Visuals — Lighting, which owns `lighting`)*.
+Whether the granted ambient bed is taken and what it is made of *(Audio)*. What a completed set grants
 *(set-completion-bonus work, wave 3 — bounded above, not chosen here)*. What matter exists here at all
-(`05-inventory`, cited and not remade). What kind of built thing this is, the climate, and the fauna
-ruling (`01-the-ruin`, cited). Scale, direction and the sightline (`02-extent`, cited). What a cleared
-part becomes and how a player goes further in (`04-permanence-and-passage`, this domain). Where the
-authored openings that light a vaulted part sit *(Meta & Content, wave 3, with Art)*. Whether the
-`artPrompt` lint that would run `RW` gets built *(contract-and-seam work — the same missing machinery
-three other wave-1 sheets already requested)*. Whether `RW` joins `vocabulary.bannedWords`
-*(Vocabulary)*.
+(`05-inventory`, which amends `setting.contents`). What kind of built thing this is, the climate, and
+the fauna ruling (`01-the-ruin`, which carries the `setting` key). Scale, direction and the sightline
+(`02-extent`, which amends `setting.extent`). What a cleared part becomes and how a player goes
+further in (`04-permanence-and-passage`, which amends `setting.passage`). Where the authored openings
+that light a vaulted part sit *(Meta & Content, wave 3, with Art)*. Whether the `artPrompt` lint that
+would run `RW` gets built *(contract-and-seam work — the same missing machinery three other wave-1
+sheets already requested)*. Whether `RW` joins `vocabulary.bannedWords` *(Vocabulary)*.
 
 ## Flagged to the developer
 
@@ -359,5 +432,4 @@ getting later is the one thing on screen that would contradict all of it for fre
 the cheap version is the playtest's step 3: **a per-part constant hour, fixed for a whole lap**, which
 keeps every argument above intact except the one about the build cost.
 
-No URL was fetched in this run. Every `[research: repo — ...]` cites a file read this run, and
-`npm run bridge -- --contract` could not be executed because this session has no shell tool.
+No URL was fetched in this run. Every `[research: repo — ...]` cites a file read in this run.
