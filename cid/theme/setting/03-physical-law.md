@@ -171,7 +171,7 @@ arguments that do not depend on it**, below.
 `collection.sets[].relics` already ships `Sundial` and `Gnomon` (Terrace and Spire), plus `Vane` and
 `Orrery` (`cid/gameplay/meta/02-the-collection.md`)
 `[research: repo — read this run]`. **Under a moving sun a gnomon is a working clock**, and
-`tone/04-do-nots` `X10` forbids *any* surface that displays time while `05-inventory` `A15` forbids
+`tone/04-do-nots` `D6` and `D15` forbid *any* surface that displays time (this was `X10`, whose recovered text is *"Nothing counts down, and no surface displays time"* — this sheet's reading of it was the correct one) while `05-inventory` `A15` forbids
 any instrument in service. Under a fixed sun the same shadow never advances and reads nothing, so all
 four names stay what lore `L1` made them: ordinary objects of measure and trim. **A vane needs weather
 and an orrery needs a sky that moves; `R2` and `R3` are what keep both ornamental.** This is the

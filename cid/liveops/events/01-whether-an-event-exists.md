@@ -112,6 +112,13 @@ present today, verified. Routed to that rule's owner with the event-specific gre
 **I delete nothing and claim no screen.** The `·` is separately illegal under
 `vocabulary.allowedPattern` (`^[A-Za-z0-9 ,.'%%/-]+$`).
 
+**A second key now leans on the same set.** `seasons/01`'s `forbidden[returningPlayerGrant]`
+observable was rewritten in round 3 to be a **subset of
+`offerSurface.artifactHygiene.mustNotBePresent`** rather than a bare zero, because
+`quests.luau`'s `"DAILY QUESTS"` and `"Chip_Streak"` matched its word list and falsified it. That is
+this finding's artifact, counted once and by two keys. If `mustNotBePresent` gains a member, both
+observables widen with it and neither re-measures.
+
 ### The reversal, priced against what this game lacks
 
 The platform half is cheap; the game half is not. What a real event would need and this game has not:
@@ -243,7 +250,7 @@ those occurrences exactly instead of denying them.
       { "path": "products.storeExists", "owner": "gameplay/monetization/01", "resolves": true },
       { "path": "products.devProductCount", "owner": "gameplay/monetization/01", "resolves": true },
       { "path": "social.chat.chatWindowEnabled", "owner": "gameplay/social/01", "resolves": true, "replacedGuess": "social.chat.window" },
-      { "path": "offerSurface.artifactHygiene.mustNotBePresent", "owner": "ui-ux/store/01", "resolves": true, "replacedGuess": "artifactHygiene.mustNotBePresent" }
+      { "path": "offerSurface.artifactHygiene.mustNotBePresent", "owner": "ui-ux/store/01", "resolves": true, "replacedGuess": "artifactHygiene.mustNotBePresent", "secondConsumer": "seasons.forbidden[returningPlayerGrant].observable, which is scoped as a subset of this set rather than as a zero" }
     ],
     "subjects": [
       { "id": "S1", "subject": "event concepts", "state": "absent", "emptiedBy": "00-CORE.md retention non-goal; R-3; endgame.forbidden seasonalEvent", "observable": "eventCount 0 and len(events) 0" },
@@ -313,6 +320,7 @@ those occurrences exactly instead of denying them.
         "briefsPresentToday": 9,
         "observable": "files under game/src matching /ends in|expires in|expiry|time left|limited time|DAILY QUESTS|\\d\\d?:\\d\\d:\\d\\d/i: 2 today, both already named in offerSurface.artifactHygiene.mustNotBePresent",
         "secondRuleBroken": "the middle dot in that string is illegal under vocabulary.allowedPattern",
+        "secondConsumer": "seasons.forbidden[returningPlayerGrant].observable, rewritten in round 3 to be a subset of the same set after quests.luau's DAILY QUESTS and Chip_Streak falsified its bare zero. One artifact, two keys, counted once",
         "repairedHere": false,
         "screenClaimedHere": false
       },
@@ -322,15 +330,18 @@ those occurrences exactly instead of denying them.
         "finding": "release.shutdown.playerFacing's own value string reads no notice channel may carry a non-beat. That clause is now false inside an approved key's value: saveNotLoaded is a non-beat notice that exists. Same class as discovery.record.keyedBy citing collection.sets[].relics[].name, and same class as the notices count three sheets carried, but it sits inside a merged value rather than in prose",
         "rulingAffected": false,
         "whyRulingSurvives": "shutdown is still silent, because notices.forbiddenAdditions closes any string a shutdown would need, not because the roster is beats-only",
-        "repairedHere": false
+        "repairedHere": false,
+        "remainingCopiesAtRound3": ["release.shutdown.playerFacing's value string", "cid/marketing/hype/_lead.md line 40"],
+        "copiesClosedAtRound3": ["cid/liveops/_category.md, which carried the clause in its intake-surface constraint and now states a predicate instead"]
       },
       {
         "id": "F-E3",
-        "to": "the cross-category pass that issued the round-3 collection ruling, and to every domain lead index in Live Ops",
-        "finding": "the leaf sheets in this category were corrected for the notices member count at round 1, but the lead indexes were not: cid/liveops/events/_lead.md lines 48 and 87, cid/liveops/roadmap/_lead.md line 69 and cid/liveops/seasons/_lead.md line 147 still read notices has exactly two members, both beats, and cid/liveops/_category.md carries it at lines 42, 281 and 344. Verified this run against ui-ux/feedback/01 lines 237 and 253, setComplete and areaComplete both class beat, and ui-ux/feedback/03 lines 138 and 148 to 149, saveNotLoaded class system via amends notices. The correct statement is two beat members and one system member",
+        "to": "the Live Ops domain lead indexes",
+        "finding": "the leaf sheets in this category were corrected for the notices member count at round 1 and the category brief at round 3, but three lead indexes still read notices has exactly two members, both beats: cid/liveops/events/_lead.md lines 48 and 87, cid/liveops/roadmap/_lead.md line 69, cid/liveops/seasons/_lead.md line 147. Verified this run against ui-ux/feedback/01, whose members[] holds setComplete and areaComplete both class beat, and ui-ux/feedback/03, whose saveNotLoaded is class system with beat null and systemNoticesAreBeats false, added via amends notices. The correct statement is two beat members and one system member, and the correct FORM is a predicate over notices.members[] rather than either count",
+        "categoryBriefStatus": "closed at round 3. cid/liveops/_category.md carried the clause at three sites and now carries none: its intake-surface, announcement-surface and operable-surface rows all state a predicate, and the deliberately false trailing clause cannot carry a non-beat was deleted rather than reworded, because saveNotLoaded IS the non-beat",
         "rulingAffected": false,
         "whyRulingSurvives": "every leaf-sheet citation is already a predicate over notices.members[] rather than a count, so no ruling in this category depends on the number",
-        "repairedHere": "only this domain's _lead.md exclusive-rewards observable, which the round-3 collection ruling named and which was therefore in scope; the notices sites in the lead and category files were left for their owners"
+        "repairedHere": "this domain's _lead.md exclusive-rewards observable only, which the round-3 collection ruling named. The three remaining lead sites are consumed wave-7 planning artifacts whose writers have run; no key, manifest or criterion depends on them"
       }
     ],
     "invariants": [
@@ -354,10 +365,10 @@ those occurrences exactly instead of denying them.
 | **Update-ordering work** *[Live Ops — Roadmap]* | An undated ordering is yours; a date is mine and is zero. `release` `N2` answers *"why is an ordering permitted and a calendar not"* and it is not mine to give. Either Roadmap ruling leaves this key untouched. |
 | **Income and sink work** *[Gameplay — Systems `economy`; Balance `solvency`]* | Subject five stays yours. This key adds no faucet, no sink and no conversion, and states no rule about held currency. |
 | **Notice and transient-message work** *[UI/UX — Feedback, `notices`]* | Nothing here asks you for a member. My citation is a **predicate over `notices.members[]`** — no entry announces an event, an update or a schedule — so a fourth member does not touch this ruling. |
-| **Release work** *[Tech & Data — Deploy, `release`]* | Finding `F-E2`: `release.shutdown.playerFacing`'s own value asserts *"no notice channel may carry a non-beat"*, which `saveNotLoaded` falsified. Your ruling survives on `notices.forbiddenAdditions`, not on the roster's shape; the sentence inside the value is what needs the edit. |
-| **Screen-inventory and UI-emission work** *[UI/UX — Store, Screens]* | Finding `F-E1`, now cited at its real path `offerSurface.artifactHygiene.mustNotBePresent`. Your whitelist survives; its `instanceToday` would be stronger if it named the event banner and the countdown, and the fix is the two generator inputs. |
+| **Release work** *[Tech & Data — Deploy, `release`]* | Finding `F-E2`: `release.shutdown.playerFacing`'s own value asserts *"no notice channel may carry a non-beat"*, which `saveNotLoaded` falsified. Your ruling survives on `notices.forbiddenAdditions`, not on the roster's shape; the sentence inside the value is what needs the edit. Two copies of that clause remain — yours and `cid/marketing/hype/_lead.md:40`; `cid/liveops/_category.md`'s copy was deleted at round 3. |
+| **Screen-inventory and UI-emission work** *[UI/UX — Store, Screens]* | Finding `F-E1`, now cited at its real path `offerSurface.artifactHygiene.mustNotBePresent`. Your whitelist survives; its `instanceToday` would be stronger if it named the event banner and the countdown, and the fix is the two generator inputs. **A second key now depends on that set being complete:** `seasons.forbidden[returningPlayerGrant]` is scoped as a subset of it, so a path outside it fails two criteria rather than one. |
 | **Anyone writing runtime code** *[Tech & Data, Mechanics, Meta & Content]* | `EV10` is new and binds you. `os.clock` is permitted because it is monotonic; `os.time`, `os.date` and `DateTime` are not, and the ban is now a content rule as well as `Layout.luau`'s determinism rule. |
-| **Live Ops lead-index and category-brief upkeep** | Finding `F-E3`: the stale *"`notices` has exactly two members, both beats"* clause survives in three `_lead.md` files and at three places in `_category.md`, verified this run. No ruling depends on it, because every leaf citation is a predicate; it is a correctness debt on the indexes, not on the keys. |
+| **Live Ops lead-index upkeep** | Finding `F-E3`: the stale *"`notices` has exactly two members, both beats"* clause survives in **three `_lead.md` files** — `events/_lead:48,87`, `roadmap/_lead:69`, `seasons/_lead:147` — and **no longer in `_category.md`**, whose three sites were corrected at round 3 to predicates. No ruling depends on any of them; it is a correctness debt on consumed planning artifacts, not on the keys. |
 | **Contract-and-seam work** | `events` needs a shape in `bridge/schema.mjs` with `eventCount == len(events)`. `citedPaths` is published as data so a resolver can check all 22 references mechanically; four of the keys it names are proposals. `collection` gains **no** derived `total` — round-3 ruling, and the schema's five-field `collection` shape at `bridge/schema.mjs:208-217` is the form to keep. |
 
 ## Acceptance criteria
@@ -387,16 +398,19 @@ those occurrences exactly instead of denying them.
 What happens to currency the player cannot spend — **`economy.atMaxLadder`** *[Gameplay — Systems]*,
 timed by **`solvency.ladderExhaustedAfter`** *[Balance]*; I route and add no rule. Whether an undated
 ordering of drops exists — **update-ordering work** *[Live Ops — Roadmap]*; I own only the
-dated half. Recurring, tiered, resetting structures — **Seasons**. How many notices exist and what
-any of them says — **`notices`** *[UI/UX — Feedback]*; I cite a predicate over its roster and set no
-member. The wording inside `release.shutdown.playerFacing` — **`release`** *[Tech & Data — Deploy]*;
-`F-E2` reports it and repairs nothing. Whether a dashboard event entry is created, what it says and
-what it looks like — **store-listing work** *[Discovery & Marketing]*. Repairing `F-E1` — the owner
-of `offerSurface.artifactHygiene`, plus whoever owns `ui-forge/briefs/`; I delete nothing and claim
+dated half. Recurring, tiered, resetting structures — **Seasons**, which now scopes its
+`returningPlayerGrant` observable as a subset of the artifact set `F-E1` routes rather than
+restating my finding. How many notices exist and what any of them says — **`notices`**
+*[UI/UX — Feedback]*; I cite a predicate over its roster and set no member. The wording inside
+`release.shutdown.playerFacing` — **`release`** *[Tech & Data — Deploy]*; `F-E2` reports it and
+repairs nothing. Whether a dashboard event entry is created, what it says and what it looks like —
+**store-listing work** *[Discovery & Marketing]*. Repairing `F-E1` — the owner of
+`offerSurface.artifactHygiene`, plus whoever owns `ui-forge/briefs/`; I delete nothing and claim
 no screen. The `·` in the emitted banner — **`vocabulary`**. Whether codes or a group reward exist —
-**Codes**. The stale `notices` member-count clause in this category's three `_lead.md` files and in
-`_category.md` — **the Live Ops lead and category-brief owners**, via finding `F-E3`; I repaired
-only the `collection` observable in my own domain's `_lead.md`, which the round-3 ruling named.
+**Codes**. The stale `notices` member-count clause in this category's three remaining `_lead.md`
+files — **the Live Ops lead owners**, via finding `F-E3`; `_category.md`'s three sites were closed
+at round 3 and I repaired only the `collection` observable in my own domain's `_lead.md`, which the
+round-3 ruling named.
 
 ## Flagged to the developer
 

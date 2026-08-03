@@ -31,7 +31,7 @@ save loop), `game/src/shared/GameConfig.luau` (`SaveIntervalSeconds`).
 | Priority 3 excludes **rebirth · offline accrual · codes · daily rewards · leaderboards · seasons and events** (`03-META.md`) | cuts binding; the *ordering* is `[I assumed]` |
 | *"no mechanical interaction"* between players (`02-GAMEPLAY.md`) | `[brief: soft]` ← `[you accepted: R6 Q2]` |
 | Live-ops: *"Ships and settles. No seasons or events."* (`OPEN.md §2`, `05-OUTWARD.md`) | `[brief: soft]` ← `[I assumed]` |
-| Approved wave 1, binding on this category: *"Measure freely, display none of it"* (`theme/tone/04` X10) | approved spec, not brief |
+| Approved wave 1, binding on this category: *"Measure freely, display none of it"* (`theme/tone/04` D16) | approved spec, not brief |
 
 **Upstream fields I cite, never copy.** Wave 4 is FAIL and `pacing`'s figures are moving
 (`_verified-wave4.md`, RR-9 and RR-10 both move rows this domain would instrument). Every
@@ -149,7 +149,7 @@ For this domain this list carries as much weight as the assigned one.
    brief's 12–20. Relayed to per-server-capacity work [currently Tech & Data, this wave] so no
    sheet of mine assumes it. No reading in this domain is per-server.
 6. **Anything comparative or player-visible — excluded twice over.** Leaderboards are priority 3
-   and `theme/tone/04`'s X10 forbids display regardless. Every reading here is developer-facing.
+   and `theme/tone/04`'s D16 forbids display regardless. Every reading here is developer-facing.
 
 ## The retention ruling, stated once so it is not read as an omission
 

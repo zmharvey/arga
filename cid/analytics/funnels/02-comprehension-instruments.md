@@ -132,7 +132,7 @@ way: a proxy is a proxy whether or not a clock exists.
 - **State-shape and persistence work owe this sheet nothing.** `K6` states it as a rule so a later
   reader does not resurrect the withdrawn request from a stale `blockedBy` string.
 - **Feedback-UI and screens work** is unaffected. Nothing here asks for a surface, a counter or an
-  indicator, and `theme/tone/04` `X10` forbids one.
+  indicator, and `theme/tone/04` `D16` forbids one.
 - **Onboarding work** keeps all seven `teaching[]` rows, their `taughtBy`, `byBeat`, `evidence`,
   `required` and `testRange` values verbatim. This sheet adds a disposition beside each and changes
   none of them.

@@ -33,7 +33,7 @@ collision.** `funnels` is a new proposed key and this domain owns none of the 25
 | *"Ships and settles. No seasons or events."* (`OPEN.md §2`) | `[brief: soft]` ← `[I assumed]` — there is no live-ops loop for a threshold to feed |
 
 **Approved upstream and binding on every sheet here:** *"Measure freely, display none of it"*
-(`theme/tone/04` `X10`, relayed by `theme/fantasy/03`) — nothing in this domain reaches a
+(`theme/tone/04` `D16`, relayed by `theme/fantasy/03`) — nothing in this domain reaches a
 player-facing surface, so I owe `vocabulary` no string. `onboarding/03` hands me its subject
 in writing: *"the observable column is a list of definitions, not a measurement plan. Whether
 any of the seven is instrumented, and at what pass mark, is yours."* `onboarding/04` closes

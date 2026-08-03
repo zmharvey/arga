@@ -221,7 +221,7 @@ are true, of different populations.
     { "id": "E6", "what": "any comparison between two players, including a rank or a percentile of others",
       "closedBy": "02-GAMEPLAY.md 'no mechanical interaction'; leaderboards priority 3" },
     { "id": "E7", "what": "any player-facing surface for any reading here",
-      "closedBy": "theme/tone/04 X10, measure freely display none of it" },
+      "closedBy": "theme/tone/04 D16, measure freely display none of it" },
     { "id": "E8", "what": "any per-server aggregate",
       "closedBy": "social.maxPlayers is assigned to nobody; no reading here is per-server" },
     { "id": "E9", "what": "an idle or AFK subtraction from session length",

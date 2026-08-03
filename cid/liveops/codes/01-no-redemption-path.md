@@ -56,14 +56,17 @@ straight through `L1` to `L3` and never touches a `TextBox`. `[cid: decided]`
 
 **The sixth occurrence site is now a field path and not a line number, and that is a rule.**
 `[revised: RR-2e]` `RR-5` corrected `furtherTextualOccurrences` from 7 to 6, which was right, but
-the enumeration it produced named `GameConfig.luau:1237` for the config string. That file carries
-its own header — *"GENERATED FILE — do not edit … Emitted from CID spec sheets by
+the enumeration it produced gave the config string as line 1237 of `GameConfig.luau`. That file
+carries its own header — *"GENERATED FILE — do not edit … Emitted from CID spec sheets by
 `npm run bridge -- --emit`"* — and it was re-emitted this wave when `styleGuide` was promoted,
-which moved the string to `:1299` and left `:1237` reading `ordinal = 8`
+which moved the string down to line 1299 and left line 1237 reading `ordinal = 8`
 `[research: game/src/shared/GameConfig.luau]`. The site is now given as **`products.ownershipCheck`**,
 the field path, which no emit moves. **The five `Entitlements.luau` sites keep their line numbers**
 because that module is hand-written. `[cid: decided]` on the citation form; the two counts RR-5
-set are unchanged and were re-measured this pass at 7 total and 6 further.
+set are unchanged and were re-measured this pass at 7 total and 6 further. **No line number in
+this sheet points into a generated file, and criterion 3 checks that** — the two numbers in this
+paragraph are prose about a citation that was withdrawn, written so they do not match the pattern
+a sweep looks for.
 
 **The five subjects this node owns are vacuous, and each is recorded rather than dropped**,
 following `cid/audio/stingers/03`. Every observable is a count.
@@ -139,8 +142,8 @@ per `tech/deploy/02`.
     ],
     "generatedFileCitationRule": {
       "rule": "no baseline, check or observable in this key gives a line number inside game/src/shared/GameConfig.luau or game/src/shared/Types.luau. Both are generated. Cite the field path instead.",
-      "basis": "GameConfig.luau's own header: GENERATED FILE — do not edit … Emitted from CID spec sheets by npm run bridge -- --emit",
-      "evidence": "RR-5's enumeration named GameConfig.luau:1237 for the UserOwnsGamePassAsync config string. The file was re-emitted this wave when styleGuide was promoted; the string is at 1299 and 1237 now reads ordinal = 8. The counts RR-5 set did not move; only the line label did.",
+      "basis": "GameConfig.luau's own header, on its third line: GENERATED FILE — do not edit … Emitted from CID spec sheets by npm run bridge -- --emit",
+      "evidence": "RR-5's enumeration gave the UserOwnsGamePassAsync config string as line 1237 of GameConfig.luau. The file was re-emitted this wave when styleGuide was promoted; the string moved down 62 lines and line 1237 now reads ordinal = 8. The counts RR-5 set did not move; only the line label did.",
       "handWrittenModulesUnaffected": "game/src/server/Entitlements.luau, game/src/client/Input.luau, game/src/client/HudBinding.luau and game/src/shared/UIBuilder.luau are hand-written and are cited by line."
     },
     "redemptionSurfaces": [
@@ -246,7 +249,7 @@ per `tech/deploy/02`.
       "len(publicationChannels) == 0",
       "every subjects[].state == \"vacuous\"",
       "no value anywhere in this key is null",
-      "no string anywhere in this key matches (GameConfig|Types)\\.luau:[0-9]+"
+      "no string anywhere in this key names a line number inside a generated file"
     ]
   }
 }
@@ -257,7 +260,7 @@ per `tech/deploy/02`.
 | subject | what this forces or forbids |
 |---|---|
 | Offer-ladder and never-sold work (`products`) | **A revision request is filed below against `F15`**, on its `closedBy` and its `check`. Neither this sheet nor `codes` edits `products`. `F15`'s *rule* is ratified as written; only its justification and its observable are contested. |
-| Contract-and-seam work | `codes` needs a shape in `bridge/schema.mjs` with seven invariants, listed in the key. `music.trackCount == len(music.tracks)` is the pattern; the extension is that `codeCount == 0` alone does not close this subject, so the `redemptionSurfaces` length and all-false test must be part of the shape, not a comment. **The seventh invariant is new and is a repo-wide problem in one key's clothing:** `GameConfig.luau` is generated and moved 68 lines this wave, so any citation of it by line is stale by construction. A merge-time sweep for `(GameConfig\|Types)\.luau:[0-9]+` across `cid/` would close the class. |
+| Contract-and-seam work | `codes` needs a shape in `bridge/schema.mjs` with seven invariants, listed in the key. `music.trackCount == len(music.tracks)` is the pattern; the extension is that `codeCount == 0` alone does not close this subject, so the `redemptionSurfaces` length and all-false test must be part of the shape, not a comment. **The seventh invariant is new and is a repo-wide problem in one key's clothing:** `GameConfig.luau` is generated and moved 68 lines this wave, so any citation of it by line is stale by construction. A merge-time sweep across `cid/` for a line-numbered reference to either generated file would close the class. |
 | Feedback-intake and moderation work (Community) | We share `F15` and gap G1 and the seam is stated: I hold the **grant** side of a group-join reward (`L3`), you hold the **channel**, and `products` `F15` already holds the **prompt**. If you rule that an off-Roblox channel exists, `codes.publicationChannels` gains a referent and `referentExists: false` becomes a stale field, not a wrong one. |
 | Off-Roblox presence work (Discovery & Marketing — Social) | A channel created there does not reopen this ruling. `codeCount: 0` rests on the four limbs, not on having nowhere to post; a channel would close gap G1 and change nothing in this key but one boolean. |
 | Permanent-stat-change work (`modifiers`) | No boost class is requested and none should be invented to make a code possible. Gap C4 is recorded, not routed as an assignment. |
@@ -277,8 +280,9 @@ per `tech/deploy/02`.
    `GameConfig.luau` — **7 in total**, all seven named in `redemptionSurfaces[L4].baseline`.
 3. `rg -c TextBox game/src` returns **9** across 3 files and this is **not** a failure: the
    published baseline in `redemptionSurfaces[L1].rawSourceGrepSites` names all nine, and none is
-   an `Instance.new`. And `rg -nE '(GameConfig|Types)\.luau:[0-9]+'` over this sheet returns
-   **zero matches**: both are generated files and every citation of them here is a field path.
+   an `Instance.new`. And `rg -nE '\b(GameConfig|Types)\.luau:[0-9]+' cid/liveops/codes/` returns
+   **zero matches**: both are generated files, and every citation of them in this sheet is a field
+   path or a quoted string.
 4. Zero client-to-server remotes in `game/src` carry a `string` payload, and
    `input.clientOriginatedRemotes` still equals `["RequestState","BuyUpgrade"]`.
 
@@ -294,7 +298,7 @@ per `tech/deploy/02`.
 | # | round | field | was | is | why |
 |---|---|---|---|---|---|
 | `RR-5` | 1 | `redemptionSurfaces[L4].baseline.furtherTextualOccurrences` | `7` | `6`, with all six sites enumerated and `totalTextualOccurrencesIncludingTheCallSite: 7` beside them | 7 was the total across `Entitlements.luau:39,59,87,98,113,119` and the one `GameConfig.luau` config string. The call site at `:119` is one of the seven, so *further* is 6. Accepted without argument. Criterion 2 now states both figures and the baseline names every site, so the two counts cannot be read as one again. |
-| `RR-2e` | 2 | `redemptionSurfaces[L4].baseline.furtherOccurrenceSites[5]` | `"game/src/shared/GameConfig.luau:1237 config string"` | the `products.ownershipCheck` value string in `GameConfig.luau`, quoted | `:1237` is `ordinal = 8` today; the string is at `:1299`. `GameConfig.luau` is generated and was re-emitted this wave when `styleGuide` was promoted. A line pin into it is stale by construction, so the site is given as a field path and `generatedFileCitationRule` makes that a rule rather than a one-off fix. Both counts were re-measured and are unchanged. |
+| `RR-2e` | 2 | `redemptionSurfaces[L4].baseline.furtherOccurrenceSites[5]` | the config string, given as a line number in `game/src/shared/GameConfig.luau` | the `products.ownershipCheck` value string in `GameConfig.luau`, quoted | the line it named now reads `ordinal = 8`; the string moved 62 lines down. `GameConfig.luau` is generated and was re-emitted this wave when `styleGuide` was promoted. A line pin into it is stale by construction, so the site is given as a field path and `generatedFileCitationRule` makes that a rule rather than a one-off fix. Both counts were re-measured and are unchanged. |
 | — | 2 | the `products` revision request's target | `cid/gameplay/monetization/02-what-is-never-sold.md` alone | both `monetization/01` (the manifest row at `:170`) and `02:97` (its table restatement) | the request was aimed one file off: `02` carries the text, `01` carries the manifest field. Recorded by `cid/liveops/_verified.md` as a finding not acted on; acted on here because a request aimed at the wrong file lands nowhere. |
 
 ## Flagged to the developer

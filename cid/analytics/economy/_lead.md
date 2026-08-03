@@ -27,7 +27,7 @@ Every line below is quoted from the source brief, not from my category brief.
 | *"**Cleared is permanent** — overgrowth never returns."* (`01-FOUNDATION.md`) | `[brief: binding]` ← `[you chose: R2 Q1]` — progress is monotonic; no economy reading may assume a reset or a decay |
 | Measurement default: *"Three things: (1) did a first-session player reveal a relic … (2) average time to complete an area … (3) set-completion rate per set"* (`OPEN.md §2`) | `[brief: soft]` ← `[I assumed — §2 default]`. **None of the three is an economy subject.** The brief asks for zero currency measurement. |
 | Priority 3: *"real procedural generation · rebirth · offline accrual · codes · daily rewards · leaderboards · trading · seasons and events"* (`03-META.md`) | ordering `[I assumed]`; rebirth `[you chose: R2 Q2]`, offline accrual follows `[you chose: R2 Q1]` |
-| Approved wave 1, binding here: *"**Measure freely, display none of it**"* — `theme/tone/04` `X10` | approved spec |
+| Approved wave 1, binding here: *"**Measure freely, display none of it**"* — `theme/tone/04` `D16` | approved spec |
 
 **Scope gate, applied.** Nothing in my subject is priority 3, and my subject is not entirely
 priority 3. The three live temptations are refused by name in sheet `03`: no comparative or

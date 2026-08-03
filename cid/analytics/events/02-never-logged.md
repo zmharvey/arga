@@ -61,7 +61,7 @@ supplied by sheet `01`.
   custom fields, values will be grouped as 'Other'"*
   `[research: https://create.roblox.com/docs/production/analytics/event-types]` — one free-text
   field would exhaust that budget alone and take the other twelve events' breakdowns with it.
-- **`N12` is inherited, not invented.** `theme/tone/04` `X10` is *"measure freely, display none of
+- **`N12` is inherited, not invented.** `theme/tone/04` `D16` is *"measure freely, display none of
   it"*, approved wave 1. A field that exists only so a surface can render it is a surface request
   wearing an event's clothes.
 
@@ -80,7 +80,7 @@ supplied by sheet `01`.
 | N9 | any identifier for any player, including the recipient's own | `social.forbidden` `X7` (`gameplay/social/03`), and the `Player` argument already supplies identity | no field name matches `/userid|user_id|playerid|displayname|username/i`; `^name$` appears in no field name |
 | N10 | any player-authored string | `social.forbidden` `X9` | every `fields[].values[]` is a closed enum declared in the manifest; no field has `cardinality: "unbounded"` and none is marked free text |
 | N11 | any second player's state — their balance, level, collection, area or position | *"no mechanical interaction"* `[brief: soft]` ← `[you accepted: R6 Q2]` (`02-GAMEPLAY.md`) | every `insertionPoint` is inside a per-player path and every value is read from the recipient's own `PlayerState`; `slot_claimed.value` is an occupancy count, not another player's state |
-| N12 | any field that exists to be shown, or that a surface would have to be built to display | `theme/tone/04` `X10`, *"measure freely, display none of it"* | no sheet in `cid/ui-ux/**` names a `telemetry` field; this domain owes `vocabulary` zero player-facing strings |
+| N12 | any field that exists to be shown, or that a surface would have to be built to display | `theme/tone/04` `D16`, *"measure freely, display none of it"* | no sheet in `cid/ui-ux/**` names a `telemetry` field; this domain owes `vocabulary` zero player-facing strings |
 | N13 | any leaderboard position or top-N membership | `03-META.md` priority 3 — leaderboards | no field name matches `/leader|top|board|rank/i` |
 | N14 | any percentile or rank of a player against a population | priority 3 — leaderboards, and `X10` | no field name matches `/percentile|pct.?rank|quantile/i`; no event's `value` is defined relative to another player |
 | N15 | any daily streak, consecutive-day count or login window | priority 3 — daily rewards | no field name matches `/streak|daily|login|consecutive/i` |

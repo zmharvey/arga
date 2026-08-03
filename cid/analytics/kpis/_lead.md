@@ -68,7 +68,7 @@ taking it literally.
 > *"Shared server, parallel progression, own areas, **no mechanical interaction**."*
 > (`02-GAMEPLAY.md`) `[brief: soft]` ← `[you accepted: R6 Q2]`.
 
-**Approved upstream, binding on this domain:** `theme/tone/04`'s `X10` — *"Measure freely,
+**Approved upstream, binding on this domain:** `theme/tone/04`'s `D16` — *"Measure freely,
 display none of it"*. Every surface this domain names is developer-facing by construction, and
 this domain owes `vocabulary` no player-facing string.
 

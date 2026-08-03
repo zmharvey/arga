@@ -310,7 +310,7 @@ every other sheet in this category wrong.
   costs this sheet nothing: `C4` means nobody else's walking changes what the player's own walking is
   worth.
 - **Analytics work**: measure the two readings in `assurances.measuredNotDisplayed`. **Measure freely,
-  display none of it** — `tone/04`'s `X10`.
+  display none of it** — `tone/04`'s `D16`.
 - **Naming work**: one internal term to collect (`sure work`, never rendered), plus the eight
   candidate `bannedWords` entries in the block, offered not imposed. They share zero tokens with the
   eight entries already in `bannedWords`, with register work's list, with `L1`/`L3`/`L5`, with
