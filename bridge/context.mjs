@@ -27,6 +27,31 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, basename, dirname } from 'node:path';
 import { SCHEMA } from './schema.mjs';
 
+/**
+ * Strip sentence punctuation that trailed a URL in prose, without eating the URL.
+ *
+ * A naive `/[.,;)]+$/` swallows the closing paren of any disambiguated Wikipedia title:
+ * `.../wiki/Terrace_(agriculture)` was banked as `.../wiki/Terrace_(agriculture`, a 404. It
+ * went unnoticed because `verify-sheets.mjs` carried its OWN copy of the same expression and
+ * mangled it identically, so the citation check compared two equally-wrong strings and agreed.
+ * That is the second time a URL bug has survived by being duplicated — hence one exported
+ * function rather than a second fix in a second file.
+ *
+ * A trailing `)` is stripped only when it is unbalanced, which is what distinguishes "(see
+ * https://example.com/x)" from a paren the URL owns. Found by the Setting writer.
+ */
+export function trimUrlPunctuation(url) {
+  let out = url.replace(/[.,;]+$/, '');
+  while (out.endsWith(')')) {
+    const opens = (out.match(/\(/g) ?? []).length;
+    const closes = (out.match(/\)/g) ?? []).length;
+    if (closes <= opens) break;
+    out = out.slice(0, -1).replace(/[.,;]+$/, '');
+  }
+  return out;
+}
+
+
 const MANIFEST = /```manifest\s*\n([\s\S]*?)\n```/g;
 
 /**
@@ -287,7 +312,7 @@ export async function researchPack(root) {
     for (const block of blocks) {
       const tagged = [...block.matchAll(RESEARCH_URL)].map((m) => m[1]);
       const bare = isLeadIndex ? [...block.matchAll(BARE_URL)].map((m) => m[0]) : [];
-      const urls = [...new Set([...tagged, ...bare])].map((u) => u.replace(/[.,;)]+$/, ''));
+      const urls = [...new Set([...tagged, ...bare])].map(trimUrlPunctuation);
       if (!urls.length) continue;
       const claim = oneLine(block.replace(RESEARCH_ANY, ''), 600).replace(/^[-*]\s*/, '');
       for (const url of urls) {

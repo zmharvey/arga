@@ -3,7 +3,7 @@
 **Generated. Do not hand-edit** — run `npm run cid:research` to rebuild, or have a
 research pass append new entries below the marker at the end.
 
-Extracted from `cid`. 325 unique source(s); 228 were
+Extracted from `cid`. 324 unique source(s); 230 were
 fetched by more than one sheet, which is the duplication this file exists to stop.
 
 A spec writer **does not fetch**. It cites an entry here. `npm run cid:verify` fails any
@@ -32,7 +32,7 @@ did not fetch" becomes checkable instead of trusted.
 
 ## https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator
 
-*Cited by 10: `gameplay/onboarding/_lead`, `liveops/codes/01-no-redemption-path`, `liveops/codes/_lead`, `liveops/events/01-whether-an-event-exists`, `liveops/events/_lead`, `marketing/store-page/01-the-claim-ledger-and-the-description`, `marketing/store-page/05-no-update-notes`, `marketing/store-page/_lead`, `theme/tone/01-register`, `theme/tone/_lead`*
+*Cited by 11: `gameplay/onboarding/_lead`, `liveops/codes/01-no-redemption-path`, `liveops/codes/_lead`, `liveops/events/01-whether-an-event-exists`, `liveops/events/_lead`, `marketing/store-page/01-the-claim-ledger-and-the-description`, `marketing/store-page/05-no-update-notes`, `marketing/store-page/_lead`, `theme/lore/02-the-silences`, `theme/tone/01-register`, `theme/tone/_lead`*
 
 - **The reference has no discovery layer, so it never teaches one.** Its store page describes it as "A relaxing lawn-trimming simulator game 🌿 The more you rebirth and upgrade, the more fun the game becomes!" `` **This is the finding that matters: the reference's teaching order is exactly the economy-first, finds-later alternative `02-GAMEPLAY.md` explicitly declined.** It is not a model to copy in order, only in shape, and the item at position 2 is the entire divergence.
 - *Its codes half is falsified by its own subject.** The reference's experience description advertises *"Join the Unequal Games group for in-game boosts!"* and a like/favourite prompt and **never mentions codes or redeeming anything** ``. The same studio's Scrap Incremental ships a byte-identical description template with the same group boost and no codes ``. A codes aggregator maintains a page for the reference and lists **no active codes as of March 2026** ``. Against 38.2M visits and a 96.2% like ratio at the brief's read ``. **If absence read as unfinished, the reference would be reading…
@@ -403,7 +403,7 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 4: `marketing/name/01-the-title`, `marketing/name/_lead`, `marketing/store-page/02-genre-and-where-keywords-live`, `marketing/store-page/_lead`*
 
-- *Its stated weakness, so nobody discovers it later:** the title carries **no discovery keyword** — no verb, no genre word, no family noun. That is survivable and not free. Primary discovery is the *"Recommended for You"* sort, a retrieval-then-ranking system on engagement signals and not keywords, and search *"can now use semantic search … to find games through natural language queries"* where it historically *"relied on … exact search queries and limited metadata such as titles"* ``. **That is the substitute `05-OUTWARD.md` could not name** for the cost it priced when it moved this game…
+- *Its stated weakness, so nobody discovers it later:** the title carries **no discovery keyword** — no verb, no genre word, no family noun. Survivable, not free. Primary discovery is the *"Recommended for You"* sort, a retrieval-then-ranking system on engagement signals and not keywords, and search *"can now use semantic search … to find games through natural language queries"* where it historically *"relied on … exact search queries and limited metadata such as titles"* ``. **That is the substitute `05-OUTWARD.md` could not name** for the cost it priced. Evidence only — the positioning is…
 - *Search behaviour**, ``:
 - *P2 closed: there is no tag or keyword field, so keywords live in the first block.** The current selectable surface is *"one genre and an optional subgenre"*, and the 2024 rollout post says of tags *"we're exploring tags as a way to express multiple dimensions to complement genres"* — future tense ``. The platform's own metadata guidance is that the first sentence is where genre and content are read, to include relevant keywords, and that *"Don't repeat keywords or add irrelevant ones, as this may result in game demotion"* ``; discovery ranking independently advises against irrelevant…
 
@@ -471,19 +471,11 @@ did not fetch" becomes checkable instead of trusted.
 - Roblox devforum announcement — retention by acquisition source, and a selectable similar-experience or genre benchmark set covering average playtime and D1/D7/D30, *"for comparison only"*. ``
 - Genre and *"similar experience"* benchmark sets are selectable on Experience Overview. ``
 
-## https://earlyguides.com/powerwash-simulator/walkthrough
-
-*Cited by 4: `gameplay/core-loop/01-payoff-frequency`, `gameplay/core-loop/04-lap-vs-session`, `gameplay/core-loop/05-depth-escalation`, `gameplay/core-loop/_lead`*
-
-- In the closest shipping analogue of a completion-shaped lap, an early small job runs "30-45 minutes" and a later one "1-2 hours solo", across 38 jobs and "around 30-35 hours to complete every job", with partial progress persisting mid-job. `` `` (fetched in this domain's planning pass, not re-fetched here). Its *smallest* early lap is 1.5x this game's entire bound session, and it survives that only because its audience sits down for long desktop sessions. This game's derived depth-1 lap is 2.7 minutes. **The analogue confirms the shape and inverts the scale**, which is the second independent…
-- `01-FOUNDATION.md` concedes lap length was unsourceable across three source types and rules the reference's number non-transferable, so this is the first stated number rather than a contradiction of a researched one. The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its smallest early lap is 1.5x this game's entire bound session and it survives that only on long desktop sittings. **It…
-- The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
-
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/thumbnails.md
 
 *Cited by 4: `marketing/hype/01-the-publish-moment`, `marketing/hype/_lead`, `marketing/icon/01-the-one-icon`, `marketing/icon/_lead`*
 
-- *The trailer is dormant, and capture closes it, not taste.** `Theme.luau` ships `archetype = "cartoon-vibrant"`, `sourceTitle = "Pet Ascend Simulator"`, surface `#2B1B4D` against a brief naming `fantasy-ornate` three times (`T8`, `G2`) ``. A trailer is captures in sequence, so it inherits that wholesale. Platform-side it is otherwise cheap, and the facts belong to Thumbnails more than to me: an approved video *"will appear first on your game's detail page"*, a detail page holds up to **10** images or videos, uploads run against a **monthly quota of 3** with rejections counted, and all are…
+- *The trailer is dormant, and capture closes it, not taste.** `Theme.luau` ships `archetype = "cartoon-vibrant"`, `sourceTitle = "Pet Ascend Simulator"`, surface `#2B1B4D` against a brief naming `fantasy-ornate` three times (`T8`, `G2`) ``. A trailer is captures in sequence, so it inherits that wholesale. Platform-side the facts belong to Thumbnails more than to me: an approved video *"will appear first on your game's detail page"*, a page holds up to **10** images or videos, uploads run against a **monthly quota of 3** with rejections counted, and all are reviewed against *"authentic and…
 - `` — up to 10 images or videos per detail page; an approved video *"will appear first on your game's detail page"*; monthly quota of 3 uploads with rejections counted; *"Video thumbnails should be authentic and accurately portray in-game content without misleading alterations"*; all videos reviewed.
 - *The production route is a capture, and the ground is the platform's own words rather than house taste.** The thumbnails page carries *"Graphics shown must be representative of the actual in-game visuals. Avoid artificially enhancing graphics beyond what a player will experience"* and *"Do not display gameplay mechanics, UI elements, or interactions that are not actually available in your game"* ``. **That is `T0` and `T8` as platform policy rather than as a house rule** — the strongest external backing this category's truthfulness rule has. Two halves, and both are said: it is published on…
 
@@ -653,13 +645,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - *G9, can one body block another.** No. `[cid: decided]` The binding social rule is "shared server, parallel progression, own areas, no interaction. Interaction: none mechanical" `[brief: soft]` ← `[you accepted: R6 Q2]`, `02-GAMEPLAY.md`, stated twice. A body that blocks another body is a mechanical interaction, and it is the only one the game affords: blocking a route or parking on a Find mid-dwell are each achievable by a stranger who cannot do anything else. Player characters collide by default on Roblox, since "All BaseParts automatically belong to this default group unless assigned to…
 - Player characters collide by default; "All BaseParts automatically belong to this default group unless assigned to another group, meaning that they will collide with all other objects in the Default group", and all groups are configured to collide with each other. ``
-
-## https://currently.att.yahoo.com/att/full-powerwash-simulator-2-mission-140000826.html
-
-*Cited by 3: `gameplay/core-loop/01-payoff-frequency`, `gameplay/core-loop/05-depth-escalation`, `gameplay/core-loop/_lead`*
-
-- In the closest shipping analogue of a completion-shaped lap, an early small job runs "30-45 minutes" and a later one "1-2 hours solo", across 38 jobs and "around 30-35 hours to complete every job", with partial progress persisting mid-job. `` `` (fetched in this domain's planning pass, not re-fetched here). Its *smallest* early lap is 1.5x this game's entire bound session, and it survives that only because its audience sits down for long desktop sessions. This game's derived depth-1 lap is 2.7 minutes. **The analogue confirms the shape and inverts the scale**, which is the second independent…
-- The closest shipping analogue of a completion-shaped lap runs from a few minutes to 2–3.5 hours per job with an early representative job at 30–45 minutes `` `` (fetched in this domain's planning pass, recorded in `_lead.md`, not re-fetched here). Its jobs grow by roughly **4× in duration** across a 38-job campaign on long desktop sittings. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10–20 minutes, mobile, ages 8–14 `[brief: binding]` ← `[you chose:…
 
 ## https://devforum.roblox.com/t/how-do-you-play-a-sound-without-restarting-it/1101216
 
@@ -889,6 +874,12 @@ did not fetch" becomes checkable instead of trusted.
 - **Passage: one condition, and it is a strike on an approved sheet rather than an absence.** `core-loop/04` ("enterable at the instant one completes, with no threshold, no cooldown and no travel worth measuring") and `core-loop/05` ("nothing may gate depth on throughput") both hold under `previousAreaComplete`: it is not a threshold, not a cooldown, not a purchase and not a throughput test, and an under-buying player is never refused. What it *is* is a condition on an opening, which `theme/setting/04` W5 sets at zero. **DIG's 50%-of-the-journal ferry unlock** `` **is a live shipping…
 - **DIG gates its second island on collection completion, not on power.** "Once you complete 50% of the Cinder Island journal, you'll unlock access to the NPC at the ferry dock… he'll offer you a ferry ticket after asking about your progress." A shipping game in the collection genre uses *fraction of the index* as the unlock, which is a live alternative for sheet `04`'s gating question and is not the one `setting/04` W5 took.
 
+## https://carpet-cleaning-simulator.wiki/guides/how-to-play/
+
+*Cited by 2: `theme/fantasy/01-fantasy-of-record`, `theme/fantasy/_lead`*
+
+- *Carpet Cleaning Simulator's loop is repeatable contracts plus rebirth**: *"Accept job → clean all required zones → collect payment → upgrade gear → unlock harder jobs"*, with rebirth from level 50 ``. At ~26.6M visits in a quarter, that is a much larger game delivering before-and-after revelation far more often than this one can, precisely *because* nothing it cleans stays clean.
+
 ## https://create.roblox.com/docs/cloud-services/data-stores
 
 *Cited by 2: `tech/persistence/01-the-save-write`, `tech/persistence/_lead`*
@@ -1104,6 +1095,12 @@ did not fetch" becomes checkable instead of trusted.
 - *Streaming is the one lever left and it is unowned today.** `StreamingEnabled` appears in neither contract and nowhere in `game/src`; instance streaming *"improves join times, reduces memory footprint, and increases frame rate"* ``, which is three of my four ceilings. Defaults are 64 / 1024 ``. **1024 is too wide**: at `plots.pitchStuds` 122 it reaches every lane of a 1,952-stud row, so a client loads sixteen live bays. **512 reaches four lanes either side** (488 studs) — nine lanes, 5,814 instances worst case — and still spans a whole merged bay longitudinally (480 studs). **160 is the min…
 - `https://create.roblox.com/docs/workspace/streaming` — `StreamingMinRadius` default 64 studs, `StreamingTargetRadius` default 1024 studs; the four `ModelStreamingMode` values with their descriptions; `StreamingIntegrityMode` recommended `PauseOutsideLoadedArea`.
 
+## https://currently.att.yahoo.com/att/full-powerwash-simulator-2-mission-140000826.html
+
+*Cited by 2: `gameplay/core-loop/05-depth-escalation`, `gameplay/core-loop/_lead`*
+
+- The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes ``, across 38 jobs and about 30 to 35 hours to complete every one ``. Its jobs grow roughly **4× in duration** across the campaign. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10 to 20 minutes, mobile, ages 8 to 14 `[brief: binding]` ← `[you chose: R1 Q4]`. The analogue confirms the…
+
 ## https://deltiasgaming.com/roblox-grass-incremental-codes/
 
 *Cited by 2: `liveops/codes/01-no-redemption-path`, `liveops/codes/_lead`*
@@ -1284,6 +1281,12 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 2: `marketing/social/01-no-off-platform-presence`, `marketing/social/_lead`*
 
 - Discord's own floor: *"By accessing our services, you confirm that you're at least 13 years old and meet the minimum age required by the laws in your country"*, and *"Our services are not designed for nor directed towards users under the age of 13"*. ``
+
+## https://earlyguides.com/powerwash-simulator/walkthrough
+
+*Cited by 2: `gameplay/core-loop/05-depth-escalation`, `gameplay/core-loop/_lead`*
+
+- The closest shipping analogue of a completion-shaped lap runs from a few minutes to two or three hours per job, with an early representative job at 30 to 45 minutes ``, across 38 jobs and about 30 to 35 hours to complete every one ``. Its jobs grow roughly **4× in duration** across the campaign. **It is the strongest available evidence for the assumption I am overruling, and it does not transfer**: 4× of duration growth requires a session that can absorb it, and `00-CORE.md` fixes 10 to 20 minutes, mobile, ages 8 to 14 `[brief: binding]` ← `[you chose: R1 Q4]`. The analogue confirms the…
 
 ## https://en.help.roblox.com/hc/en-us/articles/360000927163-Using-Licensed-Music-on-Roblox
 
@@ -1563,7 +1566,7 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 2: `theme/tone/01-register`, `theme/tone/_lead`*
 
 - *Reading level serves the bottom of the band, not the middle.** Ages 8–11 map to grade 3–6 and 11–14 to grade 6–9, and the general-public default of 8 sits at the *top* of the band ``. The band is binding `[brief: binding]` ← `[you chose: R1 Q4]` (`00-CORE.md`). A 13-year-old loses nothing reading grade-5 copy; an 8-year-old who cannot parse grade-8 copy loses the string entirely, and 35% of age-checked daily users are under 13 ``. Target 5.0, ceiling 6.0 `[playtest unknown]`, test range 4 to 8.
-- *Reading level, sourced, decision not taken.** On the standard Flesch-Kincaid mapping, ages 8–11 fall in the 3–6 band and ages 11–14 in the 6–9 band, and *"text intended for readership by the general public should aim for a grade level of around 8, schooling age 13 to 14."* `` **Consequence, not a choice I am making:** an 8–14 band spans two brackets, so no single target serves all of it, and the general-public default of 8 sits at the *top* of the band rather than the middle. Sheet 01 picks the target and says which end of the band it is serving.
+- *Reading level, sourced, decision taken in sheet 01.** On the standard Flesch-Kincaid mapping, ages 8–11 fall in the 3–6 band and ages 11–14 in the 6–9 band, and *"text intended for readership by the general public should aim for a grade level of around 8, schooling age 13 to 14."* `` An 8–14 band spans two brackets, so no single target serves all of it, and the general-public default of 8 sits at the *top* of the band rather than the middle. Sheet 01 serves the bottom: target 5.0, ceiling 6.0.
 
 ## https://robloxapi.github.io/ref-temp/enum/Material.html
 
@@ -1590,6 +1593,12 @@ did not fetch" becomes checkable instead of trusted.
 
 - *499, restated without the ladder-ratio clause it no longer has.** 499 is the top of the corroborated premium band and the observed ceiling of both Faith and DIG `` `` ``. The two single-item comparables sit above it — Carpet Cleaning at 1,499, and the reference's own oversized tool at 2,500 `` — and both bands were declined on `00-CORE.md` grounds, because the only argument either source gives for them is revenue concentration. `[cid: decided]`
 - **Two independent third-party pricing guides agree on the rung structure**, which is the only corroboration available for "impulse to whale" as a shape: impulse **"25 - 75"** / **"25–75 R$ — reflex buy"**; mid **"99 - 249"** / **"100–250 R$ — considered buy"**; premium **"249 - 499"** / **"400–1,000+ R$ — commitment buy"**; and a whale band of **"999 - 4,999"**. One adds that round numbers (100, 250, 500) perform marginally better than charm prices on Roblox. `` ``
+
+## https://store.steampowered.com/app/3164790/Overgrown_Cleaner/
+
+*Cited by 2: `theme/fantasy/01-fantasy-of-record`, `theme/fantasy/_lead`*
+
+- *The subject matter is not novel off-platform either.** `Overgrown Cleaner` ships clearing overgrowth to reveal *"buried walls and fences"* and *"buried paths"*, with *"Salvageable scrap, Repairable parts"* that are sold or crafted, **no promise that cleared ground stays cleared**, and no logbook ``. That qualifies my own index's *"no shipping game found"*: the subject matter exists, off-platform, with the finds as *materials*. It does not contest Roblox occupancy and does not touch `[you chose: R1 Q1]`. It shows that clearing-plus-buried-things **without** permanence is a shape somebody…
 
 ## https://www.nngroup.com/articles/gestalt-proximity/
 
@@ -1754,12 +1763,6 @@ did not fetch" becomes checkable instead of trusted.
 
 - `` — sent by `POST https://apis.roblox.com/cloud/v2/users/${UserId}/notifications` with an `x-api-key` header; the one-per-day limit restated.
 
-## https://apis.roblox.com/search-api/omni-search?searchQuery=
-
-*Cited by 1: `theme/fantasy/_lead`*
-
-- **A complete Roblox catalogue sweep for the reclaim-a-ruin fantasy.** `[unverified]` Roblox search is client-rendered and could not be fetched; a `roblox.com`-restricted web search returns indexed pages, not the catalogue. **The fetch that would settle it:** the omni-search endpoint (`https://apis.roblox.com/search-api/omni-search?searchQuery=...`) or the authenticated games-search API, over *overgrown*, *reclaim*, *ruin restoration*, *vines*, *moss*, *relic index*. Until then this is the same grade of evidence as `landscape.md`'s rust and cobweb rows and must not be reported as a clear…
-
 ## https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType=Published
 
 *Cited by 1: `tech/deploy/_lead`*
@@ -1800,12 +1803,6 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `gameplay/meta/_lead`*
 
 - **DIG (56M visits, 119,871 peak CCU) ships two islands.** "So far there are only 2 Islands in the game, with more to come with the official release of the game." Its first island is subdivided into named regions (Cinder Shores, Cinder Cavern, Mount Cinder) with four further sub-regions inside the cavern — Azure Hollow, Monks Shrine, Solstice Shrine, Spiders Keep — so *area* count is small and *place* count inside an area is large.
-
-## https://carpet-cleaning-simulator.wiki/guides/how-to-play/
-
-*Cited by 1: `theme/fantasy/01-fantasy-of-record`*
-
-- *Carpet Cleaning Simulator's loop is repeatable contracts plus rebirth**: *"Accept job → clean all required zones → collect payment → upgrade gear → unlock harder jobs"*, with rebirth from level 50 ``. At ~26.6M visits in a quarter ``, that is a much larger game delivering before-and-after revelation far more often than this one can, precisely *because* nothing it cleans stays clean. **Promising revelation is promising the thing an occupant delivers better** — my domain index's rule 6, applied.
 
 ## https://code.tutsplus.com/numbers-getting-bigger-the-design-and-math-of-incremental-games--cms-24023a
 
@@ -2063,7 +2060,7 @@ did not fetch" becomes checkable instead of trusted.
 *Cited by 1: `theme/fantasy/_lead`*
 
 
-## https://en.wikipedia.org/wiki/Terrace_(agriculture
+## https://en.wikipedia.org/wiki/Terrace_(agriculture)
 
 *Cited by 1: `theme/setting/02-extent`*
 
@@ -2096,19 +2093,21 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `theme/identity/_lead`*
 
-- **A developer can override that for everyone.** Studio's File > Avatar Settings *"apply globally to all player character models joining your game"*, with per-spawn override via `LoadCharacterWithHumanoidDescription` / `ApplyDescription`. `` A role that requires a uniform is technically possible; it is an art and cost question, not a platform blocker. Sheet 02 should know the option exists and that exercising it lands in someone else's unfunded slot.
+- **A developer can override that for everyone.** Studio's File > Avatar Settings *"apply globally to all player character models joining your game"*, with per-spawn override via `LoadCharacterWithHumanoidDescription` / `ApplyDescription`. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/characters/index.md
 
 *Cited by 1: `theme/identity/_lead`*
 
+- 3. **The brief never says what the player looks like, or that they have a body at all.** On Roblox the default is that *"all players join games as their saved Roblox avatar"* ``, so absent a decision the role is worn by an arbitrary player-chosen body. → **sheet 02**, merged there because "must the role survive any avatar" and "is the role ever delivered" are the same decision seen from two sides. Presentation itself is `characterArt`'s.
 - **Players arrive as their own avatar by default.** *"By default, all players join games as their saved Roblox avatar, which already includes all the components for an avatar character."* ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/characters/name-health-display.md
 
 *Cited by 1: `theme/identity/_lead`*
 
-- **Names display above heads by default and default to the account Display Name.** *"Roblox displays a name and/or health bar above that part"*; *"By default, a humanoid's display name matches the user's Roblox account Display Name which is unique and separate from their account Username."* Suppressible entirely with `DisplayDistanceType = None`. ``
+- 4. **Nothing rules on nameplates, and by default every stranger has a proper noun over their head.** Roblox *"displays a name and/or health bar above"* a character's head by default, and *"by default, a humanoid's display name matches the user's Roblox account Display Name"*; suppressible with `DisplayDistanceType = None` ``. → **sheet 03**, which now *rules* it rather than deferring: platform default, undressed, unsuppressed, with `X15` and `X16` forbidding the name being promoted into the fiction.
+- **Names display above heads by default and default to the account Display Name.** Suppressible entirely with `DisplayDistanceType = None`. ``
 
 ## https://github.com/Roblox/creator-docs/blob/main/content/en-us/scripting/events/remote.md
 
@@ -2217,12 +2216,6 @@ did not fetch" becomes checkable instead of trusted.
 
 *Cited by 1: `gameplay/core-loop/_lead`*
 
-
-## https://store.steampowered.com/app/3164790/Overgrown_Cleaner/
-
-*Cited by 1: `theme/fantasy/01-fantasy-of-record`*
-
-- *And the subject matter itself is not novel off-platform.** `Overgrown Cleaner` (Steam) ships clearing overgrowth to reveal *"buried walls and fences"* and *"buried paths"*, with *"Salvageable scrap, Repairable parts, Strange but useful leftovers"* that are sold or crafted, and **no promise anywhere that cleared ground stays cleared**, and no logbook ``. **This qualifies my own index**, which reported *"no shipping game found"* for the reclaim-overgrowth fantasy after four Roblox-scoped searches: the subject matter exists, off-platform, with the finds as *materials*. It does not contest…
 
 ## https://www.creation.dev/templates/tycoon-template
 

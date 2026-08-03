@@ -67,7 +67,8 @@ handle for writers and art prompts, not a name for anything.
       "promotionNote": "a schema owner promoting this key must fold the four amendments in; each names its sub-object and touches no other."
     },
     "exclusionListFields": {
-      "whyThisFieldExists": "this key holds eleven fields that are exclusion lists, and an exclusion list has to name the thing it excludes. Every word-pattern criterion in this domain is scoped to skip them: a check that fires on the list of forbidden words is a check reporting its own subject matter. Enumerating them once is what makes that exemption checkable rather than a judgement call, and it is the field a lint has to be handed.",
+      "count": 12,
+      "whyThisFieldExists": "twelve fields across this key are exclusion lists, and an exclusion list has to name the thing it excludes. Every word-pattern criterion in this domain is scoped to skip them: a check that fires on the list of forbidden words is a check reporting its own subject matter. Enumerating them once is what makes that exemption checkable rather than a judgement call, and it is the field a lint has to be handed.",
       "fields": [
         "setting.identity.isNotA",
         "setting.climate.excludedBands[].band",

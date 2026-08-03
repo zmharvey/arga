@@ -22,7 +22,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, basename, dirname } from 'node:path';
 import { SCHEMA, playerFacingStrings } from './schema.mjs';
 import { mergeSheets } from './merge.mjs';
-import { packUrls } from './context.mjs';
+import { packUrls, trimUrlPunctuation } from './context.mjs';
 
 const args = process.argv.slice(2);
 const opt = (name, fallback) => {
@@ -193,7 +193,7 @@ for (const f of files.filter(scoped)) {
       const rel = relative(ROOT, f);
       const body = await readFile(f, 'utf8');
       for (const m of body.matchAll(/\[research:\s*(https?:\/\/[^\s\]`]+)/g)) {
-        const url = m[1].replace(/[.,;)]+$/, '');
+        const url = trimUrlPunctuation(m[1]);
         if (!pack.has(url)) {
           fails.push(`${rel}: cites ${url}, which is not in the research pack. Either the `
             + 'pack is stale (`npm run cid:research`) or the sheet fetched on its own.');

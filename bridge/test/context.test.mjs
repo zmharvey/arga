@@ -20,6 +20,7 @@ import { join } from 'node:path';
 
 import {
   sheetDigest,
+  trimUrlPunctuation,
   renderDigest,
   researchPack,
   renderPack,
@@ -391,4 +392,25 @@ test('contractSlice tells a keyless domain plainly that it owns nothing', async 
   const { mine, others } = contractSlice('theme/lore');
   assert.deepEqual(mine, []);
   assert.ok(others.length >= 9);
+});
+
+test('a URL keeps the parens it owns and loses the ones the sentence added', () => {
+  // `.../wiki/Terrace_(agriculture)` was banked as `.../wiki/Terrace_(agriculture` — a 404 —
+  // because a naive /[.,;)]+$/ eats the closing paren of any disambiguated Wikipedia title.
+  //
+  // It went unnoticed for a wave because verify-sheets.mjs carried its OWN copy of the same
+  // expression and mangled it identically, so the citation check compared two equally-wrong
+  // strings and agreed. That is the second URL bug to survive by being duplicated, which is
+  // why this is one exported function and not a second fix in a second file.
+  const cases = [
+    ['https://en.wikipedia.org/wiki/Terrace_(agriculture)', 'https://en.wikipedia.org/wiki/Terrace_(agriculture)'],
+    ['https://example.com/a_(b)_(c)', 'https://example.com/a_(b)_(c)'],
+    ['https://example.com/x).', 'https://example.com/x'],   // "(see https://example.com/x)."
+    ['https://example.com/a_(b),', 'https://example.com/a_(b)'],
+    ['https://example.com/x.', 'https://example.com/x'],
+    ['https://x.com/p;', 'https://x.com/p'],
+  ];
+  for (const [input, expected] of cases) {
+    assert.equal(trimUrlPunctuation(input), expected, input);
+  }
 });
