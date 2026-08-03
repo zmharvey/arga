@@ -23,11 +23,15 @@ A wave advanced on a PARTIAL is a wave that will be rebuilt.
 | 1 | Theme & Narrative (6) ‖ Gameplay stage 1 — Core Loop | **done** | see below |
 | 2 | Gameplay stage 2 — Systems, Mechanics, Multiplayer & Social | **closed** | round 1 FAIL (16) → round 2 PARTIAL (3) → all 19 closed; **1 escalated** |
 | 3 | Gameplay stage 3 — Meta & Content, Monetization, Onboarding | **closed** | round 1 FAIL (14 requests) → all closed; 3 escalations resolved by ruling |
-| 4 | Gameplay stage 4 — Balance & Tuning | not started | — |
-| 5 | Tech & Data ‖ UI/UX ‖ Analytics | not started | — |
-| 6 | Art & Visuals ‖ Audio | not started | — |
-| 7 | Live Ops ‖ Discovery & Marketing | not started | — |
+| 4 | Gameplay stage 4 — Balance & Tuning | **closed** | round 1 FAIL (16) → round 2 FAIL (3) → **PASS**; two verifier requests overturned by the writer |
+| 5 | Tech & Data ‖ UI/UX ‖ Analytics | **written, verified** | Analytics **PASS**; UI/UX defects closed, verdict unwritten; Tech erratum applied, verdict unwritten |
+| 6 | Art & Visuals ‖ Audio | **written, verified** | Audio **PASS**; Art round 3 open on one stale sheet |
+| 7 | Live Ops ‖ Discovery & Marketing | **written, verified** | Live Ops round 2 FAIL on one token; Marketing 5 of 6 closed |
 | final | Cross-Category Verification | not started | — |
+
+*This table read "not started" for waves 4–7 until 2026-08-02, while five of those categories had
+released. Wave 7's Icon lead found it — stale as a status record, not wrong as a ruling record. The
+detailed state is at the end of this file; treat that as authoritative and this table as the index.*
 
 ### Wave 1 — done, recorded after the fact
 
@@ -356,3 +360,106 @@ Verification returned **FAIL** with 14 revision requests. All are closed. The fo
 - **`Span`'s deliverable depends on a `tool` change nobody has agreed.** `products` criterion 4
   fails a build where head width does not move with the product; `mechanics/04` T11 says width
   moves with Reach *level* alone.
+
+## Run state at the weekly-limit stop — 2026-08-02
+
+**All three gates are green:** `cid:verify` PASS 0 failures · `bridge` COMPLETE 25/25, 0 problems ·
+`npm test` 170 pass, 0 fail. Everything below is resumable from disk; nothing is half-written.
+
+**All 55 domains have run.** The contract is **25 merged keys + 58 proposed**. Wave 1 produced 9 keys
+from 35 sheets with 78% of it prose no build step could read; waves 4–7 ran 41 domains and every one
+produced a key or a stated reason its subject has none.
+
+### Category verdicts
+
+| category | verdict |
+|---|---|
+| Gameplay (waves 2–4) | **PASS** |
+| Audio | **PASS**, released |
+| Analytics | **PASS** (conditional on two checklist narrowings, both applied to the graph) |
+| UI/UX | PARTIAL 16/17 → both defects fixed and verified; **verdict not written** (agent died mid-close) |
+| Tech & Data | erratum applied and verified; **final verdict never written** |
+| Art & Visuals | round 3 in progress; **one real gap found, see below** |
+| Live Ops | FAIL → 7 closed → **round 2 FAIL on one token**, see below |
+| Discovery & Marketing | FAIL 7 → 5 closed; **Thumbnails RR-2 outstanding** |
+
+### Outstanding work, precisely
+
+1. **`art/environment/01` was never revised.** The Art verifier confirmed it still carries the stale
+   reservation derivation and `batchingFactorFloor` **5.990** at lines 203–204 and 245, against the
+   re-cut 16+6+11. Style Guide re-derived to 5.966; Environment did not. **This is the one substantive
+   open defect.**
+2. **`liveops/roadmap/01` AC2 fails on its own documentation.** Its new grep returns 1 — line 137's
+   `idNamespaces.finding` says *"all number their rows N1 upward"*, space-preceded and therefore
+   undotted. Fix is one token (`Nn`, or "from one upward"), or scope the criterion to citations rather
+   than prose, which its own `rule` field already says.
+3. **`liveops/seasons/01`** — `reversalPath.buildCost` still says *"none may carry a non-beat"* while
+   naming `saveNotLoaded`, a non-beat, in the same sentence. Wording residue; its load-bearing
+   predicate and AC are correct and unaffected.
+4. **`marketing/thumbnails/01` criterion 3** asserts `slots[].pixelSize` and `slots[].format`; both
+   live at `platform.*`, so the criterion returns undefined. Two of its criteria are also unverifiable
+   against files it may not edit — it was mid-fix when it died.
+5. **`liveops/events/01`** — two `collection.total` citations (lines 90, 214). It had found four more
+   path defects of its own and was rewriting with a published `citedPaths` field when it died.
+6. **UI/UX and Tech verdicts are unwritten.** Both categories' work is done and verified; only the
+   verdict documents are missing.
+
+### The `collection.total` phantom — resolved in four of six sites
+
+`collection` holds `className`, `classPlural`, `relicsPerArea`, `areasPerDepth`, `sets`. There is no
+`total`. Five sheets cited it in three spellings across three categories. Fixed: `marketing/name/03`,
+`ui-ux/screens`, `ui-ux/hud/02`. Outstanding: `liveops/events/01` (×2), `ui-ux/store/01`. And
+`gameplay/systems/05`'s `discovery.record.keyedBy` describes itself as keyed *"from
+`collection.sets[].relics[].name`"* — the same phantom **inside a neighbouring key's own value**.
+
+The canonical form is `sum(len(collection.sets[i].relics))`. `marketing/store-page/01` used it from
+the start and is the model. HUD has filed a request to `collection`'s owner for a derived
+`totalRelics`, noting that **five sheets across four categories independently invented a spelling of
+it**, which is the argument for one derived field rather than five corrections.
+
+### What the gates now catch that they did not before
+
+- **explicit nulls in any merged value** — `validateManifest` walks every value and names the path.
+  It found exactly the 16 sites `tech/deploy/02` had enumerated by hand, confirming that enumeration.
+  All 16 are fixed with per-type sentinels; three needed judgement rather than substitution
+  (`"unbounded"` twice, where `"none"` would have asserted zero; one restructured to a real value).
+- **developer-facing keys** — `documentationOnly` is a schema flag and the emitter derives its
+  exclusion set from it, so a promoted key no module reads cannot reach Luau by anyone forgetting a
+  hand-maintained list.
+- **banked research urls with a trailing backtick** — both collectors and the verifier's own copy of
+  the regex now agree where a url ends.
+
+### The defect this run kept finding, in six forms
+
+A copied value, a copied path, a copied count, an id in a shared namespace, a phantom field, and a
+grep that matches its own file. **Every one reads as safe.** Every one was found by a domain reading
+another domain's work rather than by a gate.
+
+Round 2 of Live Ops produced the structural answer three times independently: Events replaced a count
+with a predicate over `notices.members[]`; Seasons constrained member *causes* at any list length
+(*"a corrected number goes stale the same way"*); Roadmap banned its own key from stating a member
+count at all. Community named the cause about itself: **all four of its defects were facts it copied
+into criteria rather than derived from the key that owns them.**
+
+Three domains now publish their full cross-key citation list as a manifest field with a
+`resolvesToday` flag — VFX (36 paths), Screens (25), HUD (24) — which makes the check mechanical
+rather than a sweep someone has to remember.
+
+### Next, in order
+
+1. Close items 1–5 above. All are single-field except `events/01`, which is mid-rewrite.
+2. Write the UI/UX and Tech verdicts.
+3. **Cross-category verification** — it now also owns the whole-project form of *"every measurable
+   claim has a matching event"*, moved there because a wave-5 category cannot answer for wave-7 claims.
+4. **Promote the keys**, in KPI's order: `telemetry` → `economyHealth` → `funnels` → promote all four →
+   implement the `refGrammar` resolver. Ship the `sharedPredicate` check with it, with the Analytics
+   verifier's three narrowings — `readBy[]` registered as a `refSites[]` entry, `field` as a
+   `pathGrammar` path so uniqueness is well-defined, and **`definedBy` must name the key carrying the
+   block**, without which two keys can each define a block for the other's field and reproduce the
+   inversion inside the mechanism built to prevent it.
+5. **Rebuild.** The punch list is concrete: re-emit against a brief-derived context (`fantasy-ornate`,
+   not `cartoon-vibrant` from the Pet Ascend demo); `palettes.mjs:150` `MerriweatherBold` →
+   `Merriweather`, which **raises rather than returning nil** and must land with the theme change;
+   `Plots.luau:534`'s missing `slab.Color`; the `IsStudio` guard on the save loop and `onLeave`; the
+   seven unreferenced demo screens and their briefs; and HUD's route-B composition, which closes the
+   developer's reported duplicate-boxes defect with **zero ui-forge changes**.

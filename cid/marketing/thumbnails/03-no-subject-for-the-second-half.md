@@ -2,6 +2,14 @@
 
 **Domain:** marketing/thumbnails · **Category:** Discovery & Marketing · **Wave:** 7
 
+> **Revised, round 1** (`cid/marketing/_verified.md`). No request was filed against this sheet.
+> Carried from `01`'s `RR-2` fix: this sheet spelled the reveal beat `effects.beats[findReveal]`
+> in four places. **`effects` holds `cues[]`, keyed by `.id`; `beats[]` belongs to `response`**, so
+> the old spelling named a collection that exists in neither key. Corrected to
+> `effects.cues[id=findReveal]` throughout and registered in
+> `storeThumbnails.externalPathsResolved` with its `correctedFrom`. **No value moves and the
+> ruling is unchanged** — every fact it rests on was read from that cue's own fields.
+
 ## Decision
 
 **The second half is the collection list, open over the cleared ground, showing held names beside
@@ -21,7 +29,7 @@ the genre uses instead; and `T6` makes any image showing a Find as an object a k
 **I file no `## Pushing back` against `art/objects/04`, because I agree with it.**
 
 **The new fact, and it is the one that makes this sheet necessary rather than a restatement.**
-`effects.beats[findReveal]` (`art/vfx/01`) ships a **real photographable beat**: one anchored
+`effects.cues[id=findReveal]` (`art/vfx/01`) ships a **real photographable beat**: one anchored
 `Part`, `3 × 0.4 × 3` studs, flush-set into the paving at the patch position, held completely still
 for a `dwellSeconds` of 2.5 and then destroyed. So a reveal *moment* exists in an approved key
 while the revealed *object* does not, and a writer looking only at `representation.find` would miss
@@ -77,6 +85,8 @@ about a composition where one half is an interface. `[cid: decided]`
   "amends": "storeThumbnails",
   "path": "secondHalf",
   "value": {
+    "revision": 1,
+    "revisionNote": "round 1. Four occurrences of effects.beats[findReveal] corrected to effects.cues[id=findReveal]; effects holds cues[] keyed by .id and beats[] belongs to response. No value moved and the ruling is unchanged.",
     "subject": "index-panel",
     "subjectPlain": "the collection list open over the cleared ground, held names beside empty slots",
     "findObjectDepicted": false,
@@ -84,7 +94,7 @@ about a composition where one half is an interface. `[cid: decided]`
     "rejectedSubjects": [
       {
         "subject": "the findReveal dwell object",
-        "source": "effects.cues[findReveal] — one anchored Part, 3 x 0.4 x 3, dwellSeconds 2.5",
+        "source": "effects.cues[id=findReveal] — one anchored Part, 3 x 0.4 x 3, dwellSeconds 2.5 read from response.beats[findReveal].dwellSeconds",
         "photographable": true,
         "rejectedBecause": [
           "its own V7 sets readsAsTheFind false: it is ground, not a thing, byte-identical for all 24 Finds",
@@ -135,7 +145,7 @@ about a composition where one half is an interface. `[cid: decided]`
       "manifestValuesMoved": 0,
       "ifDeclined": "nothing in this key changes. representation.find and art/objects/04 govern either way; the brief simply keeps a sentence no artifact can satisfy, and a later reader re-derives this ruling from scratch.",
       "filedBy": "cid/marketing/thumbnails/03-no-subject-for-the-second-half.md",
-      "filedOnceRule": "the Icon domain is ruling the same M1 collision from the other side and may forbid a rendered Find in its own key. It may not file a second briefRevision against this line; a duplicate is the cross-category pass's to collapse.",
+      "filedOnceRule": "the Icon domain rules the same M1 collision from the other side and may forbid a rendered Find in its own key. It may not file a second briefRevision against this line; round 1 verified that exactly one exists under cid/marketing/**.",
       "status": "filed, not applied"
     }
   }
@@ -148,11 +158,11 @@ about a composition where one half is an interface. `[cid: decided]`
 `[you accepted: R6 Q1]` and therefore `[brief: soft]`. The line promises *"a relic mid-reveal"* as
 one of two composable halves. Three approved artifacts give that subject no form
 (`representation.find`, `art/objects/04`, `theme/tone/04` `D11`), a fourth ships a beat that
-explicitly is not it (`effects.cues[findReveal].readsAsTheFind: false`), and the category's own
-`T6` makes depicting it a known-false claim. **The first half is untouched.** The replacement keeps
-the sentence's structure, its two halves and its purpose, and changes only the noun that no longer
-has a referent. `RR-O1` above is the request, with the line quoted and the consequence of declining
-it stated.
+explicitly is not it (`effects.cues[id=findReveal].readsAsTheFind` is `false`), and the category's
+own `T6` makes depicting it a known-false claim. **The first half is untouched.** The replacement
+keeps the sentence's structure, its two halves and its purpose, and changes only the noun that no
+longer has a referent. `RR-O1` above is the request, with the line quoted and the consequence of
+declining it stated.
 
 ## Consequences for other work
 
@@ -163,8 +173,10 @@ it stated.
   play. `D11` was already binding; this makes a breach visible outside the game.
 - **Meta and content work (`collection`)** gets no new requirement. The 24 strings are cited by
   path and none is copied into this key, so renaming any of them costs this domain nothing.
-- **VFX work (`effects`)** is unaffected. The reveal beat is not depicted, so nothing here
-  constrains its dwell, its size or its colour, and this sheet asks for no change to it.
+- **VFX work (`effects`)** is unaffected as a decision. It does inherit one correction that may be
+  useful elsewhere: `effects` holds `cues[]`, keyed by `.id`, and this domain had spelled it
+  `beats[]`, which is `response`'s collection. Nothing here constrains the cue's dwell, size or
+  colour, and this sheet asks for no change to it.
 - **Store-page work (`storeListing`)** should know the image already depicts the collection layer,
   so its copy does not have to carry that job alone and should not repeat the number 24 as though
   it were news.
@@ -172,7 +184,8 @@ it stated.
 ## Acceptance criteria
 
 1. `storeThumbnails.secondHalf.subject` is `"index-panel"`, `findObjectDepicted` is `false` and
-   `revealBeatDepicted` is `false`; no slot's `composition` names `effects.cues[findReveal]`.
+   `revealBeatDepicted` is `false`; no slot's `composition` names `effects.cues[id=findReveal]`,
+   and `grep -rn "effects\.beats\[" cid/marketing` returns nothing.
 2. `contentRequired.slotsRendered` is `24` with at least one slot holding a name and at least one
    empty, and the frame contains zero padlocks, silhouettes, blurred models, greyed names and
    question marks.
@@ -184,13 +197,13 @@ it stated.
 
 ## Not decided here
 
-The slot count, order, claim, file and strings: **sheet `01`**, which holds `storeThumbnails`.
-What makes the capture legitimate and which gate rows must pass first: **sheet `02`**; `C8` is the
-row this subject depends on. Whether any string is drawn on the image: **sheet `04`**. How a slot
-renders, its size, its states, and whether an open panel dims the world behind it: **screens work
-and composition work**; I state a requirement on the outcome and set none of their values. The 24
-names themselves and the set labels: **meta and content work (`collection`)** and **vocabulary
-work**; cited by path, copied nowhere. What the reveal beat is made of and how long it lasts:
-**VFX work (`effects`)**; I read its values and change none. Whether `05-OUTWARD.md` is actually
-edited: **the developer**, since a brief is not a CID artifact; this sheet files the request and
-applies nothing.
+The slot count, order, claim, file and strings: **sheet `01`**, which holds `storeThumbnails` and
+the domain's `externalPathsResolved` registry. What makes the capture legitimate and which gate
+rows must pass first: **sheet `02`**; `C8` is the row this subject depends on. Whether any string
+is drawn on the image: **sheet `04`**. How a slot renders, its size, its states, and whether an
+open panel dims the world behind it: **screens work and composition work**; I state a requirement
+on the outcome and set none of their values. The 24 names themselves and the set labels: **meta and
+content work (`collection`)** and **vocabulary work**; cited by path, copied nowhere. What the
+reveal beat is made of and how long it lasts: **VFX work (`effects`)**; I read its values and
+change none. Whether `05-OUTWARD.md` is actually edited: **the developer**, since a brief is not a
+CID artifact; this sheet files the request and applies nothing.

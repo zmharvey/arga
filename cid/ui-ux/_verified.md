@@ -16,7 +16,7 @@ against the source**; the sheets did not overstate them.
 | 1 | every screen referenced by any other category exists in the screen inventory | **PASS** | `screens/01` inventories `index` present, `areas` + `upgrades` absent with citations, `shop` forbidden. Grepped `cid/**` for `collection-index`, `collection panel`, `index panel`, `loading screen`, `end screen`, `settings screen`, `shop screen`: every hit outside `ui-ux/` is either `onboarding/04`'s `collectionPanel` (= `index`), `analytics/engagement/03`'s reference to the same, or a surface named in order to be forbidden. The one live candidate not in the inventory is G2's error surface, and `feedback/03` rules it a notice rather than a screen while `navigation/01.addNodeRule` states what it must satisfy if it ever becomes one. No orphan. |
 | 2 | every screen has an entry point in the screen graph and a way back | **FAIL** | Entry point is agreed (`Pressable_INDEX`). The **way back is specified twice, oppositely**. `navigation/01:146-147` sets `separateCloseControlExists: true`, `separateCloseControlOwnedBy: "screens"`; `navigation/03:113-122` makes it a real node with `SelectionOrder` 0 that holds gamepad focus on open, and its close-path table lists it first on all three device classes. `screens/01:77-80` rules **"No close control"**, `hasCloseControl: false` (`:148`), `CloseButton` and `backArrow` in `forbiddenNodes` (`:180`), and acceptance criterion 1 requires **0 nodes named `CloseButton`**. Both are proposed contract keys. A builder cannot satisfy both. Worse, the disagreement is substantive rather than clerical: `screens` is right that a drawn close control is a fifth game-drawn pressable against `input.gameDrawnPressables: 4`, and `navigation` is right that Roblox's mobile input surface has no back input at all (`creator-docs input/mobile.md`, banked). Nobody pushed back on `input`. |
 | 3 | every purchasable in Monetization has a store surface | **FAIL — check is wrong** | See the ruling below. `store/01` is the correct output; the check is not. |
-| 4 | every value the HUD displays has a source in Systems or Balance & Tuning | **PASS** | All 13 elements in `composition.elements` carry a `source`. Traced each against the eight-field snapshot (`analytics/_category.md:90`, `architect/05:169` `snapshotShape()`): `snapshot.found`, `.currency`, `.areaLabel`, `.clearedCount`, `.areaPatchCount`, `.upgrades[]`, `.areasFinished`, `.rowsRevealed` all exist. `config.collection.classPlural`, `config.currency.plural`, `config.upgrades[i].label` are `collection`/`currency`/`upgrades` values. `derived:upgradeCost(u, level)` is `upgrades` + `solvency` (`gameplay/balance/03`, wave 4 verified). No displayed value is sourceless. |
+| 4 | every value the HUD displays has a source in Systems or Balance & Tuning | **PASS** | All 13 elements in `composition.elements` carry a `source`. Traced each against the eight-field snapshot (`analytics/_category.md:90`, `architect/05:169` `snapshotShape()`): `snapshot.found`, `.currency`, `.areaLabel`, `.clearedCount`, `.areaPatchCount`, `.upgrades[]`, `.areasFinished`, `.rowsRevealed` all exist. `config.collection.classPlural`, `config.currency.plural`, `config.upgrades[i].label` are `collection`/`currency`/`upgrades` values. `derived:upgradeCost(u, level)` is `upgrades` + `solvency` (`gameplay/balance/03`, wave 4 verified). No displayed value is sourceless. *(Amended in round 3 — see the correction there. This pass was granted on incomplete tracing.)* |
 | 5 | every screen states its empty, loading and error states | **PASS** | `screens/02` enumerates six (`S1`–`S5` plus `S3b`), assigns each a render, a string (`null` in every case) and a catch. Two are marked `reachable: false` **with the derivation that makes them unreachable** rather than skipped, which is the compliant form. `S4`'s "written once, never unwritten" is the one a default implementation gets wrong and it is stated as a rule with a countable check. |
 | 6 | no screen requires a pattern the Build Capability Registry does not list | **PARTIAL** | On the letter: both sheets name only registered patterns (`modal-grid`, `hud-overlay` — `ui-forge/src/compose/index.mjs`), so no unlisted pattern is required. **All four `modal-grid` counts in `screens/01` are confirmed** (`modal-grid.mjs:322` clamps `columns` to 1–4 and `:327` chunks one flat list; `:459` `slots: ['panelTop','panelBottom']`; `:475-487` requires `title`, `name`, `price`, `art`; `:400-407` root is an unconditional full-viewport `Backdrop` at transparency 0.45). `screens` passes because it declares `producibleBy: null`, `refusedBy: "modal-grid"` and names the shipped interim: `index-screen` builds it by hand, which is what runs today. **`composition` fails**: `hud/03` rules its own realisation not producible on either route, and `hud/01.rules.oneNodePerGroup.adjacentSiblingRealisationForbidden: true` forbids the only shape available today, while `hud/03.retires` deletes `Pressables.luau`'s `Instance.new`. Between them there is no legal way to build the HUD until six unowned `ui-forge` edits land. See RR-11. |
 | 7 | on-screen copy uses only Vocabulary terms | **PARTIAL** | Every string authored this wave passes: `Lv`, `Ready`, `Short`, `Max`, `Clear`, `Parts` (all ≤ 14, Title Case, inside `^[A-Za-z0-9 ,.'%%/-]+$`, none of the eight banned words); `Set Complete` (12), `Area Complete` (13). Two prose strings correctly identify that they need a `PROSE_PATHS` entry in `bridge/schema.mjs:713` (which is `[/\.blurb$/, /\.flavour$/]` today) — verified, the exemption is real and the request is right. The live `hud.brief.json` violation is real and I counted it independently: **six** vocabulary failures (`FINDS`, `SHARDS`, `VALUE`, `REACH`, `PACE` against `casing: "title"`; `"EAST TERRACE - 0% CLEAR"` at 23 chars against `maxLabelChars: 14`). HUD reports 7 because its seventh row is `content.readouts[*].value`, which is a structural finding, not a vocabulary one — an overcount of one, not worth a request. **The fail is ownership, not compliance**: two sheets wrote two different strings for one event. See RR-10. |
@@ -686,7 +686,7 @@ there is no scroll region for the difference.
 
 # Round 3 — final
 
-**Status: PARTIAL**
+**Status: PARTIAL** *(superseded — see Round 3 (continued))*
 **Five of six closed and verified against source. One is closed on one side only.** `hud/01` fixed
 the focus contract and filed the correction to Platform; **`platform/01`'s `gamepad.focusList` block
 is unchanged from round 2** and still reads the two paths `hud/01`'s new `citeAs.notFields` now
@@ -820,20 +820,105 @@ agree on, which is why the defect is confined to the derivation and not to the o
   `governedBy: "screens[index].geometry"` and `adoptedNotDecidedHere: true`, so no builder reads the
   prose as authoritative and no field is wrong.
 
-## Verdict
+---
 
-**PARTIAL. The category releases except `viewport.gamepad.focusList` and its `required[]` block**,
-which must take `hud/01`'s filed correction verbatim before any build reads the focus contract.
-Sixteen of seventeen sheets are approved as of this reading. `platform/01` is approved on every axis
-except that one block — its device classification, touch-target derivation, keepout rects,
-safe-area instrument, budget shares, orientation ruling and both `## Pushing back` sections all
-stand.
+# Round 3 (continued) — closed
 
-Across three rounds this category closed 14 + 6 + 5 findings, and the arbitrations that resolved
-them were argued rather than split: HUD separated affordance from instance, Feedback conceded that
-`Active = false` made its own z-rule redundant, Platform withdrew a node it had required, Screens
-disproved its own guarantee and published the arithmetic that did it, and Navigation raised a
-severity its own concession would otherwise have hidden. **The one thing three rounds did not fix is
-the thing they fixed twice before: a field path quoted from memory instead of read.** That is worth
-carrying into the final pass as a category-independent finding — `citeAs` blocks now exist in two
-keys, and they exist because the same defect recurred three times.
+**Status: PASS. UI/UX is released.**
+F-5 is closed. `platform/01`'s `gamepad.focusList` now dereferences against `hud/01` as published,
+and it took the stronger form rather than the minimum. All seventeen sheets are approved.
+
+## Platform's dereference, checked field by field
+
+I re-read the block rather than accept the report, and it resolves in every particular:
+
+| what `hud/01` publishes | what `platform/01` now reads | resolves |
+|---|---|---|
+| `groups[].groupIndex`, surface-wide, 1–6 | `rule`: *"every `composition.groups` entry with `interactive` true, sorted by `composition.groups[].groupIndex` ascending"* | ✓ — groups, not members; `interactive` read where it lives |
+| `groups[].controlNode` | `selectableInstance: "composition.groups[].controlNode"` + `selectableInstanceIsNeverGroupNode: true` | ✓ — and it matches `hud/01.focusRing.selectableNode` (*"the group's controlNode, never its node"*) word for word |
+| `groupIndex` 1 / 4 / 5 / 6 on the four interactive groups | `selectionOrderRule: "10 * composition.groups[].groupIndex"`, **no second term** | ✓ — 10 / 40 / 50 / 60 |
+| — | `realisedOrder` pinning 10→`Pressable_INDEX`, 40→`BUY1`, 50→`BUY2`, 60→`BUY3` | ✓ — matches `hud/01.focusRing.order` row for row |
+| `links.appliedTo` | `composition.groups[].controlNode` | ✓ — previously ambiguous, now explicit |
+
+**The `noSecondTerm` field is the part worth naming.** It records *why* the term was dropped —
+`Pressable_INDEX` is a `controlNode` and not an element, so it has no `memberIndexWithinGroup`, and
+a two-term rule yields 43/53/63 and **drops the collection control from the cycle entirely**. That
+is my round-3 computation, reached independently and written into the key rather than into a commit
+message. A later reader cannot re-add the term without meeting the reason.
+
+**It withdrew three requests rather than restating them.** The `amends` block is
+`status: "satisfied — nothing further is asked of composition"`, adopts `groupIndex`, `interactive`
+and `controlNode` verbatim, and withdraws `instanceName`, `members[].memberIndex` and
+`groupParentNode` with a one-line reason each. `citeAs.notFields` gained
+`viewport.gamepad.groupParentNode — withdrawn; no common parent is required`. **`composition` is
+now asked for nothing by `viewport`**, which is the correct end state for two keys that spent three
+rounds disagreeing about paths. Criterion 4 is unchanged, as it should be — it tested the behaviour
+both sheets always agreed on, which is why the defect never reached it.
+
+I re-checked the whole sheet for residue: **zero remaining references to any path in `hud/01`'s
+`citeAs.notFields`.**
+
+## A correction to my own round-1 verdict
+
+**Check 4 was a false pass and I am recording it as mine.** I marked *"every value the HUD displays
+has a source"* PASS on the strength of tracing element sources to the eight-field snapshot and to
+`config.collection.*`. I verified `config.collection.classPlural` and did **not** verify the
+denominator. `collection` holds `className`, `classPlural`, `relicsPerArea`, `areasPerDepth` and
+`sets` — **there is no `totalFinds` and no `total`** (`gameplay/meta/02:57-62`, read this run). So
+`hud/01`'s `withDenominator: "{found} / {total}"` and `hud/02:185-186`'s terminal condition both
+cite a field nothing emits. In Luau the comparison is against `nil`, which is silently falsy, so
+**the terminal state never fires and the endgame substitution `composition` owns never appears** —
+bar (a), and the `24` in `0 / 24` has the same problem.
+
+That is exactly the failure my round-1 report says a verifier must not commit: I traced eleven of
+thirteen sources and let two pass on their shape. HUD is correcting it, which is right, and the
+fix is a field name. It does not hold the category, because the same defect appears at five sites
+across three categories and is already routed to the cross-category pass — but the pass on check 4
+was mine to get right and I did not.
+
+**Check 4 now reads: PASS, conditional on HUD's `collection.total*` correction landing.** Screens'
+sweep found five more of the same class plus one inside a neighbouring key's own value
+(`discovery.record.keyedBy` describing itself as keyed from `collection.sets[].relics[].name`), and
+published `screens.citations` — 25 paths with `resolvesToday` — copying VFX. **That instrument is
+the actual fix**, and it is worth more than the six corrections it found: it is the first thing in
+this wave that makes an unresolvable citation fail rather than wait for a verifier to notice.
+
+## Outstanding on the ten ownerless `ui-forge` requests
+
+**Unchanged, and it is now the category's only open item — but it is not the category's to close.**
+None blocks the reported defect: route B ships with zero compiler changes, which is what makes the
+wave's headline claim true of the game and not only of the specification. What remains:
+
+- **`U6` and `U7` are marked not refusable and have no owner.** `U6` is a live bar-(a) overlap
+  between the bottom-right cluster and the platform jump button at `variant.anchor: "edge"`, on
+  **both** routes — `CoreUISafeInsets` clears the top bar and device cutouts, not the touch
+  controls. `U7` is the only thing between `composition.anchors[noticeStack]` and a full-width
+  plate crossing the collection group, because `slotHost()` hard-codes `align: 'stretch'`.
+- **The other eight are route-A or `modal-grid` work** and are correctly deferrable; `screens/01`'s
+  five `modal-grid` counts have `index-screen`'s hand-built surface as the standing interim.
+- **Several are the same edit counted twice** — `U3`/`U4` overlap `platform/01`'s table. The final
+  pass should deduplicate the list to one owner before wave 6 adds to it.
+
+`architect/06` states the cause plainly: *"no module in this build order owns `ui-forge`'s
+briefs."* Ten requests against a non-existent owner is a routing gap, not a design gap, and it is
+the single largest thing wave 5 hands forward.
+
+## Final status
+
+**PASS.** Seventeen of seventeen sheets approved. Six proposed keys — `composition`, `screens`,
+`navigation`, `notices`, `offerSurface`, `viewport` — each with one owning sheet, no key claimed
+twice, and every cross-key requirement either carried as data or withdrawn out loud.
+
+Across three rounds this category closed 14 + 6 + 1 findings. The arbitrations that resolved them
+were argued rather than split: HUD separated affordance from instance and later found a shipping
+route nobody had seen; Feedback conceded that `Active = false` made its own z-rule redundant;
+Platform withdrew a node it had required and then withdrew three field requests rather than restate
+them; Screens disproved its own guarantee and published the arithmetic that did it; Navigation
+raised a severity its own concession would otherwise have hidden.
+
+**The one defect class three rounds could not stop recurring is a field path quoted from memory
+instead of read** — `touchTargetFloorPx`, `members[].memberIndex`, `instanceName`,
+`Readout_Currency`, `collection.totalFinds`, and five more Screens found in one sweep. Two keys now
+carry `citeAs` blocks and one carries `screens.citations` with `resolvesToday` per path. **Those
+instruments exist because the same defect recurred five times in one wave, and generalising them is
+the highest-value thing the cross-category pass could take from this category.**

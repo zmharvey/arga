@@ -7,11 +7,12 @@
 > the criterion returned undefined rather than a verdict. Both live at `platform.*` and the
 > criterion now names them there. **No value moves.** Following `art/vfx/01`'s answer to the same
 > defect class, every cross-key path this domain's four sheets cite is re-resolved against its
-> owning manifest and published as `externalPathsResolved`, so next round's check is mechanical.
-> **Two spellings were wrong and are corrected**: `styleGuide.roleRules[C5]` was a name-keyed
-> lookup into an array (`styleGuide`'s `citeAs` keys it by `.id`), and `effects.beats[findReveal]`
-> named a collection that does not exist — the key is `effects.cues[]`, keyed by `.id`;
-> `beats[]` belongs to `response`. Sheet `03` carries the same correction.
+> owning manifest and published as `externalPathsResolved`, and every field of this key that a
+> criterion asserts is published as `internalPathsAsserted`, so both halves of next round's check
+> are mechanical. **Two spellings were wrong and are corrected**: `styleGuide.roleRules[C5]` was a
+> name-keyed lookup into an array (`styleGuide`'s `citeAs` keys it by `.id`), and the reveal cue
+> was spelled `effects.beats[...]` in sheet `03`'s prose when `effects` holds `cues[]` and
+> `beats[]` belongs to `response`.
 
 ## Decision
 
@@ -80,12 +81,14 @@ that is copy and this surface has no copy (sheet `04` rules `overlayText` empty 
 videos between them. A video is a trailer, the trailer brief is Hype's, and it inherits the same
 capture gate this key does. I set `videoCount` to `0` and claim nothing about Hype's ruling.
 
-**Every path this domain cites is now published with its resolution.** Round 1 found one criterion
-in this sheet asserting two fields that do not exist, which returns undefined rather than a
-verdict, and the same defect class produced three requests in Art and one in Name.
-`externalPathsResolved` below carries all **26** cross-key paths the four sheets in this domain
-cite, each with its owning key and a `resolves` boolean, on `art/vfx/01`'s precedent. Two were
-wrong and are corrected; the other twenty-four resolve.
+**Every path this domain cites is now published with its resolution, and so is every field its
+criteria assert.** Round 1 found one criterion in this sheet naming two fields that do not exist,
+which returns undefined rather than a verdict, and the same defect class produced three requests in
+Art and one in Name. The fix is two registries rather than one careful re-read:
+`externalPathsResolved` carries all **26** cross-key paths the four sheets cite, each with its
+owning key and a `resolves` boolean, on `art/vfx/01`'s precedent; `internalPathsAsserted` carries
+every field of this key a criterion in this domain names, so a criterion pointing at nothing is a
+defect **before** it is run rather than after.
 
 ```manifest
 {
@@ -93,7 +96,7 @@ wrong and are corrected; the other twenty-four resolve.
   "status": "proposed",
   "value": {
     "revision": 1,
-    "revisionNote": "round 1 of cid/marketing/_verified.md. RR-2: acceptance criterion 3 named slots[].pixelSize and slots[].format, which are not fields of this key; both live at platform.* and the criterion now names them there. No value moved. externalPathsResolved added, and two cited spellings corrected: styleGuide.roleRules[id=C5] and effects.cues[id=findReveal].",
+    "revisionNote": "round 1 of cid/marketing/_verified.md. RR-2: acceptance criterion 3 named two per-slot fields that do not exist; both live at platform.* and the criterion now names them there. No value moved. externalPathsResolved and internalPathsAsserted added; two cited spellings corrected to styleGuide.roleRules[id=C5] and effects.cues[id=findReveal].",
     "count": 1,
     "activeCount": 1,
     "inactiveCount": 0,
@@ -266,17 +269,18 @@ wrong and are corrected; the other twenty-four resolve.
       { "path": "representation.index-surface", "owningKey": "representation (architect/06)", "citedBy": ["01", "03"], "resolves": true },
       { "path": "representation.plot", "owningKey": "representation (architect/06)", "citedBy": ["02"], "resolves": true, "note": "the lane slab RR-A1 amends" },
       { "path": "effects.cues[id=findReveal]", "owningKey": "effects", "citedBy": ["03"], "resolves": true, "correctedFrom": "effects.beats[findReveal]", "correctionReason": "effects holds cues[], keyed by .id; beats[] belongs to response. The old spelling named a collection that exists in neither key." },
-      { "path": "response.beats[findReveal].dwellSeconds", "owningKey": "response", "citedBy": ["03"], "resolves": true, "note": "2.5; effects reads it and this domain reads effects" },
+      { "path": "response.beats[findReveal].dwellSeconds", "owningKey": "response", "citedBy": ["03"], "resolves": true, "note": "2.5. Spelled as art/vfx/01's own externalPathsCited spells it, without an id= qualifier, so one collection is not cited two ways across the contract." },
       { "path": "release.publishChecklist", "owningKey": "release", "citedBy": ["02", "04"], "resolves": true, "note": "four rows today; RR-T1 requests a fifth" },
       { "path": "budgets.deviceFloor", "owningKey": "budgets", "citedBy": ["02"], "resolves": true },
       { "path": "depths", "owningKey": "depths", "citedBy": ["01", "04"], "resolves": true, "note": "8 areas; cited as a whole key for the T3 volume bound, no field named" }
     ],
-    "externalPathsResolvedNote": "26 rows, re-resolved against each owning manifest in round 1 on art/vfx/01's precedent, not only the two the verifier named. Two spellings were wrong and are corrected in place with correctedFrom recorded; the other twenty-four resolve. No path in this domain uses a name-keyed lookup into an array, and no path in this domain is collection.total.",
+    "externalPathsResolvedNote": "26 rows, re-resolved against each owning manifest in round 1 on art/vfx/01's precedent, not only the one the verifier named. Two spellings were wrong and are corrected in place with correctedFrom recorded; the other twenty-four resolve. No path in this domain is collection.total, the phantom five sheets cite in three spellings.",
     "internalPathsAsserted": {
-      "note": "fields of THIS key that an acceptance criterion in this domain asserts. Listed so a criterion naming a field absent from this list is a defect before it is run.",
-      "paths": ["count", "activeCount", "inactiveCount", "videoCount", "personalisationOn", "platform.maxMediaItems", "platform.pixelSize", "platform.formatChosen", "platform.formatsPermitted", "slots[].backedBy", "slots[].claim", "slots[].altText", "slots[].overlayText", "slots[].captureSource", "slots[].uploaded", "variants.abTestSet", "variants.reservedSlots", "forbidden", "externalPathsResolved", "captureGate.allRowsPass", "captureGate.rows", "captureGate.rowsPassingToday", "captureGate.provenance.fields", "secondHalf.subject", "secondHalf.findObjectDepicted", "secondHalf.revealBeatDepicted", "secondHalf.contentRequired.slotsRendered", "secondHalf.framing.maxFrameWidthFraction", "overlayRule.anySlotCarriesOverlayText", "overlayRule.exclusionZone.fractionOfHeight", "overlayRule.ruleIfEverReopened.forbiddenClasses", "altTextRule.rule.forbiddenClasses"],
+      "note": "every storeThumbnails field an acceptance criterion in this domain names. A criterion naming a field absent from this list is a defect before it is run, which is RR-2's shape.",
+      "paths": ["count", "slots", "activeCount", "inactiveCount", "videoCount", "personalisationOn", "platform.maxMediaItems", "platform.pixelSize", "platform.formatChosen", "platform.formatsPermitted", "slots[].backedBy", "slots[].claim", "slots[].altText", "slots[].overlayText", "slots[].captureSource", "slots[].uploaded", "slots[].composition", "variants.abTestSet", "variants.reservedSlots", "forbidden", "externalPathsResolved", "internalPathsAsserted.paths", "captureGate.allRowsPass", "captureGate.rows", "captureGate.rowsPassingToday", "captureGate.provenance.fields", "secondHalf.subject", "secondHalf.findObjectDepicted", "secondHalf.revealBeatDepicted", "secondHalf.contentRequired.slotsRendered", "secondHalf.framing.maxFrameWidthFraction", "overlayRule.anySlotCarriesOverlayText", "overlayRule.exclusionZone.fractionOfHeight", "overlayRule.ruleIfEverReopened.forbiddenClasses", "altTextRule.rule.forbiddenClasses"],
       "notFields": ["slots[].pixelSize", "slots[].format"],
-      "notFieldsReason": "RR-2. Aspect ratio, pixel size and format are stated once at platform.* and apply to every slot; a per-slot copy would be a second source for one value."
+      "notFieldsReason": "RR-2. Aspect ratio, pixel size and format are stated once at platform.* and apply to every slot; a per-slot copy would be a second source for one value.",
+      "scope": "storeThumbnails fields only. A criterion asserting a repo file, a grep result or a sidecar field is out of scope for this list by design."
     },
     "amendedBy": [
       { "path": "captureGate", "sheet": "cid/marketing/thumbnails/02-the-capture-gate.md" },
@@ -306,6 +310,9 @@ wrong and are corrected; the other twenty-four resolve.
 - **Live Ops (Roadmap)** should note `refresh.cadence` is `never` with five named re-capture
   triggers. A roadmap item that changes the paving colour, the archetype, the find count or the
   area count re-opens one capture; nothing else does.
+- **Contract-and-seam work** may find `internalPathsAsserted` worth generalising. RR-2 in this
+  domain, three requests in Art and one in Name are all one defect: a criterion that names a field
+  the key does not have neither passes nor fails, and nothing today catches it.
 
 ## Acceptance criteria
 
@@ -313,16 +320,17 @@ wrong and are corrected; the other twenty-four resolve.
    `activeCount` is `1`, `inactiveCount` and `videoCount` are `0`, `variants.abTestSet` is `[]`,
    `variants.reservedSlots` is `0`, and `personalisationOn` is `false`.
 2. Every `slots[].backedBy[]` is non-empty and every entry resolves to a merged or proposed key
-   path, an approved `cid/**` sheet id, or a file that exists in this repo; no `claim` or `altText`
-   matches any `T1`–`T10` predicate in `cid/marketing/_category.md`.
+   path, an approved `cid/**` sheet id, or a file that exists in this repo; no `slots[].claim` or
+   `slots[].altText` matches any `T1`–`T10` predicate in `cid/marketing/_category.md`.
 3. `platform.pixelSize` is `[1920, 1080]` and `platform.formatChosen` is a member of
    `platform.formatsPermitted`; `slots[].captureSource` is the string
    `storeThumbnails.captureGate.allRowsPass`; and every slot has `uploaded: false` while
    `captureGate.allRowsPass` is `false`.
 4. `forbidden[]` has **18** rows, each with an `id`, a `ruling` and an `observable`; every row of
-   `externalPathsResolved` has `resolves: true` and no `path` contains a name-keyed lookup into an
-   array; every field named in an acceptance criterion of this domain appears in
-   `internalPathsAsserted.paths`; and no field anywhere in this key is `null`.
+   `externalPathsResolved` has `resolves: true` and the two rows carrying `correctedFrom` name the
+   spelling each replaces; every `storeThumbnails` field path named in an acceptance criterion of
+   this domain's four sheets appears in `internalPathsAsserted.paths`; and no field anywhere in
+   this key is `null`.
 
 ## Not decided here
 
@@ -336,8 +344,9 @@ game's name: **naming work**, which holds `title`; no string in this key contain
 The sort-row icon and its count: **Icon work**, which holds `storeIcon`. Every line of description
 copy, the tag set, the genre selection and the pass listing: **Store Page work**, which holds
 `storeListing`. Whether a trailer exists: **Hype**. The `collection.total` phantom five sheets cite
-in three spellings: **not cited by this domain** — `externalPathsResolved` names `collection` twice
-and neither row is `total`; the cross-category pass owns it. Whether the platform permits a detail
-page with zero thumbnails, which would matter only if the gate never passes:
+in three spellings: **not cited by this domain**, and the cross-category pass owns it. The stale
+`effects.beats[findReveal]` spelling in this domain's `_lead.md` prose: **the domain index is not
+mine to edit**; the correction is recorded here and in sheet `03`. Whether the platform permits a
+detail page with zero thumbnails, which would matter only if the gate never passes:
 `[research owed: whether a Roblox experience detail page requires at least one thumbnail, and what
 it renders when none exists]`.

@@ -379,3 +379,164 @@ travel to the `screens` owner rather than sitting in an Art sheet.
 
 Given that all three requests are re-derivations inside sheets whose decisions are already
 arbitrated, **round 3 should be a check, not a revision round.**
+
+---
+
+# Round 3 — final check
+
+**Status: PASS**
+All six checks and every universal invariant now evaluate true against the merged manifest. **Three
+residual defects survive**, all of one class — a citation naming the wrong field, or a stale value
+in a field nothing builds from — and all three miss both bars of `CLAUDE.md`'s stopping rule. I am
+passing **with a named residual list rather than an empty one**, and the list goes to the final
+cross-category pass.
+
+Gates as reported: `cid:verify --category art` PASS, `bridge` COMPLETE 25/25 0 problems, 170 tests.
+
+## The two arithmetic pushbacks — adjudicated
+
+**1 · The draw-call floor. Both of us wrong. It is 5.962, and the reason is this key's own rule.**
+
+The pushback is right that my round-2 expression does not yield my round-2 number: `9 × 661 = 5,949`,
+`+ 6 + 11 = 5,966`. It is right to refuse a quotient it cannot reproduce, and recording the delta
+rather than silently adopting a figure is the correct behaviour.
+
+**But the expression is what is wrong, not the number.** It puts
+`effects.budget.clientInstancesAdded` — **11 instances** — into a formula whose every other term is
+parts. Four of those eleven are `Attachment`s (`clientInstancesDerivation`: *"4 concurrent clear
+hosts × 2 instances (Attachment + ParticleEmitter) = 8, plus 3 concurrent reveal Parts × 1 = 3"*),
+and an `Attachment` draws nothing. That is precisely the instances-versus-parts rule `detailBudget`
+itself owns and states: 5,814 is instances **because it counts one spawn `Attachment` per lane**;
+5,805 is parts. `9 × 661` already applies that rule to the lane term. The effects term does not.
+
+**`vfx/01` publishes the right field for this sum and neither of us used it.**
+`effects.budget.renderableObjectsAdded` is **7**, with `renderableObjectsDerivation`: *"4 concurrent
+clear emitters + 3 concurrent reveal Parts."* So:
+
+`(9 × (645 + 16) + 6 + 7) / 1000` = `(5,949 + 6 + 7) / 1000` = **5.962**
+
+**The four-part delta the pushback identified is exactly the four `Attachment`s.** It found the
+right discrepancy and attributed it to my arithmetic when it belongs to the term. My number was
+right by the correct route; my written expression was wrong; its expression is faithful and its
+term is not.
+
+**Ruling: 5.962, via `effects.budget.renderableObjectsAdded`.** `drawCalls.formula`,
+`arithmeticShown`, `minimumBatchingFactorAtMergedTotals`, `envelope.rangeIfTheCeilingMoves`
+(*"above 5.966"*) and acceptance criterion 4 each swap one field name. **Non-blocking:** 0.004 on a
+threshold nobody implements, and at `batchingFactor` 50 draw calls are 12% of ceiling under either
+figure. It matters as precedent, not as a number — the key that owns the instances-versus-parts rule
+is the last one that should feed an instance count to a parts formula.
+
+**2 · The reservation release. The pushback is right, it corrects me, and it stops one step short.**
+
+Round 2 said releasing the reserved 24 *"funds exactly the two things four Flagged tables name as
+first to buy back."* That is wrong and I should have divided by nine. The correction is exact:
+litter mat +1 per lane, cross-walls 6 → 10 = +4 per lane, so +5 per lane × 9 lanes = **45 client
+instances** against **24** released — 2 per lane with 6 over.
+
+**The refinement it should carry: +2 per lane does not buy "the litter mat and one cross-wall part",
+because a cross-wall part is not a spendable unit.** `builtEdge` places cross-walls in pairs
+flanking a 16-stud opening, and the 4 → 8 step at `residentBays` 3 is four boundaries at two parts
+each. Retaining **one** extra bay boundary therefore costs **+2**, and a single cross-wall part is
+half a wall standing beside a gap. So the release buys **either** the litter mat (+1, with one
+instance per lane unspendable) **or** one retained boundary (+2) — not both, and never half a
+boundary. `reservationRelease.correction` should say which of the two it recommends;
+`environment/03`'s own flag already argues for the litter mat (*"buy it back first; the place
+currently has nothing that says it was left alone"*).
+
+## The canonical shared-field split: correct
+
+`sharedMaxStreamedConcurrently` (6) into the client and draw-call sums, `sharedPlaceInstances` (20)
+into the server sum. Both halves check out. `clientStreamedInstanceCeiling` and
+`clientStreamedInstancesWorstCase` are both *streamed* quantities, so charging twenty place-wide
+parts against them double-counts fourteen a given client never loads; a part that does not stream is
+also not drawn, so the draw-call sum takes the same 6; and `serverWorldInstanceCeiling` counts what
+exists on the server, which is all 20. `environment/01`'s `clientIdentity` already took 6 and its
+`serverCost` already took 20, so the ruling names what Environment was doing and moves nothing.
+**And it is earned rather than asserted:** `environment/05` re-spaced its trunks to *"even quarters
+of the long wall run, 765 studs apart, so at most 2 are inside the streaming radius at once"* — a
+design change made to make the accounting true.
+
+**`vfx/01` criterion 3 should move to the 6, and has not.** It still reads
+`5814 + 9 × …residentInstancesPerLane + …sharedPlaceInstances + 11 ≤ clientStreamedInstanceCeiling`
+— the server field in a client sum. It **passes either way**: 5,989 with 20, 5,975 with 6. One word,
+unspent at the cap.
+
+## The three residuals
+
+Each is a **defect**, not a design disagreement. Nobody disputes the right answer in any of the
+three; the edit was not made before the cap.
+
+| # | file · field | current | required | why it does not block |
+|---|---|---|---|---|
+| R1 | `style/03` · `drawCalls.formula` and four dependents | `effects.budget.clientInstancesAdded` (11 instances) | `effects.budget.renderableObjectsAdded` (7); floor 5.966 → **5.962** | a threshold nobody implements, 0.004 apart, self-consistent as written; criterion 4 evaluates true against its own figure |
+| R2 | `vfx/01` · acceptance criterion 3 | `environment.allowance.sharedPlaceInstances` (20) | `…sharedMaxStreamedConcurrently` (6), per the canonical ruling | evaluates true under both fields (5,989 and 5,975); no value moves |
+| R3 | `environment/01` · `allowance.perClientReservation.effects`, `batchingFactorFloor` | `worstCase: 35`, `realistic: 17`, `derivation: "vfx/01 budget.clientInstancesAdded 8 + concurrentRevealObjectsOnOneScreen 27 (9 realistic)"`; floor `5.990` | derivation reads `effects.budget.clientInstancesAdded` (11, a hard bound) by field; floor re-derived | 35 is a reservation, not a draw — a builder building to `environment.allowance` writes 16 per lane whichever number sits in the reservation; its criterion 2 evaluates true (185 ≤ 186) |
+
+**R3 is a request that was adjudicated but not executed, and I want that stated precisely.**
+`style/03` absorbed round 2's RR-15 into `reservationRelease` and correctly declined to edit another
+domain's key, recording `whoseDerivationStringItIs: "environment.allowance.perClientReservation.effects.
+Reset it to read effects.budget.clientInstancesAdded by field."` **`environment/01` was not revised
+this round.** So the merged manifest still carries a derivation string sourced to two numbers
+`vfx/01` no longer states, and three art keys carry three draw-call floors — 5.990 in `environment`,
+5.966 in `detailBudget`, against a correct 5.962. That is the last surviving instance of the defect
+class that dominated rounds 1 and 2, and it is one line in the final pass rather than a fourth round.
+
+## Why this is PASS and not PARTIAL
+
+Applying the stopping rule to each residual honestly, because the temptation at a spent cap is to
+grade on effort:
+
+- **Would a player notice?** No. None of the three changes a colour, a size, a count of parts built,
+  or anything drawn.
+- **Would two builders diverge?** No. R1 and R3 are a threshold and a reservation that no module
+  reads; R2 is a criterion that evaluates true under both fields. A builder reading `environment`,
+  `effects` and `detailBudget` together builds the same game under every one of the three readings.
+
+Both bars missed is the definition of *noted in a build report and deliberately not acted on*.
+Meanwhile every check on my list and every universal invariant evaluates true, every leaf sheet's
+acceptance criteria are checkable and pass against the merged manifest, and the category's decisions
+— the allowance, the residency model, the palette, the slab, the tool, the Find, the archetype, the
+reveal's creator — are arbitrated and mutually consistent across seven domains.
+
+**On the record: a fourth round would buy three field names. It would not buy a different game.**
+
+## What the revisions broke: nothing
+
+Re-tested every finding that survived rounds 1 and 2. `stone.cleared` 201.84 still clears Lighting's
+195, Objects' 188 and `theme/setting/01`'s 165; the tool's 68.5 / 38.8 / 39.9 separations hold with
+`M6` stating `metal.cast` does not reach the held tool; `lighting/02`'s 2.31 : 1 at the merged colour
+still sits under 3 with `V13` intact; `builtEdge` 6 + `groundwork` 4 + `chunkDressing` 6 still sums
+to the allocator's 16; `backdrop` is still 20 with 6 streamed; the server sum is still
+`16 × 662 + 20 = 10,612`; `effects.forbidden[]` is still 31 rows. `style/03`'s chunk arithmetic moved
+1.13 → **1.00 part per chunk** and correctly stopped restating `environment/04`'s figure, pointing at
+it instead. Its `overSubscription` block is kept as a **record** with `asFound`,
+`whyThisKeyCouldNotCloseIt` and `howItClosed`, which is the right shape — a closed finding that
+deletes its own history is a finding nobody can audit. **No regression.**
+
+## Carried to the final cross-category pass
+
+Neither is Art's to fix.
+
+1. **Eight of sixteen slots have no rendered lateral horizon, and no backdrop geometry can give them
+   one.** A 1,950-stud row against a 512-stud `StreamingTargetRadius` is 3.8×, and there are 2 studs
+   between lanes. `environment/05` states it per slot, forbids the reflex fix by name (`B13`), and
+   names the three levers — `budgets.streaming.StreamingTargetRadius`, `runtime.maxPlayers`, the row
+   arrangement in `plots`. **This is the wave's sharpest finding and it is a place-shape decision.**
+   It belongs beside `depths.areas[].patchCount`, which four art sheets and `tech/performance/01`
+   now name from five directions.
+2. **`objects` `RQ2` against `screens`:** `collection.sets[g].relics[i].name` is read where
+   `collection.sets[].relics[]` is an array of bare strings. A UI/UX-owned path defect found by an
+   Art domain sweeping its own citations. Already routed.
+
+Unchanged from round 2 and still open at the contract layer: `RR-E1` and `RR-V2` are one
+`representation` answer, not two; `RR-V3` and Audio's `G1` are one `response` reopening, not two;
+`architect/01-runtime.placeConfiguration` has three pending entries; and `budgets` owes one
+correction inside its own key — `batchingFactor.escalationIfBelow10` calls 5,814 draw calls where
+the parts figure is 5,805 — which is the upstream source of every floor discrepancy in this report.
+
+## Release
+
+**Art & Visuals is released.** Seven domains, 23 sheets, 13 proposed keys, three rounds, sixteen
+requests filed and sixteen closed or adjudicated. Three residual field names are recorded above for
+whoever touches these keys next.
