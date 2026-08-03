@@ -15,6 +15,11 @@ appear only where it bounds a measurement: as an operand of a comparison, as an 
 key — `viewport`, supplied by sheet `01` of this domain, which carries the `fieldKinds` map
 this rule reads — and it supplies none of them.
 
+**This sheet carries no manifest block, because its data form is already a field of a
+neighbour's key**: the kinds are **`viewport.fieldKinds`**, which sheet `01` supplies and which
+this sheet reads rather than restates. Verified this run — that field exists and holds the six
+paths, including the two `classes.*.` wildcards.
+
 ## Why
 
 **The failure is shipped, dated and player-visible, so this is not a hypothetical.**

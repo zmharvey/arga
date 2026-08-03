@@ -8,6 +8,11 @@
 `["atPatch", "readout", "audio"]` — one added array element, nothing else — and until that edit
 lands, sheet 03's cue reads the array at runtime and is silent-and-correct rather than broken.
 
+**This sheet carries no manifest block.** The channel decision lands in **`sfx`**, which
+`03-the-sfx-key.md` supplies. The `json` block below is a revision request against
+`response.beats[patchClear].channels` — a request is not a data form, which is why this line is
+needed despite the fence.
+
 ## Why
 
 - **This sheet rules the channel and nothing else. The key is `sfx`, proposed by sheet 03.**

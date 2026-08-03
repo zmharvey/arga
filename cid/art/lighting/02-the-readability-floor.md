@@ -16,6 +16,13 @@ enforces live in `lighting.readability` on sheet `01`, and a procedure constrain
 second key. Every threshold below is `[playtest unknown]` with a start and a test range, listed in
 `lighting.readability.playtestUnknown`.
 
+**This sheet carries no manifest block.** `V1`–`V13` are a procedure that constrains
+**`lighting`**, which sheet `01` supplies, plus `styleGuide.roles` and `budgets.deviceFloor`, which
+are read by field and chosen nowhere here. A procedure constraining one key is not a second key.
+
+*This is the precedent `marketing/icon/02:14` cites by name — and until this line existed, the file
+establishing it did not state it. The precedent was real; the citation resolved to nothing.*
+
 ## Why
 
 **A number with no procedure attached is an assertion.** `theme/setting/01` criterion 3 sets cleared

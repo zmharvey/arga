@@ -13,6 +13,11 @@ claimed: a patch clearing at an unknown `tierIndex`.
 **No manifest block.** Both counters land as rows in `economyHealth.readings[]` —
 `duplicateReveal` and `unknownTierClear` — which sheet `01` carries.
 
+**This sheet carries no manifest block.** Its readings are rows of **`economyHealth`**, which
+sheet `01` supplies and which already carries `refShape`, `refSites[]` and `refCount` for exactly
+this kind of citation. A volume reading that names a duplicate or a defect is a reading *of* that
+key, not a second key beside it.
+
 ## Why
 
 **The predicted rate is zero, so a rate is the wrong instrument.** `discovery.repeat.possible` is

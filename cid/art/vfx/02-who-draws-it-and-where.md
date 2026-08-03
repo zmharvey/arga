@@ -22,6 +22,10 @@ prohibition set — constraints on `replication`, `representation` and `response
 third value of my own — which is the same reason `tech/performance/03` supplies no key. Every
 value this domain owns sits in sheet `01`'s `effects`.
 
+**This sheet carries no manifest block.** Who draws an effect and where it lives are properties of
+the effects **`01`** already names: **`effects`** carries `allEffectsAreClientLocal`,
+`particleEmitterPermitted` and the per-cue rows, and this sheet decides no cue of its own.
+
 ## Why
 
 **V2, the finding that stops the build: neither cue body has a position.** `cuePatchClear`

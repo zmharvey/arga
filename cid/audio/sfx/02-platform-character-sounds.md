@@ -9,6 +9,10 @@ character sounds, **5 are kept as shipped, 1 is silenced, and 4 are unreachable 
 own world rules** — and `sfx` therefore authors no footstep, jump, landing or death asset and
 spends none of the 20 MB `Sounds` ceiling on movement.
 
+**This sheet carries no manifest block.** What the platform already plays is a constraint on
+**`sfx`**, which `03-the-sfx-key.md` supplies: a sound the engine ships is one this key must not
+provision, and that is a row there rather than a key here.
+
 ## Why
 
 - **This sheet rules the ten dispositions and nothing else. They land in `sfx.characterSounds`,

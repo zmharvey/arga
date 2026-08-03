@@ -10,6 +10,13 @@ inside a merged value at validation time, naming the JSON path, rather than lett
 `false` for a boolean, `[]` for a list, `0` for an unprovisioned platform id, and the string
 `"none"` for any scalar unless the containing table declares a more specific sentinel in place.
 
+**This sheet carries no manifest block, and in this one case that is the strongest possible
+outcome: the rule is executable.** `bridge/schema.mjs` rejects a `null` anywhere inside a merged
+value at validation time, naming the JSON path, and `npm run bridge` runs it on every merge — so
+this decision reaches the build as code rather than as a value a builder reads. The sentinel table
+it defines (`false`, `[]`, `0`, `"none"`) is cited by field across four categories. **`release`**
+(sheet `01`) is the key this domain owns.
+
 ## Why
 
 **Verified, not inferred.** `bridge/emit-config.mjs:79` returns the literal `nil` for both `null`

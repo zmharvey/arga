@@ -11,6 +11,10 @@ them is a failed ceiling, not a met one.
 **This sheet carries no `manifest` block: it constrains `budgets` (sheet `01`) and `serverCost`
 (sheet `02`) and supplies neither.**
 
+**This sheet carries no manifest block.** A prohibition on how a budget may be met is a
+constraint on **`budgets`**, which sheet `01` supplies with `deviceFloor`, `tiers` and
+`instanceCeilings`. This sheet sets no ceiling of its own and moves none of theirs.
+
 ## Why
 
 **Every ceiling in this domain has a cheap way out, and each cheap way out breaks something
