@@ -3,12 +3,17 @@
 **Domain:** marketing/thumbnails · **Category:** Discovery & Marketing · **Wave:** 7
 
 > **Revised, round 1** (`cid/marketing/_verified.md`). No request was filed against this sheet.
-> Carried from `01`'s `RR-2` fix: this sheet spelled the reveal beat `effects.beats[findReveal]`
-> in four places. **`effects` holds `cues[]`, keyed by `.id`; `beats[]` belongs to `response`**, so
-> the old spelling named a collection that exists in neither key. Corrected to
-> `effects.cues[id=findReveal]` throughout and registered in
-> `storeThumbnails.externalPathsResolved` with its `correctedFrom`. **No value moves and the
-> ruling is unchanged** — every fact it rests on was read from that cue's own fields.
+> Two things carried in from `01`'s `RR-2` fix. **(a)** This sheet spelled the reveal beat
+> `effects.beats[...]` in four places; **`effects` holds `cues[]`, keyed by `.id`, and `beats[]`
+> belongs to `response`**, so the old spelling named a collection that exists in neither key. It
+> now reads `effects.cues[id=findReveal]` throughout and is registered in
+> `storeThumbnails.externalPathsResolved` with its `correctedFrom`. **(b)** Criterion 1 asserted a
+> grep over `cid/marketing` that could only pass if this domain's `_lead.md` were edited, which is
+> **not a file I may write**. A criterion that can only be satisfied by editing someone else's file
+> is a request wearing a criterion; it is restated over this key's own fields, and the stale
+> spelling elsewhere becomes `staleSpellingElsewhere` with an observable its owner can run.
+> **No value moves and the ruling is unchanged** — every fact it rests on was read from that cue's
+> own fields.
 
 ## Decision
 
@@ -80,17 +85,26 @@ must remain identifiable in the frame. If the shipped scrim prevents that, it is
 both halves read and the world stays dominant, which is what the brief's word *"halves"* implies
 about a composition where one half is an interface. `[cid: decided]`
 
+**And one rule about my own criteria, because round 1 found the defect twice in this domain.** A
+criterion that can only be checked by editing a file this writer may not write is not a criterion.
+Both of mine are restated over fields of `storeThumbnails`, which is the key this domain owns; the
+half that genuinely belongs to another owner is published as data with the observable **that owner**
+runs. That is the same move `art/style/01` made with `RR-A1` rather than reaching into
+`architect/06`, and it is why `staleSpellingElsewhere` below is a field and not a grep. `[cid: decided]`
+
 ```json
 {
   "amends": "storeThumbnails",
   "path": "secondHalf",
   "value": {
     "revision": 1,
-    "revisionNote": "round 1. Four occurrences of effects.beats[findReveal] corrected to effects.cues[id=findReveal]; effects holds cues[] keyed by .id and beats[] belongs to response. No value moved and the ruling is unchanged.",
+    "revisionNote": "round 1. (a) Four occurrences of effects.beats[findReveal] corrected to effects.cues[id=findReveal]; effects holds cues[] keyed by .id and beats[] belongs to response. (b) Criterion 1's cross-file grep, which could only pass if this domain's _lead.md were edited, is restated over this key's own fields and the residue is published as staleSpellingElsewhere. No value moved and the ruling is unchanged.",
     "subject": "index-panel",
     "subjectPlain": "the collection list open over the cleared ground, held names beside empty slots",
     "findObjectDepicted": false,
     "revealBeatDepicted": false,
+    "revealCuePathSpelling": "effects.cues[id=findReveal]",
+    "revealCuePathSpellingRule": "every field of secondHalf that names the reveal cue uses this exact string. It is the only spelling this key admits.",
     "rejectedSubjects": [
       {
         "subject": "the findReveal dwell object",
@@ -112,6 +126,15 @@ about a composition where one half is an interface. `[cid: decided]`
         ]
       }
     ],
+    "staleSpellingElsewhere": {
+      "whyThisIsAFieldAndNotACriterion": "round 1 of this sheet asserted a grep over cid/marketing that returns nothing only if this domain's _lead.md is edited. A domain index is not a file this writer may write, so the criterion could never pass by any action available to it. Restated as data with the observable its owner runs.",
+      "occurrences": [
+        { "file": "cid/marketing/thumbnails/_lead.md", "line": 69, "reads": "effects.beats[findReveal]", "shouldRead": "effects.cues[id=findReveal]", "owner": "the thumbnails domain index", "affectsAnyManifestValue": false }
+      ],
+      "observableForItsOwner": "grep -n 'effects\\.beats\\[' cid/marketing/thumbnails/_lead.md returns nothing",
+      "severity": "prose only. No backedBy, no manifest value and no ruling depends on the spelling; art/vfx/01's own manifest uses cues correctly and this key cites it correctly.",
+      "notEditedHere": true
+    },
     "contentRequired": {
       "slotsRendered": 24,
       "slotsHoldingAName": { "min": 1 },
@@ -177,15 +200,20 @@ declining it stated.
   useful elsewhere: `effects` holds `cues[]`, keyed by `.id`, and this domain had spelled it
   `beats[]`, which is `response`'s collection. Nothing here constrains the cue's dwell, size or
   colour, and this sheet asks for no change to it.
+- **Whoever holds this domain's index (`cid/marketing/thumbnails/_lead.md`)** carries one prose
+  correction: line 69 reads `effects.beats[findReveal]` and should read `effects.cues[id=findReveal]`.
+  It is published as `secondHalf.staleSpellingElsewhere` with the observable, because a sheet may
+  not edit its own index and a criterion it cannot satisfy is worse than a stated request.
 - **Store-page work (`storeListing`)** should know the image already depicts the collection layer,
   so its copy does not have to carry that job alone and should not repeat the number 24 as though
   it were news.
 
 ## Acceptance criteria
 
-1. `storeThumbnails.secondHalf.subject` is `"index-panel"`, `findObjectDepicted` is `false` and
-   `revealBeatDepicted` is `false`; no slot's `composition` names `effects.cues[id=findReveal]`,
-   and `grep -rn "effects\.beats\[" cid/marketing` returns nothing.
+1. `storeThumbnails.secondHalf.subject` is `"index-panel"`, `findObjectDepicted` is `false`,
+   `revealBeatDepicted` is `false`, and every field of `secondHalf` that names the reveal cue reads
+   exactly `secondHalf.revealCuePathSpelling`, which is `effects.cues[id=findReveal]`; no
+   `slots[].composition` names that cue.
 2. `contentRequired.slotsRendered` is `24` with at least one slot holding a name and at least one
    empty, and the frame contains zero padlocks, silhouettes, blurred models, greyed names and
    question marks.
@@ -198,12 +226,14 @@ declining it stated.
 ## Not decided here
 
 The slot count, order, claim, file and strings: **sheet `01`**, which holds `storeThumbnails` and
-the domain's `externalPathsResolved` registry. What makes the capture legitimate and which gate
-rows must pass first: **sheet `02`**; `C8` is the row this subject depends on. Whether any string
-is drawn on the image: **sheet `04`**. How a slot renders, its size, its states, and whether an
-open panel dims the world behind it: **screens work and composition work**; I state a requirement
-on the outcome and set none of their values. The 24 names themselves and the set labels: **meta and
-content work (`collection`)** and **vocabulary work**; cited by path, copied nowhere. What the
-reveal beat is made of and how long it lasts: **VFX work (`effects`)**; I read its values and
-change none. Whether `05-OUTWARD.md` is actually edited: **the developer**, since a brief is not a
-CID artifact; this sheet files the request and applies nothing.
+the domain's `externalPathsResolved` and `internalPathsAsserted` registries. What makes the capture
+legitimate and which gate rows must pass first: **sheet `02`**; `C8` is the row this subject
+depends on. Whether any string is drawn on the image: **sheet `04`**. How a slot renders, its size,
+its states, and whether an open panel dims the world behind it: **screens work and composition
+work**; I state a requirement on the outcome and set none of their values. The 24 names themselves
+and the set labels: **meta and content work (`collection`)** and **vocabulary work**; cited by
+path, copied nowhere. What the reveal beat is made of and how long it lasts: **VFX work
+(`effects`)**; I read its values and change none. The one stale spelling in this domain's index:
+**the index's holder**, per `staleSpellingElsewhere`; not editable from a sheet. Whether
+`05-OUTWARD.md` is actually edited: **the developer**, since a brief is not a CID artifact; this
+sheet files the request and applies nothing.

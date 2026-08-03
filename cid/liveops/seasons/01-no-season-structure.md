@@ -174,7 +174,7 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
         "a claim surface: a sixth verb and a fifth pressable, against input's closed roster and ruling R-1's measured cost for adding one",
         "a purchase path for any paid half: R-4 removed the store, so products F13, F18 and F19 reopen together",
         "a new pass id, inheriting release.provisioning's six manual gates -- publish first, one gate blocked on an unanswered Networking question",
-        "an announcement channel, and read notices.members for it rather than copying a count: every entry is either a completion beat or the one class 'system' member saveNotLoaded added by ui-ux/feedback/03, and none may carry a non-beat, so no member of that key can announce a season however long the list grows. Also release.shutdown.playerFacing is 'nothing' and the brief states no off-Roblox presence anywhere (category gap G1)",
+        "an announcement channel, and read notices.members for it rather than copying a count: every entry reports something that just happened to this player -- a completion beat, or the one class 'system' member saveNotLoaded added by ui-ux/feedback/03, which reports a failed save read. The missing surface is ANNOUNCEMENT: no member of that key tells a player about something the game is doing, however long the list grows. Also release.shutdown.playerFacing is 'nothing' and the brief states no off-Roblox presence anywhere (category gap G1)",
         "an instrument to tell whether it worked: zero analytics calls exist in game/src and five of eight kpis rows are readableToday false"
       ]
     },
@@ -202,7 +202,7 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
 | Set-bonus work *[Meta & Content]* | **`setBonus` is named as this game's only permanent-grant ladder and no value of it moves.** Its four rows are why S2 is empty. A fifth permanent-grant source class in `modifiers` breaks my S2 observable before it breaks yours. |
 | Offer-ladder work *[Gameplay — Monetization]* | **There is no paid track to price**, so the "price of a paid track" item this node does not own resolves to nothing. `products.itemCount` staying 1 and `devProductCount` staying 0 are observables of my ruling as well as yours. |
 | Persistence and state-shape work *[Tech & Data, `architect`]* | `StoredState` stays at seven fields with no `seasonId`, `seasonXp`, `resetAt` or `tierClaimed`, and no writer lowers `found`, `areasFinished`, `upgrades`, `cleared` or `clearedCount`. That check is what keeps G-S2 closed. |
-| Notice-channel work *[UI/UX — Feedback]* | **`notices.members` may grow and this sheet does not care how long it is.** My constraint is on member *causes*, never on the count: no member's cause may be a season, period, track, tier or claim. `feedback/03` adding `saveNotLoaded` contradicts nothing here; a member with a period-scoped cause would. |
+| Notice-channel work *[UI/UX — Feedback]* | **`notices.members` may grow and this sheet does not care how long it is, nor what classes it holds.** My constraint is on member *causes*: no member's cause may be a season, period, track, tier or claim. `feedback/03` adding `saveNotLoaded` contradicts nothing here; a member announcing something the game is doing would. |
 | Contract-and-seam work *[owner of `bridge/schema.mjs`]* | `seasons` is proposed with `seasonCount == len(seasons)` as its invariant, on `music.trackCount == len(music.tracks)`'s pattern. **Promoting this key's and `endgame.forbidden`'s name searches into a `bridge/merge.mjs` check is worth more here than elsewhere**, because a supported first-party package makes this the cheapest priority-3 item to add by accident. |
 | Events work *[Live Ops]* | Duration and timing of a one-off are yours; the recurring, tiered, resetting structure is mine and is ruled zero. I restate none of your ruling. |
 
@@ -241,10 +241,11 @@ falls, which is the sentence `[you chose: R2 Q1]` bought.
 The price of a paid track and every Robux figure — *[Gameplay — Monetization]*, which holds
 `products`. One-off limited content, its duration and its unspent-currency handling — *[Live Ops
 — Events]*, which holds `events`. Whether an ordered, dateless content sequence exists at all —
-*[Live Ops — Roadmap]*, which holds `roadmap`. How many members `notices` has and what any of them
-says — *[UI/UX — Feedback]*, which holds `notices`; I constrain member causes and never its
-length. Any value inside `setBonus`, including whether it is framed as a progression track —
-*[Meta & Content]*, via finding `FS1`. What the terminal state sounds like or grants — `endgame`,
-`stingers` and `music`, cited above and not reopened. Whether a store icon or thumbnail may carry
-a variant with no season behind it — *[Discovery & Marketing — Icon and Thumbnails]*. The shape
-and checks that would promote `seasons` from a proposal — *[owner of `bridge/schema.mjs`]*.
+*[Live Ops — Roadmap]*, which holds `roadmap`. How many members `notices` has, what class each one
+is and what any of them says — *[UI/UX — Feedback]*, which holds `notices`; I constrain member
+causes and never its length or its classes. Any value inside `setBonus`, including whether it is
+framed as a progression track — *[Meta & Content]*, via finding `FS1`. What the terminal state
+sounds like or grants — `endgame`, `stingers` and `music`, cited above and not reopened. Whether a
+store icon or thumbnail may carry a variant with no season behind it — *[Discovery & Marketing —
+Icon and Thumbnails]*. The shape and checks that would promote `seasons` from a proposal —
+*[owner of `bridge/schema.mjs`]*.
