@@ -8,8 +8,9 @@
 *the title names the place and its condition, never the action, the prize or the genre* — and
 checked against the banked occupancy evidence. **The developer ratifies; `OPEN.md §3` reserves
 that and no sheet can close it.** `title.value` **decides** the string and
-`uiTheme.sourceTitle` **mirrors** it. **The path from this key to `Theme.luau` is a request,
-not a wire** — `title` carries the same emitter gap as every other key in this category.
+`uiTheme.sourceTitle` **mirrors** it. **`title` reaches nothing today** — no code path reads a
+merged `title.value`, so this key carries the same emitter hole as every other key in this
+category, and claims no exemption from it.
 
 ## Why
 
@@ -30,10 +31,10 @@ points one way.
 
 **Both halves of the brief's hook line are occupied as title material**, the verb half by the
 `Clean the ___` shape and the object half by `Dig` / `Find the ___`. **What the evidence leaves
-open is place-and-condition vocabulary, not action-or-prize vocabulary.** That is the finding
-the frame is built on. Every row inherits `research/landscape.md`'s own bound — *"'taken' here
-means 'exists', not 'successful'"*, no CCU or visit figures, an absent hit is weak evidence —
-which is category gap `M9`, unclosed.
+open is place-and-condition vocabulary, not action-or-prize vocabulary** — the finding the frame
+is built on. Every row inherits `research/landscape.md`'s own bound — *"'taken' here means
+'exists', not 'successful'"*, no CCU or visit figures, an absent hit is weak evidence — which is
+category gap `M9`, unclosed.
 
 **Why the recommendation is not `Ruin Restoration`. Two grounds, and a third I have withdrawn.**
 **(1)** It is `<Noun> <Genre>` — structurally the `X Incremental` skeleton with the noun
@@ -43,15 +44,16 @@ Neither was contested and both stand on their own.
 
 **Ground 3 is withdrawn, and the rule that replaces it is stated so this cannot recur.** I had
 argued that *restoration* asserts an end state `T2` falsifies. `store-page/01`'s row `C2` ships
-*"A restoration game."* and clears `tCleared: [T1, T2, T4]`, and **their reading is the correct
-one.** `T2` falsifies *a claim that the world ends up restored, reclaimed or finished* — a claim
-about an **end state**. A genre noun naming what kind of game this is asserts no end state, and
-if it did, `CONCEPT.md`'s binding *"a restoration / completion game, not an incremental"* would
-falsify itself and `uiTheme.genre: "restoration"` would be unshippable. **So: `T2` is tripped by
+*"A restoration game. You walk an old ruin, the green clears where you pass, and what was buried
+under it goes into a permanent index."* and clears `tCleared: [T1, T2, T4]` (`store-page/01:201-208`,
+read this run), and **their reading is the correct one.** `T2` falsifies *a claim that the world
+ends up restored, reclaimed or finished* — a claim about an **end state**. A genre noun naming
+what kind of game this is asserts no end state, and if it did, `CONCEPT.md`'s binding
+*"a restoration / completion game, not an incremental"* would falsify itself and
+`uiTheme.genre: "restoration"` (`art/ui-art/01:94`) would be unshippable. **So: `T2` is tripped by
 a world-outcome claim and never by a genre noun; the word `restoration` is cleared for outward
 use in every Discovery & Marketing key.** `[cid: decided]`, settled with store-listing work.
-**One predicate must have one reading**, which is the whole point of `T0`, and the reading that
-survives is theirs.
+**One predicate must have one reading**, which is the whole point of `T0`.
 
 **Why `Stone Under Green` wins.** It is `theme/lore/01`'s canon compressed — *"the stone was
 always sound under the green"* (`lore/01:8-9`) — so its `backedBy` resolves to an approved sheet
@@ -62,16 +64,14 @@ after. Three words, 17 characters, no article, no glyph, no genre suffix. Every 
 it — a free coherence check, not the reason.
 
 **Its stated weakness, so nobody discovers it later:** the title carries **no discovery
-keyword** — no verb, no genre word, no family noun. That is survivable and not free. Primary
-discovery is the *"Recommended for You"* sort, a retrieval-then-ranking system on engagement
-signals and not keywords, and search *"can now use semantic search … to find games through
-natural language queries"* where it historically *"relied on … exact search queries and limited
-metadata such as titles"*
-`[research: https://create.roblox.com/docs/production/promotion/discovery]`. **That is the
-substitute `05-OUTWARD.md` could not name** for the cost it priced when it moved this game out
-of the incremental category. Evidence only — the positioning is `[brief: binding]` and I am not
-touching it. The consequence is that the keyword load moves entirely onto the tag set and the
-genre field, which are store-listing work's.
+keyword** — no verb, no genre word, no family noun. Survivable, not free. Primary discovery is
+the *"Recommended for You"* sort, a retrieval-then-ranking system on engagement signals and not
+keywords, and search *"can now use semantic search … to find games through natural language
+queries"* where it historically *"relied on … exact search queries and limited metadata such as
+titles"* `[research: https://create.roblox.com/docs/production/promotion/discovery]`. **That is
+the substitute `05-OUTWARD.md` could not name** for the cost it priced. Evidence only — the
+positioning is `[brief: binding]` and I am not touching it. The consequence is that the keyword
+load moves entirely onto the tag set and the genre field, which are store-listing work's.
 
 **`Works`, `Terrace`, `Cistern`, `Vault` and `Spire` were considered and excluded for two
 different reasons.** `works` is registered in `vocabulary.internalTerms` as a writers-handle with
@@ -81,10 +81,23 @@ it uses a word the game never says. The four set labels each name **one kind of 
 title naming one of them misrepresents the extent of the place.
 
 **`maxLabelChars` 14 does not reach this string.** `crossCuttingProblems()` applies it only over
-the paths `playerFacingStrings()` walks, all of them `GuiObject` strings inside `game/src`
-`[research: bridge/schema.mjs]`; `theme/vocabulary/01` exempts the title by name; and the
-shipped `"Ruin Restoration"` is 16 characters and merged clean. The bound that does apply is
-sheet `02`'s.
+the paths `playerFacingStrings()` walks, all `GuiObject` strings inside `game/src`
+`[research: bridge/schema.mjs]`; `theme/vocabulary/01` exempts the title by name; and the shipped
+`"Ruin Restoration"` is 16 characters and merged clean. The bound that applies is sheet `02`'s.
+
+**`title` reaches nothing today, and four places in this repo say otherwise.**
+`concept/src/derive/game-context.mjs:136` is `title: concept.title`, read off a **stage-0 concept
+object** and not off any CID key; **no `*.concept.json` exists anywhere in this repo** (glob, this
+run), so that arrow has no input either. The next arrow is real —
+`ui-forge/src/theme/generate.mjs:116` is `sourceTitle: ctx.title ?? 'Untitled'` — but nothing
+feeds it from here. `bridge/test/theme-archetype.test.mjs` **does not exist**; `bridge/test/`
+holds `bridge.test.mjs`, `context.test.mjs` and `refs.test.mjs`. The four sites asserting the
+missing first arrow are this domain's `_lead` (corrected this run), `art/ui-art/01:60`,
+`bridge/schema.mjs:710-711` (*"except `title`, which reaches `Theme.luau` through `generate.mjs`
+and is therefore build-read"*), and this sheet's own earlier draft. Only two are mine.
+**So `emitter.keyReachesNothingToday` is `true` here**, the same record `storeIcon` (`G-I3`),
+`storeThumbnails`, `storeListing`, `channels` and `launchBeats` each make.
+`[research: repo — five files, read this run]`
 
 **What I could not do, stated rather than papered over.** I have no fetch tools, so every
 occupancy row above is at **word** and **shape** level from the banked pack. **No exact-string
@@ -106,6 +119,22 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
     "ratified": false,
     "ratifiedBy": "the developer, per OPEN.md section 3 'Needs you'",
     "ratificationOpenReason": "OPEN.md section 3 reserves the name; OPEN.md section 4 routes the work here. This sheet produces the framework, the evidence and the candidate set.",
+    "emitter": {
+      "exists": false,
+      "kind": "DOCUMENTATION_ONLY",
+      "keyReachesNothingToday": true,
+      "consumedBy": [],
+      "note": "No code path reads a merged title.value. concept/src/derive/game-context.mjs:136 is 'title: concept.title' off a stage-0 concept object, and no *.concept.json exists anywhere in this repo. ui-forge/src/theme/generate.mjs:116 is 'sourceTitle: ctx.title ?? Untitled' and is real code, but its input never comes from this key. bridge/test/theme-archetype.test.mjs does not exist; bridge/test holds bridge.test.mjs, context.test.mjs and refs.test.mjs. Merging title changes zero files on disk.",
+      "isCategoryGap": "M6",
+      "sameFindingAs": ["storeIcon G-I3", "storeThumbnails fileOwnership.keyReachesNothingToday", "storeListing emitter none", "channels emitter.exists false", "launchBeats emitterHole"],
+      "sitesAssertingTheMissingArrow": [
+        { "site": "cid/marketing/name/_lead.md", "status": "corrected this run" },
+        { "site": "cid/marketing/name/01-the-title.md, earlier draft", "status": "corrected this run" },
+        { "site": "cid/art/ui-art/01-archetype-and-lock.md:60", "status": "approved wave 6, not this domain's to edit, routed to the cross-category pass" },
+        { "site": "bridge/schema.mjs:710-711", "status": "a code comment asserting title 'reaches Theme.luau through generate.mjs and is therefore build-read'; title is not in SCHEMA's 25 keys. Routed to contract-and-seam work." }
+      ],
+      "closedBy": ["N-A", "N-B"]
+    },
     "authority": {
       "decidedBy": "title.value",
       "mirroredBy": "uiTheme.sourceTitle",
@@ -113,14 +142,17 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
       "wireExists": false,
       "wireStatus": "requested, not built",
       "whatIsActuallyOnDisk": {
-        "gameContext": "concept/src/derive/game-context.mjs:136 reads concept.title off a stage-0 concept object. It reads no CID key, and the concept.json it consumes does not exist anywhere in this repo (art/ui-art/01 A4).",
+        "gameContext": "concept/src/derive/game-context.mjs:136 reads concept.title off a stage-0 concept object. It reads no CID key, and no *.concept.json exists anywhere in this repo (art/ui-art/01 A4).",
+        "themeGenerator": "ui-forge/src/theme/generate.mjs:116 is 'sourceTitle: ctx.title ?? Untitled'. Real code; its input is ctx.title, never title.value.",
         "archetypeTest": "bridge/test/theme-archetype.test.mjs does not exist. It is a test art/ui-art/01 proposed. Nothing asserts sourceTitle against anything today.",
-        "emittedArtifact": "game/src/shared/Theme.luau meta.sourceTitle currently holds Pet Ascend Simulator, which is the defect art/ui-art/01 exists to close."
+        "emittedArtifact": "game/src/shared/Theme.luau meta.sourceTitle currently holds Pet Ascend Simulator, which is the defect art/ui-art/01 exists to close.",
+        "schemaKeyList": "bridge/schema.mjs holds 25 keys and title is not one of them."
       },
       "emitterGap": "category gap M6. No emitter writes an outward artifact and no code path carries this key to Theme.luau. title is not exempt from that gap and this sheet claims no exemption.",
       "requestedChanges": [
         { "id": "N-A", "owner": "contract-and-seam work", "change": "carry title.value into whatever game-context this project actually uses, so ctx.title stops depending on a concept.json that does not exist", "isSameRequestAs": "art/ui-art/01 A4", "blocksNothingShippingToday": true },
-        { "id": "N-B", "owner": "contract-and-seam work, jointly with art/ui-art/01's own request", "change": "write bridge/test/theme-archetype.test.mjs and have it read title.value when title is merged, falling back to uiTheme.sourceTitle until then", "blocksNothingShippingToday": true }
+        { "id": "N-B", "owner": "contract-and-seam work, jointly with art/ui-art/01's own request", "change": "write bridge/test/theme-archetype.test.mjs and have it read title.value when title is merged, falling back to uiTheme.sourceTitle until then", "blocksNothingShippingToday": true },
+        { "id": "N-C", "owner": "contract-and-seam work", "change": "correct or delete the bridge/schema.mjs:710-711 comment claiming title is build-read; either build the wire it describes or stop describing it", "blocksNothingShippingToday": true }
       ],
       "interimSourceTitle": "Ruin Restoration",
       "interimEndsWhen": "title merges",
@@ -149,7 +181,7 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
       { "id": "E6", "rule": "uses a term registered in vocabulary.internalTerms with renderable false", "words": ["works", "finder"], "verdict": "eliminated", "because": "the title would use a word the game never says" }
     ],
     "predicateReadings": [
-      { "predicate": "T2", "reading": "T2 is tripped by a claim about the world's end state and never by a genre noun. The word restoration is cleared for outward use in every Discovery and Marketing key.", "settledWith": "cid/marketing/store-page/01-the-claim-ledger-and-the-description.md row C2, which clears tCleared T1 T2 T4", "supersedes": "this sheet's withdrawn third ground against Ruin Restoration" }
+      { "predicate": "T2", "reading": "T2 is tripped by a claim about the world's end state and never by a genre noun. The word restoration is cleared for outward use in every Discovery and Marketing key.", "settledWith": "cid/marketing/store-page/01-the-claim-ledger-and-the-description.md row C2, which clears tCleared T1 T2 T4", "supersedes": "this sheet's withdrawn third ground against Ruin Restoration", "narrowClaimRetained": "<Noun> Restoration is still rejected as a title, by F3 and by position occupancy, and not by T2" }
     ],
     "evidenceBound": "'taken' means 'exists', not 'successful'. No CCU or visit figure was gathered for any title below. An absent hit is weak evidence. Inherited verbatim from research/landscape.md and relayed as category gap M9.",
     "evidenceDated": "2026-08-02",
@@ -194,10 +226,10 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
   `"Ruin Restoration"` → `"Stone Under Green"`, and its acceptance criterion 1's literal moves
   with it. That sheet accepted this in advance and no new round is needed. **`title.value`
   decides and `uiTheme.sourceTitle` mirrors** — where the two differ, `title` wins.
-- **Contract-and-seam work** takes `N-A` and `N-B`, and they are **not new requests**: `N-A` is
-  `art/ui-art/01`'s `A4` seen from the other end, and `N-B` is the test that sheet proposed and
-  which does not exist on disk. Nothing this key decides reaches an artifact until both land,
-  and this sheet states that rather than implying a wire.
+- **Contract-and-seam work** takes `N-A`, `N-B` and `N-C`. `N-A` is `art/ui-art/01`'s `A4` seen
+  from the other end; `N-B` is the test that sheet proposed and which is not on disk; `N-C` is
+  the `bridge/schema.mjs:710-711` comment, which asserts a wire no file implements. Nothing this
+  key decides reaches an artifact until `N-A` lands.
 - **Store-listing work** owns the whole keyword load. This title contains no verb, no genre word
   and no family noun, so the tag set, the genre field and the description are the only places a
   keyword-matched or semantically-matched query can land. It also owns the settled `T2` reading:
@@ -206,7 +238,7 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
   two lines at any tile width. Any overlay repeating the title is redundant with the tile's own
   label; that is their call, and this sheet supplies the string.
 - **Every other outward domain** may cite `title.value`; none may restate the string as a
-  literal, because a copied literal is what goes stale when an alternate is promoted.
+  literal, because a copied literal goes stale when an alternate is promoted.
 
 ## Acceptance criteria
 
@@ -215,9 +247,11 @@ plus a roblox.com/discover search pass on 'stone under green' and 'under the ove
 2. `title.candidates` has at least six rows; every row carries a non-empty `wordOccupancy`,
    `shapeOccupancy`, `verdict` and `backedBy`, and exactly one row's `verdict` begins
    `RECOMMENDED`.
-3. Either `uiTheme.sourceTitle` equals `title.value`, or `title.authority.revisionRequest` names
-   field `uiTheme.sourceTitle` with `to: "title.value"` and `acceptedInAdvance: true`; and
-   `title.authority.wireExists` is `false` with at least one entry in `requestedChanges`.
+3. `title.emitter.keyReachesNothingToday` is `true` and `title.authority.wireExists` is `false`;
+   `title.authority.requestedChanges` has at least two entries and **every** entry carries a
+   non-empty `owner` and a non-empty `change`. Separately, either `uiTheme.sourceTitle` equals
+   `title.value`, or `title.authority.revisionRequest` names field `uiTheme.sourceTitle` with
+   `to: "title.value"` and `acceptedInAdvance: true`.
 4. No field anywhere in this key is `null`.
 
 ## Flagged to the developer
@@ -234,9 +268,10 @@ which I had no tool to run.
 
 What the name field may ever contain, the glyph ruling, the title-tag convention, the character
 bound and the rename policy: sheet `02`, this domain. Whether a tagline exists and what it says:
-sheet `03`, this domain. In-game naming language, the ban list and the term register:
-`theme/vocabulary`, which holds `vocabulary`. The tag set, the genre field, the description and
-every keyword decision: store-listing work, which also owns the `T2` reading this sheet adopted.
-The icon and every thumbnail: store-icon and thumbnail work. Whether `title` is promoted into
-`bridge/schema.mjs`, and whether any emitter ever writes an outward artifact (category gap
-**M6**, which this key does not escape): contract-and-seam work.
+sheet `03`. In-game naming language, the ban list and the term register: `theme/vocabulary`.
+The tag set, the genre field, the description and every keyword decision: store-listing work,
+which also owns the `T2` reading this sheet adopted. The icon and every thumbnail: store-icon and
+thumbnail work. Whether `title` is promoted into `bridge/schema.mjs`, whether any emitter ever
+writes an outward artifact (category gap **M6**), and the `bridge/schema.mjs:710-711` comment:
+contract-and-seam work. The identical claim at `art/ui-art/01:60`, which is approved and not
+mine to edit: the cross-category pass.

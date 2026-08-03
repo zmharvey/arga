@@ -2,12 +2,16 @@
 
 **Domain:** liveops/community · **Category:** Live Ops · **Wave:** 7
 
-> **Revised, round 1** (`cid/liveops/_verified.md`). **R3** closed: the `robloxCommunity` row no
-> longer claims the 16+ visibility rule reaches it. That row is regrounded on `products` `F15`
-> plus G1, marked explicitly weaker than the six off-Roblox rows, and named in a new
-> `rowsReopenedByGaAlone` field. **R6** closed: AC2's `social` exclusion is restated as its
-> reason with an approximate count, because the published figure was wrong (37/7 → 40 across 7
-> files, 39 across 6 `.luau` files). The exclusion itself was verified correct and is unchanged.
+> **Revised** against `cid/liveops/_verified.md`, and **every grep, line number and count below
+> was re-run against the repo on 2026-08-02** rather than inherited. **R3** closed: the
+> `robloxCommunity` row no longer claims the 16+ visibility rule reaches it. It is regrounded on
+> `products` `F15` — verbatim at `cid/gameplay/monetization/01-the-offer-ladder.md:170` — plus
+> `G-a`, marked explicitly weaker than the six off-Roblox rows, and named in
+> `rowsReopenedByGaAlone`. **R6** closed: AC2's `social` exclusion is restated as its reason.
+> **Both published figures were wrong, mine included.** Measured today: **40 matching lines
+> across 7 files, 39 across 6 `.luau` files** — and three of the forty are the word used
+> descriptively, not the contract key, which my first correction asserted they all were. None of
+> the forty is a channel reference, and that zero is what the criterion rests on.
 
 ## Decision
 
@@ -31,11 +35,9 @@ against the generation source
 `[research: https://raw.githubusercontent.com/Roblox/creator-docs/main/content/en-us/production/promotion/social-media-links.md]`.
 **The stated audience is 8–14** `[brief: binding]` ← `[you chose: R1 Q4]` (`00-CORE.md`), so
 **zero percent of it can see a social link on the experience page.** A channel created for this
-game reaches none of its intended players through the only sanctioned surface.
-
-A web-search snippet gave the threshold as 13. **Both official pages say 16, and 16 is what
-this sheet cites.** Recording that is the point: the number a search returns and the number the
-documentation states were different, and the ruling uses the documented one.
+game reaches none of its intended players through the only sanctioned surface. A web-search
+snippet gave the threshold as 13; **both official pages say 16, and 16 is what this sheet
+cites** — the number a search returns and the number the documentation states were different.
 
 **An on-Roblox community is ruled here too, and its closure is weaker — stated rather than left
 for the stronger argument to cover.** `[revised: R3]` My first draft said it *"gets the same
@@ -46,15 +48,16 @@ nothing about **joining or discovering** a Roblox community, which an 8–14 pla
 through platform search and the creator profile with no social link involved. **So `G-b` does
 not reach this row**, and the claim is withdrawn rather than softened.
 
-What closes `robloxCommunity` instead is `products` `F15` (*"no like, favourite, follow,
-group-join, rate-us or share prompt, anywhere in the game"*), which bars the in-game grant and
-prompt by grep, plus `G-a`, the brief's empty referent — **and `G-a` is the ground this sheet
-already labels weakest.** Marking the *ground* weakest and leaving the *row* unmarked was the
-defect: it let a reader take the compliance closure as covering all eight rows when it covers
-six. `rowsReopenedByGaAlone` now names `robloxCommunity` as **the single row a developer
-reversing the "no players" stance reopens**, and none of the other seven. That field is worth
-its bytes because a group-join reward is the most likely reversal in this category and `codes`
-`L3` defers its channel side to me.
+What closes `robloxCommunity` instead is `products` `F15` (*"No code entry field, and no like,
+favourite, follow, group-join, rate-us or share prompt, anywhere in the game."*), which bars the
+in-game grant and prompt by grep, plus `G-a`, the brief's empty referent — **and `G-a` is the
+ground this sheet already labels weakest.** (`G-a` is what `_verified.md` calls `G1`; the ids
+are made to agree in the manifest so a merge does not see two grounds.) Marking the *ground*
+weakest and leaving the *row* unmarked was the defect: it let a reader take the compliance
+closure as covering all eight rows when it covers six. `rowsReopenedByGaAlone` now names
+`robloxCommunity` as **the single row a developer reversing the "no players" stance reopens**,
+and none of the other seven. That field is worth its bytes because a group-join reward is the
+most likely reversal in this category and `codes` `L3` defers its channel side to me.
 
 The in-experience form is barred outright either way: *"You may not link to, share, or display
 URLs of any external websites or services except by using the Social Links feature"* and *"You
@@ -79,7 +82,9 @@ reading meeting neither is recorded and deliberately not acted on — that claus
 stopping rule's own, and a triage process that re-litigates it would re-open the recursion the
 rule exists to end. A fourth class exists because the record needs one: the 1/2/3 keypress
 report is **unattributed to a build**, not classified as harmless, and it has been open across
-a wave boundary `[research: cid/_playtest.md]`.
+a wave boundary `[research: cid/_playtest.md]`. Re-measured this pass: `KeyCode` matches
+`game/src` on exactly four lines — `Pressables.luau:13,33` and `Input.luau:8,15` — and all four
+are comments recording that the binding was superseded and removed.
 
 **No cadence is published here, and that is a decision rather than an omission.**
 `kpis.cadence` is a bounded post-publish window that closes, and `kpis.verdictRule` already
@@ -88,12 +93,12 @@ change"* (`analytics/kpis/02`). A second review rhythm in a second key is two an
 question. My dispositions inherit that shape verbatim and my key holds no day, week, interval
 or schedule field at all.
 
-**One editorial resolution of my own index's proposed shape,** stated so a schema author is not
-left guessing: the index asked for both `channels: []` and one row per candidate. Those cannot
-be the same array. `channels` is the **live** set and is empty; `channelsConsidered` holds the
-eight candidates with their closure and their grep. The count invariant then does real work —
-`channelCount == len(channels)` **and** `channelCount == the number of considered rows where
-`exists` is true`. Roles use the identical pair. `[cid: decided]`
+**One editorial resolution of my own index's proposed shape:** the index asked for both
+`channels: []` and one row per candidate, and those cannot be the same array. `channels` is the
+**live** set and is empty; `channelsConsidered` holds the eight candidates with their closure
+and their grep. The count invariant then does real work — `channelCount == len(channels)` and
+`channelCount == the number of considered rows where `exists` is true`. Roles use the identical
+pair. `[cid: decided]`
 
 **Reversal condition, as a field rather than a sentence.** Discovery & Marketing — Social
 creating any channel makes this sheet wrong and hands this domain a moderation position it does
@@ -101,7 +106,7 @@ not today hold. `offRobloxPresence.reversalCondition` carries it so a merge agai
 sheet naming a Discord fails loudly instead of leaving two sheets disagreeing in prose.
 
 **This key emits no `GameConfig` value.** It is `DOCUMENTATION_ONLY` in the emitter's sense,
-and that does not make it prose: four of its fields are counts a grep confirms. **Neither of my
+and that does not make it prose: five of its fields are counts a grep confirms. **Neither of my
 sheets authors a player-facing string,** so `vocabulary` binds nothing here and
 `playerFacingStringsAuthored` is `0`.
 
@@ -113,17 +118,18 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
     "emitsGameConfigValues": false,
     "documentationOnly": true,
     "playerFacingStringsAuthored": 0,
+    "greppedOn": "2026-08-02",
     "offRobloxPresence": {
       "exists": false,
       "ruledBy": "cid/liveops/community/01-no-channel-and-the-intake-of-record.md",
       "groundsCount": 3,
       "grounds": [
-        { "id": "G-a", "ground": "the brief states no off-Roblox presence in any of five layer sheets, OPEN.md or research/", "tag": "cid: decided", "strength": "weakest: silence makes a channel unassigned, not impermissible" },
+        { "id": "G-a", "verifierLabel": "G1", "ground": "the brief states no off-Roblox presence in any of five layer sheets, OPEN.md or research/", "tag": "cid: decided", "strength": "weakest: silence makes a channel unassigned, not impermissible" },
         { "id": "G-b", "ground": "social media links are only visible to users who have verified their age as at least 16 years old, and the stated audience is 8-14, so zero percent of the intended audience can see one", "tag": "research", "source": "https://create.roblox.com/docs/production/promotion/social-media-links", "ageThreshold": 16, "conflictingSnippetValue": 13, "conflictResolvedBy": "both official pages state 16; the 13 came from a search snippet and is rejected", "strength": "load-bearing", "reachesRows": ["discord", "guilded", "twitter", "youtube", "twitch", "facebook"], "doesNotReachRows": ["robloxCommunity", "inGameIntake"], "doesNotReachWhy": "the source supports only that a social LINK TO a community is hidden below 16. It says nothing about joining or discovering a Roblox community, which an 8-14 player reaches through platform search and the creator profile with no social link involved." },
         { "id": "G-c", "ground": "you may not link to, share, or display URLs of any external websites or services except by using the Social Links feature, and you cannot share social media links directly within a game", "tag": "research", "source": "https://about.roblox.com/community-standards", "strength": "closes the in-experience form independently of products F15" }
       ],
       "onRobloxCommunityRuledToo": true,
-      "onRobloxCommunityReason": "products F15 bans a group-join, follow or share prompt anywhere in the game, and G1 leaves the referent empty. NOT the 16+ visibility rule: that rule reaches a social LINK to a community, not the community itself.",
+      "onRobloxCommunityReason": "products F15 bans a group-join, follow or share prompt anywhere in the game (verbatim at cid/gameplay/monetization/01-the-offer-ladder.md:170), and G-a leaves the referent empty. NOT the 16+ visibility rule: that rule reaches a social LINK to a community, not the community itself.",
       "onRobloxCommunityClosureStrength": "weaker than the six off-Roblox rows, deliberately marked. It rests on a scope closure plus G-a, and G-a is the ground labelled weakest above.",
       "rowsReopenedByGaAlone": ["robloxCommunity"],
       "rowsReopenedByGaAloneMeaning": "a developer reversing the brief's 'no players' stance reopens this row and none of the other seven. The six off-Roblox rows are held by a platform fact that does not move when a non-goal is reversed; inGameIntake is held by products F15 and community-standards independently.",
@@ -140,11 +146,31 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       { "id": "youtube",        "class": "offRoblox",  "exists": false, "closureStrength": "strong", "closedBy": "same",                                                                     "observable": "grep -rniE \"youtube\" game/src returns zero" },
       { "id": "twitch",         "class": "offRoblox",  "exists": false, "closureStrength": "strong", "closedBy": "same",                                                                     "observable": "grep -rniE \"twitch\" game/src returns zero" },
       { "id": "facebook",       "class": "offRoblox",  "exists": false, "closureStrength": "strong", "closedBy": "same. Enumerated because it is one of the seven link types, so the set is complete against its source rather than against habit", "observable": "grep -rniE \"facebook\" game/src returns zero" },
-      { "id": "robloxCommunity","class": "onRoblox",   "exists": false, "closureStrength": "WEAKEST OF THE EIGHT — see offRobloxPresence.rowsReopenedByGaAlone", "closedBy": "products F15 bans a group-join prompt anywhere in the game; G1, the brief states no presence so the referent is empty. NOT the 16+ rule, which reaches a link to a community and not the community itself.", "observable": "grep -rniE \"roblox\\.com/(groups|communities)|IsInGroup|GetRankInGroup|GetRoleInGroup\" game/src returns zero" },
+      { "id": "robloxCommunity","class": "onRoblox",   "exists": false, "closureStrength": "WEAKEST OF THE EIGHT — see offRobloxPresence.rowsReopenedByGaAlone", "closedBy": "products F15 bans a group-join prompt anywhere in the game; G-a, the brief states no presence so the referent is empty. NOT the 16+ rule, which reaches a link to a community and not the community itself.", "observable": "grep -rniE \"roblox\\.com/(groups|communities)|IsInGroup|GetRankInGroup|GetRoleInGroup\" game/src returns zero" },
       { "id": "inGameIntake",   "class": "inExperience","exists": false, "closureStrength": "strong", "closedBy": "products F15 (no code entry field, no rate-us or share prompt, zero TextBox); notices has two beat members and one system member and cannot carry a non-beat; community-standards bars the in-experience URL form", "observable": "no module constructs a TextBox instance, and grep -rniE \"https?://|SocialService|PromptGameInvite\" game/src returns zero. NOTE: a bare grep for the word TextBox matches a type union in HudBinding and a defaults table in UIBuilder and is NOT the check." }
     ],
     "channelsConsideredCount": 8,
     "channelsConsideredSource": "the seven social-link types named at https://create.roblox.com/docs/production/promotion/social-media-links, plus the in-experience surface",
+    "bareSocialWordBaseline": {
+      "why": "AC2's compound pattern deliberately excludes the bare word `social`. This is the measurement that justifies the exclusion, so no later reader re-derives it.",
+      "command": "grep -rni \"social\" game/src",
+      "measuredOn": "2026-08-02",
+      "matchingLines": 40,
+      "files": 7,
+      "luauFiles": 6,
+      "luauMatchingLines": 39,
+      "nonLuauFile": "game/src/server/Tool.report.md, 1 line",
+      "perFile": { "World.luau": 21, "GameConfig.luau": 11, "Plots.luau": 4, "IndexScreen.luau": 1, "Clearing.luau": 1, "Protocol.luau": 1, "Tool.report.md": 1 },
+      "channelReferencesAmongThem": 0,
+      "channelReferenceTest": "run AC2's compound pattern over those 40 lines: zero hits",
+      "descriptiveNotKeyPathUses": [
+        "GameConfig.luau:1567 — \"a player can spend a whole session alone and receives no social proof\"",
+        "Plots.luau:284 — \"deletes the only social system the game has\"",
+        "World.luau:26 — \"social-graph or ranking APIs social forbids\""
+      ],
+      "correctionRecord": "the published figure was 37 across 7 files; the first correction said all 40 were the contract key. Both were wrong. 40/7/39/6 is measured, and the three lines above are not key paths. Neither error touched the exclusion, which holds.",
+      "stabilityWarning": "the 40 drifts with every comment edit and nothing here depends on it. The zero does not drift and is the criterion."
+    },
     "roles": [],
     "roleCount": 0,
     "rolesConsidered": [
@@ -174,7 +200,7 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       "houseRulesInherited": 4,
       "houseRulesChanged": 0,
       "openDefects": [
-        { "id": "PT-1", "what": "the developer reported that pressing 1, 2 and 3 buys upgrades; no module binds those keys and all four KeyCode matches in game/src are comments recording that ruling R-1 removed the binding", "session": "2026-08-01", "class": "T4", "disposition": "stays open in cid/_playtest.md until reproduced against a named build or ruled out; no revision request is filed on an unattributed observation", "openAcrossWaveBoundary": true }
+        { "id": "PT-1", "what": "the developer reported that pressing 1, 2 and 3 buys upgrades; no module binds those keys and all four KeyCode matches in game/src are comments recording that ruling R-1 removed the binding — re-measured 2026-08-02 at Pressables.luau:13,33 and Input.luau:8,15", "session": "2026-08-01", "class": "T4", "disposition": "stays open in cid/_playtest.md until reproduced against a named build or ruled out; no revision request is filed on an unattributed observation", "openAcrossWaveBoundary": true }
       ],
       "openDefectCount": 1
     },
@@ -231,12 +257,12 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
 The brief is silent on all three, and alternatives were live. **A channel:** create one, create
 a Roblox community only, or none — I recommend **none**, because the 16+ visibility rule makes
 an off-Roblox channel invisible to 100% of the stated audience through the sanctioned surface.
-**Note that the middle option is the one my ruling holds most weakly**: a Roblox community is
-closed here by `products` `F15` and an empty referent, not by the age rule. **The intake of
-record:** `cid/_playtest.md`, a new issue tracker, or nothing — I recommend
-**`cid/_playtest.md`**, because it exists, already holds the only reading anyone has, and a
-second artifact splits the record. **Roles:** none, or a tester rank — **none**, because
-`release.environments` is two and `N7` forbids a player-facing test ring.
+**The middle option is the one my ruling holds most weakly**: a Roblox community is closed here
+by `products` `F15` and an empty referent, not by the age rule. **The intake of record:**
+`cid/_playtest.md`, a new issue tracker, or nothing — I recommend **`cid/_playtest.md`**,
+because it exists, already holds the only reading anyone has, and a second artifact splits the
+record. **Roles:** none, or a tester rank — **none**, because `release.environments` is two and
+`N7` forbids a player-facing test ring.
 
 ## Acceptance criteria
 
@@ -246,16 +272,21 @@ second artifact splits the record. **Roles:** none, or a tester rank — **none*
    `closedBy` and a non-empty `observable`; and in each pair the number of considered rows with
    `exists: true` equals the matching count field.
 2. `grep -rniE "https?://|discord|guilded|twitch|youtube|twitter|facebook|roblox\.com/(groups|communities)|SocialService|PromptGameInvite|IsInGroup|GetRankInGroup|GetRoleInGroup|leaderstats" game/src`
-   returns zero matches. **The word `social` alone is deliberately not in this pattern**, and
-   the reason is the criterion rather than a count: **every occurrence of it in `game/src` is
-   the `social` contract key — either the lowercase key name in a comment or the
-   `GameConfig.Social` identifier — and none is a channel reference.** Approximately 40 such
-   occurrences exist across 7 files (39 across 6 `.luau` files, the remainder in
-   `Tool.report.md`); the figure drifts with every comment edit and nothing here depends on it.
+   returns zero matches (re-run 2026-08-02: zero). **The bare word `social` is deliberately not
+   in that pattern**, and the justification is a measurement, not an estimate:
+   `grep -rni "social" game/src` returns **40 matching lines across 7 files** — 39 in 6 `.luau`
+   files, 1 in `game/src/server/Tool.report.md` — and **running the compound pattern above over
+   those 40 lines returns zero**, so not one of them is a channel, a URL, a group id or a
+   social-graph call. Most name the `social` contract key, a `cid/gameplay/social/*` sheet path
+   or the `GameConfig.Social`/`SOCIAL` identifier; **three use the word descriptively and are
+   also not channel references** — `GameConfig.luau:1567` *"no social proof"*, `Plots.luau:284`
+   *"the only social system the game has"*, `World.luau:26` *"social-graph or ranking APIs"*.
+   The 40 drifts with every comment edit; the zero does not, and the zero is the criterion.
 3. No field anywhere under `community` contains a day, week, month, interval, schedule or date
-   value: `community.triage.cadence` is the string `"none"`, and searching the merged
-   `community` value for `daily|weekly|monthly|everyN|schedule|intervalSeconds` returns zero
-   hits. `kpis.cadence` is the only cadence in the merged manifest.
+   value **other than `greppedOn` and `bareSocialWordBaseline.measuredOn`, which record when a
+   grep was run and are not a rhythm**: `community.triage.cadence` is the string `"none"`, and
+   searching the merged `community` value for `daily|weekly|monthly|everyN|schedule|intervalSeconds`
+   returns zero hits. `kpis.cadence` is the only cadence in the merged manifest.
 4. `community.triage.classes` has exactly 4 rows; every row carries exactly one `disposition`
    and `liveChange: false`; every row with `revisionRequest: true` names a target sheet and a
    field in its `disposition`; `community.intakeOfRecord.requiredFields` has exactly 5 rows;

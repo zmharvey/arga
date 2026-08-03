@@ -123,10 +123,42 @@ export const ARCHETYPES = {
 };
 
 /**
+ * Every `Enum.Font` member the engine actually has, as of the 2026 reference.
+ *
+ * This list exists because a comment saying "values are Enum.Font names valid in the engine"
+ * did not make one of them valid: `serif-ui.numeric` shipped `MerriweatherBold`, which is not a
+ * member. The failure mode is worse than a wrong typeface. `UIBuilder.luau:482` reads
+ * `(Enum.Font :: any)[t.font] or Enum.Font.Gotham`, and indexing an Enum with an absent member
+ * **raises** rather than returning nil — so the fallback never runs and every `numeric`-typed
+ * node throws. A defaulting expression that cannot default is the most expensive kind of safe-
+ * looking code.
+ *
+ * `assertFontStacks()` below turns the comment into a check. Adding a stack with an invented
+ * name now fails a test instead of a play session.
+ *
+ * @see https://create.roblox.com/docs/reference/engine/enums/Font
+ */
+export const ENUM_FONT_MEMBERS = new Set([
+  'Legacy', 'Arial', 'ArialBold', 'SourceSans', 'SourceSansBold', 'SourceSansSemibold',
+  'SourceSansLight', 'SourceSansItalic', 'Bodoni', 'Garamond', 'Cartoon', 'Code',
+  'Highway', 'SciFi', 'Arcade', 'Fantasy', 'Antique', 'Gotham', 'GothamMedium',
+  'GothamBold', 'GothamBlack', 'AmaticSC', 'Bangers', 'Creepster', 'DenkOne', 'Fondamento',
+  'FredokaOne', 'GrenzeGotisch', 'IndieFlower', 'JosefinSans', 'Jura', 'Kalam', 'LuckiestGuy',
+  'Merriweather', 'Michroma', 'Nunito', 'Oswald', 'PatrickHand', 'PermanentMarker', 'Roboto',
+  'RobotoCondensed', 'RobotoMono', 'Sarpanch', 'SpecialElite', 'TitilliumWeb', 'Ubuntu',
+  'Unknown', 'BuilderSans', 'BuilderSansMedium', 'BuilderSansBold', 'BuilderSansExtraBold',
+]);
+
+/**
  * Roblox font stacks, with the closest web equivalent for preview rendering.
- * `roblox` values are Enum.Font names valid in the engine; `web` is only ever
- * used by the HTML preview and must stay metrically close so the screenshot
- * critic isn't judging different type than the game will ship.
+ * `roblox` values are Enum.Font names valid in the engine — enforced, not asserted, by
+ * `assertFontStacks()`. `web` is only ever used by the HTML preview and must stay metrically
+ * close so the screenshot critic isn't judging different type than the game will ship.
+ *
+ * Where the engine has no bold cut of a face, the stack repeats the regular member and carries
+ * the intent in `weight`. `serif-ui` does this: Roblox ships `Merriweather` and no
+ * `MerriweatherBold`, so display and numeric are the same member at weight 700, and the web
+ * side renders the real bold for preview.
  */
 export const FONT_STACKS = {
   ui: {
@@ -147,9 +179,25 @@ export const FONT_STACKS = {
   'serif-ui': {
     display: { roblox: 'Merriweather', web: '"Merriweather", Georgia, serif', weight: 700 },
     body: { roblox: 'SourceSans', web: '"Source Sans 3", "Segoe UI", sans-serif', weight: 400 },
-    numeric: { roblox: 'MerriweatherBold', web: '"Merriweather", Georgia, serif', weight: 700 },
+    numeric: { roblox: 'Merriweather', web: '"Merriweather", Georgia, serif', weight: 700 },
   },
 };
+
+/**
+ * Every `roblox` value in every stack is a real `Enum.Font` member.
+ *
+ * Returns the offending `stack.role` pairs rather than throwing, so a caller can report all of
+ * them at once instead of one per run.
+ */
+export function badFontMembers() {
+  const bad = [];
+  for (const [stack, roles] of Object.entries(FONT_STACKS)) {
+    for (const [role, spec] of Object.entries(roles)) {
+      if (!ENUM_FONT_MEMBERS.has(spec.roblox)) bad.push(`${stack}.${role} = "${spec.roblox}"`);
+    }
+  }
+  return bad;
+}
 
 /**
  * Map loose game-context vibe strings onto archetype keys.

@@ -2,6 +2,10 @@
 
 **Domain:** marketing/thumbnails · **Category:** Discovery & Marketing · **Wave:** 7
 
+> **Revised, round 2.** One field. `uploadStep` named `release.publishChecklist` row `P5`; a
+> requester does not assign a checklist id, and three other live requests want a row on the same
+> checklist. It now names the row without numbering it. No other value moves.
+
 ## Decision
 
 **No thumbnail carries overlay text. `overlayText` is the empty string on every slot, now and on
@@ -173,7 +177,7 @@ in a sort row, at desktop and at phone width, so the 15% is replaced by a measur
       "forbiddenClasses": ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12", "B13", "B14", "B15"]
     },
     "stringsLiveIn": "storeThumbnails.slots[].altText — sheet 01 writes the strings, this sheet writes the rule they satisfy",
-    "uploadStep": "release.publishChecklist row P5, requested by sheet 02 as RR-T1, which pastes altText at upload time",
+    "uploadStep": "release.publishChecklist, a new row requested by sheet 02 as RR-T1, which pastes altText at upload time. The row's id is release's to assign and is deliberately not named here.",
     "vocabularyScopeQuestion": {
       "finding": "vocabulary's scope sentence does not reach an outward string, yet ruling M-B makes its ban list bind one. The scope sentence is the thing that is wrong, not the ruling.",
       "routedTo": "naming-rule work (theme/vocabulary), which owns the key, and the developer, who may overturn M-B in one line",
@@ -196,7 +200,7 @@ in a sort row, at desktop and at phone width, so the 15% is replaced by a measur
 - **Icon work (`storeIcon`)** may adopt `W1`–`W8` and `B1`–`B15` by citation if it decides an icon
   carries a word. It should not write a second ceiling from a different derivation.
 - **Publish-checklist work (`release`)** pastes `altText` at upload. It is one field per slot and
-  it is in `RR-T1`'s read-back.
+  it is in `RR-T1`'s read-back. **`release` assigns that row's id; this domain does not.**
 
 ## Acceptance criteria
 
@@ -221,6 +225,7 @@ satisfy and neither writes nor edits a string. The slot count, the claim ledger 
 from the in-game register. The game's name, its length bound and whether it carries a glyph:
 **naming work (`title`)**. Whether `vocabulary`'s scope sentence is widened to cover outward
 strings, and whether ruling `M-B` stands: **naming-rule work and the developer**. Any string on an
-icon: **Icon work**, which may cite these rules and should not derive a second set. The measured
-height of the platform's metadata overlay: `[research owed:]`, named above, and until it lands the
-15% band is a stated starting value rather than a sourced one.
+icon: **Icon work**, which may cite these rules and should not derive a second set. **Which id the
+upload row gets on `release.publishChecklist`: `release`**, which composes four live requests
+against one checklist. The measured height of the platform's metadata overlay: `[research owed:]`,
+named above, and until it lands the 15% band is a stated starting value rather than a sourced one.

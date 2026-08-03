@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { PATTERNS, capabilities, validateBrief, compose } from '../src/compose/index.mjs';
+import { badFontMembers, ENUM_FONT_MEMBERS } from '../src/theme/palettes.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, '..', '..');
@@ -164,4 +165,24 @@ test('the HTML preview and the Luau runtime support the same AutomaticSize arms'
   for (const enumArm of ['AutomaticSize.X', 'AutomaticSize.Y', 'AutomaticSize.XY']) {
     assert.ok(luau.includes(`Enum.${enumArm}`), `UIBuilder.luau must set Enum.${enumArm}`);
   }
+});
+
+/* ---------------------------------------------------------------- font stacks */
+
+test('every font stack names a real Enum.Font member', () => {
+  // `serif-ui.numeric` shipped `MerriweatherBold`, which the engine does not have. The comment
+  // above FONT_STACKS already said the values were valid, which is precisely as much protection
+  // as a comment provides.
+  //
+  // The reason this is a test and not a lint: `UIBuilder.luau:482` reads
+  // `(Enum.Font :: any)[t.font] or Enum.Font.Gotham`, and indexing an Enum with an absent
+  // member RAISES rather than returning nil. The fallback cannot run. Every `numeric`-typed
+  // node in the archetype throws, and the code that looks like it handles this is the code
+  // that guarantees it won't.
+  assert.deepEqual(badFontMembers(), []);
+});
+
+test('a stack naming an invented face is caught', () => {
+  assert.ok(!ENUM_FONT_MEMBERS.has('MerriweatherBold'), 'the member that started this');
+  assert.ok(ENUM_FONT_MEMBERS.has('Merriweather'), 'the one that replaced it');
 });
