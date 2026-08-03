@@ -872,23 +872,26 @@ state looks like, what each object is made of, and what happens in what order.
   "rungsUsed": [
     "premium"
   ],
-  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted",
+  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted, and NEVER called when gamePassId <= 0",
   "prompt": {
-    "method": null,
+    "method": "none",
+    "methodAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no prompt method because there is no prompt; the sibling promptGamePassPurchaseCalls 0 carries the same fact as a number, so this field is documentary.",
     "promptGamePassPurchaseCalls": 0,
     "reason": "R-4 removed the in-game store. There is no verb, pressable or screen that could trigger a prompt, and none is reserved. If a purchase surface is ever built, this field is what must be revised first."
   },
   "externalPrerequisite": {
     "what": "products.items[].gamePassId must be filled with the id of a pass created on the Roblox creator site and priced to match priceRobux",
     "owner": "the developer, or whoever holds the Roblox creator account",
-    "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification."
+    "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification.",
+    "unprovisionedValue": 0,
+    "unprovisionedValueRule": "gamePassId is 0 while unprovisioned, never null (cid/tech/deploy/02). 0 is a legal number that no pass id can hold, so entitlements guards with a single 'id > 0' test and resolves the product to not-owned with factor 1. This is what lets the build run correctly at every step of release.provisioning with the id still unfilled. The sentinel is a NUMBER because a game-pass id is a number; the empty-string sentinel Audio declares for ContentId fields is the same rule applied to a string-typed id and does not transfer here."
   },
   "items": [
     {
       "id": "span",
       "label": "Span",
       "kind": "gamePass",
-      "gamePassId": null,
+      "gamePassId": 0,
       "axis": "radius",
       "factor": 1.75,
       "factorTestRange": [
@@ -1034,6 +1037,12 @@ state looks like, what each object is made of, and what happens in what order.
       "rule": "No purchase-derived state is written to persistence. Ownership is read live every join.",
       "closedBy": "gameplay/systems/06 (recomputed from live ownership, never persisted)",
       "check": "the save payload contains no pass id, no product id and no purchase-sourced factor"
+    },
+    {
+      "id": "F21",
+      "rule": "No call to UserOwnsGamePassAsync with an id at or below zero, and no explicit null in any field of this key.",
+      "closedBy": "cid/tech/deploy/02 + release.provisioning",
+      "check": "every UserOwnsGamePassAsync call site is preceded by an 'id > 0' test; grep for '= nil' in the emitted Products block returns nothing"
     }
   ],
   "headroom": {
@@ -1042,12 +1051,13 @@ state looks like, what each object is made of, and what happens in what order.
       "rule": "for every axis A and every area ordinal N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
       "marginFraction": 0.9,
       "ladderMax": "for the entry of upgrades[] whose id equals A: base + maxLevel * perLevel",
+      "ceilingsAreExpressionsOrNone": "every entry of ceilings is a ceiling EXPRESSION as a string, or the string \"none\" where no ceiling exists on that axis. It USED to be a null on the value axis, which cid/tech/deploy/02 forbids: emitted as nil, Luau dropped the key, and a builder iterating ceilings saw two axes and could not tell 'the value axis has no ceiling' from 'the value axis is missing from the table'. An axis whose ceiling is \"none\" passes H1 trivially and is never evaluated.",
       "ceilings": {
-        "value": null,
+        "value": "none",
         "radius": "plots.laneWidthStuds / 2",
         "speed": "movement.baseClearRadius / runtime.serverTickSeconds"
       },
-      "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25"
+      "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25; value is unconstrained because its ceiling is \"none\""
     },
     "H2_lapFloor": {
       "rule": "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
@@ -1289,6 +1299,7 @@ state looks like, what each object is made of, and what happens in what order.
   "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
   "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
   "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+  "maxRadiusProductIsAlwaysANumber": "every row carries a number, including row 1. It USED to carry a null on row 1, meaning 'no shipped product comes near this row'. cid/tech/deploy/02 forbids an explicit null in an emitted value, and neither sentinel was safe here: \"none\" reads as 'no radius product is permitted' and \"unbounded\" reads as 'any is', while the truth is a real threshold of about 2.18x that nothing shipped reaches. The figure was already derived twice in this sheet's prose, so the field is filled rather than sentinelled, and invariants[11] is now evaluable on all eight rows instead of seven.",
   "valueOnlyPurchaserThreshold": 7,
   "areas": [
     {
@@ -1302,7 +1313,7 @@ state looks like, what each object is made of, and what happens in what order.
       "patchCount": 140,
       "minSpacing": 6,
       "unlock": "none",
-      "maxRadiusProduct": null
+      "maxRadiusProduct": 2.18
     },
     {
       "ordinal": 2,
@@ -1420,7 +1431,7 @@ state looks like, what each object is made of, and what happens in what order.
     "footprintStuds2 <= footprintCeilingStuds2 for every row",
     "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
     "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
-    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
+    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row, and every row carries maxRadiusProduct as a number"
   ]
 }
 ```
@@ -1497,7 +1508,8 @@ state looks like, what each object is made of, and what happens in what order.
     "which patch indices the seed picks to carry a slice",
     "the order in which a depth's slices are assigned to its areas"
   ],
-  "sellableLuck": null,
+  "sellableLuck": "none",
+  "sellableLuckAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no sellable luck quantity of any kind; the sibling luckShaped false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
   "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
 }
 ```
@@ -1534,7 +1546,8 @@ state looks like, what each object is made of, and what happens in what order.
       "affects": []
     }
   ],
-  "findRarityField": null,
+  "findRarityField": "none",
+  "findRarityFieldAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). It asserts exactly what the null asserted — a Find has no rarity field — and nothing weaker: a null emits as nil, Luau drops the key, and a reader cannot tell it from a key that was never emitted.",
   "findPlacementReadsTier": false,
   "findPlacementWeighting": "blind to tier: the probability a patch carries a Find is independent of its tierIndex. Whether that choice is spatially uniform or spread is content-structure work's, not this key's.",
   "depthRarityChannel": "tiers[].weight, shifted toward the rare end per depth",
@@ -1559,6 +1572,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -1593,7 +1607,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -1640,7 +1655,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -1749,7 +1765,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -1764,7 +1781,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -1780,7 +1798,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -2066,7 +2085,8 @@ state looks like, what each object is made of, and what happens in what order.
   "fall": {
     "damage": false,
     "voidBelowPlayArea": false,
-    "maxSurvivableFallStuds": null
+    "maxSurvivableFallStuds": "unbounded",
+    "maxSurvivableFallStudsAbsence": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". This field declares \"unbounded\", because \"none\" on an upper-bound field would assert that ZERO studs are survivable — the exact opposite of the decision. No fall is fatal at any height; the siblings damage false and voidBelowPlayArea false carry the same fact as booleans. A reader must test type(v) == \"number\" before comparing."
   },
   "death": {
     "possibleByDesign": false,
@@ -2300,6 +2320,7 @@ state looks like, what each object is made of, and what happens in what order.
     "grantsNothingElse": "a modifier changes exactly one axis; it never grants currency, a Find, an area, a cosmetic or a second modifier"
   },
   "axisIdsJoinUpgrades": "axes[].id is upgrades[].id verbatim; Pace is a label and never an id",
+  "axisClampRule": "a consumer builds the clamp table by iterating axes[] and MUST test ceilingRule ~= \"none\" rather than testing truthiness. Under cid/tech/deploy/02 an axis with no ceiling carries the string \"none\", not a null: a null emitted as nil, Luau dropped the key, and the value axis was then indistinguishable from an axis missing from the table entirely.",
   "axes": [
     {
       "id": "value",
@@ -2307,7 +2328,8 @@ state looks like, what each object is made of, and what happens in what order.
       "unit": "multiplier on tiers[].value",
       "baseFrom": "upgrades[value].base, already inside upgradeEffect",
       "consumedBy": "economy.faucets[patch-clear].formula",
-      "ceilingRule": null,
+      "ceilingRule": "none",
+      "ceilingRuleAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02, and it is load-bearing: this axis is deliberately UNCLAMPED and the other two are clamped, so a builder iterating axes[] must be able to read all three rows. See axisClampRule.",
       "ceilingReason": "a currency multiplier breaks no invariant"
     },
     {
@@ -2400,7 +2422,8 @@ state looks like, what each object is made of, and what happens in what order.
     "a set bonus written into save data",
     "a purchase written into save data",
     "the value multiplier applied both at the faucet formula and inside the award function",
-    "a clamp applied between two sources"
+    "a clamp applied between two sources",
+    "a clamp skipped because ceilingRule was tested for truthiness rather than against \"none\""
   ]
 }
 ```
@@ -2444,6 +2467,7 @@ state looks like, what each object is made of, and what happens in what order.
       "factor": 1.2
     }
   ],
+  "axisHeadroomAbsenceRule": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". The value axis declares \"unbounded\" rather than \"none\", because on a headroom field \"none\" would assert that ZERO headroom remains — the opposite of the truth, which is that no ceiling exists on that axis at all. A checker iterating the three axes must test type(v) == \"number\" before comparing, and must treat \"unbounded\" as passing.",
   "axisHeadroom": {
     "radius": {
       "availableToSetsAtShippedPass": 2.158,
@@ -2456,7 +2480,7 @@ state looks like, what each object is made of, and what happens in what order.
       "derivation": "0.9 * (movement.baseClearRadius / runtime.clearTickRate) / upgradeLadderMax(speed)"
     },
     "value": {
-      "availableToSets": null,
+      "availableToSets": "unbounded",
       "spentAtStartingFactors": 1.2,
       "derivation": "no ceiling exists on this axis"
     }
@@ -2466,7 +2490,8 @@ state looks like, what each object is made of, and what happens in what order.
     "every collection.sets[].id appears in exactly one row",
     "every rows[].axis is an upgrades[].id",
     "every rows[].factor is at least 1.0 and inside factorTestRange",
-    "for each axis, the product of its set factors times every product factor on that axis is at most 0.9 times that axis's systems/06 ceiling"
+    "for each axis, the product of its set factors times every product factor on that axis is at most 0.9 times that axis's systems/06 ceiling",
+    "an axisHeadroom entry whose availableToSets is \"unbounded\" passes the check above trivially and is never compared numerically"
   ]
 }
 ```
@@ -2497,23 +2522,26 @@ state looks like, what each object is made of, and what happens in what order.
   "rungsUsed": [
     "premium"
   ],
-  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted",
+  "ownershipCheck": "UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted, and NEVER called when gamePassId <= 0",
   "prompt": {
-    "method": null,
+    "method": "none",
+    "methodAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no prompt method because there is no prompt; the sibling promptGamePassPurchaseCalls 0 carries the same fact as a number, so this field is documentary.",
     "promptGamePassPurchaseCalls": 0,
     "reason": "R-4 removed the in-game store. There is no verb, pressable or screen that could trigger a prompt, and none is reserved. If a purchase surface is ever built, this field is what must be revised first."
   },
   "externalPrerequisite": {
     "what": "products.items[].gamePassId must be filled with the id of a pass created on the Roblox creator site and priced to match priceRobux",
     "owner": "the developer, or whoever holds the Roblox creator account",
-    "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification."
+    "blocking": "until it is filled, ownershipCheck cannot return true for any player and the product is unownable. This is a provisioning step, not an unfinished specification.",
+    "unprovisionedValue": 0,
+    "unprovisionedValueRule": "gamePassId is 0 while unprovisioned, never null (cid/tech/deploy/02). 0 is a legal number that no pass id can hold, so entitlements guards with a single 'id > 0' test and resolves the product to not-owned with factor 1. This is what lets the build run correctly at every step of release.provisioning with the id still unfilled. The sentinel is a NUMBER because a game-pass id is a number; the empty-string sentinel Audio declares for ContentId fields is the same rule applied to a string-typed id and does not transfer here."
   },
   "items": [
     {
       "id": "span",
       "label": "Span",
       "kind": "gamePass",
-      "gamePassId": null,
+      "gamePassId": 0,
       "axis": "radius",
       "factor": 1.75,
       "factorTestRange": [
@@ -2659,6 +2687,12 @@ state looks like, what each object is made of, and what happens in what order.
       "rule": "No purchase-derived state is written to persistence. Ownership is read live every join.",
       "closedBy": "gameplay/systems/06 (recomputed from live ownership, never persisted)",
       "check": "the save payload contains no pass id, no product id and no purchase-sourced factor"
+    },
+    {
+      "id": "F21",
+      "rule": "No call to UserOwnsGamePassAsync with an id at or below zero, and no explicit null in any field of this key.",
+      "closedBy": "cid/tech/deploy/02 + release.provisioning",
+      "check": "every UserOwnsGamePassAsync call site is preceded by an 'id > 0' test; grep for '= nil' in the emitted Products block returns nothing"
     }
   ],
   "headroom": {
@@ -2667,12 +2701,13 @@ state looks like, what each object is made of, and what happens in what order.
       "rule": "for every axis A and every area ordinal N: ladderMax(A) * prod(setFactors on A) * prod(products.items[].factor where axis == A) <= marginFraction * ceiling(A, N)",
       "marginFraction": 0.9,
       "ladderMax": "for the entry of upgrades[] whose id equals A: base + maxLevel * perLevel",
+      "ceilingsAreExpressionsOrNone": "every entry of ceilings is a ceiling EXPRESSION as a string, or the string \"none\" where no ceiling exists on that axis. It USED to be a null on the value axis, which cid/tech/deploy/02 forbids: emitted as nil, Luau dropped the key, and a builder iterating ceilings saw two axes and could not tell 'the value axis has no ceiling' from 'the value axis is missing from the table'. An axis whose ceiling is \"none\" passes H1 trivially and is never evaluated.",
       "ceilings": {
-        "value": null,
+        "value": "none",
         "radius": "plots.laneWidthStuds / 2",
         "speed": "movement.baseClearRadius / runtime.serverTickSeconds"
       },
-      "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25"
+      "atShippedValues": "radius 14.3 * 1.44 * 1.75 = 36.0 <= 0.9 * 60 = 54; speed 25.6 * 1.2 = 30.7 <= 0.9 * 45.83 = 41.25; value is unconstrained because its ceiling is \"none\""
     },
     "H2_lapFloor": {
       "rule": "for every area ordinal N: ROUTE_SLACK * depths.areas[N-1].footprintStuds2 / tau(N) >= floorSeconds, where tau(N) is computed for a player owning EVERY product",
@@ -2832,6 +2867,7 @@ state looks like, what each object is made of, and what happens in what order.
   "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
   "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
   "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+  "maxRadiusProductIsAlwaysANumber": "every row carries a number, including row 1. It USED to carry a null on row 1, meaning 'no shipped product comes near this row'. cid/tech/deploy/02 forbids an explicit null in an emitted value, and neither sentinel was safe here: \"none\" reads as 'no radius product is permitted' and \"unbounded\" reads as 'any is', while the truth is a real threshold of about 2.18x that nothing shipped reaches. The figure was already derived twice in this sheet's prose, so the field is filled rather than sentinelled, and invariants[11] is now evaluable on all eight rows instead of seven.",
   "valueOnlyPurchaserThreshold": 7,
   "areas": [
     {
@@ -2845,7 +2881,7 @@ state looks like, what each object is made of, and what happens in what order.
       "patchCount": 140,
       "minSpacing": 6,
       "unlock": "none",
-      "maxRadiusProduct": null
+      "maxRadiusProduct": 2.18
     },
     {
       "ordinal": 2,
@@ -2963,7 +2999,7 @@ state looks like, what each object is made of, and what happens in what order.
     "footprintStuds2 <= footprintCeilingStuds2 for every row",
     "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
     "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
-    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
+    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row, and every row carries maxRadiusProduct as a number"
   ]
 }
 ```
@@ -3040,7 +3076,8 @@ state looks like, what each object is made of, and what happens in what order.
     "which patch indices the seed picks to carry a slice",
     "the order in which a depth's slices are assigned to its areas"
   ],
-  "sellableLuck": null,
+  "sellableLuck": "none",
+  "sellableLuckAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no sellable luck quantity of any kind; the sibling luckShaped false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
   "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
 }
 ```
@@ -3397,6 +3434,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -3431,7 +3469,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -3478,7 +3517,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -3587,7 +3627,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -3602,7 +3643,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -3618,7 +3660,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -3821,7 +3864,8 @@ state looks like, what each object is made of, and what happens in what order.
 {
   "currencyKey": "currency",
   "startingBalance": 0,
-  "balanceCap": null,
+  "balanceCap": "none",
+  "balanceCapAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config), and it is load-bearing here: the balance is UNCAPPED, which is this sheet's decision and atMaxLadder.readoutHidden false depends on it. A null emitted as nil and Luau dropped the key, so no module could tell \"no cap\" from \"never emitted\". 0 was NOT used because it would assert a cap of zero — the opposite of the decision. A reader treating balanceCap as a number must test type(v) == \"number\" first.",
   "negativeBalance": "impossible; a purchase that cannot be afforded changes nothing at all",
   "authority": "server only; no client message carries a cost, an amount or a balance, and whether a client message exists at all is input's",
   "faucetCount": 1,
@@ -3877,7 +3921,8 @@ state looks like, what each object is made of, and what happens in what order.
   ],
   "atMaxLadder": {
     "incomeContinues": true,
-    "convertsTo": null,
+    "convertsTo": "none",
+    "convertsToAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02. Currency converts to nothing at max ladder; the sibling newSinkAppears false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
     "newSinkAppears": false,
     "readoutHidden": false,
     "balanceFrozen": false,
@@ -3904,6 +3949,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -3938,7 +3984,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -3985,7 +4032,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -4094,7 +4142,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -4109,7 +4158,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -4125,7 +4175,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -5062,7 +5113,8 @@ state looks like, what each object is made of, and what happens in what order.
   "fall": {
     "damage": false,
     "voidBelowPlayArea": false,
-    "maxSurvivableFallStuds": null
+    "maxSurvivableFallStuds": "unbounded",
+    "maxSurvivableFallStudsAbsence": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". This field declares \"unbounded\", because \"none\" on an upper-bound field would assert that ZERO studs are survivable — the exact opposite of the decision. No fall is fatal at any height; the siblings damage false and voidBelowPlayArea false carry the same fact as booleans. A reader must test type(v) == \"number\" before comparing."
   },
   "death": {
     "possibleByDesign": false,
@@ -5734,6 +5786,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -5768,7 +5821,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -5815,7 +5869,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -5924,7 +5979,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -5939,7 +5995,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -5955,7 +6012,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -6307,7 +6365,8 @@ state looks like, what each object is made of, and what happens in what order.
       "affects": []
     }
   ],
-  "findRarityField": null,
+  "findRarityField": "none",
+  "findRarityFieldAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). It asserts exactly what the null asserted — a Find has no rarity field — and nothing weaker: a null emits as nil, Luau drops the key, and a reader cannot tell it from a key that was never emitted.",
   "findPlacementReadsTier": false,
   "findPlacementWeighting": "blind to tier: the probability a patch carries a Find is independent of its tierIndex. Whether that choice is spatially uniform or spread is content-structure work's, not this key's.",
   "depthRarityChannel": "tiers[].weight, shifted toward the rare end per depth",
@@ -6397,7 +6456,8 @@ state looks like, what each object is made of, and what happens in what order.
     "which patch indices the seed picks to carry a slice",
     "the order in which a depth's slices are assigned to its areas"
   ],
-  "sellableLuck": null,
+  "sellableLuck": "none",
+  "sellableLuckAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no sellable luck quantity of any kind; the sibling luckShaped false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
   "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
 }
 ```
@@ -6529,6 +6589,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -6563,7 +6624,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -6610,7 +6672,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -6719,7 +6782,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -6734,7 +6798,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -6750,7 +6815,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -7115,7 +7181,8 @@ state looks like, what each object is made of, and what happens in what order.
     "which patch indices the seed picks to carry a slice",
     "the order in which a depth's slices are assigned to its areas"
   ],
-  "sellableLuck": null,
+  "sellableLuck": "none",
+  "sellableLuckAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no sellable luck quantity of any kind; the sibling luckShaped false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
   "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
 }
 ```
@@ -7214,6 +7281,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -7248,7 +7316,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -7295,7 +7364,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -7404,7 +7474,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -7419,7 +7490,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -7435,7 +7507,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -7797,7 +7870,8 @@ state looks like, what each object is made of, and what happens in what order.
   "fall": {
     "damage": false,
     "voidBelowPlayArea": false,
-    "maxSurvivableFallStuds": null
+    "maxSurvivableFallStuds": "unbounded",
+    "maxSurvivableFallStudsAbsence": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". This field declares \"unbounded\", because \"none\" on an upper-bound field would assert that ZERO studs are survivable — the exact opposite of the decision. No fall is fatal at any height; the siblings damage false and voidBelowPlayArea false carry the same fact as booleans. A reader must test type(v) == \"number\" before comparing."
   },
   "death": {
     "possibleByDesign": false,
@@ -8477,7 +8551,8 @@ state looks like, what each object is made of, and what happens in what order.
 {
   "currencyKey": "currency",
   "startingBalance": 0,
-  "balanceCap": null,
+  "balanceCap": "none",
+  "balanceCapAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config), and it is load-bearing here: the balance is UNCAPPED, which is this sheet's decision and atMaxLadder.readoutHidden false depends on it. A null emitted as nil and Luau dropped the key, so no module could tell \"no cap\" from \"never emitted\". 0 was NOT used because it would assert a cap of zero — the opposite of the decision. A reader treating balanceCap as a number must test type(v) == \"number\" first.",
   "negativeBalance": "impossible; a purchase that cannot be afforded changes nothing at all",
   "authority": "server only; no client message carries a cost, an amount or a balance, and whether a client message exists at all is input's",
   "faucetCount": 1,
@@ -8533,7 +8608,8 @@ state looks like, what each object is made of, and what happens in what order.
   ],
   "atMaxLadder": {
     "incomeContinues": true,
-    "convertsTo": null,
+    "convertsTo": "none",
+    "convertsToAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02. Currency converts to nothing at max ladder; the sibling newSinkAppears false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
     "newSinkAppears": false,
     "readoutHidden": false,
     "balanceFrozen": false,
@@ -8625,7 +8701,8 @@ state looks like, what each object is made of, and what happens in what order.
     "which patch indices the seed picks to carry a slice",
     "the order in which a depth's slices are assigned to its areas"
   ],
-  "sellableLuck": null,
+  "sellableLuck": "none",
+  "sellableLuckAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). There is no sellable luck quantity of any kind; the sibling luckShaped false carries the same fact as a boolean, so this field is documentary and the sentinel only keeps it readable.",
   "persistenceRequirement": "one boolean per name in collection and nothing else; the one part of save data bounded by design rather than by collapse"
 }
 ```
@@ -8637,6 +8714,7 @@ state looks like, what each object is made of, and what happens in what order.
   "armDistanceStuds": 2,
   "armScope": "perCharacterSpawn",
   "armMeasuredOn": "server, horizontal XZ displacement of the character root from the plot spawn pivot",
+  "absenceConvention": "cid/tech/deploy/02: no explicit null in an emitted value. In this key a beat that teaches no concept carries teaches [] (never null, because ipairs(nil) errors), and a withheld surface that is never lifted carries liftedBy \"none\" (never null, because Luau drops a nil-valued key and the row becomes unreadable).",
   "ceilings": {
     "secondsToFirstClear": {
       "max": 3,
@@ -8671,7 +8749,8 @@ state looks like, what each object is made of, and what happens in what order.
       "from": "join",
       "precondition": "character loaded and pivoted to the plot spawn point",
       "guaranteedOutcome": "stands inside standing overgrowth, tool welded and visible, at least one standing patch inside movement.baseClearRadius, clearedCount 0",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: this beat teaches no concept and ipairs(nil) errors"
     },
     {
       "id": "firstClear",
@@ -8718,7 +8797,8 @@ state looks like, what each object is made of, and what happens in what order.
       ],
       "precondition": "the first 20 patches by spawn-distance ordinal hold at least two distinct tierIndex values",
       "guaranteedOutcome": "two clears with different currency credits and different silhouettes",
-      "teaches": null
+      "teaches": [],
+      "teachesAbsence": "empty list, not null, per cid/tech/deploy/02: no concept in teaching[] names this beat and ipairs(nil) errors"
     },
     {
       "id": "firstSpendAffordable",
@@ -8827,7 +8907,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "collectionCount",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -8842,7 +8923,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "currencyReadout",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0"
     },
@@ -8858,7 +8940,8 @@ state looks like, what each object is made of, and what happens in what order.
     {
       "surface": "areaProgress",
       "presentAtJoin": true,
-      "liftedBy": null,
+      "liftedBy": "none",
+      "liftedByAbsence": "\"none\" per cid/tech/deploy/02: present at join and never lifted; latched false carries the same fact as a boolean",
       "latched": false,
       "joinValue": "0%"
     },
@@ -9054,6 +9137,7 @@ state looks like, what each object is made of, and what happens in what order.
   "unlockRule": "the area before it in this list is complete; nothing else conditions any area or any depth. This is a strike on theme/setting/04 W5, taken in this sheet's Pushing back.",
   "relicSliceAssignment": "each depth's set is cut into collection.areasPerDepth contiguous slices of collection.relicsPerArea names in name order; the slices are assigned to that depth's areas in an order seeded by (layoutSeed, depth), per gameplay/systems/05 discovery.theOnlyRandomQuantities[1]",
   "purchaserFloorRule": "row k is under core-loop/04's 75 s floor above tau = 2 * footprintStuds2 / 75; the product of every product factor on the radius axis must stay at or under that row's maxRadiusProduct",
+  "maxRadiusProductIsAlwaysANumber": "every row carries a number, including row 1. It USED to carry a null on row 1, meaning 'no shipped product comes near this row'. cid/tech/deploy/02 forbids an explicit null in an emitted value, and neither sentinel was safe here: \"none\" reads as 'no radius product is permitted' and \"unbounded\" reads as 'any is', while the truth is a real threshold of about 2.18x that nothing shipped reaches. The figure was already derived twice in this sheet's prose, so the field is filled rather than sentinelled, and invariants[11] is now evaluable on all eight rows instead of seven.",
   "valueOnlyPurchaserThreshold": 7,
   "areas": [
     {
@@ -9067,7 +9151,7 @@ state looks like, what each object is made of, and what happens in what order.
       "patchCount": 140,
       "minSpacing": 6,
       "unlock": "none",
-      "maxRadiusProduct": null
+      "maxRadiusProduct": 2.18
     },
     {
       "ordinal": 2,
@@ -9185,7 +9269,7 @@ state looks like, what each object is made of, and what happens in what order.
     "footprintStuds2 <= footprintCeilingStuds2 for every row",
     "lapSeconds(k) = footprintStuds2(k) / tau(k) * ROUTE_SLACK is inside 75..200 for every row, both at arrival and one upgrade level behind arrival on both throughput axes",
     "patchCount <= lapSeconds(k) / (2 * runtime.clearTickRate)",
-    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row"
+    "the product of every products[].factor on the radius axis is at most maxRadiusProduct for every row, and every row carries maxRadiusProduct as a number"
   ]
 }
 ```
@@ -10325,7 +10409,8 @@ state looks like, what each object is made of, and what happens in what order.
   "fall": {
     "damage": false,
     "voidBelowPlayArea": false,
-    "maxSurvivableFallStuds": null
+    "maxSurvivableFallStuds": "unbounded",
+    "maxSurvivableFallStudsAbsence": "cid/tech/deploy/02 forbids an explicit null in an emitted config and permits a table to declare a more specific sentinel than \"none\". This field declares \"unbounded\", because \"none\" on an upper-bound field would assert that ZERO studs are survivable — the exact opposite of the decision. No fall is fatal at any height; the siblings damage false and voidBelowPlayArea false carry the same fact as booleans. A reader must test type(v) == \"number\" before comparing."
   },
   "death": {
     "possibleByDesign": false,

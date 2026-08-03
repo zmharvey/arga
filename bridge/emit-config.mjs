@@ -207,6 +207,19 @@ GameConfig.RelicSets = {
 ${rows}
 }
 
+-- The whole-collection count, DERIVED here rather than authored in the sheet.
+--
+-- Five sheets across four categories independently wrote \`collection.total\`, and two more
+-- wrote \`collection.totalFinds\`. None of those fields has ever existed. The reason they kept
+-- appearing is that the number is genuinely needed at runtime — \`HudBinding.luau\` recomputes
+-- it per bind — and no field carried it.
+--
+-- A hand-authored total would be a second copy of a fact \`sets[]\` already holds, and a second
+-- copy can disagree with the first. Deriving it at emit time gives the runtime its constant and
+-- makes the disagreement unrepresentable. Sheets still cite \`sum(len(collection.sets[i].relics))\`,
+-- because that is what this is.
+GameConfig.RelicTotal = ${num(collection.sets.reduce((n, s) => n + s.relics.length, 0))}
+
 GameConfig.RelicsPerArea = ${num(collection.relicsPerArea)}
 
 -- How many areas exist at one depth. In SCHEMA but previously not emitted, so a
