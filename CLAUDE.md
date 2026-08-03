@@ -7,29 +7,32 @@ end to end at once.
 ## Stages
 
 ```
-idea → [0: concept] → [CID] → 9 creative keys ┐
-                                              ├→ [architect] → 7 technical keys → BUILD-ORDER.md → [build] → game
+idea → [0: concept] → [CID] → 26 creative keys ┐
+                                               ├→ [architect] → 7 technical keys → BUILD-ORDER.md → [build] → game
                               ui-forge ───────┘   screens only
 ```
 
 | stage | where | state |
 |---|---|---|
 | **0 — concept** | `.claude/skills/game-concept/`, `concept/` | working; four runs recorded |
-| **CID** — what the game is | `.claude/agents/cid-*`, `cid/` | wave 1; **9 creative keys**, 7 domains eligible |
-| **bridge** — the creative seam | `bridge/` | working; validates the 9, enforces the copy rules |
+| **CID** — what the game is | `.claude/agents/cid-*`, `cid/` | **all 7 waves run, 55 domains, 250 sheets.** 26 creative keys merged, 57 proposed |
+| **bridge** — the creative seam | `bridge/` | working; validates the 26, resolves every declared citation, enforces the copy rules |
 | **architect** — how it gets built | `.claude/agents/build-architect.md`, `architect/` | working; **7 technical keys**, one graph traversal |
-| **build** | `.claude/agents/game-builder.md`, `bridge/build-pack.mjs` | working; **11 modules built, 2,732 lines** |
+| **build** | `.claude/agents/game-builder.md`, `bridge/build-pack.mjs` | working; **21 modules, ~14,650 lines** |
 | **ui-forge** — screens only | `ui-forge/` | working; one pattern. Deliberately outside the build order |
 | **game** | `game/` | **pipeline-built and playable.** Clearing pays, the HUD updates, purchases apply. Hand-written control kept at `docs/hand-written-control/` |
 
 **The loop closes.** Ten agents wrote eleven modules from two contracts; none read another's
 code or the hand-written control; the result runs. Clearing awards, the snapshot crosses the
 wire, the HUD updates, a keypress buys an upgrade and it takes effect. That is the claim four
-build trials could not settle by counting stops, because nothing ran.
+build trials could not settle by counting stops, because nothing ran. *That was eleven
+modules; the game is 21 now. The sentence is kept in its original form because the eleven is
+the evidence — the first eleven were the ones written blind from contracts alone.*
 
-**Two contracts, sixteen keys, and that is the whole interface.** CID answers what the game
-is; the architect answers how it gets built; a builder reads one brief composed from both and
-should never open either. The split exists because two build trials measured what actually
+**Two contracts, thirty-three keys, and that is the whole interface.** CID answers what the
+game is; the architect answers how it gets built; a builder reads one brief composed from both
+and should never open either. It was sixteen when one hand-built game was the only evidence;
+the growth is the seven waves running, not scope creep — see the stopping rule below. The split exists because two build trials measured what actually
 stopped a builder and **roughly 15 of 21 stops were not creative questions** — require paths,
 collection shapes, who writes a Humanoid property.
 
@@ -73,6 +76,26 @@ second. **The bar is consistency, not one good result.**
   overrides `color.accent.primary`. This is what keeps reskin working.
 - **Prefer changes that make bad output impossible** (tokens, validators, lint passes) over
   changes that make one screen prettier by hand.
+- **A citation is checked, not trusted.** `bridge/refs.mjs` resolves every declared reference
+  against merged ∪ proposals, and `npm run bridge` reports it. This exists because the single
+  most-repeated defect across seven waves was not a bad decision — it was a field path quoted
+  from memory. `collection.total` appeared in five sheets, three spellings, three categories,
+  and the key has never had it; one of those was a runtime condition, and a nil compare in
+  Luau is silently falsy, so the terminal state would simply never have fired. A citation that
+  resolves to nothing reads as safe, which is what makes it expensive.
+  - A citing key **registers** where its refs live (`refSites`) rather than flagging each one,
+    because verifying a discriminator means proving no intended reference forgot the flag —
+    a negative. `refCount` closes the registry's one hole with an integer.
+  - Resolution is a triple, not a boolean: `absent`, `present`, `absentByDesign`. A sentinel is
+    not a zero, and reading it as one is how a bay with no Finds reports a perfect reveal gap.
+  - **When every author writes the same "wrong" spelling, the grammar is wrong.** Bare string
+    subscripts (`customFields[saveState]`) became legal because four sites across two domains
+    wrote them that way and none quoted. A bare *number* stays illegal, because `[0]` really is
+    ambiguous between the index and a row whose id is `"0"`.
+- **A check must be able to pass.** Three sheets independently shipped an acceptance criterion
+  of the form *"the string X appears zero times in this sheet"* — in a sheet that names X in
+  order to forbid it. Scope a grep-shaped check to the fields that carry claims, never to the
+  prose that documents the fix.
 
 ## Commands
 
@@ -89,6 +112,8 @@ npm run cid:verify                          # mechanical checks. run BEFORE any 
 npm run cid:research                         # bank every [research: url] into one deduped pack
 npm run cid:digest                          # every sheet's decision + boundary, ~40 lines
 npm run cid:pack -- --domain theme/tone --brief concept/spec/<slug>
+npm run cid:leadpack                        # one category lead's context, derived
+node --test bridge/test/refs.test.mjs       # the citation resolver
 
 # stage 1
 npm run render -- --brief briefs/shop.brief.json --viewport all
@@ -121,7 +146,8 @@ because a writer holding all of a domain's sheets cannot collide with itself.
 
 CID's job is to spec **every aspect of the game** — 9 categories, 55 domains, from Environment
 and VFX through SFX, Mix, Networking, Security and Platform & Input. Wave 1 covered 14 of them.
-The rest are real work and they are supposed to happen.
+**All 55 have now run, across seven waves, producing 250 sheets.** They were real work and
+they did happen.
 
 **A domain does not need a contract key to run. It needs to produce one.**
 
@@ -133,10 +159,19 @@ exists to remove. Prose was never the problem; prose *with no data beside it* wa
 > Every sheet carries a `manifest` block, or states in one line why its subject has no data
 > form and names the key it would need. `npm run cid:verify` warns on sheets with neither.
 
-**A missing key is a finding, not a stop sign.** The contract is 16 keys because it was
-derived from one hand-built game. It should grow roughly one key per domain as the remaining
-waves run: `environment`, `sfx`, `mix`, `products`, `events` do not exist yet and all of them
-should, because a builder cannot build an environment from an adjective.
+**A missing key is a finding, not a stop sign.** The contract was 16 keys because it was
+derived from one hand-built game, and the prediction here was that it would grow roughly one
+key per domain. It did: **26 merged, 57 proposed.** `products` and `events` landed, and
+`styleGuide` is the worked example of *why* — the lane slab was `Slate` with no `Color` at
+all, against a design naming `Limestone` at `[216, 201, 169]`. Nobody had chosen `Slate`.
+The key was proposed, nothing emitted it, and the value did not exist to read. A builder
+cannot build a world from an adjective, and it turns out it cannot build one from a proposal
+either.
+
+**A proposal is a finding that has not been paid for yet.** 57 of them are queued. Promoting
+one is a deliberate act — a shape, a check, an emit block, and a module that reads it — and
+the architect's "supplied but no module reads it" check is what stops a promotion from being
+a decoration.
 
 Tone is the worked example of doing it right. Four sheets of register prose became
 `vocabulary.casing`, `.maxSentenceWords` and `.allowedPattern`, which the merger now enforces
@@ -176,7 +211,7 @@ That last clause is the stopping condition, and it is deliberately not "no findi
 rebuild will always produce findings. It should stop producing findings a player would notice.
 
 **The corollary:** do not add a contract key to close a finding that meets neither bar. The
-contract is 16 keys because 16 is what the build actually reads. Growing it to answer
+contract is the size it is because that is what the build actually reads. Growing it to answer
 questions nobody would notice the answer to is how a specification becomes a second codebase.
 
 ## Known gaps
@@ -185,9 +220,18 @@ questions nobody would notice the answer to is how a specification becomes a sec
    says the audience is mobile-heavy — so most of the target audience cannot spend currency.
    Closing it needs a `pressable` readout in ui-forge's `hud-overlay` pattern, which is the
    one-pattern bottleneck, not a spec gap. The largest remaining item.
-2. **Five modules still declare their own `PlayerState`.** `Types.luau` is emitted now and
-   `stateShape` owns the shape, but the modules built before it exist have not been
-   regenerated. Static only: the game runs, because instance requires resolve to `any`.
+2. ~~**Five modules still declare their own `PlayerState`.**~~ **Closed.** Zero rival
+   declarations remain. Two modules still write the name — `Progression` and `Modifiers` —
+   and both say in place that they are declaring a structural *subset* of `Types.PlayerState`
+   (the three fields each is the writer or reader of) rather than a competing shape. That is
+   the narrowing the state shape was meant to make possible, not the drift it was meant to
+   stop. Six files now reference `Types.PlayerState` directly.
+3. **The design's own citations are checked now, but only inside the contract.**
+   `bridge/refs.mjs` resolves every declared reference against merged ∪ proposals, and
+   `npm run bridge` reports it. Today 13 resolve and 19 wait on a proposed key — so a citation
+   into a *proposed* key cannot fail the gate, because a proposal is never merged. Those
+   become problems on promotion, which is the right moment, but it means the count of checked
+   citations grows with the contract rather than being complete now.
 4. **Six CID domains own no contract key** and are frozen by the rule above. Their 23 sheets
    stay as a record.
 5. **`ui-forge` is undeclared as a build dependency**, which is why `client-main` is the one
