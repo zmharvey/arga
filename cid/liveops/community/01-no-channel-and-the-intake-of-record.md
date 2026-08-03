@@ -165,8 +165,8 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       "channelReferencesAmongThem": 0,
       "channelReferenceTest": "run AC2's compound pattern over those 40 lines: zero hits",
       "descriptiveNotKeyPathUses": [
-        "GameConfig.luau:1567 — a player can spend a whole session alone and receives no social proof",
-        "Plots.luau:284 — deletes the only social system the game has",
+        "GameConfig.luau, the line matching `no social proof` — a player can spend a whole session alone and receives no social proof",
+        "Plots.luau, the line matching `the only social system` — deletes the only social system the game has",
         "World.luau:26 — social-graph or ranking APIs social forbids"
       ],
       "correctionRecord": "the published figure was 37 across 7 files; the first correction said all 40 were the contract key. Both were wrong. 40/7/39/6 is measured, and the three lines above are not key paths. Neither error touched the exclusion, which holds.",
@@ -281,7 +281,7 @@ record. **Roles:** none, or a tester rank — **none**, because `release.environ
    those 40 lines returns zero**, so not one of them is a channel, a URL, a group id or a
    social-graph call. Most name the `social` contract key, a `cid/gameplay/social/*` sheet path
    or the `GameConfig.Social`/`SOCIAL` identifier; **three use the word descriptively and are
-   also not channel references** — `GameConfig.luau:1567` *"no social proof"*, `Plots.luau:284`
+   also not channel references** — `GameConfig.luau` *"no social proof"*, `Plots.luau`
    *"the only social system the game has"*, `World.luau:26` *"social-graph or ranking APIs"*.
    The 40 drifts with every comment edit; the zero does not, and the zero is the criterion.
 3. **No field under `community` publishes a review rhythm.** `community.triage.cadence` is the

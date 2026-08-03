@@ -310,6 +310,41 @@ const PROSE_BUDGET = 100;
   }
 }
 
+/*
+ * A line number in a GENERATED file is a citation with an expiry date.
+ *
+ * `GameConfig.luau` says "GENERATED FILE — do not edit" on line 3 and is rewritten by
+ * `npm run bridge -- --emit` on every contract change. Promoting one key shifted it by +68 and
+ * silently falsified four acceptance criteria across three sheets in a single commit — each of
+ * which had been measured honestly, against a file that then moved.
+ *
+ * This is worse than an ordinary stale citation because nothing local changed. A sheet nobody
+ * touched became wrong, and its criterion still LOOKS specific: `GameConfig.luau:1634` reads
+ * like the most precise thing on the page.
+ *
+ * Cite generated files by CONTENT — the string to grep for — which survives re-emission and is
+ * what the criterion actually means. Cite hand-written files by line freely; those move only
+ * when someone edits them, and then the editor is present to notice.
+ */
+{
+  const GENERATED = /\b(GameConfig|Types)\.luau:(\d+)/g;
+  const sites = [];
+  for (const f of [...leaves, ...indexes].filter(scoped)) {
+    const body = await readFile(f, 'utf8');
+    const hits = [...body.matchAll(GENERATED)];
+    if (hits.length) sites.push({ sheet: relative(ROOT, f), hits: hits.map((h) => h[0]) });
+  }
+  if (sites.length) {
+    const total = sites.reduce((n, s) => n + s.hits.length, 0);
+    warns.push(`${total} line-number citation(s) into GENERATED files, across ${sites.length} sheet(s). `
+      + `A re-emit moves every one of them and falsifies the criteria that carry them, with nothing `
+      + `local changed to explain it — promoting one key shifted GameConfig.luau by 68 lines and `
+      + `broke four criteria in one commit. Cite the string to grep for instead. `
+      + `${sites.slice(0, 4).map((s) => `${s.sheet} (${s.hits.length})`).join(', ')}`
+      + `${sites.length > 4 ? ', …' : ''}`);
+  }
+}
+
 /* ----------------------------------------------------------------- report */
 
 console.log(`\ncid:verify — ${leaves.length} leaf sheet(s), ${indexes.length} index(es)${only ? ` [${only}]` : ''}\n`);

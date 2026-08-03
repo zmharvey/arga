@@ -112,3 +112,188 @@ Recorded for the final pass; none is a failure of this category now.
 3. Requests 5 and 6 applied — arithmetic and scope corrections that cost a sentence each.
 4. `npm run cid:verify` re-run after the edits, including the `icon/02` backtick note, so the no-data-form warning list is empty rather than explained.
 5. Nothing here waits on another domain. Live Ops ran and is cited correctly throughout; Art, Gameplay and Tech are approved and every value read from them reproduces.
+
+---
+
+# Round 2 — re-verification after revision
+
+**Status: FAIL**
+Six of the seven round-1 requests are closed and I re-derived every one of them rather than
+accepting the writers' reports. The category does not release, on one finding: **`hype/` never ran
+this round, and it is the one domain still pinning `publishChecklist` row `P5` and asserting an
+absolute row count** — against an orchestrator ruling that binds this category, against
+`liveops/community/02` which withdrew that ask, and against the four sibling Marketing sheets that
+de-pinned. `release` is handed two contradictory numbering instructions by one category. Four
+further sheets carry line-precise repo citations that were true when written and are false now.
+Nothing is blocked on an unrun domain, so this closes in one more round.
+
+## Round-2 check results
+
+Re-run against the current files. Checks not listed were re-confirmed unchanged and their round-1
+evidence still reproduces (`Theme.luau:3,10,12` still reads `cartoon-vibrant` / `Pet Ascend
+Simulator`, so check 8's `C1` still fails as stated; `meta/02:62-67` still holds four sets of six).
+
+| # | check | round 1 | round 2 | evidence |
+|---|---|---|---|---|
+| 1 | `T0` — every outward claim resolves | FAIL, 1 of 18 | **pass** | `name/03`'s `G1.backedBy` is now `["collection.sets", "cid/gameplay/meta/02-the-collection.md"]` and its `check` is `sum(len(collection.sets[i].relics)) == 24` (`name/03:130`). `meta/02:62-67` holds `terrace`/`cistern`/`vault`/`spire`, six relics each — I counted the arrays, 4 × 6 = 24. Grep for `collection\.total` over `cid/marketing/**`: every surviving occurrence is a negative citation (naming it in order to forbid). Zero `backedBy`, `check` or `supplyBackedBy` values contain it |
+| 5 | the six keys do not overlap | pass | pass | Re-run. Exactly six `"provides":` in `cid/marketing/**`, one per key, one per file. No new `provides` was introduced by any of the four writers |
+| 6 | Social's cross-key invariant | FAIL as written | **pass, and I broke it myself before passing it** | I ran all ten patterns over `cid/marketing/` independently: **0 matches, every one**. Positive control confirms the anchoring is load-bearing rather than the corpus being empty — the unanchored `x\.com/` matches 155 times across 22 files, and `(^\|[^a-z0-9.])x\.com/` (leading class only, no trailing class) still matches 7 lines including `social/01:272`'s `U1` and `social/_lead:163`. Adding the trailing class `[A-Za-z0-9_]{1,15}([^A-Za-z0-9_/]\|$)` takes it to 0, which is exactly the citation-versus-handle distinction the sheet claims. The `roblox.com` question resolves correctly: the only occurrence of the literal `x.com` inside `roblox.com` is preceded by `o`, which is inside `[a-z0-9.]`, so the leading class excludes it — confirmed against 23 banked `roblox.com/games/[0-9]` urls in the same files. `invariants[1]` (`social/01:251`) mirrors the criterion. Criterion 3's *"every `source` appears in `cid/_research/pack.md`"* also holds: all eight `platformRules[].source` patterns are banked |
+| 14 | Name's three grounds against `Ruin Restoration` | FAIL on ground 3 | **pass** | `name/01:45-56` withdraws ground 3 explicitly, states the replacement rule (*"`T2` is tripped by a world-outcome claim and never by a genre noun"*), and retains the narrow claim as data at `predicateReadings[0].narrowClaimRetained`. Candidate `C4` now reads *"passes, including `T2`"*. `store-page/01`'s `t2Predicate.appliedTo[2]` says the same thing from the other side. The two sheets now agree on one reading of one predicate, which is what the check asked for |
+| 20 | `RR-H1` and `RR-C1` compose to six rows and do not overlap | pass | **FAIL — and the check is wrong; see below** | `liveops/community/02:145` withdrew the `P5` ask (*"My first draft asked for `P5` and stated a `4 → 5` row count"*) and files `F-C4` naming ten stale citations across six Marketing files. Four sites still assert the withdrawn form, all in Hype, which did not run: `hype/01:259` `effectOnReleaseAC1` = *"RR-C1 already moves the row count from 4 to 5; this moves it to 6"*; `hype/01:263` describes RR-C1's ask as *"a fifth publishChecklist row `P5`"*; `hype/01:287-291` repeats both in prose; `hype/_lead:150` says *"the two rows become `publishChecklist` `P5`/`P6`"*. Meanwhile `thumbnails/01:287`, `thumbnails/02:165-167`, `thumbnails/04:180` and `icon/01:191-196` all now read *"id assigned by `release`"* / *"at least one row beyond `P4`"* |
+| 21 | acceptance criteria 2–4 and mechanically checkable | FAIL, 3 sheets | **pass, with one ambiguity — see request R2-4** | All three named criteria are now runnable. `thumbnails/01` #3 repoints to `platform.pixelSize` and `platform.formatChosen` and adds a byte-identity test on `slots[].captureSource`, which the writer made satisfiable by splitting the gloss out into `captureSourceRule` (`:161-162`) rather than weakening the criterion — the right direction. `name/01` #3 asserts `emitter.keyReachesNothingToday` and `authority.wireExists`, both present. `name/03` #4 is rescoped to `backedBy`/`check`/`supplyBackedBy` values, which is not cosmetic: `name/03:122` carries `"refuses": "the collection.totalRelics field …"`, and `collection.totalRelics` contains `collection.total` as a substring, so an unscoped criterion would still self-falsify. **Correction to round 1: there are 16 leaf sheets, not 15.** All 16 carry exactly 4 |
+| 23 | nothing invented is presented as sourced | pass with one slip | **FAIL, 3 sheets** | The round-1 slip is fixed and I reproduced every figure (below). But three sheets now assert that a named file and line says something it does not, because the orchestrator corrected those files this round. See R2-1, R2-2, R2-3 |
+| — | store-page mirror is a strict subset (round-1 request 4) | FAIL | **pass** | The writer made no edit and pushed back. **The pushback is correct.** I walked all 25 mirrored leaves myself against the four amending sheets, not the writer's summary. `discovery`: 7 leaves, all identical at `02:103-139`, including `keywordSurface` byte-for-byte. `contentMaturity`: 7 leaves, all identical at `03:95-104`, and `analyticsUnder13Suppression` is **absent from the mirror**, which is one of the two round-1 defects. `passListing`: 6 leaves — `description.statesFactorNumber`/`.statesPrice` at `04:111,113` and `provisioning.published`/`.publishedGate` at `04:202-203`, both nested, which is the other round-1 defect. `updateNotes`: 5 leaves, all identical at `05:85-91`. No type mismatch, no path mismatch, no field in the mirror absent from its amender. (The writer counted 21; I count 25. The discrepancy is in the counting convention, not in the result) |
+| — | `icon/02` data-form exemption (round-1 note) | note | **note withdrawn — the round-1 note was wrong** | The writer pushed back and is right. `icon/02:14` reads `**This sheet carries no manifest block**` with no backticks, and `:153` states it a second time. `bridge/verify-sheets.mjs:259` matches `/##\s*No manifest block\|no data form\|carries no manifest block\|supplies no value/i`; line 14's inner text is contiguous, so it matches and the sheet is skipped. No edit was needed and none was made |
+
+## Findings I verified independently rather than accepting
+
+**The icon arithmetic reproduces at every figure, and the exclusion is robust.** I recomputed
+Rec.601 from the source triples rather than checking the subtractions: head `[178,160,133]` →
+162.304; head-as-`styleGuide`-had-it `[190,158,118]` → 163.008; grip `[118,88,66]` → 94.462;
+`tiers[0] [104,142,76]` → 123.114; `stone.built [210,195,163]` → 195.837; `stone.cleared
+[216,201,169]` → 201.837; `canopy.leaf [52,66,44]` → 59.306. Every rounded value in the sheet is
+correct. The three exclusion subtractions then hold: 39.19 and 33.54 at 162.30, 39.90 and 32.83 at
+163.01 — all four under 40, so the head is inside a 40-luma band of **both** regions under every
+assignment, which is what makes `L4` unsatisfiable and `L3` the fallback. 63.80 for canopy clears
+the floor, so `canopyAreaPct` correctly cites `maxRegions: 2` and not a separation failure. 28.65
+for the grip is inside one band, so dropping it as a ground was right. `realisedSeparationLuma`
+72.73 and the 78.73 best case both reproduce. **Round-1 request 5 is closed on better ground than
+it asked for** — the writer found the inherited figure itself was wrong, which the request did not.
+
+**Every `[research: url]` in the revised Name sheets is a real fetched source.** The Name writer had
+no fetch tools, so this was the invariant most at risk. All 14 experience and catalog urls in
+`name/01`'s occupancy table resolve to `##`-headed sections in `cid/_research/pack.md` — I checked
+by asset id and by slug (`Lush-Overgrown-Showcase`, `Overgrowth-Cape`, `Star-Ruins-Spirit-Forest`,
+`Ruins-Realm`, `FNaF-The-Ruins`, `Find-the-Objects` all appear as banked fetch headings). Nothing is
+a plausible-looking url.
+
+**`name/01`'s repo claims are exact where they matter.** `game-context.mjs:136` is `title:
+concept.title`, and `:133` confirms the object's provenance is `${concept.slug}.concept.json`. Glob
+for `**/*.concept.json`: no files. `bridge/test/` holds exactly `bridge.test.mjs`,
+`context.test.mjs`, `refs.test.mjs` — three, as the sheet says and as round 1 got wrong.
+`theme-archetype.test.mjs` does not exist. `IndexScreen.luau` does exist, so `thumbnails/03`'s one
+build claim is a shipped file.
+
+**`N-C` is closed in repo source.** `bridge/schema.mjs:710-711` now holds shape-validation code; the
+`documentationOnly` comment lives at `:781-785` and reads *"An earlier version of this comment made
+`title` the exception … It does not"*, with the correct derivation. The comment is right now.
+
+**Other runnable claims that reproduce:** `grep -rniE "discord\|guilded\|twitch\|tiktok\|youtube\|twitter\|social media\|https?://"` over `game/src` → 0 (`social/01` criterion 4, `C13`).
+`grep -ri "find what's buried" game/src` → 0 (`name/03` criterion 3). Exactly one `briefRevision`
+object under `cid/marketing/**`, at `thumbnails/03:169` (`thumbnails/03` criterion 3, check 9).
+`grep -n "effects\.beats\[" cid/marketing/thumbnails/_lead.md` → 0, so `staleSpellingElsewhere` is
+genuinely closed and the round-1 note is discharged; the only surviving occurrences are inside
+`correctedFrom` records, which is what that field says. `thumbnails/01`'s `internalPathsAsserted.paths`
+does carry every `storeThumbnails` field path named by a criterion in all four sheets — I walked all
+sixteen criteria against the list.
+
+**`name/01`'s `emitter` block does not "match the five sibling shapes", because there is no such
+shape.** The six keys record one finding six ways: `storeIcon` as `gaps.G-I3` (an object with
+`statement`/`routedTo`), `storeThumbnails` as `captureGate.fileOwnership.keyReachesNothingToday` (a
+boolean), `storeListing` as `emitter: "none"` (a **string**), `channels` as `emitter: {exists, kind,
+consumedBy, gap}` (an **object**), `launchBeats` as `emitterHole` (a **string**). `title` adds a
+third `emitter` field, an object, closest to `channels`. This is not a violation of anything on my
+list — criterion 3 asserts only `keyReachesNothingToday`, `wireExists` and two `requestedChanges`
+entries, all of which are present and true — and the *finding* is recorded correctly at all six
+sites. But the field name `emitter` now carries a string at one key and an object at two others in
+one category, which is the same type-collision shape that `blocksMirrored` exists to catch. Recorded
+as a cross-category conflict, not as a request.
+
+## Round-2 revision requests
+
+### R2-A. `cid/marketing/hype/01-the-publish-moment.md` — still pins `publishChecklist` row `P5` and asserts an absolute row count
+**Violates:** check 20; the orchestrator ruling that requesters do not assign ids; `liveops/community/02` `F-C4`
+**Current:** four assertions in one file. `:259` `revisionRequests[RR-H1].effectOnReleaseAC1` = *"RR-C1 already moves the row count from 4 to 5; this moves it to 6."* `:263` `revisionRequestsCitedNotFiled[RR-C1].ask` = *"a fifth publishChecklist row P5 for the Maturity and Compliance questionnaire"*. `:287` prose = *"already asks `release` for a `P5` row"*. `:290-291` prose = *"Together the two move `release` AC1's row count **from 4 to 6**"*.
+**Fix:** three edits and one deletion. `:263` restate RR-C1's ask as its owner now words it — `liveops/community/02:136` reads *"Add a new `publishChecklist` row, ID ASSIGNED BY `release`"* — and drop the words *"a fifth"* and *"P5"*. `:259` replace `effectOnReleaseAC1` with `rowCountEffect: "at least one row beyond P4"`, matching `thumbnails/02:167`. `:287` and `:290-291` drop `P5` and the `4 → 6` arithmetic, and say instead that four live requests want rows on one checklist and `release` numbers them.
+**Why it counts:** bar (b). `release` is one owner receiving four requests against a four-row checklist. Two of them (`thumbnails/02`, `icon/01`) say *"id is yours, at least one row beyond `P4`"*; Hype says the row is `P5` and the resulting count is exactly 6. `liveops/community/02:323` states plainly that four self-assigned numbers is a collision `release` would have to unpick before executing any of them. Two competent readers building the checklist from this category produce different checklists. It is also the only place in Marketing where a ruling the orchestrator applied everywhere else did not land — because this domain's writer was not dispatched.
+
+### R2-B. `cid/marketing/hype/_lead.md` — the verification note pins `P5`/`P6`
+**Violates:** the same ruling as R2-A
+**Current:** `:150` — *"if that sheet accepts the revision request, the two rows become `publishChecklist` `P5`/`P6` and `launchBeats.preconditions` must cite them instead of stating them."*
+**Fix:** replace `P5`/`P6` with *"two new rows whose ids `release` assigns"*. The sentence's point — that accepting the request converts `preconditions` from stating an obligation to citing a row — survives unchanged and is the useful half.
+**Why:** it is the domain index, so it is what the next writer on this domain reads first, and it re-teaches the pin the leaf is being asked to drop.
+
+### R2-C. `cid/marketing/icon/01-the-one-icon.md` — asserts `art/style/01` line 264 carries a value it no longer carries
+**Violates:** check 23
+**Current:** the sheet says in four places that `styleGuide` ratifies the tool head as `[190,158,118]` luma 163.01 against `objectArt`'s `[178,160,133]` luma 162.30, and files that as a live conflict: `:32` (*"`styleGuide` … line 264 ratifies the head as `[190,158,118]` luma **163.01**"*), `:222` `toolAreaPctBecause`, `:223-231` the whole `toolHeadLumaDiscrepancy` object, `:354-357` a Consequences bullet (*"one of the two sheets is carrying a superseded number"*), the `## Flagged to the developer` row 4, and the `## Not decided here` line. `art/style/01:263-264` now reads grip `[118,88,66]` luma 94.46, head `[178,160,133]` luma **162.30**, paler by **67.84**, and `:269-276` records the correction by name.
+**Fix:** collapse `toolHeadLumaDiscrepancy` to a closed record — `styleGuideProseValue` and `objectArtValue` both 162.30, `status: "closed"`, `closedBy: "art/style/01:269-276"` — and delete the `[190,158,118]` / 163.01 clauses at `:32` and `:222`, the Flagged row and the Not-decided line. **Change no arithmetic:** the operative subtractions are 39.19 and 33.54 at 162.30 and they are already correct and already primary.
+**Why:** the sheet's own criterion 2 is an arithmetic reproduction, and it is the one place in this category where a reader is told to go check another file's line. That line now says the opposite. Below both stopping-rule bars — the verdict is identical at either figure and the sheet says so — but check 23 is on my list and this is a line-precise citation that no longer resolves.
+
+### R2-D. `cid/marketing/name/01-the-title.md` — asserts `bridge/schema.mjs:710-711` carries a comment it no longer carries
+**Violates:** check 23
+**Current:** `:96-97` prose and `value.emitter.sitesAssertingTheMissingArrow[3]` both name `bridge/schema.mjs:710-711` as *"a code comment asserting `title` 'reaches `Theme.luau` through `generate.mjs` and is therefore build-read'"*, `status: "Routed to contract-and-seam work"`; and `authority.requestedChanges[N-C]` asks someone to *"correct or delete"* it. Lines 710-711 now hold `if (typeof value !== 'object' …) problems.push(\`${key} must be an object\`)`. The comment is at `:781-785` and now reads *"An earlier version of this comment made `title` the exception … It does not."*
+**Fix:** mark `sitesAssertingTheMissingArrow[3]` `status: "corrected in repo, bridge/schema.mjs:781-785"` and move `N-C` from `requestedChanges` to a `closedRequests` field with the same citation. Do not touch `N-A` or `N-B`; criterion 3 needs `requestedChanges` to hold at least two entries and those two remain live and correct.
+**Why:** the sheet's substance — `title` reaches nothing today — is right, and I re-derived all of it. What is wrong is that it reports an open request against a file that has already answered it, at a line number that now points at unrelated code.
+
+### R2-E. `cid/marketing/name/03-the-tagline.md` — asserts a `collection.total` citation survives when none does
+**Violates:** check 23
+**Current:** `:182` — *"one domain index — `liveops/events/_lead:101` — still cites `collection.total == 24` as a check. **That is the last live occurrence in `cid/`**"* — and `:205-206` routes it to the cross-category pass. Grep for `collection\.total` over all of `cid/`: zero live citations remain anywhere. `liveops/events/01` now carries it only inside `replacedPhantom` and `correctedAtRound2` records, and `liveops/events/_lead:101` no longer matches.
+**Fix:** replace both sentences with a statement that the sum form has landed at every site and no live citation remains, or delete them. One sentence each.
+**Why:** it is the last open item this sheet hands to the cross-category pass, and it hands it an item that is already closed. Cheapest of the five and the least consequential; filed because it is the same defect class as R2-C and R2-D and the pattern is the point.
+
+### R2-F. `cid/marketing/thumbnails/02-the-capture-gate.md` — criterion 4's `id` clause is false as literally read
+**Violates:** the invariant that acceptance criteria are checkable without two readers disagreeing
+**Current:** *"it carries no field named `rowId`, `row`, `newRowId` or `newRow`, and **its only `id` field is `"RR-T1"`**."* The `revisionRequests[RR-T1]` object nests `otherLiveRequestsAgainstThisChecklist`, whose three rows each carry an `id` (`"RR-C1"`, `"RR-H1"`, `"unnumbered"`). Read literally the clause is false; read charitably it means the top level.
+**Fix:** one word — *"its only **top-level** `id` field is `"RR-T1"`"*.
+**Why:** the clause exists to prove this sheet assigns no checklist id, and it was added in the same edit that introduced the nested rows that falsify it. Two readers running it disagree on the verdict, which is the one thing an acceptance criterion may not permit.
+
+## The checklist itself is wrong at check 20
+
+**FAIL — check is wrong.** Check 20 reads *"`RR-H1` and `RR-C1` compose to six rows and do not
+overlap"*, and round 1 passed it by doing the arithmetic `4 + 1 + 1 = 6`. That arithmetic is now the
+thing being forbidden: `liveops/community/02` has withdrawn the `P5` pin and the `4 → 5` count, and
+the orchestrator has ruled that requesters assign no ids. Under check 20 as written, the four
+Marketing sheets that correctly de-pinned (`thumbnails/01`, `/02`, `/04`, `icon/01`) would now
+*fail* it, because they refuse to state the composed count, and Hype — the only sheet still
+asserting it — would pass. The check rewards the defect.
+
+`cid/marketing/_verified.md:31` and `:96` are themselves two of the ten citations `F-C4` names.
+
+**Narrow check 20 to:** *"`RR-H1` and `RR-C1` are each filed once, do not overlap in subject, and
+neither they nor any sheet citing them asserts a checklist row id or an absolute post-acceptance
+row count."* Under the narrowed check the four de-pinned sheets pass on their own wording, Hype
+fails on four sites, and the row count returns to `release`, which is the only holder that can see
+all four requests. Predicted conflict 3 above should be rewritten the same way: `release` is owed
+*at least four rows beyond `P4`*, and this category asserts no total.
+
+## Predicted cross-category conflicts — round 2
+
+Carried forward from round 1: 1 (now closed inside `cid/`; see R2-E), 2, 4, 5, 6, 7 all stand. 3 is
+superseded by the narrowing above. New:
+
+8. **`emitter` is a string at one Marketing key and an object at two others.** `storeListing.emitter`
+   is `"none"`; `channels.emitter` and now `title.emitter` are objects. `storeIcon`,
+   `storeThumbnails` and `launchBeats` record the same finding under three further field names.
+   Six keys, one finding, six shapes and one type collision. Nothing reads any of them today, so no
+   builder diverges — but contract-and-seam work cannot write one shape for `emitter` without
+   picking a winner, and `store-page/01`'s own `blocksMirrored.checkedBy` treats exactly this
+   string-versus-object mismatch as a failure when it happens inside one key.
+9. **`store-page/01`'s `## Pushing back` describes a disagreement that has been settled.** It says
+   it overrules *"`name/01`'s ground 3 as written"* and that *"the narrowing sits in
+   `## Consequences` as a one-field change for them to make."* Name has made it. The reasoning is
+   still correct and worth keeping as the record of how `t2Predicate` came to exist; a final pass
+   should decide whether a settled `## Pushing back` is annotated or left as history. Not a request:
+   it asserts no false fact about a file.
+10. **Four sheets were revised against a baseline that was stale for their own files.** The Name and
+    Store-page writers both reported the round-1 findings already landed, and in both cases I
+    confirmed the current file is correct. Round 1 also miscounted the leaf sheets (15 for 16) and
+    cited `thumbnails/03:126` for an object now at `:169`. A final pass should re-read rather than
+    diff against this file's round-1 line references.
+
+## What must happen before this category can release
+
+1. **R2-A and R2-B applied by the Hype writer, which has not been dispatched since round 1.** This
+   is the only bar-(b) finding in the round and the only reason the status is FAIL rather than PASS.
+   Four sites in two files; no decision moves, no beat changes, `beatCount` stays 1.
+2. **R2-C, R2-D and R2-E applied** — three sheets asserting that a named repo file or line says
+   something it no longer says, all three created by corrections the orchestrator made elsewhere
+   this round. One field or one sentence each. Below both stopping-rule bars; filed because check 23
+   is on the checklist and because a category whose central claim is `T0` cannot ship citations that
+   do not resolve.
+3. **R2-F applied** — one word in `thumbnails/02` criterion 4.
+4. **Check 20 narrowed as stated above, at the category, before the final pass runs it.** Left as
+   written it will fail the four sheets that got this right.
+5. Nothing waits on another domain. Live Ops ran and `F-C4` is the source of finding R2-A; Art,
+   Gameplay and Tech are approved and every value I read from them reproduced to two decimal places.
+   Gates re-run by the orchestrator this round: `cid:verify` PASS 0 failures, `bridge` COMPLETE
+   26/26 0 problems (`styleGuide` promoted), `npm test` 199 pass 0 fail.

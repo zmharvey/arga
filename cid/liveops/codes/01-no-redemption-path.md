@@ -190,7 +190,7 @@ per `tech/deploy/02`.
             "game/src/server/Entitlements.luau:87 comment",
             "game/src/server/Entitlements.luau:98 warn string",
             "game/src/server/Entitlements.luau:113 warn string",
-            "game/src/shared/GameConfig.luau:1237 config string"
+            "game/src/shared/GameConfig.luau, the one UserOwnsGamePassAsync occurrence in it — a config string"
           ],
           "totalTextualOccurrencesIncludingTheCallSite": 7,
           "correctedInRound": 1,

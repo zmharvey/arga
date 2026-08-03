@@ -28,16 +28,65 @@ formulation true of the arrangement the build actually ships.
 **Past the fourth set the works continues as more parts of the same four kinds, further in, with
 nothing new to find.** No fifth kind of part, no summit, no floor, no last area.
 
-**No manifest block: Setting owns no contract key.** This session has no shell tool, so
-`npm run bridge -- --contract` could not be run; I read `SCHEMA` in `bridge/schema.mjs` directly,
-which is the same rows `contract()` prints. Eleven keys, owners `gameplay/*` ×7,
-`tech/architecture` ×2, `art/objects` ×1, `theme/vocabulary` ×1. **None holds a scale, a direction,
-a count of places or a spatial relation.** The numbers this decision touches — `area.size`,
-`area.originXZ`, `collection.areasPerDepth` — are all `gameplay/meta`'s, and I state requirements on
-them and set none. `[research: repo — bridge/schema.mjs:29-311 and :461-464, read this run]`
+**This sheet amends `setting.extent`; `01-the-ruin` carries the key.** The numbers this decision
+touches — `area.size`, `area.originXZ`, `collection.areasPerDepth`, `depths.areaCount` — are all
+`gameplay/meta`'s, and the block below states requirements on them and sets none. What it does set
+is the shape of the place: one works, four kinds of part, an inward axis, no total and no adjacency.
+Three merged keys have since implemented exactly that, and the block names the fields
+`[research: repo — cid/gameplay/meta/06-plot-arrangement.md, cid/gameplay/meta/04-the-depth-ladder.md,
+read this run]`.
 
 **This sheet coins zero terms.** The fiction of the repeating part rides on a word the contract
 already has: an `area` **is** the works's part. Naming work gains nothing to collect.
+
+```json
+{
+  "amends": "setting",
+  "requested_by": "cid/theme/setting/02-extent.md",
+  "extent": {
+    "worksCount": 1,
+    "secondBuildingOfAnyKind": 0,
+    "areaIs": "one working part of the one works",
+    "partKindCount": 4,
+    "partKindsAreKindsNotPlaces": true,
+    "instancesPerKind": "more than one. collection.areasPerDepth may take any integer >= 1 with 0 renames; it currently ships 2 and depths.areaCount ships 8.",
+    "fifthKindOfPart": 0,
+    "finalPart": 0,
+    "summitOrFloor": 0,
+    "depthAxis": "inward, away from the one open edge a person walks in by",
+    "depthAxisIsElevation": false,
+    "whyNotElevation": "collection.sets ships Cistern and Vault (substructure) at depths 2 and 3 and Spire (superstructure) at depth 4, so a vertical axis would run down, down, then up, and is falsified by values already on disk.",
+    "elevationCarriesProgressionMeaning": false,
+    "deeperMeans": ["further in", "more thoroughly covered", "denser", "rarer sets"],
+    "densityHasAFictionalReasonToRiseInward": true,
+    "sizeHasNoFictionalReason": "if core-loop/04's stud band bites, spend density rather than size",
+    "totalStatedAnywhere": false,
+    "uncountedNotInfinite": "canon declines to count. No total, no plan, no survey mark, no boundary stone, no map, no vantage point.",
+    "viewOfTheWhole": 0,
+    "sightlineIsAboutOnePartWide": true,
+    "spatialRelationsCanon": [],
+    "spatialRelationsExcluded": ["adjacency", "bearing", "distance", "map", "plan", "signpost", "survey mark", "boundary stone"],
+    "pastTheFourthSet": "more parts of the same four kinds, further in, with nothing new to find",
+    "shuffleGoverns": "which part you meet next, never whether it exists",
+    "createdWhilePlaying": 0,
+    "accruedWhileAway": 0,
+    "bannedDirectionWords": ["descend", "descends", "descended", "descent", "underground", "subterranean", "catacomb", "cavern", "dungeon", "abyss", "sunken", "summit", "peak", "topmost", "last area"],
+    "bannedDirectionWordsScope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose and quoted research are exempt.",
+    "unavailableStoreWords": ["islands", "worlds", "maps"],
+    "playerFacingTotals": {
+      "permitted": ["the 24-slot collection index", "any count of parts the player has finished"],
+      "forbidden": ["a total number of areas that exist", "a fraction or percentage of the works cleared", "N of M areas", "N% of the ruin", "a map", "an elevation cross-section", "depth drawn as a stack of levels or a descending shaft"]
+    },
+    "carriedDownstreamBy": [
+      { "field": "plots.laneAxis", "value": "+Z", "holds": "the inward direction; the lane is the works running inward" },
+      { "field": "plots.bays[]", "holds": "eight parts of one continuous works, not eight places" },
+      { "field": "depths.areaCount", "value": 8, "holds": "two instances of each of the four kinds — kind, not place, realised" },
+      { "field": "environment.tuples[].residency", "holds": "one design repeated the length of the lane; repetition is the evidence, not the artifact" }
+    ],
+    "coPresenceNeedsNoWorldRule": "nobody owns the works; every kind of part exists in quantity, so two people working a terrace are working two terraces; and no adjacency is canon, so the fiction makes no claim about what stands where nobody is working."
+  }
+}
+```
 
 ## Why
 
@@ -189,7 +238,7 @@ reading `[research: repo — read this run]`. **I do not reinstate it:** I asser
 explicitly no plan, no map, no adjacency and no distance. What that sheet had to excuse — twelve
 identical adjacent grounds — this ruling *predicts*: parts of one works are alike because one crew
 built them to one design to do one job. **Repetition is the evidence, not the artifact.** And a
-neighbour visible across a 40-stud gap is not *"a second structure on the skyline"* under
+neighbour visible across the inter-plot boundary is not *"a second structure on the skyline"* under
 `01-the-ruin`'s exclusion, because it is more of this works — which is precisely the reading a chain
 of ruins could not have supplied.
 
@@ -239,6 +288,7 @@ much of it is there?"* — *"it just keeps going"* passes, *"it's the same one a
   list depths and the parts the player has finished. It **may not** show a total number of areas, a
   fraction or percentage of the works cleared, a map, or an elevation cross-section, and depth must
   not be drawn as a stack of levels or a descending shaft. Depth is distance inward.
+  `setting.extent.playerFacingTotals` is the field to cite.
 - **Environment art** *[Art & Visuals — Environment, wave 4+]*: **do not fight the repetition.** Two
   parts of one kind are alike because one crew built them to one design; the variance budget goes to
   green quantity (uniform weathering, per history work's L4) and to dressing, never to giving each
@@ -266,7 +316,7 @@ much of it is there?"* — *"it just keeps going"* passes, *"it's the same one a
   true and sayable is that the work does not run out.
 - **Naming work** *[Vocabulary, this wave, last writer]*: **nothing owed.** This sheet coins zero
   terms and introduces zero proper nouns; the fiction of the repeating part attaches to the existing
-  internal word `area`. Offered, not imposed: the direction words in criterion 1 are ready for
+  internal word `area`. Offered, not imposed: `setting.extent.bannedDirectionWords` is ready for
   `vocabulary.bannedWords` if you want *descend*, *underground* and *summit* refused mechanically
   rather than by review.
 
@@ -275,36 +325,37 @@ much of it is there?"* — *"it just keeps going"* passes, *"it's the same one a
 1. **Direction check.** Across every `manifest` block and every `artPrompt` under `cid/`, the
    whole-word case-insensitive pattern
    `descend|descends|descended|descent|underground|subterranean|catacomb|cavern|dungeon|abyss|sunken|summit|peak|topmost|last area`
-   returns **0 hits.** Verified 0 today across all manifest blocks on disk. Prose and quoted research
-   in these sheets is exempt; the check is against contract values and art prompts only.
+   returns **0 hits.** Prose and quoted research in these sheets is exempt; the check is against
+   contract values and art prompts only.
 2. **No-total check.** The number of player-facing strings and UI elements that state a total number
    of areas that exist, or a fraction or percentage of the works cleared, is **0.** Anything of the
    form `N of M areas` or `N% of the ruin` fails. **Counts of the player's own work are exempt and
-   permitted:** the 24-slot collection index and any count of finished areas both pass. Today: 0
-   violations, because the only counts on disk are `collection` and per-area cleared state.
-3. **Kind-not-place check, run through the bridge.** With `collection.areasPerDepth` set to `4` and
-   `collection.relicsPerArea` set to `2`, `npm run bridge` reports **zero problems** and **zero** of
-   the four `collection.sets[].label` strings requires renaming (4 × 2 = 8 ≥ the largest set of 6, so
-   the depth-completability invariant passes). This sheet requests **0** renames at the shipped values
-   as well.
+   permitted:** the 24-slot collection index and any count of finished areas both pass.
+3. **Kind-not-place check, run through the bridge.** `npm run bridge` reports **zero problems** at
+   the shipped `collection.areasPerDepth` and `collection.relicsPerArea`, and **zero** of the four
+   `collection.sets[].label` strings requires renaming at any value of `areasPerDepth` ≥ 1. This
+   sheet requests **0** renames.
 4. **No-adjacency check.** Across every `manifest` block under `cid/`, the number of fields stating a
-   position, distance, bearing or adjacency **between two areas** is **0**, and the only positional
-   field in the contract remains `area.originXZ`, owner `gameplay/meta`. This sheet introduces 0 such
-   fields and requests 0 changes to the `area` key.
+   position, distance, bearing or adjacency **between two areas** is **0**. The positional fields in
+   the contract are `area.originXZ` and `plots.slotOrigin`, both `gameplay/meta`'s, and both place a
+   *plot*, never one area relative to another. This sheet introduces 0 such fields and requests 0
+   changes to either key.
 
 ## Not decided here
 
 How many areas exist at any depth, how large or dense any of them is, how they are arranged, in what
 order they are met, how many authored layouts the shuffle draws from, and which of the four kinds sits
 at depth 5 and beyond — all `gameplay/meta`'s, wave 3, then balance work. What a finished part becomes
-and how a player physically goes further in (`04-permanence-and-passage`, this domain, next). The
-hour, the sky, weather, the light inside a vaulted part, and whether anything more than ordinary
-exists here (`03-physical-law`). The full presence-and-absence roster (`05-inventory`, which cites the
-five absences above rather than remaking them). Whether the `areas` screen exists at all and what it
+and how a player physically goes further in (`04-permanence-and-passage`, which amends
+`setting.passage`). The hour, the sky, weather, the light inside a vaulted part, and whether anything
+more than ordinary exists here (`03-physical-law`, which amends `setting.law`). The full
+presence-and-absence roster (`05-inventory`, which amends `setting.contents` and cites the five
+absences above rather than remaking them). Whether the `areas` screen exists at all and what it
 looks like (UI/UX, wave 4). Every colour, material, model and lighting value (Art & Visuals). Whether
-a stranger may do anything (Social, wave 2). Whether this setting is occupied on Roblox (Fantasy, this
-wave — if its search returns a shipping game built as one repeating uncounted complex, this sheet
-inherits the finding).
+a stranger may do anything (Social, wave 2). Whether `setting` is promoted into `bridge/schema.mjs`
+(contract-and-seam work; `01-the-ruin` carries the key). Whether this setting is occupied on Roblox
+(Fantasy, this wave — if its search returns a shipping game built as one repeating uncounted complex,
+this sheet inherits the finding).
 
 ## Flagged to the developer
 
@@ -334,7 +385,7 @@ same decision as *"further in"*. If you meant *deeper* literally, that is a one-
 forces a rename on `collection.sets[].label` — because `Cistern` and `Vault` cannot sit deeper than
 `Spire` in elevation, and 24 Find names hang off those four labels.
 
-Sources fetched this run:
+Sources fetched in the original run:
 [Basilica Cistern](https://en.wikipedia.org/wiki/Basilica_Cistern) ·
 [Piscina Mirabilis](https://en.wikipedia.org/wiki/Piscina_Mirabilis) ·
 [Terrace (agriculture)](https://en.wikipedia.org/wiki/Terrace_(agriculture)). The `Villa of Domitian`

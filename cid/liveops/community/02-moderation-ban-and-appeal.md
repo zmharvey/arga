@@ -45,7 +45,7 @@ and the key is already satisfied.
 **Where the class names actually occur, because my first draft got this wrong and it is worth
 saying why.** `[revised: R1]` I asserted that all three configuration class names appear in
 `game/src` **only** inside `World.luau`. Two of them do. `ChatWindowConfiguration` does not:
-`game/src/shared/GameConfig.luau:1634` carries
+`game/src/shared/GameConfig.luau` carries (grep `overridesPlatformDefault`; the line number moves on every re-emit and did — this was `:1634` before `styleGuide` was promoted)
 `overridesPlatformDefault = "ChatWindowConfiguration.Enabled defaults to true"` — a string
 value, not a reference, and it is **`social.chat.overridesPlatformDefault`, the very field this
 sheet cites approvingly two paragraphs above**. The fact was right and the location claim was
@@ -54,7 +54,7 @@ every observable here is now scoped to **executable use** — a reference a Luau
 which is both true today and robust against the next documentation string, where an unqualified
 occurrence count is neither. `[cid: decided]` on the scoping form. Re-measured this pass, the
 whole set is five lines: `World.luau:61,62,63` (the `CHAT_SURFACES` entries, executable),
-`World.luau:55` (the explanatory comment) and `GameConfig.luau:1634`.
+`World.luau:55` (the explanatory comment) and the one `GameConfig.luau` line matching `overridesPlatformDefault`.
 
 **The platform's age-check regime confirms `social.chat: false` on a second, independent
 ground, and overrules nothing.** A facial age check is required to access chat; users are
@@ -171,7 +171,7 @@ disjoint obligations with different surfaces, read-backs and failure modes, and
       "totalLines": 5,
       "executable": ["game/src/server/World.luau:61", "game/src/server/World.luau:62", "game/src/server/World.luau:63"],
       "executableAllInOneTable": "CHAT_SURFACES, which has exactly 3 entries",
-      "nonExecutable": ["game/src/server/World.luau:55 — the explanatory comment", "game/src/shared/GameConfig.luau:1634 — the social.chat.overridesPlatformDefault value string"],
+      "nonExecutable": ["game/src/server/World.luau:55 — the explanatory comment", "game/src/shared/GameConfig.luau, the line matching `overridesPlatformDefault` — the social.chat.overridesPlatformDefault value string"],
       "whyStatedAsASet": "an unqualified occurrence count was the defect R1 found. Naming all five lines makes the criterion checkable AND makes the next leak visible as a sixth line rather than as a failed count."
     },
     "conductSurfacesConsidered": [
@@ -398,7 +398,7 @@ disjoint obligations with different surfaces, read-backs and failure modes, and
    returns **exactly five lines**: `World.luau:61`, `:62` and `:63`, which are the three entries
    of `CHAT_SURFACES`, plus two **non-executable** lines — the explanatory comment at
    `World.luau:55` and the `social.chat.overridesPlatformDefault` value string at
-   `GameConfig.luau:1634`. So each of the three class names is **referenced in executable code
+   the `overridesPlatformDefault` line of `GameConfig.luau`. So each of the three class names is **referenced in executable code
    by exactly one module, `game/src/server/World.luau`**. **A criterion phrased as "these names
    appear only in `World.luau`" is not this criterion and fails against the repo.**
 4. `community.moderation.restsOnHumanTick` has exactly 2 rows, `P4` and `P3`, each with a

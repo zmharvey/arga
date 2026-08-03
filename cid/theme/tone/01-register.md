@@ -6,7 +6,7 @@
 
 Every player-facing string that is not a Find's flavour line is written to **P1–P9 below**:
 no first or second person, declarative only, at most 12 words a sentence and 2 sentences a
-string, ASCII letters plus five punctuation marks, Flesch-Kincaid grade 5 (hard ceiling 6),
+string, ASCII letters plus six punctuation marks, Flesch-Kincaid grade 5 (hard ceiling 6),
 no reference to the game as a game, no word naming a mood, and no veneration of the ruin's
 age. *"Warm, aged, unhurried"* is **not overruled**: it survives as the label and P1–P9 are
 its operative form, so `04-PRESENTATION.md`'s `fantasy-ornate` cascade is untouched.
@@ -40,19 +40,27 @@ all-caps, because `theme/vocabulary/01-naming-form` (pack §4) already fixed Tit
 uppercase is lossy, and rendered case is typography that UI/UX can apply to a whole class of
 label at draw time. `[cid: decided]`
 
+**P4 was widened by its key owner and the widening is accepted.** P4 originally banned `/`.
+`theme/vocabulary/02` added it on 2026-08-01 because excluding it made the collection readout
+`0 / 24` illegal, and wrote `%` as `%%` so the pattern means the same thing to Lua's
+`string.match` as to JavaScript's `RegExp`. P4's purpose is that a string be *typeable in the
+game's character set*, not that marks be scarce, and a solidus is typeable on every keyboard
+this audience owns. The row below is restated to the enforced pattern so this domain and the
+key it feeds do not disagree `[research: bridge/schema.mjs]`.
+
 ### P1–P9, the register
 
 | id | property | rule | check |
 |---|---|---|---|
 | P1 | person | No first or second person. Copy names the thing, never the reader. Banned whole words, case-insensitive: `you your yours yourself we us our ours let's I my me mine` | regex over every player-facing string |
 | P2 | mood | Declarative sentences only. No imperative, no question, no exclamation. **One exemption:** a control affordance may be a bare verb if it is exactly one word and names the action the control performs (`Close`, `Buy`, `Back`) | a string of 2+ words beginning with a bare verb fails |
-| P3 | length | 12 words a sentence, 2 sentences a string, 1 sentence for anything that is not `.blurb` or `.flavour`. Where `theme/vocabulary` sets a tighter per-field ceiling, the tighter one governs | word count |
-| P4 | characters | `/^[A-Za-z0-9 ,.'%-]+$/`, which is the alphabet, the digits, space, and the five marks `,` `.` `'` `%` `-`. Banned by name: `!` `?` `:` `;` `"` `*` `~` `#` `@` `+` `=` `/` `\` `|` `(` `)` `[` `]` `{` `}` `…` `—` `–` `’` `“` `”` and **every codepoint above U+007E**, which covers emoji, the genre's title glyphs and curly quotes | regex; also protects the emitted Luau string literals |
-| P5 | reading level | Flesch-Kincaid grade 5.0 target, 6.0 hard ceiling, computed over all `.blurb` and `.flavour` strings concatenated, with proper nouns (Find names, tier names, set labels, currency name, area label) excluded from the syllable count | scored corpus |
+| P3 | length | 12 words a sentence, 2 sentences a string, 1 sentence for anything that is not `.blurb` or `.flavour`. Where `theme/vocabulary` sets a tighter per-field ceiling, the tighter one governs | `vocabulary.maxSentenceWords`, merged at 12 |
+| P4 | characters | The enforced set is `vocabulary.allowedPattern`, today `^[A-Za-z0-9 ,.'%%/-]+$`: the alphabet, the digits, space, and the six marks `,` `.` `'` `%` `-` `/`. Banned by name: `!` `?` `:` `;` `"` `*` `~` `#` `@` `+` `=` `\` `\|` `(` `)` `[` `]` `{` `}` `…` `—` `–` `’` `“` `”` and **every codepoint above U+007E**, which covers emoji, the genre's title glyphs and curly quotes | the merger runs the pattern over every player-facing string, prose included |
+| P5 | reading level | Flesch-Kincaid grade 5.0 target, 6.0 hard ceiling, computed over all `.blurb` and `.flavour` strings concatenated, with proper nouns (Find names, tier names, set labels, currency name, area label) excluded from the syllable count | scored corpus; **no merged field carries it yet**, requested below |
 | P6 | fourth wall | The copy never names the game, the platform, the interface or the input. Banned whole words: `game gamepass Robux server lobby menu screen button icon update version beta dev developer studio account user player session click tap press swipe hold drag` | word list. Roblox's own purchase and error chrome is platform text, not ours, and is out of scope |
 | P7 | mood claim | **The fiction may not state its own mood, and may not praise the player.** Banned whole words (list M): `relaxing calm peaceful cozy chill soothing zen satisfying fun exciting epic legendary ultimate amazing awesome incredible insane crazy best congratulations congrats welcome nice great wow yay hooray`, plus the phrases `well done` `good job` | word list |
 | P8 | veneration | Age is stated as fact, never as awe. Banned whole words (list R): `sacred holy hallowed blessed cursed haunted doomed forbidden lost forgotten vanished mysterious mystery secret legend myth spirit soul ghost tomb eternal immortal`. `old` and `ancient` are permitted, at most one age adjective a string. `lost` and `forgotten` also contradict canon: the place *"was never lost, only overgrown"* (`cid/theme/lore/01-the-past.md`, pack §4) | word list |
-| P9 | emphasis | No stored all-caps word of 2+ letters, no repeated punctuation (`..`, `!!`), no markup characters inside a string. Rendered case is UI/UX's and may differ | regex |
+| P9 | emphasis | No stored all-caps word of 2+ letters, no repeated punctuation (`..`, `!!`), no markup characters inside a string. Rendered case is UI/UX's and may differ | `vocabulary.casing`, merged at `title` |
 
 ### Where the bound lands, path by path
 
@@ -69,36 +77,101 @@ label at draw time. `[cid: decided]`
 | `collection.sets[].label` | label | P1 P2 P4 P6 P7 P8 P9 | `gameplay/meta` |
 | `collection.sets[].relics[].name` | label | P1 P2 P4 P6 P7 P8 P9 + the pun ban (sheet `02`) | `gameplay/meta` |
 | `upgrades[].label` | label | P1 P2 P4 P6 P7 P8 P9 | `gameplay/balance` |
-| `upgrades[].blurb` | prose | P1–P9 entire. The only free-prose field in the contract | `gameplay/balance` |
+| `upgrades[].blurb` | prose | P1–P9 entire. The only populated free-prose field in the contract | `gameplay/balance` |
 | `collection.sets[].relics[].flavour` | prose | P1 P3 P4 P5 P9, then sheet `02` governs voice and humor | `gameplay/meta` |
 | `modules[].responsibility`, `modules[].criteria`, `runtime.dataStoreName` | technical | **not bound.** A player never reads them | `tech/architecture` |
 | screen headings, button faces, empty-state lines, error and system messages | prose/label | P1–P9 entire, **and no contract path carries them**, so the bridge cannot check them and a human reviewer is the only gate | unowned; see below |
 
+## Data form
+
+**Three of P1–P9 already reached the build and five did not.** `vocabulary.casing` (`title`),
+`vocabulary.maxSentenceWords` (`12`) and `vocabulary.allowedPattern` are merged and the merger
+runs them over every player-facing string, so P3, P4 and P9 are enforced rather than read
+`[research: bridge/schema.mjs]`. **P1, P6, P7 and P8 are word lists and `vocabulary.bannedWords`
+holds eight entries, none of them from those lists** — so four of my nine rules are still prose
+a reviewer must remember. The block below is the request that closes that gap. It amends a key
+this domain does not own, so it is a request against `theme/vocabulary`, not a merge.
+
+```json
+{
+  "amends": "vocabulary",
+  "from": "theme/tone/01-register.md",
+  "alreadyMerged": {
+    "casing": "title",
+    "maxSentenceWords": 12,
+    "allowedPattern": "^[A-Za-z0-9 ,.'%%/-]+$",
+    "note": "these three are P9, P3 and P4 and are not re-asked for here; listed so the origin of the values is recorded on the sheet that decided them"
+  },
+  "requestedFields": {
+    "maxFleschKincaidGrade": 6.0,
+    "targetFleschKincaidGrade": 5.0,
+    "gradeScoredOver": "every .blurb and .flavour string concatenated, with proper nouns excluded from the syllable count",
+    "maxSentencesPerString": 2,
+    "maxSentencesOutsideProsePaths": 1
+  },
+  "mergeNote": "requestedBannedWords is grouped by rule so one reason is not repeated 81 times. Flatten each group to {word, reason} pairs, using the group's reason, before merging into vocabulary.bannedWords. Phrases containing a space work under the existing \\b<word>\\b test.",
+  "requestedBannedWords": [
+    {
+      "rule": "P1",
+      "reason": "P1: copy names the thing, never the reader. First and second person address the player and break the register",
+      "words": ["you", "your", "yours", "yourself", "we", "us", "our", "ours", "let's", "my", "me"]
+    },
+    {
+      "rule": "P6",
+      "reason": "P6: the copy never names the game, the platform, the interface or the input",
+      "words": ["game", "gamepass", "Robux", "server", "menu", "button", "icon", "update", "version", "beta", "dev", "developer", "studio", "account", "user", "player", "session", "click", "swipe"]
+    },
+    {
+      "rule": "P7",
+      "reason": "P7 list M: the fiction may not state its own mood and may not praise the player",
+      "words": ["relaxing", "calm", "peaceful", "cozy", "chill", "soothing", "zen", "satisfying", "fun", "exciting", "epic", "legendary", "ultimate", "amazing", "awesome", "incredible", "insane", "crazy", "best", "congratulations", "congrats", "welcome", "nice", "great", "wow", "yay", "hooray", "well done", "good job"]
+    },
+    {
+      "rule": "P8",
+      "reason": "P8 list R: age is stated as fact, never as awe; and the place was never lost, only overgrown",
+      "words": ["sacred", "holy", "hallowed", "blessed", "cursed", "haunted", "doomed", "forbidden", "lost", "forgotten", "vanished", "mysterious", "mystery", "secret", "legend", "myth", "spirit", "soul", "ghost", "tomb", "eternal", "immortal"]
+    }
+  ],
+  "heldBack": [
+    { "word": "I", "rule": "P1", "reason": "one letter; the \\bI\\b test is case-insensitive and would fire on any stray initial. Reviewer-enforced" },
+    { "word": "mine", "rule": "P1", "reason": "also a physical place a later area or Find could legitimately name" },
+    { "words": ["screen", "press", "hold", "drag", "tap", "lobby"], "rule": "P6", "reason": "each is also a physical object or a physical verb this fiction may need: a fire screen, an olive press, a bowl that holds water, a cistern tap, a lobby of a ruined house. Banned as interface words, reviewer-enforced, deliberately not machine-banned" }
+  ],
+  "breaksOnMerge": [
+    {
+      "path": "upgrades[1].blurb",
+      "value": "Clear a wider sweep as you walk",
+      "violates": "P1, the word \"you\"",
+      "replacement": "Clear a wider sweep while walking",
+      "owner": "gameplay/balance",
+      "note": "6 words, inside maxSentenceWords 12 and inside the grade ceiling. This is the only string in the merged manifest that any requested word hits; the other 80 requests are inert today"
+    }
+  ]
+}
+```
+
 ## Consequences for other work
 
-- **Existing all-caps values fail P9 and must be re-cased.** `cid:verify` already warns that
-  player-facing labels use two casing conventions and asks Tone to rule; the ruling is Title
-  Case `[research: bridge/schema.mjs]`. Concretely this lands on the **upgrade ladder's three
-  labels** (`gameplay/balance`) and the **area label** (`gameplay/meta`). Stored case changes;
-  rendered case is UI/UX's and may still be uppercase.
-- **Banned-word maintenance** (`theme/vocabulary`, holds `vocabulary.bannedWords`): lists M
-  (P7) and R (P8) are requested as additions, with reasons. Until they are in the key, P7 and
-  P8 are prose a reviewer enforces rather than a merge failure, and that is the difference
-  between a rule and a wish `[research: bridge/schema.mjs]`.
-- **Upgrade copy** (`gameplay/balance`, owns `upgrades[].blurb`): a blurb containing *you* or
-  *your* fails P1. The blurb is the only place in the contract where P3's two-sentence
-  allowance is ever reachable.
+- **Upgrade copy** (`gameplay/balance`, owns `upgrades[].blurb`) must change one string:
+  `"Clear a wider sweep as you walk"` becomes `"Clear a wider sweep while walking"`. The
+  replacement is supplied so there is nothing to invent. Until it lands, P1 cannot be merged
+  without failing the manifest, and that is why it is a request rather than a value.
+- **Banned-word maintenance** (`theme/vocabulary/02`, holds the `vocabulary` key): four grouped
+  requests and a `heldBack` list are above. The held-back words are a decision, not an
+  oversight — machine-banning `hold` would fail a flavour line about a bowl.
+- **Existing all-caps values fail P9 and must be re-cased.** The ruling is Title Case and the
+  merger now enforces it. This lands on the upgrade ladder's labels (`gameplay/balance`) and
+  the area label (`gameplay/meta`). Stored case changes; rendered case is UI/UX's.
 - **Currency naming** (`gameplay/systems`): P4 forbids any glyph in `currency.name`, which is
   the genre's default (a leaf, a magnet, a sprout in the title). The 10-character `plural`
   ceiling is the schema's, not mine.
-- **Screen-copy budgeting** (UI/UX, wave 4): every new on-screen string inherits P1–P9. Number
+- **Screen-copy budgeting** (UI/UX): every new on-screen string inherits P1–P9. Number
   formatting, separators and a colon between a label and a value are furniture composed at
   render time, not copy, and are outside P4.
 - **Error and system copy** (unowned; nearest holder is UI/UX): it has a register now and still
   has no contract path. Somebody must own the surface or P1–P9 reaches it only as prose.
-- **Store listing** (Discovery & Marketing, wave 5): **not bound by this sheet.** The listing
-  competes in a market where every neighbour shouts. Sheet `02`'s humor ban does reach it,
-  because the binding decision names *store copy* by name; the register does not.
+- **Store listing** (Discovery & Marketing): **not bound by this sheet.** Sheet `02`'s humor ban
+  does reach it, because the binding decision names *store copy* by name; the register does not.
 
 ## Flagged to the developer
 
@@ -110,10 +183,11 @@ from the genre's. Recommendation: (a). `[cid: decided]`, the brief is silent.
 
 ## Acceptance criteria
 
-1. Every string returned by `playerFacingStrings(manifest)` matches `/^[A-Za-z0-9 ,.'%-]+$/`,
+1. Every string returned by `playerFacingStrings(manifest)` matches `vocabulary.allowedPattern`,
    contains no codepoint above U+007E, and contains no all-caps word of 2 or more letters.
-2. Zero player-facing strings contain, as whole words case-insensitively, any word from P1's
-   person list, P6's meta list, P7's list M or P8's list R.
+2. Zero player-facing strings contain, as whole words case-insensitively, any word in the four
+   `requestedBannedWords` groups above. **This currently fails on exactly one string**,
+   `upgrades[1].blurb`, and the replacement is named in `breaksOnMerge`.
 3. No sentence in any player-facing string exceeds 12 words; no string outside `.blurb` and
    `.flavour` contains more than one sentence; no string contains more than two.
 4. Flesch-Kincaid grade over the concatenated `.blurb` and `.flavour` corpus, proper nouns
@@ -121,9 +195,9 @@ from the genre's. Recommendation: (a). `[cid: decided]`, the brief is silent.
 
 ## Not decided here
 
-Which words are banned as a machine-checkable list, the character ceiling `maxLabelChars`, the
-casing regex and the plural rule (`theme/vocabulary`, sheets `01` and `02`, which hold the
-`vocabulary` key). The voice of a Find's flavour line and every question about humor (sheet
-`02`, this domain). When the game is permitted to be loud (sheet `03`). Rendered case,
-typography and number formatting (UI/UX). The store listing's register (Discovery & Marketing).
-Whether an error-copy surface exists at all (UI/UX, wave 4).
+The `vocabulary` key itself, its character ceiling `maxLabelChars`, its casing regexes and its
+plural rule (`theme/vocabulary`, sheets `01` and `02`, which own the key; everything above is a
+request against it). The voice of a Find's flavour line, the words banned only inside one, and
+every question about humor (sheet `02`, this domain). When the game is permitted to be loud
+(sheet `03`). What may not be built at all (sheet `04`). Rendered case, typography and number
+formatting (UI/UX). The store listing's register (Discovery & Marketing).

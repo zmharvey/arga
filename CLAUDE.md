@@ -92,6 +92,16 @@ second. **The bar is consistency, not one good result.**
     subscripts (`customFields[saveState]`) became legal because four sites across two domains
     wrote them that way and none quoted. A bare *number* stays illegal, because `[0]` really is
     ambiguous between the index and a row whose id is `"0"`.
+- **Never cite a generated file by line number.** `GameConfig.luau`, `Types.luau` and
+  `BUILD-ORDER.md` are rewritten by `npm run bridge -- --emit` on every contract change.
+  Promoting one key shifted `GameConfig.luau` by 68 lines and silently falsified four acceptance
+  criteria across three sheets in a single commit — each measured honestly against a file that
+  then moved. This is worse than an ordinary stale citation, because nothing local changed to
+  explain it and `GameConfig.luau:1634` reads like the most precise thing on the page. Cite the
+  **string to grep for**, which survives re-emission and is what the criterion meant anyway.
+  `npm run cid:verify` warns on every line-number citation into a generated file. Hand-written
+  files may be cited by line freely — those move only when someone edits them, and then the
+  editor is present to notice.
 - **A check must be able to pass.** Three sheets independently shipped an acceptance criterion
   of the form *"the string X appears zero times in this sheet"* — in a sheet that names X in
   order to forbid it. Scope a grep-shaped check to the fields that carry claims, never to the

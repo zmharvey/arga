@@ -30,11 +30,15 @@ raised.** `East Terrace` and the set labels `Terrace · Cistern · Vault · Spir
 complex, and *"a 120-stud terrace to dress, **not an open landscape**"* is ratified as the
 correct read: a terrace is a walled platform, which is a bounded place by construction.
 
-**No manifest block: Setting owns no contract key.** I read `SCHEMA` in `bridge/schema.mjs`
-directly — no shell in this run, so `npm run bridge -- --contract` could not be executed. Eleven
-keys, owners `gameplay/*` ×7, `tech/architecture` ×2, `art/objects` ×1, `theme/vocabulary` ×1.
-None holds a place, a landscape, a climate, a material or a list of what is alive.
-`[research: repo — bridge/schema.mjs:30-300, read this run]`
+**This sheet proposes `setting`, and it is this domain's one key.** Wave 1 read an eleven-key
+contract, found no slot for a place, and shipped prose — so Art re-derived the ruin by hand at
+wave 6, citing `05-inventory` `A6`/`A7`/`A14` and this sheet's criterion 3 by name inside
+`environment`, `styleGuide` and `lighting`. The contract is now 26 merged keys and still holds no
+place, no landform, no climate and no roster of what is alive
+`[research: repo — bridge/schema.mjs, read this run]`. **The block below carries this sheet's own
+half — identity, land, climate, material register, the luma floor and the fauna ruling — and names
+the four siblings that amend the key's other four sub-objects. One key, one subject, five sheets,
+nothing written twice.** `[cid: decided]`
 
 **The single-building-versus-endless-space cost is handed to `02-extent`, with the property that
 resolves it supplied here rather than left blank:** a works is built in **repeating functional
@@ -45,6 +49,102 @@ unit. `02-extent` fixes how many units and which way they run.**
 
 **This sheet coins exactly one term: `works`, lowercase, internal, never rendered.** It is a
 handle for writers and art prompts, not a name for anything.
+
+```manifest
+{
+  "provides": "setting",
+  "status": "proposed",
+  "value": {
+    "oneLine": "A stone works built to gather water and keep the count of it, on a broad temperate limestone hillside under broadleaf wood: disused, uncounted, and empty of everything alive but plants and players.",
+    "oneLineIsInternal": "not a player-facing string. vocabulary does not bind it, and no field name or value below is ever rendered to a player unless another key renders it.",
+    "keyShape": {
+      "whyOneKey": "five sheets, one subject: the place. This sheet carries the key; the other four amend named sub-objects of it with a json amends block, and no sub-object is written twice.",
+      "identity, land, climate, materialRegister, readability, life": "cid/theme/setting/01-the-ruin.md (this sheet)",
+      "extent": "cid/theme/setting/02-extent.md",
+      "law": "cid/theme/setting/03-physical-law.md",
+      "passage": "cid/theme/setting/04-permanence-and-passage.md",
+      "contents": "cid/theme/setting/05-inventory.md",
+      "promotionNote": "a schema owner promoting this key must fold the four amendments in; each names its sub-object and touches no other."
+    },
+    "identity": {
+      "buildingFunction": "gathering water and keeping the count of it",
+      "partKinds": ["terrace", "cistern", "vault", "spire"],
+      "partKindsAre": "collection.sets[].label, verbatim and ratified. Renames requested: 0.",
+      "register": "civil and utilitarian",
+      "isNotA": ["temple", "shrine", "palace", "fortress", "watchtower", "tomb", "dwelling", "villa", "great house", "town", "city"],
+      "properNameExists": false,
+      "properNameSentinel": "the canon asserts no name for the place (theme/lore/01 L3) and none for its makers (theme/lore/02 S2). A builder needing a string here has hit a design rule, not a gap.",
+      "cultureNamed": false,
+      "dated": false,
+      "internalTerm": { "term": "works", "casing": "lowercase", "playerFacing": false, "renderedAnywhere": false }
+    },
+    "land": {
+      "landform": "broad temperate hillside",
+      "walkableElevationsPerArea": 1,
+      "heightChangeLivesAt": "the area boundary — retaining wall on the uphill side, low parapet or wall on the open side",
+      "wood": "broadleaf, as backdrop only",
+      "walkableGroundOutsideThePlotStuds": 0,
+      "visibleBeyondTheWorkedEdge": ["more of the same slope", "more of the same wood"],
+      "visibleBeyondTheWorkedEdgeExcludes": ["road", "track", "field", "smoke", "any light", "any second structure on the skyline", "anything tended, inhabited or travelled"],
+      "depthCorrelatesWithElevation": false,
+      "whyNot": "theme/lore/01 L4 rules depth is coverage, not chronology, and uses the tower at depth 4 as its case. The slope gives 02-extent both an up and a down; this sheet spends neither."
+    },
+    "climate": {
+      "band": "temperate humid",
+      "growingSeason": "long",
+      "rain": "frequent enough that holding water was worth building for",
+      "rainIsDepicted": false,
+      "rainIsDepictedOwner": "setting.law R2, which closes it at never shown",
+      "excludedBands": [
+        { "band": "tropical", "why": "darkens the greens and cools and wets the stone, against the high-contrast requirement 04-PRESENTATION.md calls a requirement, not a nicety" },
+        { "band": "arid", "why": "grows nothing to clear" },
+        { "band": "alpine or northern", "why": "grey light and a grey palette, which is the v1 snow failure" }
+      ],
+      "evidenceOnDisk": "tiers[].name Moss, Fern, Bramble, Heartvine are a temperate humid flora; a cistern is only worth building where rain is reliable and dry spells happen"
+    },
+    "materialRegister": {
+      "stone": "warm pale limestone",
+      "excludedStones": ["grey granite", "white marble", "red brick", "dark basalt"],
+      "technologyFloor": ["hand tools", "dressed stone", "cast fittings", "cut gears", "gravity-fed water"],
+      "poweredAnything": 0,
+      "selfRunningAnything": 0,
+      "technologyCeiling": "Orrery — gears cut by hand are in, anything powered is out",
+      "ornamentIs": ["carving", "casting", "dressed joints", "pattern in paving"],
+      "ornamentIsNot": ["iconography", "gilding", "gemstones", "statuary of a person or a creature"],
+      "vaultIsA": "record strongroom, never a treasury",
+      "inheritedOverrule": "theme/lore/01 struck 'relics must read as treasure'; Art must not add gold, gilding or gemstones to compensate. Inherited, not reopened."
+    },
+    "readability": {
+      "clearedStoneLumaFloor": 165,
+      "lumaFormula": "Rec.601 Y = 0.299R + 0.587G + 0.114B on the authored Color3 in 0-255 space",
+      "derivedFrom": "tiers[0].rgb [104, 142, 76], luma 123.11, plus 40 points of separation",
+      "appliesTo": "every cleared surface a player stands on, at every depth, checked once per part including the vaulted ones",
+      "satisfiedBy": "styleGuide.roles[\"stone.cleared\"].luma = 201.84; styleGuide.roleRules C1 holds every stone-family role in [195, 210]",
+      "headroomOverFloor": 36.84,
+      "hueIsNotSetHere": "Art chooses hue and material inside this bound; this key sets the relation, not the colour"
+    },
+    "life": {
+      "aliveHere": ["plants", "players"],
+      "faunaModelled": 0,
+      "faunaAnimated": 0,
+      "faunaInteractable": 0,
+      "offScreenAmbientSoundBeyondTheEdge": "permitted, continuous only, and it is Audio's to take or leave. It is the one permitted living sound in the game.",
+      "runningWaterBedAvailable": false,
+      "bannedWords": ["bird", "birds", "animal", "animals", "beast", "insect", "beetle", "butterfly", "fish", "deer", "fox", "snake", "lizard", "frog", "bat", "spider"],
+      "bannedWordsScope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt and non-visual ambient audio is exempt.",
+      "reopeningCondition": "a developer ruling only — theme/identity/04 row 7. No other sheet may add a visible creature."
+    },
+    "playtestUnknowns": [
+      {
+        "question": "whether a place with no visible animals reads as warm or as eerie to 8-14s",
+        "startingValue": "no visible fauna, ambient off-screen sound permitted",
+        "escalationInOrder": ["raise ambient density and volume", "motion in the canopy at the area edge", "a developer ruling adds a visible creature"],
+        "whatWouldSettleIt": "a first-session read of whether players describe the place as quiet or as empty"
+      }
+    ]
+  }
+}
+```
 
 ## Why
 
@@ -118,7 +218,8 @@ greyscale, which is what makes tier legible without hue. The lightest tier green
 `[104,142,76]`, has Rec.601 luma 123. **The stone's base value must clear that by at least 40
 points (luma ≥ 165.)** Grey granite, white marble, red brick and dark basalt are all excluded:
 the first two by the *"warm"* in *"warm stone"*, the last two by the luma floor.
-`[cid: decided]` — Art chooses the hue inside that bound.
+`[cid: decided]` — Art chooses the hue inside that bound, and has: `styleGuide.roles["stone.cleared"]`
+ships luma 201.84, which clears the floor by 36.84 `[research: repo — cid/art/style/01-palette-and-materials.md, read this run]`.
 
 **Ornament survives the utilitarian reading, and this is the objection worth answering.**
 `fantasy-ornate` wants *"ornamented ... crafted"* and a waterworks sounds plain. It is not: the
@@ -173,7 +274,8 @@ Routed to fantasy work rather than claimed.
   channel run. **Whatever `02` decides may not require a settlement, a dwelling quarter, a second
   culture, or a fifth kind of part beyond the four `collection` already labels.** The slope gives
   it both directions; the correlation between depth and elevation is left unspent on purpose so
-  the tower at depth 4 stays coherent under history work's L4.
+  the tower at depth 4 stays coherent under history work's L4. **It amends `setting.extent` and
+  writes no field this block holds.**
 - **Place-rules work** *[Setting — `03-physical-law`, this domain]*: three inheritances. **The
   works no longer works — nothing flows.** Channels and basins are dry or hold still rainwater at
   most; a running watercourse would be motion without the player's hand and would also read as
@@ -181,14 +283,14 @@ Routed to fantasy work rather than claimed.
   is; the hour, the sky, and weather as a depicted event are yours.** Whatever you rule must stay
   consistent with a place that gets rain, though rain need never be shown. And the technology
   floor above (no power, nothing self-running) is offered as support for your budget line, not as
-  a constraint on it.
+  a constraint on it. **It amends `setting.law`.**
 - **Place-inventory work** *[Setting — `05-inventory`, this domain]*: the alive question is
   **decided here, not there.** Your present column cites this sheet for "plants and players
   only"; your absent column reads "no fauna of any kind, visible or interactive", and it must not
   read "nothing alive". If you need to differ, revise against this sheet with a stated reason —
   do not re-decide it silently. Standing water, sky, wind, roads and remains remain yours;
   "nothing built or travelled is visible past the edge" is decided here and available for you to
-  cite.
+  cite. **It amends `setting.contents`.**
 - **Area-content work** *[Meta & Content, wave 3 — `cid/gameplay/meta/01-the-area.md`,
   `02-the-collection.md`]*: **zero renames, zero revision requests.** All five architectural
   strings on disk are ratified. Two forward constraints: areas 2 to 4 name parts of **this** works
@@ -202,7 +304,7 @@ Routed to fantasy work rather than claimed.
   beyond as a backdrop with no walkable ground on it. **Ornament is carving, casting, dressed
   joints and pattern in paving.** No gilding, no gemstones, no iconography, no statuary of a
   person or a creature. Weathering is uniform across all four depths per history work; only the
-  quantity of green varies.
+  quantity of green varies. **`setting.readability` is the field to cite, not this prose.**
 - **Object art** *[Art & Visuals — Objects, wave 4+]*: the 24 Finds are the fittings and
   instruments of a water-and-record works, so their material register is dressed stone, fired
   clay, cast bronze, worked wood and cut gearwork. `Orrery` sets the technology ceiling: gears
@@ -214,9 +316,14 @@ Routed to fantasy work rather than claimed.
 - **Naming work** *[Vocabulary, this wave, last writer]*: this sheet coins **exactly one term**,
   `works`, lowercase and **internal — it must never be rendered as a player-facing string.** It
   is closer to `finder` (`cid/theme/identity/01-player-role.md`) than to a label. This sheet
-  introduces no proper noun and asks for nothing else. Offered, not imposed: the fauna word list
-  in criterion 4 is ready for `vocabulary.bannedWords` if you want the ruling machine-checked
-  rather than review-checked.
+  introduces no proper noun and asks for nothing else. Offered, not imposed: `setting.life.bannedWords`
+  is ready for `vocabulary.bannedWords` if you want the ruling machine-checked rather than
+  review-checked.
+- **Contract-and-seam work** *[whoever owns `bridge/schema.mjs`]*: `setting` is proposed, not
+  merged. Promoting it means folding in four amendments — `extent`, `law`, `passage`, `contents` —
+  each of which names its sub-object and touches no other. Nothing downstream may read `setting`
+  until it is promoted; every current consumer cites this sheet's prose by hand, which is the
+  defect the proposal exists to close.
 - **Fantasy work** *[Fantasy, this wave]*: your Roblox occupancy search now has a specific target
   shape to check — restoration of a terraced hillside stoneworks — plus the unverified near-miss
   above (`Prospecting!`, *"Overgrown Grotto"*, vine-cutting behind tool gates). **If your search
@@ -234,7 +341,8 @@ Routed to fantasy work rather than claimed.
 
 1. **Ratification check.** All 5 architectural strings on disk — `area.label` (`East Terrace`)
    and the 4 `collection.sets[].label` (`Terrace`, `Cistern`, `Vault`, `Spire`) — are accounted
-   for by this sheet as parts of one complex. Count of renames requested: **0.** Count of
+   for by this sheet as parts of one complex, and each appears verbatim in
+   `setting.identity.partKinds` or is named by it. Count of renames requested: **0.** Count of
    revision requests raised against `cid/gameplay/meta/01-the-area.md` or `02-the-collection.md`:
    **0.**
 2. **Level-ground check.** Within the area's 120-stud extent at `originXZ` `[0, 0]` (cited, not
@@ -244,7 +352,7 @@ Routed to fantasy work rather than claimed.
 3. **Contrast check.** The stone base colour used for cleared surfaces has a Rec.601 greyscale
    luma of **at least 165**, which is at least 40 above the lightest tier green on disk (`Moss`,
    rgb `[104,142,76]`, luma 123). In a greyscale screenshot, cleared stone reads lighter than all
-   four tier greens.
+   four tier greens. Today: `styleGuide.roles["stone.cleared"].luma` = **201.84**, passing by 36.84.
 4. **Fauna check.** The count of animal, bird, insect and fish models, meshes, animations and
    interactables in the build is **0**, and across every `manifest` block and every `artPrompt`
    under `cid/` the whole-word case-insensitive pattern
@@ -254,14 +362,16 @@ Routed to fantasy work rather than claimed.
 ## Not decided here
 
 One works or many, what an area is a piece of, which way depth points, and why the place
-continues past the fourth set (`02-extent`, this domain). The hour, the sky, weather as an event,
-and whether anything more than ordinary exists here (`03-physical-law`). Standing water, wind,
-roads, remains and the full two-column roster (`05-inventory`, which cites the alive ruling rather
-than remaking it). What a cleared area becomes and how a player goes deeper
-(`04-permanence-and-passage`). Any map, arrangement, area count, size, density or chunk theming
+continues past the fourth set (`02-extent`, which amends `setting.extent`). The hour, the sky,
+weather as an event, and whether anything more than ordinary exists here (`03-physical-law`,
+which amends `setting.law`). Standing water, wind, roads, remains and the full two-column roster
+(`05-inventory`, which amends `setting.contents` and cites the alive ruling rather than remaking
+it). What a cleared area becomes and how a player goes deeper (`04-permanence-and-passage`, which
+amends `setting.passage`). Any map, arrangement, area count, size, density or chunk theming
 *[Meta & Content, wave 3]*. Every colour, material asset, model, effect and lighting value inside
 the bounds stated above *[Art & Visuals]*. Whether the ambient sound is taken *[Audio]*. Whether
-`works` is kept, renamed or held internal in the canonical list *[Vocabulary]*. Whether this
+`works` is kept, renamed or held internal in the canonical list *[Vocabulary]*. Whether `setting`
+is promoted into `bridge/schema.mjs`, and in what shape *[contract-and-seam work]*. Whether this
 setting is occupied on Roblox *[Fantasy, this wave]*.
 
 ## Flagged to the developer
@@ -289,7 +399,7 @@ overruled, the cheap version of the reversal is to change the complex's **functi
 keeping the landform, the climate, the palette relation and the fauna ruling — those four are
 independent of what the building was for.
 
-Source fetched this run:
+Source fetched in the original run:
 [Villa of Domitian — Wikipedia](https://en.wikipedia.org/wiki/Villa_of_Domitian). Two fetches
 failed and informed nothing: `archserve.id.ucsb.edu` (connection refused) and
 `prospecting.fandom.com` (HTTP 402).
