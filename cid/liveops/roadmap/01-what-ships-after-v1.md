@@ -59,8 +59,8 @@ in the second `[research: cid/tech/performance/03-what-optimisation-may-never-do
 is the only sheet in the run that cites more than one of them**, so it is the only place the
 collision is visible. `storeMigration.bumpTriggers` is cited here too but numbers `B1` upward, so
 it is a fourth namespace and not a fourth collision. Every citation below is written dotted
-(`release.forbidden.N6`, `storeMigration.nonTriggers.N6`), and criterion 2 is scoped to citations
-rather than to this paragraph. `[cid: decided]`
+(`release.forbidden.N6`, `storeMigration.nonTriggers.N6`), and criterion 2 is scoped to the four
+fields that may hold such a citation rather than to the whole key. `[cid: decided]`
 
 **Cadence is `none`, and `OPEN.md §2`'s *"ships and settles"* is upheld on the merits, not on its
 tag** — which is `[brief: soft]` ← `[I assumed — batched]` at **0 interview questions**
@@ -147,6 +147,8 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       ],
       "rule": "every citation of an exclusion row in this key is written dotted, as key.list.id. An undotted id is not a citation and satisfies no check. This field and the finding above are documentation prose describing the collision rather than citations, which is why criterion 2's scan is scoped to citation-bearing fields.",
       "citationBearingFields": ["closedBy", "why", "blockedBy", "rule", "migrationTrigger", "migrationTriggerReasoning", "migrationTriggerConfirmationOwed", "precondition", "costAgainst", "alsoCosts", "reversalCost", "whyOneDropAndNotTwo", "shipWindow"],
+      "releaseForbiddenCitationSites": ["forbidden[].closedBy", "guardrails[].closedBy", "trigger.forbiddenTriggers[].closedBy", "idNamespaces.finding"],
+      "releaseForbiddenCitationSitesWhy": "the first three are the only fields in this key that name a release.forbidden row, and each names it in order to forbid or to close something — which is the compliant form the category brief states. idNamespaces.finding is the single documentation site: it quotes release.forbidden.N6 to demonstrate the collision and forbids nothing. Zero entries in drops[], notADrop[], blocked[] or declined[] cite release.forbidden at all, and that is what criterion 2 clause 1 checks.",
       "ownIdPrefixes": ["D for drops", "T for forbiddenTriggers", "X for notADrop", "R-F for forbidden", "G for guardrails"],
       "ownIdsCollideWithNothing": "no id minted by this key is of the form Nn or Bn"
     },
@@ -323,6 +325,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       "roadmap.cadence.value == 'none' implies roadmap.cadence.intervalDays == 0",
       "no value anywhere in roadmap is null or undefined at any depth",
       "every exclusion-row citation in a field named by idNamespaces.citationBearingFields is dotted with its owning key and list",
+      "every occurrence of release.forbidden.N<k> lies in a field named by idNamespaces.releaseForbiddenCitationSites, and none lies in drops[], notADrop[], blocked[] or declined[]",
       "no field in this key states a count of notices.members"
     ]
   }
@@ -361,7 +364,10 @@ schedule around it, which is why D1 exists at all rather than being declined.
   lists number from one upward — ten rows, eight rows and thirteen rows — and mean different
   things. Nothing needs renumbering, but an undotted id is ambiguous across your three keys, and
   this sheet writes every one of them dotted. Any grep over exclusion ids, in verification, in a
-  build check or in a later sheet, must namespace it or it will match the wrong list.
+  build check or in a later sheet, must namespace it or it will match the wrong list. **And it
+  must also name the fields it scans**: `idNamespaces.releaseForbiddenCitationSites` is the
+  four-field permitted set here, because a forbidden-trigger row citing the rule that closes it
+  is a citation, not a schedule.
 - **Notice-channel work (`notices`).** I request no further member, so D1 ships silently. My claim
   is a predicate over `notices.members` — no member has a trigger a drop could fire — not a member
   count, so adding a member does not invalidate it and adding an *announcement* member would,
@@ -372,7 +378,7 @@ schedule around it, which is why D1 exists at all rather than being declined.
 - **Store-page and update-notes work (Discovery & Marketing).** Your input is: one drop, no
   cadence, no dates, nothing announceable inside the game. No title-tag stem is invented here.
 - **Contract-and-seam work.** `roadmap` is developer-facing and needs `DOCUMENTATION_ONLY` so it
-  never reaches `GameConfig`. The six `invariantsForSchema` rows are the shape to write.
+  never reaches `GameConfig`. The seven `invariantsForSchema` rows are the shape to write.
 
 ## Flagged to the developer
 
@@ -391,15 +397,20 @@ recommend the first, riding `solvency`'s publish.**
    case-insensitive scan of the serialised key for
    `monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|march|april|june|july|august|september|october|november|december|weekly|biweekly|fortnight|monthly|quarterly|q[1-4]\b|\d{4}-\d{2}-\d{2}`
    returns zero matches.
-2. **Scoped to citations, because three approved keys number their exclusion rows from one
-   upward.** Every one of the 13 names in `endgame.forbidden`, and every id matching
-   `release\.forbidden\.N([1-9]|10)\b`, appears inside `roadmap` **only** within
-   `roadmap.forbidden[]` or `roadmap.guardrails[]`. Ids matching
-   `storeMigration\.(nonTriggers|bumpTriggers)\.` and `performance\.forbidden\.` are outside this
-   criterion's scope and appear legitimately in `notADrop[]`, `declined[]` and `blocked[]`. And
-   over the fields named in `idNamespaces.citationBearingFields`, and those fields only —
-   `idNamespaces.finding` and `idNamespaces.rule` are documentation prose about the collision
-   rather than citations — `grep -oE "(^|[^.[:alnum:]])N([1-9]|1[0-3])\b"` returns zero matches.
+2. **Scoped to the fields that may carry a citation, because three approved keys number their
+   exclusion rows from one upward.** Every one of the 13 names in `endgame.forbidden`, and every
+   id matching `release\.forbidden\.N([1-9]|10)\b`, appears inside `roadmap` **only** in the four
+   fields listed by `idNamespaces.releaseForbiddenCitationSites` — `forbidden[].closedBy`,
+   `guardrails[].closedBy`, `trigger.forbiddenTriggers[].closedBy` (each of which names a
+   `release` row in order to forbid or close something) and `idNamespaces.finding` (documentation
+   prose that quotes `N6` to demonstrate the collision and forbids nothing). **Zero occur
+   anywhere in `drops[]`, `notADrop[]`, `blocked[]` or `declined[]`**, which is the breach this
+   clause exists to catch. Ids matching `storeMigration\.(nonTriggers|bumpTriggers)\.` and
+   `performance\.forbidden\.` are outside this criterion's scope and appear legitimately in
+   `notADrop[]`, `declined[]` and `blocked[]`. And over the fields named in
+   `idNamespaces.citationBearingFields`, and those fields only — `idNamespaces.finding` and
+   `idNamespaces.rule` are documentation prose about the collision rather than citations —
+   `grep -oE "(^|[^.[:alnum:]])N([1-9]|1[0-3])\b"` returns zero matches.
 3. `grep -rn "AnalyticsService\|LogService\|FireEvent\|LogCustomEvent" game/src` returns zero
    matches; exactly one trigger in the key (`roadmap.trigger.theOneReadableToday`) has a
    `readMechanism` naming a repository artifact; and every `forbiddenTriggers[]` row whose

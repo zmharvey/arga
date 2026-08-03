@@ -4,8 +4,9 @@
 
 ## Decision
 
-This game has **exactly one outward beat — the private→public visibility flip — and zero beats
-before it**, gated on eight recorded preconditions. Trailer, countdown, cross-promotion and
+This game has **exactly one outward beat — the private→public visibility flip — with zero beats
+before it and zero after it**, gated on eight recorded preconditions. `roadmap`'s one drop gets no
+outward beat, so `beatCount: 1` is a **total, not a floor**. Trailer, countdown, cross-promotion and
 re-engagement are all **zero**, each with the ruling that empties it and a priced reversal.
 
 ## Why
@@ -23,6 +24,17 @@ discoverable to the general public"*
 Until that setting moves no stranger can reach this game at all, which makes it the whole outward
 launch — and `release`, which claims *"every publish-time platform setting and its read-back"*, has
 no checklist row for it.
+
+**Live Ops ran, so the dependency this sheet was drafted around is now answered rather than
+deferred.** `roadmap` ruled `dropCount: 1`, `cadence.value: "none"`, `ordering.dated: false`, and its
+own `announcement.external` reads *"not this key's. Discovery and Marketing owns…"*; `store-page/05`
+routes the same question here by name — *"Hype owns whether anything is said outside the game"* — and
+sets `storeListing.updateNotes.entryCount: 0`, `surface: "none"`
+`[research: cid/liveops/roadmap/01-what-ships-after-v1.md]`
+`[research: cid/marketing/store-page/05-no-update-notes.md]`. **My answer is zero.** `D1` has no
+channel to be posted on, the flip is a one-way state change that cannot fire twice, and the only
+outward surface that could ever carry a drop is an `updateNotes` entry — which is a listing field
+under `store-page/05`'s own reopening condition, not a beat here. **`M10` closes.** `[cid: decided]`
 
 **The order is safe under both readings of an ambiguous prerequisite.** `release.provisioning` gate 4
 rests on the experience being *"published and is accessible"*, and the page does **not** say *public*
@@ -83,7 +95,7 @@ place, and the brief names no other game by this developer (**H4**).
 
 | # | subject | ruling | observable |
 |---|---|---|---|
-| 1 | beat structure (teaser → reveal → launch) | one beat, the flip | beats before the flip **0**; beats total **1**; non-page surfaces **0** |
+| 1 | beat structure (teaser → reveal → launch) | one beat, the flip | beats before the flip **0**; beats after it **0**; beats total **1**; non-page surfaces **0** |
 | 2 | trailer brief | dormant, capture-gated | `trailerVideoCount` **0**; frames from an unfixed `cartoon-vibrant` build **0**; no `captureSource` equal to the current `Theme.luau` |
 | 3 | countdown mechanics | forbidden four ways | date-, clock- or calendar-keyed values **0**; strings matching `/limited\|ends in\|counting down\|today only\|last chance/i` **0** |
 | 4 | cross-promotion | no second experience exists | `crossPromotedExperiences` **0**; place ids or universe ids named **0** |
@@ -95,7 +107,9 @@ place, and the brief names no other game by this developer (**H4**).
   "status": "proposed",
   "value": {
     "beatCount": 1,
+    "beatCountIsATotalNotAFloor": true,
     "beatsBeforeTheFlip": 0,
+    "beatsAfterTheFlip": 0,
     "nonPageSurfaceCount": 0,
     "playerFacingStringCount": 0,
     "claims": [],
@@ -112,11 +126,13 @@ place, and the brief names no other game by this developer (**H4**).
         "whatChanges": "the experience becomes available and discoverable to the general public. Before it, no stranger can reach the game at all.",
         "backedBy": "https://create.roblox.com/docs/production/publishing/publishing-experiences-and-places (new places are private by default; public means available and discoverable to the general public)",
         "checklistRowExists": false,
-        "checklistRowShouldExist": "release.publishChecklist, as a new row. release claims every publish-time platform setting and its read-back and has no row for this one.",
+        "checklistRowShouldExist": "release.publishChecklist, as a new row whose id release assigns. release claims every publish-time platform setting and its read-back and has no row for this one.",
         "revisionRequest": "RR-H1",
         "readableBack": "unverified. No retrieved page states a runtime or API read of a place's public/private visibility. Stands in for a read: one signed-out browser reaching the experience page, recorded by the person publishing.",
         "reversible": true,
-        "reversalPath": "set the place back to private. The page stops being reachable; nothing in game/src changes and no save is touched."
+        "reversalPath": "set the place back to private. The page stops being reachable; nothing in game/src changes and no save is touched.",
+        "fireableTwice": false,
+        "fireableTwiceWhy": "the flip is a one-way state change on the page. Once public, there is no second flip to spend on a later drop, which is half of why beatsAfterTheFlip is 0."
       }
     ],
     "preconditions": [
@@ -131,7 +147,7 @@ place, and the brief names no other game by this developer (**H4**).
     ],
     "preconditionCount": 8,
     "seamAgainstRelease": {
-      "releaseOwns": "the inward half whole: environments, publishChecklist, version identity, six provisioning gates, rollback and flags. Every value is cited and none is restated.",
+      "releaseOwns": "the inward half whole: environments, publishChecklist, version identity, six provisioning gates, rollback and flags. Every value is cited and none is restated. Row ids and the checklist's length are release's, not this key's.",
       "thisKeyOwns": "whether anything is said outside the game when it runs, what, in what order, and on which surface.",
       "flipSitsBetween": "release.provisioning gate 2 and gate 3",
       "orderIsSafeUnderBothReadings": {
@@ -177,9 +193,9 @@ place, and the brief names no other game by this developer (**H4**).
       {
         "id": "S1",
         "subject": "beat structure before a drop: teaser, reveal, launch",
-        "ruling": "one beat, the public flip. Zero before it.",
+        "ruling": "one beat, the public flip. Zero before it and zero after it.",
         "closedBy": "channels.channelCount 0 (no surface); products F15 (no in-game path to one); notices has exactly two members and both are response beats; release.shutdown.playerFacing nothing; OPEN.md section 2 ships and settles",
-        "observable": "beatCount 1; beatsBeforeTheFlip 0; nonPageSurfaceCount 0",
+        "observable": "beatCount 1; beatsBeforeTheFlip 0; beatsAfterTheFlip 0; nonPageSurfaceCount 0",
         "reversalPath": "a channel must exist first, which is channels' ruling and not this key's. Opening one needs a developer ruling against 00-CORE.md's binding shipped-artifacts-not-players AND a 16+ age check on the operator, after which the 8-14 audience still cannot see the link."
       },
       {
@@ -231,22 +247,39 @@ place, and the brief names no other game by this developer (**H4**).
     "liveOpsDependency": {
       "key": "roadmap",
       "owner": "Live Ops — Roadmap, same wave",
-      "resolvedHere": false,
+      "resolvedHere": true,
+      "resolvedAgainst": "the shipped sheet, not the expectation this key was drafted with. An earlier draft left this open as a conditional; roadmap has since ruled and store-page/05 routed the outward half here by name, so the conditional is replaced by an answer.",
       "seam": "this key announces; roadmap decides whether there is anything to announce. Marketing's does_not_own is what is actually in the update.",
-      "ifRoadmapIsEmpty": "beatCount 1 is the TOTAL. One ship and nothing after it.",
-      "ifRoadmapHasDrops": "beatCount 1 becomes a FLOOR, and this key takes a revision request naming each drop's outward beat. It does not become a schedule on this sheet's authority.",
+      "roadmapRuled": {
+        "dropCount": 1,
+        "dropId": "D1",
+        "cadence": "none",
+        "dated": false,
+        "inGameAnnouncement": "none",
+        "externalAnnouncementRoutedTo": "Discovery and Marketing",
+        "citedFrom": "cid/liveops/roadmap/01-what-ships-after-v1.md"
+      },
+      "routedHereBy": "cid/marketing/store-page/05-no-update-notes.md, updateNotes.dependencyStatedNotResolved.whetherAnythingIsSaidOutsideTheGame — Discovery and Marketing, Hype, which owns launchBeats",
+      "answer": "D1 gets zero outward beats. beatCount 1 is a TOTAL.",
+      "answerClosedBy": [
+        "channels.channelCount 0 — no surface exists on which a drop announcement could be posted",
+        "storeListing.updateNotes.entryCount 0 with surface none and cadence none — the one outward surface that could carry a drop is empty by its owner's ruling",
+        "beats[0].fireableTwice false — the visibility flip is a one-way state change and cannot serve a second drop",
+        "00-CORE.md success is shipped artifacts not players, brief binding — a second beat would exist because a drop is supposed to have one"
+      ],
+      "notABeatEvenIfItHappens": "if storeListing.updateNotes ever gains an entry under its own reopeningCondition, that is a listing field edited by store-page/05, not a beat here. beatCount does not move and this key takes no revision request for it.",
       "constraintsAnyLaterBeatInherits": [
         "no field may read a date, a cohort or an elapsed time (release N1, N2, N4, N10)",
         "no channel exists to post on (channels.channelCount 0)",
         "no in-game surface may carry it (notices has exactly two members, both response beats; release.shutdown.playerFacing nothing; products F19)"
       ],
-      "categoryGap": "M10"
+      "categoryGap": "M10 — closed here"
     },
     "revisionRequests": [
       {
         "id": "RR-H1",
         "target": "cid/tech/deploy/01-the-release-contract.md",
-        "ask": "add a publishChecklist row for the private-to-public visibility setting. release claims every publish-time platform setting and its read-back; a new place is private by default, so without this row a correctly executed checklist leaves the game unreachable by anyone but its creator. Values are release's to set; the obligation and its citation are supplied here.",
+        "ask": "add a new publishChecklist row, id assigned by release, for the private-to-public visibility setting. release claims every publish-time platform setting and its read-back; a new place is private by default, so without this row a correctly executed checklist leaves the game unreachable by anyone but its creator. Values are release's to set; the obligation and its citation are supplied here.",
         "suggestedRow": {
           "item": "experience visibility, private to public",
           "surface": "Creator Dashboard, experience, Basic Settings, playability",
@@ -256,19 +289,39 @@ place, and the brief names no other game by this developer (**H4**).
           "failureIfWrong": "the experience is published, correctly configured, and reachable by nobody. No error, no log line, no in-game symptom."
         },
         "rowAddedByThisSheet": false,
-        "effectOnReleaseAC1": "RR-C1 already moves the row count from 4 to 5; this moves it to 6."
+        "rowIdAssignedBy": "release",
+        "rowIdPinned": false,
+        "rowIdNotNamedHere": "requesters do not assign ids. Four requests are live against one four-row checklist, and four self-assigned numbers is a collision release would have to unpick before executing any of them. An earlier version of this key named an id and an absolute post-acceptance count; both are withdrawn.",
+        "rowCountEffect": "at least one row beyond P4",
+        "absoluteRowCountAsserted": false,
+        "otherLiveRequestsAgainstThisChecklist": [
+          { "id": "RR-C1", "filedBy": "cid/liveops/community/02-moderation-ban-and-appeal.md", "subject": "the content maturity and compliance questionnaire" },
+          { "id": "RR-T1", "filedBy": "cid/marketing/thumbnails/02-the-capture-gate.md", "subject": "uploading the thumbnail slot files and reading back the active count" },
+          { "id": "unnumbered", "filedBy": "cid/marketing/icon/01-the-one-icon.md", "subject": "uploading the experience icon" }
+        ],
+        "otherLiveRequestsNote": "listed so release composes four asks into one numbering of its own rather than discovering them one at a time. This sheet asserts no total and claims no id. release's own AC1 states a row count; restating it after acceptance is release's edit, not this key's.",
+        "status": "filed, not applied"
       }
     ],
     "revisionRequestsCitedNotFiled": [
-      { "id": "RR-C1", "filedBy": "cid/liveops/community/02-moderation-ban-and-appeal.md", "target": "cid/tech/deploy/01-the-release-contract.md", "ask": "a fifth publishChecklist row P5 for the Maturity and Compliance questionnaire", "whyNotRefiled": "the same gap found from the Live Ops side in the same wave. Two domains filing one request against one sheet is a collision, so this key cites theirs and adds none." }
+      {
+        "id": "RR-C1",
+        "filedBy": "cid/liveops/community/02-moderation-ban-and-appeal.md",
+        "target": "cid/tech/deploy/01-the-release-contract.md",
+        "ask": "a new publishChecklist row, id assigned by release, for the Maturity and Compliance questionnaire",
+        "askReadFrom": "cid/liveops/community/02-moderation-ban-and-appeal.md, section Revision request issued, which words it as a new row with the id assigned by release and requires only at least one row beyond P4",
+        "rowIdPinned": false,
+        "whyNotRefiled": "the same gap found from the Live Ops side in the same wave. Two domains filing one request against one sheet is a collision, so this key cites theirs and adds none."
+      }
     ],
     "emitterHole": "No emitter writes an outward artifact. release.publishChecklist covers place settings; nothing in either contract or docs/cid-workflow.json makes a name, an icon, a thumbnail, a description or a visibility setting a build artifact. A merged launchBeats reaches no build step today. Category gap M6; the same finding art/ui-art/01 recorded for uiTheme.",
     "invariants": [
       "beatCount == len(beats)",
-      "beatsBeforeTheFlip == 0",
+      "beatsBeforeTheFlip == 0 and beatsAfterTheFlip == 0",
       "preconditionCount == len(preconditions)",
       "no field anywhere in this key reads or holds a date, a calendar, a season, a cohort, a bucket or an elapsed time",
       "no null token appears anywhere in this key",
+      "no field anywhere in this key names a publishChecklist row id other than the existing P1 to P4, and no field asserts a post-acceptance checklist row count",
       "claims is empty, so the category T0 backedBy pass over this key is vacuously satisfied and every outward claim belongs to another marketing key",
       "no channel, invite, handle, group id, place id, universe id or external url is named by this key, which is what channels.channelCount 0 and crossPromotedExperiences 0 enforce jointly"
     ],
@@ -278,32 +331,38 @@ place, and the brief names no other game by this developer (**H4**).
 }
 ```
 
-## Revision request issued
+## Revision requests
 
 | id | target | ask |
 |---|---|---|
-| RR-H1 | `cid/tech/deploy/01-the-release-contract.md` | add a `publishChecklist` row for the **private→public visibility setting**. A new place is private by default, so a correctly executed four-row checklist leaves the game reachable by nobody but its creator, with no error and no in-game symptom. Values are `release`'s; the surface, read-back status and failure mode are in `launchBeats.revisionRequests[RR-H1].suggestedRow` |
+| `RR-H1` | `cid/tech/deploy/01-the-release-contract.md` | add **a new `publishChecklist` row, id assigned by `release`**, for the **private→public visibility setting**. A new place is private by default, so a correctly executed four-row checklist leaves the game reachable by nobody but its creator, with no error and no in-game symptom. Values are `release`'s; the surface, read-back status and failure mode are in `launchBeats.revisionRequests[RR-H1].suggestedRow`. **I name no id and assert no post-acceptance row count** |
 
-**Cited, not refiled: `RR-C1`.** `cid/liveops/community/02` already asks `release` for a `P5` row
-covering the Maturity & Compliance questionnaire — wave 7's Community domain found the same gap from
-the Live Ops side, and two domains filing one request against one sheet is the collision this
-pipeline keeps finding. Together the two move `release` AC1's row count **from 4 to 6**; if either is
-accepted, `launchBeats.preconditions` cites the new row instead of stating the obligation.
+**Cited, not refiled: `RR-C1`.** `cid/liveops/community/02` asks `release` for a new row covering the
+Maturity & Compliance questionnaire, and words it as *"a new `publishChecklist` row, id assigned by
+`release`"*. Wave 7's Community domain found the same gap from the Live Ops side, and two domains
+filing one request against one sheet is the collision this pipeline keeps finding. **Four requests
+are live against one four-row checklist** — `RR-H1`, `RR-C1`, `RR-T1` (`marketing/thumbnails/02`) and
+an unnumbered ask from `marketing/icon/01` — and `release` is the only holder that can see all four,
+so it numbers them. This sheet requires only **at least one row beyond `P4`**; when a row is
+accepted, `launchBeats.preconditions` cites it instead of stating the obligation.
 
 ## Consequences for other work
 
 - **Publish-and-release-mechanics work (`release`).** `RR-H1`, and the flip is now sequenced between
-  your gates 2 and 3 by another key. **I add no row.**
+  your gates 2 and 3 by another key. **I add no row, name no id and state no resulting count** — your
+  AC1 carries the count, and restating it after you accept any of the four requests is your edit.
 - **Thumbnail-slot work (`storeThumbnails`).** Slot 1 is yours and uncontested today. If the capture
   gate ever closes, an approved video takes slot 1 regardless of your ordering, so your slot list
   must survive one insertion at the head without hand-renumbering.
 - **Store-listing work (`storeListing`).** The page goes public while `gamePassId` is unprovisioned.
   What the listing says about `Span` in that window (`M7`) is a consequence of an ordering chosen
-  here, not a free choice.
-- **Roadmap work (`roadmap`).** Rule a roadmap and `beatCount: 1` becomes a floor, owing this key a
-  revision request per drop; rule none and it is the total and `M10` closes.
+  here, not a free choice. And your `updateNotes` surface is the **only** outward carrier a drop can
+  ever have, because I rule `D1` gets no beat; your `reopeningCondition` decides whether it fills.
+- **Roadmap work (`roadmap`).** Your one drop gets **zero outward beats** and `beatCount: 1` is a
+  total. `M10` closes. A second drop does not reopen this by itself — reopening needs a channel,
+  which is `channels`', not yours.
 - **Off-platform-presence work (`channels`).** Your empty channel set is what makes
-  `beatsBeforeTheFlip: 0` arithmetic. Any channel you find reopens `S1` as a revision request here.
+  `beatsBeforeTheFlip: 0` and `beatsAfterTheFlip: 0` arithmetic. Any channel you find reopens `S1`.
 - **Name, Icon, Store Page, Social.** Each owns one precondition row (4–8). Shipping a field at the
   platform default blocks the beat, and that is now checkable rather than implied.
 - **Contract-and-seam work.** `launchBeats` reaches nothing today; if promoted it is developer-facing
@@ -321,10 +380,16 @@ both readings, (b) under one, and (a)'s cost is a copy line Store Page already o
 
 **Second: do you own another Roblox experience?** One line closes `S4` permanently; nothing else can.
 
+**Third, and new this round: `roadmap`'s one drop ships with no outward announcement of any kind.**
+Nothing in the game says it happened (`R-F11`), no channel exists, and `updateNotes.entryCount` is 0.
+The alternative is one listing note, which `store-page/05` already has a shape for and which becomes
+owed only if a real player loses cleared ground. I recommend silence, and their condition as the
+trigger if it does not hold.
+
 ## Acceptance criteria
 
 1. `launchBeats.beatCount == 1 == len(launchBeats.beats)`; and `beatsBeforeTheFlip`,
-   `nonPageSurfaceCount`, `playerFacingStringCount`, `countdownsPermitted`,
+   `beatsAfterTheFlip`, `nonPageSurfaceCount`, `playerFacingStringCount`, `countdownsPermitted`,
    `crossPromotedExperiences`, `reEngagementPushes`, `trailer.trailerVideoCount`,
    `trailer.framesFromAnUnfixedBuild`, `claimCount` and `reservedSlots` are each exactly `0`.
 2. The serialized value of `launchBeats` contains zero `null` tokens and zero matches for
@@ -335,19 +400,24 @@ both readings, (b) under one, and (a)'s cost is a copy line Store Page already o
    non-empty `owner`, `ownedToday` and `check`; exactly one row has `ownedToday: "nobody"` (`n: 3`)
    and it carries `revisionRequest: "RR-C1"` with `citedNotDuplicated: true`; and rows 4–8 name
    exactly `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels`, each once.
-4. `launchBeats.beats[0].checklistRowExists` is `false` and carries `revisionRequest: "RR-H1"`;
-   `revisionRequests` has exactly one entry and `revisionRequestsCitedNotFiled` exactly one; and
-   `grep -rn "HttpService" game/src` returns **zero** matches.
+4. `launchBeats.revisionRequests` has exactly one entry, carrying `rowIdAssignedBy: "release"`,
+   `rowIdPinned: false`, `absoluteRowCountAsserted: false`, a `rowCountEffect` of exactly
+   `"at least one row beyond P4"` and an `otherLiveRequestsAgainstThisChecklist` array of **3** rows;
+   `revisionRequestsCitedNotFiled` has exactly one entry with `rowIdPinned: false`; the serialized
+   value of `launchBeats` contains zero matches for `/\bP[5-9]\b/` and no field named `rowId`,
+   `newRowId` or `newRow`; and `grep -rn "HttpService" game/src` returns **zero** matches.
 
 ## Not decided here
 
-**What is in any update, and whether there is one** — `roadmap`, Live Ops — Roadmap; a dependency
-field, not resolved. **The `publishChecklist` row values and the two new rows** — `release`; I file
-`RR-H1`, cite `RR-C1`, add no row. **What the listing says while `gamePassId` is unprovisioned** —
-`storeListing`, gap `M7`. **The thumbnail slot list and what a legitimate capture requires** —
-`storeThumbnails`; I state only that a video takes slot 1 and that there are none. **The name, icon,
-description, tag set, genre and maturity label** — `title`, `storeIcon`, `storeListing`; each is a
-precondition here and no value of theirs is decided here. **Whether any channel exists** — `channels`.
-**Whether *"accessible"* means *public*** — `[unverified]`, settled by the fetch named in
+**What is in any update** — `roadmap`, Live Ops; its one drop's *outward beat count* is resolved here
+at zero, its content is not mine. **Whether an update note is ever owed, and what it says** —
+`storeListing.updateNotes`, `store-page/05`, which holds the shape and the reopening condition.
+**The `publishChecklist` row ids, their values and the checklist's resulting length** — `release`; I
+file `RR-H1`, cite `RR-C1`, name no id and add no row. **What the listing says while `gamePassId` is
+unprovisioned** — `storeListing`, gap `M7`. **The thumbnail slot list and what a legitimate capture
+requires** — `storeThumbnails`; I state only that a video takes slot 1 and that there are none. **The
+name, icon, description, tag set, genre and maturity label** — `title`, `storeIcon`, `storeListing`;
+each is a precondition here and no value of theirs is decided here. **Whether any channel exists** —
+`channels`. **Whether *"accessible"* means *public*** — `[unverified]`, settled by the fetch named in
 `seamAgainstRelease`; the ordering is safe either way, so nothing waits on it. **Whether this
 developer owns a second experience** — the developer, in one line.

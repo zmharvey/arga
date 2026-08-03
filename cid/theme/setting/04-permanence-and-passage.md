@@ -10,8 +10,16 @@ as finished is the same flag that rebuilds it as finished.
 
 **The way further in is an opening in the built boundary that was always open and holds nothing.**
 Every part has exactly two — one inward, one outward — and neither is a door, neither is operable,
-and neither changes state at any moment for any reason. Going deeper is walking through the inward
-one. Going back is walking through the outward one. **That is the entire passage system.**
+and neither holds an instance at any moment for any reason. Going deeper is walking through the
+inward one. Going back is walking through the outward one. **That is the entire passage system.**
+
+**`W5` is struck, and the strike is recorded rather than argued.** This sheet named it as a
+one-line reversal; `depths.unlockRule` and `plots.openings.gatedUntilPreviousBayComplete` have both
+taken it `[research: repo — cid/gameplay/meta/04-the-depth-ladder.md, cid/gameplay/meta/06-plot-arrangement.md,
+read this run]`. **Passage is therefore conditional on the current part being finished** — and it
+survives `A11` and `A12` intact, because the refusal still has no object: `plots.openings.gateMechanism`
+is *"the ground beyond does not exist yet"*, and no barrier is ever placed in an opening. That is the
+one form of a condition this world could host, and it is the one the build took.
 
 **I rule on the re-entry question `fantasy/02` handed me: a finished part stays re-enterable.** Its
 either/or closes on that branch. Re-enterability and the `OPEN.md §2` collapse-to-a-flag default are
@@ -24,24 +32,24 @@ Six rules, `W1`–`W6`, each stated so another sheet can cite it by id. `W` beca
 | # | rule | the shape of the check |
 |---|---|---|
 | **W1** | **A finished part is finished stone and nothing else.** Zero patches, zero `Finds`. It gains no marker, plaque, dressing, light, colour shift, sound, cue or state of any kind. The only difference between it and itself an hour earlier is that the green is gone. | count of instances in a part that differ between the tick before its last patch clears and the tick after: **0** |
-| **W2** | **A finished part stays walkable, rebuilt from its completion flag.** Entering it spawns **0** patches. **This is the clause that can be struck; see the hinge.** | a finished part's saved payload is 1 boolean, and its byte count is identical whether or not it is ever re-entered |
+| **W2** | **A finished part stays walkable, rebuilt from its completion flag.** Entering it spawns **0** patches. Realised as `plots.liveGeometry.torndownBeyond`: a bay outside the retained window is destroyed and **rebuilt bare on re-entry**. | a finished part's saved payload is 1 boolean, and its byte count is identical whether or not it is ever re-entered |
 | **W3** | **Two openings per part, always open, holding nothing.** One inward, one outward. No door, no arch that shuts, no barrier, no operable part, no instance inside the gap. Neither opening exists *because* the part was finished; both were there at second zero. | count of openings per part: **2**; count of instances in an opening: **0** |
 | **W4** | **Passage is a walk and costs nothing but the walk.** Zero studs between an opening and the next part, no corridor, no antechamber, no approach, no loading surface. A player arriving in a part stands at its **outward** opening facing in, so the walk reads as one continuous movement inward. | travel between an opening and the next part: **0** studs, **0** s |
-| **W5** | **Nothing conditions passage.** The inward opening is passable whether the part is finished or not. Walking on early forfeits the `Finds` under the green you left and meets denser green with a weaker tool. **That is the only brake and it is patience, not a lock.** **Second strikeable clause; see the hinge.** | count of conditions, checks, prompts, barriers or refusals attached to an opening: **0** |
+| **W5** | **STRUCK.** As written: nothing conditions passage. As it now stands: the inward opening is passable only once the part is finished, and the refusal is the absence of ground rather than a barrier. | count of conditions attached to an opening: **1** (previous part complete); count of barriers, prompts or instances in an opening: **0** |
 | **W6** | **Both directions are always walkable.** The way in is the way out. No part is one-way and no route closes behind anyone. This is what makes `W2` reachable without any interface at all. | count of one-way openings: **0** |
 
-**The hinge, named so that a later refusal is one line rather than a rewrite.** Two clauses carry
-every cost in this sheet and each has a stated fallback:
+**The hinge, named so that a later refusal is one line rather than a rewrite. One of the two has
+been spent.**
 
 > **Strike `W2`** → a finished part is not re-enterable, the outward opening of the current part leads
 > nowhere walkable, and `fantasy/02`'s either/or resolves on its other branch: the count of finished
 > parts becomes a **mandatory** player-facing figure rather than an optional one. `W1`, `W3`–`W6` are
-> unchanged and no other sheet is reopened.
+> unchanged and no other sheet is reopened. **Not taken. Still available at the same price.**
 >
 > **Strike `W5`** → the inward opening is passable only when the part is finished, at most one part
 > ever carries a per-patch list, and the brief's own *"depth is reached by clearing"* reading wins.
-> `W1`–`W4` and `W6` are unchanged. **This is the reversal I recommend if persistence work refuses
-> the cost in `## Consequences`.**
+> `W1`–`W4` and `W6` are unchanged. **TAKEN**, by `gameplay/meta/04` and `gameplay/meta/06`, both
+> citing this hinge by name. The persistence cost this sheet created is gone with it.
 
 **Priority 2's *visitable restored ruins* is held open and not committed to.** `W2` is its
 precondition and this sheet supplies it at zero cost. Three things would have to be true before it
@@ -53,17 +61,54 @@ players. **The word `restored` is not adopted** — `lore/01-the-past` `L5` limi
 finished part is *finished* or *cleared*, and priority 2's phrase is quoted as the brief's rather than
 used as canon.
 
-**No manifest block: Setting owns no contract key.** This session has no shell tool, so
-`npm run bridge -- --contract` could not be executed; I read `SCHEMA` in `bridge/schema.mjs` directly,
-which is what `contract()` prints from. **Eleven keys** — `area`, `tiers`, `upgrades`, `vocabulary`,
-`currency`, `movement`, `patch`, `collection`, `onboarding`, `modules`, `runtime` — owners
-`gameplay/*` ×7, `tech/architecture` ×2, `art/objects` ×1, `theme/vocabulary` ×1. Note that one
-Theme & Narrative domain **does** own a key (`vocabulary`, owned by `theme/vocabulary`), correcting my
-own index's blanket claim; **none of the eleven holds a passage, a route, a state a finished place
-reaches, or a save format.** `[research: repo — bridge/schema.mjs:29-311 and :499, read this run]`
+**This sheet amends `setting.passage`; `01-the-ruin` carries the key.** Most of `W1`–`W6` is now
+carried by a merged key — `plots.openings` implements `W3` and `W4` field for field, and cites this
+sheet in doing so. The block below is therefore a crosswalk first and a decision second: it names,
+per rule, the field that holds it and the residue nothing holds.
 
-**This sheet coins zero terms.** *Opening* and *finished* are ordinary words used descriptively, not
-names; neither is proposed for the canonical list and neither is player-facing.
+```json
+{
+  "amends": "setting",
+  "requested_by": "cid/theme/setting/04-permanence-and-passage.md",
+  "passage": {
+    "rules": [
+      { "id": "W1", "rule": "a finished part is finished stone and nothing else", "status": "stands", "carriedBy": "no key holds it; it is a prohibition binding environment, chunkDressing, effects and stingers", "counts": { "instancesDifferingAcrossTheCompletingTick": 0 } },
+      { "id": "W2", "rule": "a finished part stays walkable and entering it spawns 0 patches", "status": "stands", "carriedBy": "plots.liveGeometry.torndownBeyond — destroyed and rebuilt bare on re-entry", "counts": { "patchesOnReEntry": 0, "findsOnReEntry": 0, "savedPayloadBooleans": 1 } },
+      { "id": "W3", "rule": "two openings per part, always open, holding nothing", "status": "stands", "carriedBy": "plots.openings — perBay 2, alwaysOpen true, barrierInOpening false, outwardOpeningOfBay1 is the works' edge", "counts": { "openingsPerPart": 2, "instancesInAnOpening": 0 } },
+      { "id": "W4", "rule": "passage is a walk and costs nothing but the walk", "status": "stands", "carriedBy": "plots.openings.studsBetweenParts = 0", "counts": { "studsBetweenParts": 0, "loadingScreens": 0, "corridorsAntechambersOrApproaches": 0 } },
+      { "id": "W5", "rule": "as written: nothing conditions passage", "status": "struck", "struckBy": ["depths.unlockRule", "plots.openings.gatedUntilPreviousBayComplete"], "replacedBy": "the inward opening is passable only once the part is finished", "theStrikeWasNamedInThisSheetAsAOneLineReversal": true, "counts": { "conditionsOnAnOpening": 1, "barriersPromptsOrInstancesInAnOpening": 0 } },
+      { "id": "W6", "rule": "both directions are always walkable; no part is one-way and no route closes behind anyone", "status": "stands", "carriedBy": "plots.liveGeometry.groundExistsIn, with the seam noted below", "counts": { "oneWayOpenings": 0 } }
+    ],
+    "theConditionHasNoObject": "plots.openings.gateMechanism — the ground beyond does not exist yet; the built lane's inward edge is bounded by the same plot boundary that bounds its long sides, and no barrier is ever placed in an opening. This is why the W5 strike reopens neither A11 nor A12: the refusal costs 0 instances.",
+    "finishedPartGains": { "markers": 0, "plaques": 0, "lights": 0, "colourShifts": 0, "cues": 0, "strings": 0, "cameraMoves": 0, "effects": 0, "fades": 0, "transitions": 0 },
+    "aFinishedPartCannotBecomeSomethingOverTime": "setting.law R4 — no settling in, no gradual return, no state a finished part reaches later",
+    "arrivalPlacement": {
+      "standsAt": "the part's outward opening, facing in",
+      "why": "a neighbour watching a plot re-green in one frame reads a body translating across it as they moved on, rather than as the green came back. Costs one position and no assets.",
+      "spawnMayNotFaceTheInwardOpening": true,
+      "carriedBy": "plots.spawn.lookVector and plots.spawn.neverFacesLaneAxis true"
+    },
+    "wordRestored": { "adopted": false, "why": "lore/01 L5 limits it to exposure. A finished part is finished or cleared; priority 2's phrase is quoted as the brief's, never used as canon.", "thereIsNoRestoredLookToAuthor": "a finished part is dressed identically to an unfinished one minus the green" },
+    "bannedPassageWords": ["door", "doorway", "gate", "gateway", "gated", "locked", "unlock", "unlocks", "unlocked", "barred", "portal", "teleport", "shortcut"],
+    "bannedPassageWordsScope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt, and the exemption is load-bearing: every hit under cid/ today is prose.",
+    "deliberatelyNotBanned": ["key", "seal", "hinge"],
+    "whyThoseThree": "Key, Seal and Hinge are live collection.sets[].relics values. A check that forces a rename of a shipped value is a check that failed. Shipped values at rename risk from this sheet: 0.",
+    "unavailableProgressionWordsForTheStore": ["unlock", "gate", "door", "key", "portal", "shortcut", "restored"],
+    "areasScreen": { "loadBearingForProgression": false, "mayNotBe": ["the only route to any part", "a map", "an elevation section", "a total or a fraction"], "walkBackShortcutPermittedIf": "it arrives on foot inside the part and never shows the works from outside" },
+    "visitableRestoredRuins": {
+      "status": "held open at zero cost, not committed to",
+      "aVisitorWouldSee": "bare stone and nothing else",
+      "preconditions": ["a plot holding a second occupant or rendering a copy of another player's part", "no mechanical interaction survives it", "the category gate's ban on comparison between players survives it"]
+    },
+    "openSeam": {
+      "field": "plots.liveGeometry",
+      "problem": "groundExistsIn says every bay from 1 up to and including the live bay exists; torndownBeyond says bays more than two outward of the live one are destroyed. Both are in one key's value and they cannot both be standing statements.",
+      "whatThisSheetNeeds": "W6 holds under either reading only if a destroyed bay is rebuilt on approach rather than on arrival — a player walking outward must not meet an absence of ground.",
+      "owner": "gameplay/meta/06, which owns plots. Raised, not resolved here."
+    }
+  }
+}
+```
 
 ---
 
@@ -85,7 +130,8 @@ button"*) and `A12` (*"Nothing is closed. Nothing locked, sealed, barred, shut, 
 route further in"*) are already on disk in my own domain, and between them they delete every obvious
 answer. **What they leave is the answer they explicitly offered:** *"an opening in construction that
 was always open costs nothing and breaks nothing"* (`05-inventory`, consequences to this sheet).
-`W3` takes it.
+`W3` takes it, and the `W5` strike does not disturb it: the condition that now exists is an absence of
+ground, not an object in a gap.
 
 **The independent argument, which is the one with a rename attached.** `collection.sets[].relics`
 already ships `Hinge` (Terrace, depth 1), and `Seal` and `Key` (Vault, depth 3)
@@ -93,7 +139,7 @@ already ships `Hinge` (Terrace, depth 1), and `Seal` and `Key` (Vault, depth 3)
 passage those three stop being objects a mason and a clerk left and become instruments in service** —
 the exact failure `03-physical-law` argument 1 identified for `Sundial` and `Gnomon` under a moving
 sun, and a breach of `A15` (*"No instrument in service"*). Under `W3` there is no door anywhere in the
-world, so a hinge is a hinge, a seal is a seal, and a key fits nothing. **Reverse this ruling and three
+world, so a hinge is a hinge, a seal is a seal, and a key fits nothing. **Reverse `W3` and three
 live contract values are at risk.** `[cid: decided]`
 
 The dry joke is available and left dry: the deepest set the game ships contains a key, in a place where
@@ -161,7 +207,7 @@ twenty-five.** An opening is an absence of `P1`, not a new material.
 ground the player cannot walk onto, because the next part is not instantiated. **The player stands in
 the opening — the last stud of the plot — and the ground they are on becomes the next part.** They never
 walk outside the plot. The boundary is still built on all four sides; two of them have a gap in the
-build.
+build. That the ground beyond does not exist yet is also, under the `W5` strike, the entire gate.
 
 **`02-extent` authorised exactly this and I take it literally.** It ruled *"Going deeper is **walking
 further in**, so passage may not be described or built as descending, climbing, or crossing to a separate
@@ -170,16 +216,16 @@ a gap in a wall into more of the same works is the only shape left after those f
 supplies the honesty about the seam, which I inherit rather than re-argue: *"Depth is an ordering, not a
 coordinate. **No spatial relation between two areas is canon** — no adjacency, no bearing, no distance,
 no map."* So the fiction claims **continuity** (you kept walking inward) and claims **no position**, and
-the build re-authoring one 120-stud plot does not falsify a claim the fiction never makes. That is the
+the build re-authoring one plot does not falsify a claim the fiction never makes. That is the
 same argument `02-extent` used to make the shipped row of identical plots correct rather than excused.
 
-**`W4`'s placement clause exists for one reason and it is a legibility one.** Passage destroys and
-rebuilds the plot whole, which is exactly the operation `identity/03-co-present-stranger` criterion 4
-already mandates (*"created in one loop with no yield and removed by a single `Destroy`"*) — **zero
-revision requests there.** But a neighbour watching sees a plot go from bare stone to full green in one
-frame. Placing the arriving player at the **outward** opening — the far side from where they entered —
-means they visibly translate across the plot at that same instant, which reads as *they moved on* rather
-than as *the green came back*. It costs one position and no assets. `[cid: decided]`
+**`W4`'s placement clause exists for one reason and it is a legibility one.** Passage rebuilds the live
+bay, which is the operation `identity/03-co-present-stranger` criterion 4 already mandates (*"created in
+one loop with no yield and removed by a single `Destroy`"*) — **zero revision requests there.** But a
+neighbour watching sees ground go from bare stone to full green in one frame. Placing the arriving
+player at the **outward** opening — the far side from where they entered — means they visibly translate
+across the plot at that same instant, which reads as *they moved on* rather than as *the green came
+back*. It costs one position and no assets. `[cid: decided]`
 
 **The travel budget, stated because `core-loop/04` set one.** It requires the next area be *"enterable
 at the instant one completes, with no threshold, no cooldown and no travel worth measuring"* — *"Any
@@ -187,64 +233,70 @@ gate at all converts the completion peak into a stall three to seven times a ses
 only travel is the walk to the opening, bounded by the part's own diagonal: at the shipped `area.size`
 of 120 that is 170 studs, and at `movement.baseWalkSpeed` 16 that is 10.7 s against the 165 s lap that
 sheet targets — **6.5%, and on average about half of it**, since the last patch cleared can be anywhere.
+**The `W5` strike does not spend that budget**, because the condition is satisfied at the moment the
+last patch clears and the next bay is built at that same instant
+(`plots.liveGeometry.bayBuiltAt`).
 `[research: repo — cid/gameplay/mechanics/01-reach-and-pace.md, cid/gameplay/meta/01-the-area.md,
 cid/gameplay/core-loop/04-lap-vs-session.md, read this run]`
 
-### `W5`: the refusal has no form available, so there is no refusal
+### `W5`: written unconditional, struck conditional, and the reason the strike is cheap
 
-This is the sheet's overrule and it has its own section below. The world-side argument is short: `A12`
-says *nothing is walled off from the route further in*, `A11` says nothing is operable and no prompt
-exists, `R1`–`R3` give the place one unchanging lighting state, and `W1`/`K3` forbid anything appearing
-or changing at completion. **A conditional passage would therefore have to refuse invisibly** — a player
-walks into a gap and simply does not go through, with nothing in the world to explain it. That is worse
-than either alternative: it is a lock whose only form is a non-event. So the place presents no barrier
-and the game adds none. `[cid: decided]`
+The world-side argument for the original ruling was short: `A12` says *nothing is walled off from the
+route further in*, `A11` says nothing is operable and no prompt exists, `R1`–`R3` give the place one
+unchanging lighting state, and `W1`/`K3` forbid anything appearing or changing at completion. **A
+conditional passage would therefore have to refuse invisibly** — a player walks into a gap and simply
+does not go through, with nothing in the world to explain it.
 
-**The brake that does exist is better than a lock, and the brief already built it.** *"Depth is
-progression — deeper areas are larger, denser, and hide rarer sets"* `[brief: binding]`
-`[you chose: R3 Q2]`, and *"the binding constraint moves from **tool power** to **time and
-patience**"* `[brief: soft]` `[I assumed]`. A player who walks two parts in with a level-0 tool meets
-denser green and clears it slowly. Nothing is lost, nothing is at risk (`A16`), and they can walk back
-out (`W6`). **That is friction made of patience, which is the only friction this design has** — *"The
-only friction is the size of an area"* `[brief: soft]`.
+**The build found the third option this sheet did not, and that is why the strike costs so little.**
+The refusal is not invisible and not an object: **the ground beyond has not been built yet**
+(`plots.openings.gateMechanism`, `plots.liveGeometry.bayBuiltAt`). A player at the inward opening of an
+unfinished part is looking at the edge of the world, which is the same thing they see at the far side
+of any part in any direction. Nothing was added, nothing shut, nothing refused them by name.
+`A11` and `A12` both survive, unamended, at **0 instances**. `[cid: decided]`
+
+**The brake the original ruling relied on is still there and is now the second one.** *"the binding
+constraint moves from **tool power** to **time and patience**"* `[brief: soft]` `[I assumed]`; a player
+who walks two parts in with a level-0 tool meets denser green and clears it slowly. Under the strike
+that walk is no longer available, and the friction that remains is *"The only friction is the size of
+an area"* `[brief: soft]`, which is the brief's own.
 
 ### `[playtest unknown]` — whether an 8–14 player who can walk on early does, and regrets it
 
-`[brief: binding]` `[you chose: R1 Q4]` on the band. **Starting value: `W5` as written — passage
-unconditional, no signal of any kind attached to it.** Test range, in the order it should be spent:
-(1) `onboarding`'s spawn placement, which this sheet requires not face the inward opening, so a first
-session's first steps are into green rather than out of the part; (2) area authoring places the inward
-opening away from the outward one, so reaching it crosses the part — arrangement work's, permitted here;
-(3) **strike `W5`** and take the brief's reading, which is the named one-line reversal and requires a
-developer or a persistence ruling, not a tuning pass. What would settle it: whether first-session
-players end session 1 in the part they started in. If a meaningful share are two or more parts in with
-zero `Finds`, spend the reversal.
+`[brief: binding]` `[you chose: R1 Q4]` on the band. **This unknown is now closed by the strike:**
+walking on early is not possible, so nothing is forfeited and nothing is regretted. The two tuning
+steps it named survive as ordinary placement work and are handed on: (1) `onboarding`'s spawn placement
+does not face the inward opening, which `plots.spawn.neverFacesLaneAxis` already guarantees; (2) area
+authoring places the inward opening away from the outward one, so reaching it crosses the part.
+**What replaces the unknown:** whether a player ever presses against an unfinished part's inward
+opening and reads the absent ground as a bug. Starting value: no signal of any kind attached to the
+opening. What would settle it: whether first-session players walk into the inward opening more than
+once.
 
 ---
 
 ## Consequences for other work
 
-- **Persistence work** *[Tech & Data — `cid/tech/architecture/02-module-plan.md`, the `persistence`
-  module]*: **three items, and the third is a cost you may refuse.** **(a)** `W2` asks for **nothing you
-  are not already building.** Your `forbids` on a per-patch list after completion is honoured exactly,
-  your criterion *"a completed area occupies a single boolean"* is ratified, and re-entry is a read of
-  that boolean plus a `layout` call that spawns zero patches. **Zero revision requests on that half.**
-  **(b)** One new bounded field: the id of the part the player is currently in. It is **O(1) per
-  player**, not per part. **(c)** `W5` lets a player hold **more than one** part in a partial state,
-  each needing its per-patch state kept, because *"Cleared is permanent"* applies to a part left
-  half-cleared exactly as it does to a finished one. Your shipped criterion tests one in-progress area
-  because one exists. **If a bound of 1 is required, the fix is to strike `W5`, not to discard a
-  partial part** — discarding one re-greens cleared ground and breaks a binding decision. Raise it as a
-  revision against this sheet and it is a one-line change.
-- **Area-arrangement and depth-theming work** *[Meta & Content, wave 3, owner of `area` and
-  `collection`; also the owner of the gating question per `OPEN.md §5` #3]*: four things. Every part you
-  author carries **exactly two openings**, one inward and one outward, and they are the same
-  construction at every depth — an opening is not a depth-themed feature. **No part is the last**, so no
-  part may lack an inward opening (`02-extent` already forbids a final part). **Depth 1's outward
-  opening is the works's own edge** and leads to unwalkable slope and wood, per `02-extent`'s *"the one
-  open edge a person walks in by"*. And the gating question is now answered from the world side rather
-  than left to you: **there is nothing there.** If you still want a condition, it has no form in this
-  place, which is `W5`'s named cost.
+- **Persistence work** *[Tech & Data — the `persistence` module]*: **two items now, not three.**
+  **(a)** `W2` asks for **nothing you are not already building.** Your `forbids` on a per-patch list
+  after completion is honoured exactly, your criterion *"a completed area occupies a single boolean"*
+  is ratified, and re-entry is a read of that boolean plus a `layout` call that spawns zero patches.
+  **Zero revision requests on that half.** **(b)** One new bounded field: the id of the part the
+  player is currently in. It is **O(1) per player**, not per part. **(c) is withdrawn.** The `W5`
+  strike bounds partial parts at one, which was the cost you were being asked to carry; it is gone.
+- **Area-arrangement and depth-theming work** *[Meta & Content, wave 3, owner of `area`, `depths` and
+  `plots`]*: four things. Every part you author carries **exactly two openings**, one inward and one
+  outward, and they are the same construction at every depth — an opening is not a depth-themed
+  feature. **No part is the last**, so no part may lack an inward opening (`02-extent` already forbids
+  a final part). **Depth 1's outward opening is the works's own edge** and leads to unwalkable slope
+  and wood. And **the gating question is closed on your reading, not mine**: your `unlockRule` is the
+  `W5` strike this sheet named, and it is accepted here without a counter-request.
+- **Plot-arrangement work** *[Meta & Content — `plots`]*: **one open seam, raised not resolved.**
+  `plots.liveGeometry.groundExistsIn` says every bay from 1 to the live bay exists;
+  `plots.liveGeometry.torndownBeyond` says bays more than two outward of the live one are destroyed.
+  Both sit in one key's value. `W6` holds under either reading **only if a torn-down bay is rebuilt on
+  approach rather than on arrival** — a player walking outward must never meet an absence of ground,
+  because that is the same signal the `W5` gate uses and it would then mean two different things.
+  Yours to settle; `setting.passage.openSeam` records it.
 - **Promise-over-time work** *[Fantasy — `02-promise-over-time`, this wave, already ruled]*: **your
   either/or is closed on the re-entry branch.** A finished part stays walkable, so carrier 2 survives
   and the finished-parts figure is no longer the promise's only carrier. **Your criterion 4's
@@ -252,20 +304,17 @@ zero `Finds`, spend the reversal.
   not making it for you. Nothing else in your sheet is touched: `W1` supplies no second finishable
   thing, no ending, and no event at 24 of 24.
 - **Place-rules work** *[Setting — `03-physical-law`, this domain, already ruled]*: **one revision
-  request, one clause, and your own prose already grants it.** Your criterion 2 counts *"properties of
-  any instance inside a plot whose value at second N differs from its value at second 0 for any reason
-  other than **a player clearing a patch**"* and requires 0. Passage rebuilds the plot on a player
-  *walking*, which is a player's hand but not a clearing. Your `R4` prose already anticipates precisely
-  this — *"the shuffle picks **which part you meet next**, resolved on a player's arrival ... the part
-  that appears is a different part, never a part that changed, so the shuffle is a player-caused read
-  and not a timer"* — so the requested amendment is to add **"or a player passing through an
-  opening"** to that criterion's carve-out. `R1`–`R3`, `R5` and `R6` are untouched, and `W1` is `R4`
-  restated for the one case you routed to me.
+  request, one clause, granted.** Your criterion 2 counts *"properties of any instance inside a plot
+  whose value at second N differs from its value at second 0 for any reason other than **a player
+  clearing a patch**"* and requires 0. Passage rebuilds geometry on a player *walking*, which is a
+  player's hand but not a clearing. The carve-out now reads *or passing through an opening*, in `R4`,
+  in your criterion 2, and in `setting.law.r4CarveOuts`. `R1`–`R3`, `R5` and `R6` are untouched, and
+  `W1` is `R4` restated for the one case you routed to me.
 - **Place-inventory work** *[Setting — `05-inventory`, this domain, already ruled]*: **zero rows added,
   zero rows licensed back, zero renames.** An opening is an absence of `P1`, not a thirteenth class.
-  `A11` and `A12` are cited rather than extended, and the reading you offered me (*"an opening in
-  construction that was always open"*) is the one taken. `A13` is what makes priority 2's plural survive
-  as *cleared* and never as *dressed*, exactly as you said.
+  `A11` and `A12` are cited rather than extended — **and they survive the `W5` strike unamended**,
+  because the condition is an absence of ground rather than an object. `A13` is what makes priority 2's
+  plural survive as *cleared* and never as *dressed*, exactly as you said.
 - **Presence and module-planning work** *[Social, wave 2; Tech — `plots`]*: **passage produces the same
   observable as slot reuse, and now it is frequent rather than rare** — 3 to 7 times a session per
   player, times a server of 12–20, versus once per join. `identity/03-co-present-stranger` routed the
@@ -279,20 +328,22 @@ zero `Finds`, spend the reversal.
   screen is no longer load-bearing for progression.** Walking works, in both directions, always. If you
   build it, three bounds: it may not be the only route to any part, it may not be a map or an elevation
   section (`02-extent`), and it may not show a total or a fraction (`02-extent` criterion 2). **The one
-  thing it is genuinely worth building for is the walk back:** under `W6`, returning from depth 12 to
-  depth 1 is eleven walks, and a shortcut that arrives **on foot inside the part** is permitted and
+  thing it is genuinely worth building for is the walk back:** under `W6`, returning to depth 1 is a
+  walk of every bay between, and a shortcut that arrives **on foot inside the part** is permitted and
   costs the fiction nothing. **What is forbidden is a shortcut that shows the works from outside.**
 - **Onboarding work** *[Onboarding, wave 2 — `cid/gameplay/onboarding/01-first-find.md`]*: one
-  requirement. **The first session's spawn may not face the inward opening**, so a first-session
-  player's first steps are into overgrowth rather than out of the part. Your guarantee that the patch
-  nearest spawn carries the first `Find` is untouched, and nothing about `W1`–`W6` needs stating to a
-  player, which is what *"No text, no tutorial"* requires of every world fact.
-- **Mood-and-beat work** *[`cid/theme/tone/03-beat-map.md`, this category, already ruled]*: **ratified,
-  and `M8` gains the reason it was missing.** You ruled *"arriving in a deeper area → baseline; nothing
-  gates it, so a peak here makes walking an accomplishment"* and justified it with *"Nothing was
-  passed"* — this sheet is what makes that literally true. `W1` independently forbids any world change
-  at completion, which is `K3` reaching the ground rather than the payload. No cue, string or effect
-  fires on passage or on entering a finished part.
+  requirement, and `plots.spawn` already meets it. **The first session's spawn may not face the inward
+  opening**, so a first-session player's first steps are into overgrowth rather than out of the part.
+  Your guarantee that the patch nearest spawn carries the first `Find` is untouched, and nothing about
+  `W1`–`W6` needs stating to a player, which is what *"No text, no tutorial"* requires of every world
+  fact.
+- **Mood-and-beat work** *[`cid/theme/tone/03-beat-map.md`, this category, already ruled]*: **one
+  qualification, raised because the `W5` strike changes it.** You ruled *"arriving in a deeper area →
+  baseline; nothing gates it, so a peak here makes walking an accomplishment"* and justified it with
+  *"Nothing was passed"*. Something is now passed — a completion condition — but it is satisfied at the
+  instant the last patch clears, and **the peak for that instant is already the completion**, not the
+  walk. So `M8` stands and its reason narrows: a peak at arrival would be a second cue for one event.
+  `W1` independently forbids any world change at completion, which is `K3` reaching the ground.
 - **Clear-feedback and VFX work** *[Mechanics, wave 2; Art — VFX, wave 4]*: `identity/03`'s rule that
   *"whatever celebrates a clear or a completion may not be reused on plot construction"* now applies 3
   to 7 times a session instead of on joins only. **No effect, sound, fade, camera move or transition
@@ -315,11 +366,11 @@ zero `Finds`, spend the reversal.
   additions and `A13` forbids placement, so *"visit your restored ruins"* has no surface to run an event
   on. Priority 2 is a scope decision and remains one; it is not reachable from your wave.
 - **Naming work** *[Vocabulary, this wave, last writer]*: **nothing owed. This sheet coins zero terms.**
-  Offered, not imposed: the tokens in criterion 4 are ready for `vocabulary.bannedWords`, and I have
-  checked them against every shipped string — **`key`, `seal` and `hinge` are deliberately excluded**
-  because `Key`, `Seal` and `Hinge` are live `collection.sets[].relics` values, and a check that forces
-  a rename of a shipped value is a check that failed. This list shares zero tokens with `XW`, `RW`,
-  `L1`/`L3`/`L5`, `S1`–`S6` or the eight entries already in `bannedWords`.
+  Offered, not imposed: `setting.passage.bannedPassageWords` is ready for `vocabulary.bannedWords`, and
+  I have checked it against every shipped string — **`key`, `seal` and `hinge` are deliberately
+  excluded** because `Key`, `Seal` and `Hinge` are live `collection.sets[].relics` values, and a check
+  that forces a rename of a shipped value is a check that failed. This list shares zero tokens with
+  `XW`, `RW`, `L1`/`L3`/`L5`, `S1`–`S6` or the entries already in `bannedWords`.
 - **Fantasy work** *[Fantasy, this wave, occupancy search]*: nothing here depends on the finding. An
   always-open gap and a re-enterable finished part survive any result about who else ships a ruin.
 
@@ -327,15 +378,16 @@ zero `Finds`, spend the reversal.
 
 1. **Opening check.** Every part's built boundary holds exactly **2** openings, one inward and one
    outward, and each holds **0** instances. Count of instances anywhere in a part whose existence,
-   position, material, colour or state differs between the tick before that part's last patch clears and
-   the tick after: **0**. Count of `ProximityPrompt`, `ClickDetector`, `HingeConstraint`,
+   position, material, colour or state differs between the tick before that part's last patch clears
+   and the tick after: **0**. Count of `ProximityPrompt`, `ClickDetector`, `HingeConstraint`,
    `PrismaticConstraint`, `Motor`, `TweenBase` or animated instance in or on an opening: **0**. At
-   depth 1, walkable ground beyond the outward opening: **0** studs.
-2. **Re-entry check (`W2`).** With `areasComplete[partId]` true, entering that part spawns **0** patches
-   and **0** `Finds`, its saved payload is **1** boolean holding **0** patch indices, and the payload's
-   byte count is identical whether or not the part is ever re-entered. Count of strings, cues, effects or
-   camera moves that fire on entering a finished part: **0**. Entering it a second time produces an
-   identical result.
+   depth 1, walkable ground beyond the outward opening: **0** studs. **The `W5` condition adds 0 to
+   every count in this criterion.**
+2. **Re-entry check (`W2`).** With a part's completion flag true, entering that part spawns **0**
+   patches and **0** `Finds`, its saved payload is **1** boolean holding **0** patch indices, and the
+   payload's byte count is identical whether or not the part is ever re-entered. Count of strings,
+   cues, effects or camera moves that fire on entering a finished part: **0**. Entering it a second
+   time produces an identical result.
 3. **Passage cost check (`W4`).** Travel between an opening and the next part: **0** studs, **0**
    loading screens, **0** seconds of non-walking time. The walk from the furthest patch in a part to that
    part's inward opening is at most one diagonal of the part — at the shipped `area.size` of 120 that is
@@ -345,57 +397,52 @@ zero `Finds`, spend the reversal.
 4. **Passage word check.** Over every `manifest` string value and every `artPrompt` under `cid/`, the
    whole-word case-insensitive pattern
    `door|doorway|gate|gateway|gated|locked|unlock|unlocks|unlocked|barred|portal|teleport|shortcut`
-   returns **0** hits. **Verified 0 today:** every hit under `cid/` is prose (`scope gate`,
-   `category gate`, `gating`, and the quoted competitor line *"unlock new islands"*), and none sits
-   inside a `manifest` block — the prose exemption is load-bearing here and must be applied, or the
+   returns **0** hits. The prose exemption is load-bearing here and must be applied, or the
    check fails on other sheets' own process notes. `key`, `seal` and `hinge` are absent from the pattern
    by design, so this sheet puts **0** shipped values at risk and requests **0** renames.
 
 ## Not decided here
 
-The save format, the field names, the encoding of a partial part's cleared set, and how many partial
-parts are tolerated *(persistence work — I state a requirement and set no value)*. How parts are
-arranged, ordered, sized, densified or themed by depth, and where in a part its two openings sit
-*(`gameplay/meta`, wave 3, then balance work)*. Whether the `areas` screen exists, what it looks like,
-and whether a walk-back shortcut is built *(UI/UX, wave 4, then the pattern registry)*. Whether a rule
-conditions passage after all *(Meta & Content, the gating question — the world provides no form for it
-either way)*. Whether priority 2's visiting is ever built, and everything about how *(scope, then
-Social wave 2 and UI/UX wave 4; three preconditions stated, none specced)*. The opening's width, hue,
-material, geometry and ornament *(Art & Visuals — Environment)*. Spawn and arrival placement values
-*(Mechanics with Onboarding; I state a facing requirement and no coordinate)*. What kind of built thing
-this is, the climate and the fauna ruling (`01-the-ruin`, cited). Scale, direction, the sightline and
-the no-adjacency rule (`02-extent`, cited). The hour, weather and the supernatural budget
-(`03-physical-law`, cited). The roster of matter (`05-inventory`, cited). Whether criterion 4's tokens
-join `vocabulary.bannedWords` *(Vocabulary)*.
+The save format, the field names, and the encoding of a partial part's cleared set *(persistence work —
+I state a requirement and set no value)*. How parts are arranged, ordered, sized, densified or themed by
+depth, where in a part its two openings sit, and when a torn-down bay is rebuilt *(`gameplay/meta`,
+which owns `plots` and `depths`)*. Whether the `areas` screen exists, what it looks like,
+and whether a walk-back shortcut is built *(UI/UX, wave 4, then the pattern registry)*. Whether priority
+2's visiting is ever built, and everything about how *(scope, then Social wave 2 and UI/UX wave 4; three
+preconditions stated, none specced)*. The opening's width, hue, material, geometry and ornament
+*(Art & Visuals — Environment)*. Spawn and arrival placement values *(Mechanics with Onboarding; I state
+a facing requirement and no coordinate)*. What kind of built thing this is, the climate and the fauna
+ruling (`01-the-ruin`, which carries the `setting` key). Scale, direction, the sightline and the
+no-adjacency rule (`02-extent`, which amends `setting.extent`). The hour, weather and the supernatural
+budget (`03-physical-law`, which amends `setting.law`). The roster of matter (`05-inventory`, which
+amends `setting.contents`). Whether criterion 4's tokens join `vocabulary.bannedWords` *(Vocabulary)*.
 
 ## Pushing back
 
-**Overruled: the strong reading of *"depth is reached by clearing"*** (`03-META.md`, `[brief: soft]`
-`[I assumed — follows from cutting rebirth; not interviewed]`, and `OPEN.md §5` assumption 3, whose
-stated inheritor is Meta & Content). **The line's own sentence is ratified in full** — no gating
-mechanism is needed and depth is not reached by hitting a threshold. What I overrule is the reading
-that *completing a part is a precondition for entering the next one*, which is `W5`.
+**Overruled and then reversed, and both halves are recorded because the record is the point.**
 
-Four reasons, in descending order of strength. **(1)** A completion requirement is a gate whose
-condition is usually already met, and `05-inventory` `A12` — my own domain, already on disk — says
-*nothing is walled off from the route further in*. **(2)** There is no form for the refusal: `A11`
-leaves no prompt, no barrier and nothing operable, and `W1` plus `tone/03-beat-map` `K3` forbid anything
-appearing at completion, so the lock would have to be an invisible non-event. **(3)** *"Zero tension is
-deliberate"*, elevated to *"Do not invent tension to fill the gap"* (`HANDOFF.md`) — a precondition is a
-demand, and this is the only one the design would contain. **(4)** `core-loop/04` states that *"Any gate
-at all converts the completion peak into a stall three to seven times a session"*, which is an argument
-against a condition even when it is satisfied.
+**What this sheet overruled:** the strong reading of *"depth is reached by clearing"* (`03-META.md`,
+`[brief: soft]` `[I assumed — follows from cutting rebirth; not interviewed]`, `OPEN.md §5` assumption
+3, whose stated inheritor is Meta & Content). **The line's own sentence was ratified in full** — no
+gating mechanism is needed and depth is not reached by hitting a threshold. What `W5` overruled was
+the reading that *completing a part is a precondition for entering the next one*.
 
-**The cost, stated rather than softened:** `W5` lets a player hold several parts in a partial state, and
-each one keeps its per-patch cleared set, because permanence applies to half-cleared ground too. That is
-a new instance of the risk the brief names as its only novel technical one, created by me. It is small in
-absolute terms — a partial part's cleared set is a bitfield of `area.patchCount`, and a player has no
-incentive to accumulate partials, since an unfinished part pays nothing and yields no `Finds` — but it is
-real, it is unbounded in principle, and it is why `W5` is a named hinge with a one-line reversal rather
-than a settled claim. **If persistence work refuses it, take the reversal and the brief's reading wins.**
+**What reversed it:** `gameplay/meta/04` and `gameplay/meta/06`, both citing this sheet's own named
+hinge, on grounds this sheet accepted in advance. **The overrule is withdrawn and the brief's reading
+stands.** Of the four reasons `W5` gave, three are answered by the form the build found — the refusal
+is an absence of built ground, so `A12` is not breached, `A11` needs no prompt, and there is nothing
+for a player to be demanded of. The fourth (*"any gate at all converts the completion peak into a
+stall"*) is answered by timing: the condition is satisfied at the instant the last patch clears, and
+`plots.liveGeometry.bayBuiltAt` builds the next bay at that same instant, so the stall is **0 s**.
 
-**Not overruled, ratified:** the `OPEN.md §2` collapse-to-a-completion-flag default, in full. This sheet
-is the demonstration that it and priority 2's plural were never actually in conflict.
+**What the reversal bought:** the persistence cost `W5` created — several parts held in a partial
+state, each keeping its per-patch cleared set — is gone. At most one part is ever partial. That was
+the risk the brief itself calls its only novel technical one, and this sheet had created a new
+instance of it.
+
+**Not overruled, ratified:** the `OPEN.md §2` collapse-to-a-completion-flag default, in full. This
+sheet is the demonstration that it and priority 2's plural were never actually in conflict, and that
+survives the `W5` reversal untouched.
 
 ## Flagged to the developer
 
@@ -403,27 +450,24 @@ is the demonstration that it and priority 2's plural were never actually in conf
 a deeper area or for what a finished area becomes; `03-META.md` says only that no gate is *needed*, and
 priority 2 wants restored ruins visitable while `OPEN.md §2` wants finished areas collapsed to a flag.
 My index logged both as gaps 9 and 10 and marked them `[cid: decided]`. So every rule above answers a
-question the brief left open, and two of them (`W2`, `W5`) carry costs on somebody else's key.
+question the brief left open, and one of them (`W2`) still carries a cost on somebody else's key.
 
 | ruling | live alternative | why I did not take it | cost of overruling me |
 |---|---|---|---|
 | **A finished part stays re-enterable** (`W2`) | Discard it — a finished part is gone, and the count of finished parts becomes the only record. The `OPEN.md §2` default read at its most conservative | It costs **zero additional bytes**: the flag exists anyway to stop green returning, and re-entry is a read of it. Without it the game's stated payoff is never observable and `fantasy/02`'s wordless carrier disappears | **One line.** Strike `W2`; the finished-parts figure becomes mandatory and `fantasy/02` criterion 4 stands as written |
-| **Passage is unconditional** (`W5`) | Onward passage requires the current part finished, which is the brief's own soft reading | The refusal has no form in this world, and `A12` already says nothing is walled off from the route in. The existing brake — denser green, weaker tool — is friction made of patience, which is the only friction this design has | **One line.** Strike `W5`; at most one part is ever partial, and the persistence cost above disappears with it |
+| **Passage is unconditional** (`W5`) | Onward passage requires the current part finished, which is the brief's own soft reading | **Reversed. The alternative won**, on a form this sheet did not find: the refusal is the absence of built ground, which costs 0 instances and breaches neither `A11` nor `A12` | **Already spent.** `depths.unlockRule` and `plots.openings.gatedUntilPreviousBayComplete` |
 | **Two always-open gaps, no door** (`W3`) | A doorway, an arch, a stair with a barrier — the genre reflex, and the cheapest way to signal *onward* | It puts `Hinge`, `Seal` and `Key` — three shipped `collection.sets[].relics` values — into service as instruments, against `A15`, and it needs an operable object `A11` forbids | **Expensive.** It reopens `A11` and `A12` and puts three live contract values at rename risk |
 | **A finished part gains nothing** (`W1`) | A marker, a warmer light, a bloom on completion — the standard payoff dressing | Every form of it is already banned by `A4`, `A7`, `A10`, `A13`, `R1` and `K3`. The set of available additions is empty before I get to it | **One row, plus whatever five other sheets then have to relax** |
 
-**The ruling I would most like from you: whether a player may walk deeper without finishing where they
-stand.** My recommendation is `W5` as written, on one argument — a lock with no visible form is worse
-than no lock, and this world has no form to give it. **But it is the one clause in this sheet whose cost
-lands on the risk the brief itself calls novel**, so if persistence work says a bound of one partial part
-is required, take the reversal rather than trying to reconcile the two. Re-enterability (`W2`) is
-independent of that ruling and I recommend keeping it under either.
+**The ruling I would still like from you: whether re-enterability (`W2`) is worth keeping.** It is the
+one clause here that has not been settled by a downstream key, and my recommendation is to keep it: it
+costs zero additional bytes, and it is the only wordless way a player is ever shown that *cleared is
+permanent* means forever rather than means this afternoon.
 
 **Second, smaller ruling: whether priority 2's *visitable restored ruins* is worth the three
 preconditions above.** My recommendation is to leave it exactly where it is. `W2` keeps it reachable at
 no cost, and the honest current state is that a visitor would be shown bare stone, because everything a
 player might display in a finished part is already forbidden by a wave-1 sheet.
 
-No URL was fetched in this run. Every `[research: repo — ...]` cites a file read this run, the one
-`research/landscape.md` citation is marked as the brief's fetch rather than mine, and
-`npm run bridge -- --contract` could not be executed because this session has no shell tool.
+No URL was fetched in this run. Every `[research: repo — ...]` cites a file read in this run, and the
+one `research/landscape.md` citation is marked as the brief's fetch rather than mine.

@@ -650,3 +650,57 @@ test('vocabulary.allowedPattern means the same thing in Lua as in JavaScript', a
     assert.equal(re.test(s), false, `${JSON.stringify(s)} is untypeable and must fail`);
   }
 });
+
+test('a ```json amendment is parsed and JSON-validated, not just counted', async () => {
+  // The comment above the amends branch said the fence had stopped being load-bearing and that
+  // an amendment is recognised wherever it appears. That was only true for fences the manifest
+  // regex already matched — a ```json amendment never entered the loop, so it was never parsed.
+  //
+  // Which left a real hole: `verify-sheets.mjs` counts one as a data form via a text test for
+  // `"amends"`, so a MALFORMED ```json amendment passed both gates in silence. The check that
+  // could see it did not parse it, and the parser could not see it.
+  //
+  // Found by the Tone writer reading the regex rather than the comment above it.
+  const dir = await mkdtemp(join(tmpdir(), 'bridge-json-'));
+  await mkdir(join(dir, 'a'), { recursive: true });
+  const sheet = (payload) => `# a sheet\n\n## Decision\nx\n\n\`\`\`json\n${payload}\n\`\`\`\n`;
+
+  await writeFile(join(dir, 'a', '01-owner.md'),
+    `# a sheet\n\n## Decision\nx\n\n\`\`\`manifest\n${JSON.stringify({ provides: 'tiers', value: [{ id: 't1' }] })}\n\`\`\`\n`, 'utf8');
+  await writeFile(join(dir, 'a', '02-amendment.md'),
+    sheet('{ "amends": "tiers", "value": { "note": "more rows" } ,}'), 'utf8');
+
+  const broken = await mergeSheets(dir, { tiers: { owner: 'a' } });
+  assert.equal(broken.problems.length, 1, 'a malformed json amendment must be a problem, not silence');
+  assert.match(broken.problems[0], /not valid JSON/);
+
+  // Well-formed: parsed, validated, and still never merged — a key has one owning sheet.
+  await writeFile(join(dir, 'a', '02-amendment.md'),
+    sheet(JSON.stringify({ amends: 'tiers', value: { note: 'more rows' } })), 'utf8');
+  const ok = await mergeSheets(dir, { tiers: { owner: 'a' } });
+  assert.deepEqual(ok.problems, []);
+  assert.deepEqual(ok.manifest.tiers, [{ id: 't1' }], 'the amendment must not merge');
+});
+
+test('a ```json fence that claims no key is left alone, and indexes are never widened', async () => {
+  // Two deliberate limits. Sheets carry ```json fences that are not manifest data —
+  // `audio/sfx/01`'s is a revision request against another sheet's field — and those must not
+  // start reporting "needs a provides". And `cid/_contract.md` documents this very format with
+  // `{ "provides": "<key>", "value": <data> }`, which claims a key and is deliberately not
+  // JSON; the first run of the widened check reported it, correctly and uselessly.
+  const dir = await mkdtemp(join(tmpdir(), 'bridge-json2-'));
+  await mkdir(join(dir, 'a'), { recursive: true });
+  const fenced = (payload) => `# a sheet\n\n## Decision\nx\n\n\`\`\`json\n${payload}\n\`\`\`\n`;
+
+  await writeFile(join(dir, 'a', '01-owner.md'),
+    `# a sheet\n\n## Decision\nx\n\n\`\`\`manifest\n${JSON.stringify({ provides: 'tiers', value: [{ id: 't1' }] })}\n\`\`\`\n`, 'utf8');
+  // A revision request: valid JSON, names another sheet's field, claims no key of its own.
+  await writeFile(join(dir, 'a', '02-request.md'),
+    fenced(JSON.stringify({ sheet: 'x/01.md', path: 'response.beats[a].channels', from: ['p'], to: ['q'] })), 'utf8');
+  // An index carrying the documentation template, which is not JSON on purpose.
+  await writeFile(join(dir, '_contract.md'),
+    fenced('{ "provides": "<key>", "status": "proposed", "value": <data> }'), 'utf8');
+
+  const { problems } = await mergeSheets(dir, { tiers: { owner: 'a' } });
+  assert.deepEqual(problems, [], 'neither a keyless fence nor an index template is a merge problem');
+});

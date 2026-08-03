@@ -44,6 +44,35 @@ import { SCHEMA, validateManifest } from './schema.mjs';
 
 const BLOCK = /```manifest\s*\n([\s\S]*?)\n```/g;
 
+/*
+ * A ```json fence is only a manifest block if it claims to be one.
+ *
+ * The comment further down says the fence stopped being load-bearing and that an amendment is
+ * recognised by its `amends` field wherever it appears. That was only ever true for fences
+ * `BLOCK` already matched — a ```json amendment never entered the loop at all, so it was never
+ * parsed and never JSON-validated. `verify-sheets.mjs` counts one as a data form via a text
+ * test for `"amends"`, which means a MALFORMED ```json amendment passed both gates in silence:
+ * the check that could see it did not parse it, and the parser could not see it.
+ *
+ * Found by the Tone writer reading the regex rather than the comment above it.
+ *
+ * The gate is deliberately narrow, two ways.
+ *
+ * A fence is a candidate only if its raw text claims a key. Sheets carry plenty of ```json
+ * fences that are not manifest data — `audio/sfx/01`'s is a revision request against another
+ * sheet's field — and those must not start reporting "needs a provides".
+ *
+ * And only LEAF sheets are widened. `cid/_contract.md` documents this very format with
+ * `{ "provides": "<key>", "value": <data> }`, which claims a key and is deliberately not JSON;
+ * the first run of this check reported it, correctly and uselessly. An amendment is a leaf
+ * sheet adding rows to its domain's key, so widening indexes buys nothing and would force the
+ * documentation to contort to satisfy a parser it is describing. ```manifest fences are still
+ * read everywhere, exactly as before.
+ */
+const JSON_BLOCK = /```json\s*\n([\s\S]*?)\n```/g;
+const CLAIMS_A_KEY = /"(amends|provides)"\s*:/;
+const IS_LEAF = /\/\d\d-[^/]+\.md$/;
+
 async function walk(dir) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -80,7 +109,14 @@ export async function mergeSheets(root, schema = SCHEMA) {
     const body = await readFile(file, 'utf8');
     let found = false;
 
-    for (const match of body.matchAll(BLOCK)) {
+    const candidates = [
+      ...body.matchAll(BLOCK),
+      ...(IS_LEAF.test(file)
+        ? [...body.matchAll(JSON_BLOCK)].filter((m) => CLAIMS_A_KEY.test(m[1]))
+        : []),
+    ];
+
+    for (const match of candidates) {
       let block;
       try {
         block = JSON.parse(match[1]);
