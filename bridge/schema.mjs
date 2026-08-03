@@ -707,8 +707,11 @@ function explicitNulls(key, value, path = key) {
  * design reads, with `telemetry` the exception because its `events[]` names insertion
  * points a builder implements. Live Ops marked `roadmap` `DOCUMENTATION_ONLY` in its own
  * manifest before anything asked it to. Marketing's artifacts are outward and are built by
- * a person, not by a module — except `title`, which reaches `Theme.luau` through
- * `generate.mjs` and is therefore build-read.
+ * a person, not by a module. An earlier version of this comment made `title` the exception,
+ * "because it reaches `Theme.luau` through `generate.mjs`". It does not. `generate.mjs:116`
+ * reads `ctx.title`, and `game-context.mjs:136` fills that from `concept.title` — the stage-0
+ * object. Nothing anywhere reads a merged `title.value`, so `title` is documentation-only for
+ * the same reason as its five siblings, not despite being different from them.
  *
  * Without this, promoting those keys would push several thousand lines of reading specs,
  * claim ledgers and publish checklists into a runtime module every file requires — the

@@ -7,6 +7,11 @@
 `cid/art/vfx/01`, `cid/art/ui-art/01`; `cid/gameplay/meta/02`, `/04`, `/07`;
 `game/src/shared/Theme.luau`.
 
+> **Corrected, round 2.** Two prose occurrences of `effects.beats[findReveal]` (in the M1 ruling
+> and in sheet `03`'s row of the assignment table) now read `effects.cues[id=findReveal]`. `effects`
+> holds `cues[]`, keyed by `.id`; `beats[]` belongs to `response`. No manifest value, `backedBy` or
+> ruling depended on the spelling. This closes `storeThumbnails.secondHalf.staleSpellingElsewhere`.
+
 This is an assignment document. It names four decisions and makes one ruling the category lead
 asked me to make. It writes no hook, no overlay string and no slot.
 
@@ -66,8 +71,8 @@ Five grounds, none of them mine and none of them new:
 - `T6` in this category's own truthfulness table: *"any image showing a Find as an object, a
   model, a card, a drop or an icon"* is a known-false claim.
 
-**What survives, and it is not nothing.** `effects.beats[findReveal]` ships a real world beat: one
-anchored `Part`, `3 × 0.4 × 3`, at the cleared patch's position, for a `dwellSeconds` of 2.5
+**What survives, and it is not nothing.** `effects.cues[id=findReveal]` ships a real world beat:
+one anchored `Part`, `3 × 0.4 × 3`, at the cleared patch's position, for a `dwellSeconds` of 2.5
 (`art/vfx/01`). Its own `V7` states plainly that **it is not the Find**. So a reveal *moment* is
 photographable and a revealed *object* is not, and the difference is the whole of sheet `03`'s
 job. The honest reading of the brief's line is that its first half is buildable, its second half
@@ -90,7 +95,7 @@ Each routed to the item that will decide it. None filled here.
 | **N3** | **No build a capture is legitimate from.** M2. `game/src/shared/Theme.luau` is the wrong archetype and every world subject the fiction requires is `[does not exist]`. Nothing in either contract owns producing a promotional capture, and no artifact says *this build is representative*. | sheet `02` |
 | **N4** | **Whether a thumbnail carries text at all.** `owns` names the rule; three approved sheets exempt outward strings from every mechanical string rule (`M-B`), and the brief says nothing. | sheet `04` |
 | **N5** | **Refresh cadence.** *"Ships and settles"* `OPEN.md §2` `[brief: soft]` implies never; nobody has said it, and the genre's own behaviour splits (see Research). | sheet `01` |
-| **N6** | **Nothing owns uploading a thumbnail.** `release.publishChecklist` owns publish-time platform settings and their read-back and does not name thumbnails; no emitter writes one; `storeThumbnails` would merge and reach nothing. This is `M6` arriving at this domain. | named by sheet `02`; **publish-checklist work** (currently `tech/deploy`) to accept or refuse the entry |
+| **N6** | **Nothing owns uploading a thumbnail.** `release.publishChecklist` owns publish-time platform settings and their read-back and does not name thumbnails; no emitter writes one; `storeThumbnails` would merge and reach nothing. This is `M6` arriving at this domain. | named by sheet `02` as `RR-T1`; **publish-checklist work** (currently `tech/deploy`) to accept or refuse the entry **and to assign its row id** |
 | **N7** | **Alt text has no owner and no register rule.** The platform offers per-thumbnail alt text *"for improved accessibility"*; `vocabulary`'s scope sentence is *"every player-facing string in the build contract"* and a thumbnail is not in the build contract. An 8–14 audience with a binding accessibility constraint is exactly the case for it. | sheet `04` to rule; **naming-rule work** (`vocabulary`) if the scope sentence is widened |
 | **N8** | **The game has no name.** Any overlay containing a title depends on `title`, which is being decided in this same wave and whose ratification is reserved to the developer (`OPEN.md §3`, `M4`). | sheet `04` states the dependency and does not resolve it |
 | **N9** | **The occupancy survey's stated limit** — *"'taken' here means 'exists', not 'successful'"*, no CCU or visit figures. **Partly closed by this domain's research**, below, and the closure is a fact about four competitors, not about the market. | recorded; relayed to **Name** and **Store Page**, which carry the other halves of `M9` |
@@ -125,7 +130,7 @@ blocks, which is the house form (`analytics/funnels`, `tech/security`, `audio/mi
 |---|---|---|
 | 01 | `the-slot-set` | How many thumbnails this game ships and in what order, and for each slot: the one claim it sells, its `backedBy` resolving to a real key path or sheet id, its `captureSource` citing sheet `02`'s gate by field, its alt text, and its overlay string or the empty string — plus the refresh cadence and the active-variant count, each with the line that decides it and a runnable check, given the platform turns qPTR optimisation on at two active thumbnails and `00-CORE.md` declines acquisition by name. |
 | 02 | `the-capture-gate` | What makes a capture of this game legitimate, as a precondition list with named gates rather than a note: which artifacts must be true before any promotional image may be taken (at minimum `uiTheme.archetype` emitted into `Theme.luau` with `A1` closed, `styleGuide`'s stone role reaching a `Part` via `RR-A1`, and the world subjects `art/_category.md` rows 10–19 mark `[does not exist]` existing), what is forbidden as a source, whether an image built in Studio from approved keys rather than captured from a running server is legitimate, and where the resulting file is owned given no emitter and no publish step writes one today. |
-| 03 | `no-subject-for-the-second-half` | What the second of the brief's *"two composable halves"* actually is, given the first half (a cleared path through green) is buildable and the second (*"a relic mid-reveal"*) names a subject with no form: whether it becomes the 2.5-second reveal beat that `effects.beats[findReveal]` ships as one anchored `Part`, the index panel's held names, or nothing at all — and file the revision request against `05-OUTWARD.md` naming the line, its status, and what changes if it is declined. |
+| 03 | `no-subject-for-the-second-half` | What the second of the brief's *"two composable halves"* actually is, given the first half (a cleared path through green) is buildable and the second (*"a relic mid-reveal"*) names a subject with no form: whether it becomes the 2.5-second reveal beat that `effects.cues[id=findReveal]` ships as one anchored `Part`, the index panel's held names, or nothing at all — and file the revision request against `05-OUTWARD.md` naming the line, its status, and what changes if it is declined. |
 | 04 | `overlay-and-alt-text` | Whether any thumbnail carries overlay text at all and, if so, the rule that binds it: the word ceiling and its derivation from the surface rather than from `vocabulary`, the reading level for an 8–14 audience, the ban list that does bind (`M-B`), the forbidden classes (urgency, volume claims above 24/4/8/1, anything `T1`–`T10` reaches), the platform's own bottom-of-image exclusion zone, and whether every slot ships alt text and to what rule — stating the dependency on `title`, which does not exist yet. |
 
 ---

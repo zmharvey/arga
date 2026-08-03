@@ -152,8 +152,8 @@ total duplicates data already present and can therefore disagree with it, and
 `bridge/schema.mjs:208-217` gives `collection` five shape fields — `className`, `classPlural`,
 `relicsPerArea`, `areasPerDepth`, `sets` — and no total `[research: bridge/schema.mjs]`. My round-2
 form is already the ruled form, so **nothing in my ruling moves**; what round 3 adds is that no
-later sheet may ask for the field back, and that this domain's `_lead.md` observables table, which
-still carried `collection.total == 24`, now carries the ruled form. **Round 3 also found my own
+later sheet may ask for the field back, and that this domain's `_lead.md` exclusive-rewards
+observable, which still carried the phantom, now carries the ruled form. **Round 3 also found my own
 criterion 4 false as written** — it asserted the three phantom strings appeared 0 times outside
 `correctedAtRound2`, while `citedPaths[].replacedPhantom`, `citedPaths[].replacedGuess` and
 `forbidden[EV4].observable` all name them in order to forbid them. The criterion below now counts
@@ -327,10 +327,10 @@ those occurrences exactly instead of denying them.
       {
         "id": "F-E3",
         "to": "the cross-category pass that issued the round-3 collection ruling, and to every domain lead index in Live Ops",
-        "finding": "the leaf sheets in this category were corrected for the notices member count at round 1, but three lead indexes were not: cid/liveops/events/_lead.md lines 48 and 87, cid/liveops/roadmap/_lead.md line 69 and cid/liveops/seasons/_lead.md line 147 still read notices has exactly two members, both beats, and cid/liveops/_category.md carries it at lines 42, 281 and 344. Verified this run against ui-ux/feedback/01 lines 237 and 253 (setComplete and areaComplete, class beat) and ui-ux/feedback/03 lines 138 and 148 to 149 (saveNotLoaded, class system, via amends notices). The correct statement is two beat members and one system member",
+        "finding": "the leaf sheets in this category were corrected for the notices member count at round 1, but the lead indexes were not: cid/liveops/events/_lead.md lines 48 and 87, cid/liveops/roadmap/_lead.md line 69 and cid/liveops/seasons/_lead.md line 147 still read notices has exactly two members, both beats, and cid/liveops/_category.md carries it at lines 42, 281 and 344. Verified this run against ui-ux/feedback/01 lines 237 and 253, setComplete and areaComplete both class beat, and ui-ux/feedback/03 lines 138 and 148 to 149, saveNotLoaded class system via amends notices. The correct statement is two beat members and one system member",
         "rulingAffected": false,
         "whyRulingSurvives": "every leaf-sheet citation is already a predicate over notices.members[] rather than a count, so no ruling in this category depends on the number",
-        "repairedHere": "only cid/liveops/events/_lead.md's collection.total observable, which was in scope; the notices sites in lead and category files were left for their owners"
+        "repairedHere": "only this domain's _lead.md exclusive-rewards observable, which the round-3 collection ruling named and which was therefore in scope; the notices sites in the lead and category files were left for their owners"
       }
     ],
     "invariants": [
@@ -340,7 +340,7 @@ those occurrences exactly instead of denying them.
       "this key adds zero faucets, zero sinks, zero conversions, zero products, zero gates and zero player-facing strings",
       "every forbidden row carries a ruling tracing to an approved sheet or to this sheet, and an observable that is a count",
       "every cross-key citation in this sheet appears in citedPaths with resolves true; no citation is a member count of another key's roster and no citation names a field its owning key does not hold",
-      "no citedPaths[].path is collection.total, social.chat.window or a bare top-level artifactHygiene; those three strings appear in this key only inside correctedAtRound2, citedPaths[].replacedPhantom, citedPaths[].replacedGuess and forbidden[EV4].observable, and only in order to forbid them"
+      "no citedPaths[].path is any of the three phantom paths recorded in correctedAtRound2; every occurrence of those three strings in this key sits in correctedAtRound2, citedPaths[].replacedPhantom, citedPaths[].replacedGuess or forbidden[EV4].observable, and names the string in order to forbid it"
     ]
   }
 }

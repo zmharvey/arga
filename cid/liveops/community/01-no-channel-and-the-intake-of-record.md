@@ -91,7 +91,8 @@ are comments recording that the binding was superseded and removed.
 makes a breached row produce *"a revision request against a named sheet and field, never a live
 change"* (`analytics/kpis/02`). A second review rhythm in a second key is two answers to one
 question. My dispositions inherit that shape verbatim and my key holds no day, week, interval
-or schedule field at all.
+or schedule field at all. The two dated stamps it does hold record **when a grep was run**,
+which is provenance, not rhythm.
 
 **One editorial resolution of my own index's proposed shape:** the index asked for both
 `channels: []` and one row per candidate, and those cannot be the same array. `channels` is the
@@ -164,9 +165,9 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       "channelReferencesAmongThem": 0,
       "channelReferenceTest": "run AC2's compound pattern over those 40 lines: zero hits",
       "descriptiveNotKeyPathUses": [
-        "GameConfig.luau:1567 — \"a player can spend a whole session alone and receives no social proof\"",
-        "Plots.luau:284 — \"deletes the only social system the game has\"",
-        "World.luau:26 — \"social-graph or ranking APIs social forbids\""
+        "GameConfig.luau:1567 — a player can spend a whole session alone and receives no social proof",
+        "Plots.luau:284 — deletes the only social system the game has",
+        "World.luau:26 — social-graph or ranking APIs social forbids"
       ],
       "correctionRecord": "the published figure was 37 across 7 files; the first correction said all 40 were the contract key. Both were wrong. 40/7/39/6 is measured, and the three lines above are not key paths. Neither error touched the exclusion, which holds.",
       "stabilityWarning": "the 40 drifts with every comment edit and nothing here depends on it. The zero does not drift and is the criterion."
@@ -209,6 +210,7 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       "cadence": "none",
       "cadenceOwnedBy": "analytics/kpis/02, kpis.cadence — a bounded post-publish window that closes. No second review rhythm exists in this key or any other.",
       "noLiveChangeEver": true,
+      "datedFieldsAreMeasurementsNotRhythms": ["greppedOn", "bareSocialWordBaseline.measuredOn", "intakeOfRecord.openDefects[].session"],
       "classes": [
         { "id": "T1", "bar": "a player would notice it", "test": "a wrong payout, a dead upgrade, an unreachable area, an unreadable label, a character that cannot respawn", "disposition": "one revision request against the named sheet and field the reading bears on", "revisionRequest": true, "liveChange": false, "example": "area 1's clear time landing far outside its estimate would bear on pacing and depths.areas[1]" },
         { "id": "T2", "bar": "two builders would diverge on it", "test": "materially unstated, such that two competent implementations behave differently. Not merely unstated.", "disposition": "one revision request against the named sheet and field, asking for the value rather than the fix", "revisionRequest": true, "liveChange": false, "example": "the 2026-08-01 duplicate-readout reading, which no contract key owned and which routed to the proposed key composition" },
@@ -282,11 +284,14 @@ record. **Roles:** none, or a tester rank — **none**, because `release.environ
    also not channel references** — `GameConfig.luau:1567` *"no social proof"*, `Plots.luau:284`
    *"the only social system the game has"*, `World.luau:26` *"social-graph or ranking APIs"*.
    The 40 drifts with every comment edit; the zero does not, and the zero is the criterion.
-3. No field anywhere under `community` contains a day, week, month, interval, schedule or date
-   value **other than `greppedOn` and `bareSocialWordBaseline.measuredOn`, which record when a
-   grep was run and are not a rhythm**: `community.triage.cadence` is the string `"none"`, and
-   searching the merged `community` value for `daily|weekly|monthly|everyN|schedule|intervalSeconds`
-   returns zero hits. `kpis.cadence` is the only cadence in the merged manifest.
+3. **No field under `community` publishes a review rhythm.** `community.triage.cadence` is the
+   string `"none"`, and searching the merged `community` value for
+   `daily|weekly|monthly|everyN|schedule|intervalSeconds` returns zero hits. The only
+   date-shaped values permitted are measurement stamps — `greppedOn`,
+   `bareSocialWordBaseline.measuredOn`, `intakeOfRecord.openDefects[].session`, and in sheet
+   `02` the equivalents plus the platform enforcement dates it quotes — each of which records
+   **when something was observed**, never when something recurs. `kpis.cadence` is the only
+   cadence in the merged manifest.
 4. `community.triage.classes` has exactly 4 rows; every row carries exactly one `disposition`
    and `liveChange: false`; every row with `revisionRequest: true` names a target sheet and a
    field in its `disposition`; `community.intakeOfRecord.requiredFields` has exactly 5 rows;

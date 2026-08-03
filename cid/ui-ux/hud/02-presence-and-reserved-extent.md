@@ -115,7 +115,15 @@ and the corrected `latchSource` on the denominator.
   "status": "request, not an assumption — composition uses the sum form and does not depend on this landing",
   "add": { "field": "totalRelics", "type": "integer", "value": "sum over sets of #sets[i].relics", "derived": true, "emittedTo": "GameConfig.Collection.totalRelics" },
   "because": "five sheets across four categories independently invented collection.total / collection.totalFinds because the sum is needed at runtime and no field carries it; HudBinding.luau:370-376 already recomputes it per bind. One derived field retires the whole class",
-  "ifRefused": "every call site computes the sum, which is what composition specifies today"
+  "ifRefused": "every call site computes the sum, which is what composition specifies today",
+  "ruling": {
+    "by": "orchestrator, wave 7 cross-category",
+    "outcome": "granted in substance, refused in form",
+    "refused": "collection gains no authored totalRelics field. A hand-authored total is a second copy of what sets[] already holds, and a second copy can disagree with the first — which is the failure that produced the phantom, not a reason to formalise it. relicsPerArea * areasPerDepth is not guaranteed to equal what sets[] contains.",
+    "granted": "the number the request is actually about. bridge/emit-config.mjs now derives it from sets[] at emit time and writes GameConfig.RelicTotal = 24. The runtime gets its constant, HudBinding.luau:370-376 need not recompute per bind, and the disagreement is unrepresentable rather than merely discouraged.",
+    "spellingDiffers": "GameConfig.RelicTotal, not GameConfig.Collection.totalRelics. One name, at the level the other emitted collection scalars already sit at.",
+    "consequenceForSheets": "no sheet changes. composition's sum form stays correct and is what every sheet cites, because sum(len(collection.sets[i].relics)) is what the emitted constant IS."
+  }
 }
 ```
 
@@ -242,7 +250,13 @@ and the corrected `latchSource` on the denominator.
 3. With `rowsRevealed` all false, a reserved purchase group renders zero opaque pixels and a press
    on it produces no call to `onActivate`; toggling any one row to true changes the
    `AbsolutePosition` of the other two by zero.
-4. No string in this sheet or in `composition` contains `collection.total` or `collection.totalFinds`;
+4. No `backedBy`, `check`, `condition` or `path` value in this sheet's fences, and no string in
+   `composition`, contains `collection.total` or `collection.totalFinds`. **Scoped to fields that
+   carry claims, because the unscoped form could never pass:** this sheet names both phantoms in
+   order to forbid them, so a criterion reading "no string in this sheet" is falsified by the
+   criterion itself. Same shape `marketing/name/03` and `marketing/social/01` each found in their
+   own sheet this round — a check written as a grep over prose fails on the prose that documents
+   the fix. Also:
    both `headline.byState` conditions resolve through `composition.derivedValues`, and at
    `foundCount == totalRelics` exactly one element carries the headline flag, it is
    `collection-count`, and its rendered string contains no `/` and no `%`.

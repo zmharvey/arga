@@ -8,12 +8,16 @@
 > belongs to `response`**, so the old spelling named a collection that exists in neither key. It
 > now reads `effects.cues[id=findReveal]` throughout and is registered in
 > `storeThumbnails.externalPathsResolved` with its `correctedFrom`. **(b)** Criterion 1 asserted a
-> grep over `cid/marketing` that could only pass if this domain's `_lead.md` were edited, which is
-> **not a file I may write**. A criterion that can only be satisfied by editing someone else's file
-> is a request wearing a criterion; it is restated over this key's own fields, and the stale
-> spelling elsewhere becomes `staleSpellingElsewhere` with an observable its owner can run.
-> **No value moves and the ruling is unchanged** — every fact it rests on was read from that cue's
-> own fields.
+> grep over `cid/marketing` that could only pass if this domain's `_lead.md` were edited, which was
+> **not a file this writer could write at the time**. A criterion that can only be satisfied by
+> editing someone else's file is a request wearing a criterion; it is restated over this key's own
+> fields, and the stale spelling elsewhere became `staleSpellingElsewhere` with an observable its
+> owner can run.
+>
+> **Round 2:** the round-2 assignment put this domain's index in scope, the two stale prose
+> occurrences in `_lead.md` were corrected there, and `staleSpellingElsewhere` is now closed with
+> zero occurrences rather than open with one. **No value in the ruling moves in either round** —
+> every fact it rests on was read from that cue's own fields.
 
 ## Decision
 
@@ -90,15 +94,17 @@ criterion that can only be checked by editing a file this writer may not write i
 Both of mine are restated over fields of `storeThumbnails`, which is the key this domain owns; the
 half that genuinely belongs to another owner is published as data with the observable **that owner**
 runs. That is the same move `art/style/01` made with `RR-A1` rather than reaching into
-`architect/06`, and it is why `staleSpellingElsewhere` below is a field and not a grep. `[cid: decided]`
+`architect/06`. The residue is `staleSpellingElsewhere`, which round 2 closed at zero occurrences
+when the index came into scope — **and it closed as a field with an observable, not as a criterion
+that had been failing all along.** `[cid: decided]`
 
 ```json
 {
   "amends": "storeThumbnails",
   "path": "secondHalf",
   "value": {
-    "revision": 1,
-    "revisionNote": "round 1. (a) Four occurrences of effects.beats[findReveal] corrected to effects.cues[id=findReveal]; effects holds cues[] keyed by .id and beats[] belongs to response. (b) Criterion 1's cross-file grep, which could only pass if this domain's _lead.md were edited, is restated over this key's own fields and the residue is published as staleSpellingElsewhere. No value moved and the ruling is unchanged.",
+    "revision": 2,
+    "revisionNote": "round 1. (a) Four occurrences of effects.beats[findReveal] corrected to effects.cues[id=findReveal]; effects holds cues[] keyed by .id and beats[] belongs to response. (b) Criterion 1's cross-file grep, which could only pass if this domain's _lead.md were edited, is restated over this key's own fields and the residue is published as staleSpellingElsewhere. Round 2: the index came into scope, its two stale occurrences were corrected, and staleSpellingElsewhere is closed at zero occurrences. No value moved in either round and the ruling is unchanged.",
     "subject": "index-panel",
     "subjectPlain": "the collection list open over the cleared ground, held names beside empty slots",
     "findObjectDepicted": false,
@@ -127,13 +133,16 @@ runs. That is the same move `art/style/01` made with `RR-A1` rather than reachin
       }
     ],
     "staleSpellingElsewhere": {
-      "whyThisIsAFieldAndNotACriterion": "round 1 of this sheet asserted a grep over cid/marketing that returns nothing only if this domain's _lead.md is edited. A domain index is not a file this writer may write, so the criterion could never pass by any action available to it. Restated as data with the observable its owner runs.",
-      "occurrences": [
-        { "file": "cid/marketing/thumbnails/_lead.md", "line": 69, "reads": "effects.beats[findReveal]", "shouldRead": "effects.cues[id=findReveal]", "owner": "the thumbnails domain index", "affectsAnyManifestValue": false }
-      ],
+      "status": "closed",
+      "whyThisIsAFieldAndNotACriterion": "round 1 of this sheet asserted a grep over cid/marketing that returned nothing only if this domain's _lead.md was edited. A domain index was not a file this writer could write in that round, so the criterion could never pass by any action available to it. It was restated as data with the observable its owner runs.",
+      "occurrences": [],
+      "occurrencesAtRound1": 1,
+      "closedInRound2By": "the round-2 assignment placed cid/marketing/thumbnails/*.md, including _lead.md, in this writer's scope. Both prose occurrences there (the M1 ruling and sheet 03's row of the assignment table) now read effects.cues[id=findReveal].",
       "observableForItsOwner": "grep -n 'effects\\.beats\\[' cid/marketing/thumbnails/_lead.md returns nothing",
-      "severity": "prose only. No backedBy, no manifest value and no ruling depends on the spelling; art/vfx/01's own manifest uses cues correctly and this key cites it correctly.",
-      "notEditedHere": true
+      "observableHoldsToday": true,
+      "severity": "prose only. No backedBy, no manifest value and no ruling ever depended on the spelling; art/vfx/01's own manifest uses cues correctly and this key cites it correctly.",
+      "notEditedHere": true,
+      "notEditedHereNote": "the correction was made in the index file itself, not from inside this sheet. This field records it; it does not perform it."
     },
     "contentRequired": {
       "slotsRendered": 24,
@@ -168,7 +177,7 @@ runs. That is the same move `art/style/01` made with `RR-A1` rather than reachin
       "manifestValuesMoved": 0,
       "ifDeclined": "nothing in this key changes. representation.find and art/objects/04 govern either way; the brief simply keeps a sentence no artifact can satisfy, and a later reader re-derives this ruling from scratch.",
       "filedBy": "cid/marketing/thumbnails/03-no-subject-for-the-second-half.md",
-      "filedOnceRule": "the Icon domain rules the same M1 collision from the other side and may forbid a rendered Find in its own key. It may not file a second briefRevision against this line; round 1 verified that exactly one exists under cid/marketing/**.",
+      "filedOnceRule": "the Icon domain rules the same M1 collision from the other side and may forbid a rendered Find in its own key. It may not file a second briefRevision against this line; rounds 1 and 2 both verified that exactly one exists under cid/marketing/**.",
       "status": "filed, not applied"
     }
   }
@@ -200,10 +209,10 @@ declining it stated.
   useful elsewhere: `effects` holds `cues[]`, keyed by `.id`, and this domain had spelled it
   `beats[]`, which is `response`'s collection. Nothing here constrains the cue's dwell, size or
   colour, and this sheet asks for no change to it.
-- **Whoever holds this domain's index (`cid/marketing/thumbnails/_lead.md`)** carries one prose
-  correction: line 69 reads `effects.beats[findReveal]` and should read `effects.cues[id=findReveal]`.
-  It is published as `secondHalf.staleSpellingElsewhere` with the observable, because a sheet may
-  not edit its own index and a criterion it cannot satisfy is worse than a stated request.
+- **Whoever holds this domain's index (`cid/marketing/thumbnails/_lead.md`)** carries no
+  outstanding correction: the two stale `effects.beats[findReveal]` occurrences were fixed in
+  round 2 and `staleSpellingElsewhere.status` is `closed` with `occurrences: []`. The observable
+  stays published so the fix can be re-checked rather than trusted.
 - **Store-page work (`storeListing`)** should know the image already depicts the collection layer,
   so its copy does not have to carry that job alone and should not repeat the number 24 as though
   it were news.
@@ -220,8 +229,10 @@ declining it stated.
 3. Across every fenced data block under `cid/marketing/**`, exactly **one** `briefRevision` object
    has an `against` naming `05-OUTWARD.md`; its `filedBy` is this file and its `line` quotes the
    brief sentence. Quoting the phrase in prose is not filing a request and does not count.
-4. `framing.maxFrameWidthFraction` is `0.45` and the captured frame shows cleared limestone paving
-   plus at least two of the four `tiers` shapes with the panel open.
+4. `framing.maxFrameWidthFraction` is `0.45`; `staleSpellingElsewhere.occurrences` is `[]` and
+   `grep -rn "effects\.beats\[" cid/marketing/thumbnails/` returns **0** matches; and the captured
+   frame shows cleared limestone paving plus at least two of the four `tiers` shapes with the panel
+   open.
 
 ## Not decided here
 
@@ -233,7 +244,6 @@ its states, and whether an open panel dims the world behind it: **screens work a
 work**; I state a requirement on the outcome and set none of their values. The 24 names themselves
 and the set labels: **meta and content work (`collection`)** and **vocabulary work**; cited by
 path, copied nowhere. What the reveal beat is made of and how long it lasts: **VFX work
-(`effects`)**; I read its values and change none. The one stale spelling in this domain's index:
-**the index's holder**, per `staleSpellingElsewhere`; not editable from a sheet. Whether
-`05-OUTWARD.md` is actually edited: **the developer**, since a brief is not a CID artifact; this
-sheet files the request and applies nothing.
+(`effects`)**; I read its values and change none. Whether `05-OUTWARD.md` is actually edited:
+**the developer**, since a brief is not a CID artifact; this sheet files the request and applies
+nothing.

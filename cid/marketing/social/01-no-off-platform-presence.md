@@ -1,6 +1,6 @@
 # 01 — No off-platform presence
 
-**Domain:** marketing/social · **Category:** Discovery & Marketing · **Wave:** 7 · **Revised:** round 1, `RR-6`
+**Domain:** marketing/social · **Category:** Discovery & Marketing · **Wave:** 7 · **Revised:** round 2, `RR-6`
 
 ## Decision
 
@@ -74,16 +74,19 @@ shorthand two category documents use is what misleads. This is a floor, not a to
 `ui-forge/src/transpile/to-html.mjs:309-324`), so the code-redemption closure rests on `F15` and
 priority 3, not on an incapability.
 
-**A url cited as evidence is not a channel, and criterion 2 originally could not tell the
-difference** `[cid: decided]`, round-1 revision `RR-6`. My first form counted external urls *in any
-manifest value*, which is falsified by this sheet's own `platformRules[].source`: `discord.com/terms`
-and `youtube.com/t/terms` are what make the closure sourced rather than asserted. **The count is now
-of urls that name a channel this project would operate**, with citation-role fields excluded by name
-(`platformRules[].source`, `backedBy`, `settledBy`, `captureSource`, `[research: url]` tags), and the
-exclusion is carried in the key as `externalUrlCountScope` so a critic reads the same scope the
-criterion does. The substance is unchanged; three domains this wave shipped an observable that
-matched its own sheet, and the extension of "test a grep before shipping it" is to test it against
-your own file.
+**A url cited as evidence is not a channel, and the first two forms of this check both failed on
+that** `[cid: decided]`, revision `RR-6`. The original counted external urls *in any manifest value*,
+which this sheet's own `platformRules[].source` falsifies: `discord.com/terms` and
+`youtube.com/t/terms` are what make the closure sourced rather than asserted. Round 1 excluded
+citation-role fields by name, which runs, but tells a reader **which fields to skip** instead of what
+is true. **The form that ships is neither: ten anchored patterns and no field excluded.** Every
+pattern requires a trailing identifier, which is exactly the difference between a channel and a
+citation, so `discord.com/terms`, `youtube.com/t/terms`, `tiktok.com/legal/…` and the 402'd
+`https://x.com/en/tos` carried in `U1` are not matches; and `roblox.com/games/…` does not match the X
+pattern, because there `x.com` is preceded by a letter. Run this round over all of `cid/marketing/`,
+a superset of the six values: **0 matches, every pattern**. The generalisation, which is the part
+worth keeping: test a grep against your own file before you ship it, and **a grep that needs an
+exclusion list is usually the wrong grep**.
 
 **The seam against inbound feedback, asserted so it can be checked.** I rule whether an **outbound**
 channel exists. How **inbound** feedback is received and moderated is community-management work, and
@@ -96,13 +99,13 @@ naming the row, and it inherits the same 16+ evidence.
 | id | form ruled out | closed by, strongest first | observable |
 |---|---|---|---|
 | `C1` | A Roblox community or group | `products` `F15` (no group-join, follow, like, favourite, rate-us or share prompt anywhere in the game) + `00-CORE.md` non-goals. **Not `PR1`: a community is on-platform** | `robloxCommunityCount == 0`; 0 community ids in any `cid/**` manifest or emitted config; 0 strings rendered to a `Text` property match `/group\|community\|join us/i` |
-| `C2` | A Discord server and its invite | `PR1` (audience cannot see the link) → `PR6` (Discord's own 13+ excludes the lower half of the band) → `PR4`/`PR5` (no link inside an experience) → `F15` → an unfunded moderation obligation | 0 `discord.gg` or `discord.com/invite` urls in `cid/**` or `game/src` outside a citation field; 0 experience-page links of type Discord |
-| `C3` | A TikTok account | `PR1` → `PR7` (13+, 14+ in Florida) → *"shipped artifacts, not players"*. **TikTok is not one of the seven linkable types at all**, so its only possible form is an unlinked off-page account | `channelCount == 0`; 0 `tiktok.com/@` handles in any marketing key |
-| `C4` | A YouTube channel | `PR1` → `PR8` (13+) → *"shipped artifacts, not players"* | `channelCount == 0`; 0 YouTube handles or `/channel/`, `/c/`, `/@` urls in any marketing key |
-| `C5` | An X account | `PR1` → *"shipped artifacts, not players"* + *"Revenue. Offered and declined"*. X's own floor is `[unverified]` `U1` and **nothing rests on it** | `channelCount == 0`; 0 `x.com/` handles in any marketing key |
-| `C6` | A Twitch channel | `PR1` → `PR3` (a linkable type with no content to carry: no capture is legitimate, `M2`/`G2`) | `channelCount == 0` |
-| `C7` | A Guilded server | `PR1` → `PR3` → same moderation obligation as `C2` | `channelCount == 0` |
-| `C8` | A Facebook page | `PR1` → `PR3` → audience band 8-14 `[brief: binding]` is below every consumer floor on the list | `channelCount == 0` |
+| `C2` | A Discord server and its invite | `PR1` (audience cannot see the link) → `PR6` (Discord's own 13+ excludes the lower half of the band) → `PR4`/`PR5` (no link inside an experience) → `F15` → an unfunded moderation obligation | 0 matches of `discord\.gg/[A-Za-z0-9]` or `discord\.com/invite/[A-Za-z0-9]` in `cid/**` or `game/src`; 0 experience-page links of type Discord |
+| `C3` | A TikTok account | `PR1` → `PR7` (13+, 14+ in Florida) → *"shipped artifacts, not players"*. **TikTok is not one of the seven linkable types at all**, so its only possible form is an unlinked off-page account | `channelCount == 0`; 0 matches of `tiktok\.com/@[A-Za-z0-9._]` in any marketing key |
+| `C4` | A YouTube channel | `PR1` → `PR8` (13+) → *"shipped artifacts, not players"* | `channelCount == 0`; 0 matches of `youtube\.com/(@[A-Za-z0-9._-]\|channel/UC\|c/[A-Za-z0-9])` in any marketing key |
+| `C5` | An X account | `PR1` → *"shipped artifacts, not players"* + *"Revenue. Offered and declined"*. X's own floor is `[unverified]` `U1` and **nothing rests on it** | `channelCount == 0`; 0 matches of `(^\|[^a-z0-9.])x\.com/[A-Za-z0-9_]{1,15}([^A-Za-z0-9_/]\|$)` in any marketing key. The trailing class is what distinguishes a handle from `x.com/en/tos`, and the leading class is what stops `roblox.com/` matching |
+| `C6` | A Twitch channel | `PR1` → `PR3` (a linkable type with no content to carry: no capture is legitimate, `M2`/`G2`) | `channelCount == 0`; 0 matches of `twitch\.tv/[A-Za-z0-9_]` |
+| `C7` | A Guilded server | `PR1` → `PR3` → same moderation obligation as `C2` | `channelCount == 0`; 0 matches of `guilded\.gg/[A-Za-z0-9]` |
+| `C8` | A Facebook page | `PR1` → `PR3` → audience band 8-14 `[brief: binding]` is below every consumer floor on the list | `channelCount == 0`; 0 matches of `facebook\.com/[A-Za-z0-9.]` |
 | `C9` | A posting cadence of any interval | **Vacuous**: no surface exists (`C1`-`C8`); *"ships and settles"*; `endgame` unchanging; `notices` holds two beats | `postingCadence == "none"`; 0 fields in `channels` name a day, week, month or interval |
 | `C10` | Content pillars, themes or a content calendar | **Vacuous**, same grounds as `C9` | `contentPillars == []`; 0 scheduled outbound artifacts in `launchBeats` naming a channel |
 | `C11` | Creator and influencer outreach, paid or gifted | *"Beating the genre's retention curve. Offered and declined"* + *"Revenue. Offered and declined"* `[brief: binding]` ×2; and nothing legitimate to send (`M2`/`G2`) | `outreach.contactCount == 0`, `paidPlacements == 0`, `briefsIssued == 0`, `keysIssued == 0`; 0 `claims[]` rows addressed to anyone but a player |
@@ -111,8 +114,8 @@ naming the row, and it inherits the same 16+ evidence.
 
 ### The platform rules this rests on
 
-**Every `source` below is a citation, not a channel, and is excluded from `externalUrlCount` by
-`externalUrlCountScope`.**
+**Every `source` below is a citation, not a channel, and no pattern in `externalUrlCountPatterns`
+matches one — so none of them needs excluding by name.**
 
 | id | rule | source |
 |---|---|---|
@@ -154,10 +157,28 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     "channelCount": 0,
     "channels": [],
     "externalUrlCount": 0,
-    "externalUrlCountScope": {
-      "counts": "urls that name a channel, server, community or account this project would operate",
-      "excludes": ["platformRules[].source", "backedBy", "settledBy", "captureSource", "research tags", "any url cited as evidence"],
-      "reason": "a cited url is what makes a closure sourced rather than asserted; counting it falsifies the check against the sheet that supplies it"
+    "externalUrlCountPatterns": {
+      "fieldNameIsTheLeads": "social/_lead named the field externalUrlCount; what it counts is defined here",
+      "counts": "matches of the patterns below, anywhere in the six values, with NO field excluded",
+      "fieldsExcluded": [],
+      "regexFlavour": "ripgrep / rust regex, case-insensitive, no lookaround used",
+      "patterns": [
+        "discord\\.gg/[A-Za-z0-9]",
+        "discord\\.com/invite/[A-Za-z0-9]",
+        "tiktok\\.com/@[A-Za-z0-9._]",
+        "youtube\\.com/(@[A-Za-z0-9._-]|channel/UC|c/[A-Za-z0-9])",
+        "(^|[^a-z0-9.])x\\.com/[A-Za-z0-9_]{1,15}([^A-Za-z0-9_/]|$)",
+        "twitter\\.com/[A-Za-z0-9_]",
+        "twitch\\.tv/[A-Za-z0-9_]",
+        "guilded\\.gg/[A-Za-z0-9]",
+        "facebook\\.com/[A-Za-z0-9.]",
+        "roblox\\.com/(groups|communities)/[0-9]"
+      ],
+      "patternCount": 10,
+      "alsoZero": "no field name matches /(roblox)?(group|community)Id$/i",
+      "whyAnchored": "every pattern requires a trailing identifier, which is the difference between a channel and a citation. discord.com/terms, youtube.com/t/terms, tiktok.com/legal/... and https://x.com/en/tos are NOT matches. The leading class on the X pattern stops roblox.com/ matching, since x.com is a substring of roblox.com.",
+      "verifiedThisRun": "0 matches for all 10 patterns across cid/marketing/**, a superset of the six values",
+      "supersedes": "round 1's field-exclusion list, which was legal but told a reader which fields to skip rather than what is true"
     },
     "robloxCommunityCount": 0,
     "postingCadence": "none",
@@ -185,13 +206,13 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     },
     "forbidden": [
       { "id": "C1",  "form": "robloxCommunity",        "closedBy": ["products.F15", "00-CORE.nonGoals"],                 "observable": "robloxCommunityCount == 0; 0 community ids in any manifest; 0 rendered strings match /group|community|join us/i" },
-      { "id": "C2",  "form": "discordServer",          "closedBy": ["PR1", "PR6", "PR4", "PR5", "products.F15"],         "observable": "0 discord.gg or discord.com/invite urls in cid/** or game/src outside a citation field; 0 links of type Discord" },
-      { "id": "C3",  "form": "tiktokAccount",          "closedBy": ["PR1", "PR7", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 tiktok.com/@ handles in any marketing key" },
-      { "id": "C4",  "form": "youtubeChannel",         "closedBy": ["PR1", "PR8", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 youtube handles or /channel/, /c/, /@ urls in any marketing key" },
-      { "id": "C5",  "form": "xAccount",               "closedBy": ["PR1", "00-CORE.nonGoals"],                          "observable": "channelCount == 0; 0 x.com/ handles in any marketing key" },
-      { "id": "C6",  "form": "twitchChannel",          "closedBy": ["PR1", "PR3", "M2"],                                 "observable": "channelCount == 0" },
-      { "id": "C7",  "form": "guildedServer",          "closedBy": ["PR1", "PR3", "00-CORE.nonGoals"],                   "observable": "channelCount == 0" },
-      { "id": "C8",  "form": "facebookPage",           "closedBy": ["PR1", "PR3", "00-CORE.audience"],                   "observable": "channelCount == 0" },
+      { "id": "C2",  "form": "discordServer",          "closedBy": ["PR1", "PR6", "PR4", "PR5", "products.F15"],         "observable": "0 matches of patterns 1 and 2 in cid/** or game/src; 0 links of type Discord" },
+      { "id": "C3",  "form": "tiktokAccount",          "closedBy": ["PR1", "PR7", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 matches of pattern 3 in any marketing key" },
+      { "id": "C4",  "form": "youtubeChannel",         "closedBy": ["PR1", "PR8", "00-CORE.shippedArtifacts"],           "observable": "channelCount == 0; 0 matches of pattern 4 in any marketing key" },
+      { "id": "C5",  "form": "xAccount",               "closedBy": ["PR1", "00-CORE.nonGoals"],                          "observable": "channelCount == 0; 0 matches of patterns 5 and 6 in any marketing key" },
+      { "id": "C6",  "form": "twitchChannel",          "closedBy": ["PR1", "PR3", "M2"],                                 "observable": "channelCount == 0; 0 matches of pattern 7" },
+      { "id": "C7",  "form": "guildedServer",          "closedBy": ["PR1", "PR3", "00-CORE.nonGoals"],                   "observable": "channelCount == 0; 0 matches of pattern 8" },
+      { "id": "C8",  "form": "facebookPage",           "closedBy": ["PR1", "PR3", "00-CORE.audience"],                   "observable": "channelCount == 0; 0 matches of pattern 9" },
       { "id": "C9",  "form": "postingCadence",         "closedBy": ["C1..C8", "OPEN.shipsAndSettles", "endgame", "notices"], "observable": "postingCadence == 'none'; 0 fields name a day, week, month or interval" },
       { "id": "C10", "form": "contentPillars",         "closedBy": ["C1..C8", "OPEN.shipsAndSettles", "endgame"],        "observable": "contentPillars == []; 0 launchBeats rows name a channel" },
       { "id": "C11", "form": "creatorOutreach",        "closedBy": ["00-CORE.nonGoals", "M2"],                           "observable": "outreach.* all 0; 0 claims[] rows addressed to anyone but a player" },
@@ -227,7 +248,7 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
     },
     "invariants": [
       "channelCount == len(channels) == 0",
-      "externalUrlCount == 0 summed across title, storeIcon, storeThumbnails, storeListing, channels and launchBeats, counting only urls that name a channel this project would operate, per externalUrlCountScope",
+      "every pattern in externalUrlCountPatterns.patterns matches 0 times across title, storeIcon, storeThumbnails, storeListing, channels and launchBeats, with no field excluded; and no field name in those six matches /(roblox)?(group|community)Id$/i",
       "robloxCommunityCount == 0",
       "experiencePageSocialLinks.count == 0",
       "contentPillars == [] and outreach.contactCount == 0",
@@ -262,13 +283,13 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
 |---|---|
 | Store-listing copy work | **No external url, handle, invite or "join our" call to action, in any section**, and no line may reference a channel as a place to get anything. The listing's three social-link slots stay empty at publish. Whether the *absence* of a community is stated outward is yours, not mine |
 | Launch-beat and trailer work | **No beat may assume a posting surface.** There is nowhere to post a teaser, a countdown or a reveal; the publish moment's outward half has no channel to land on, and a beat whose delivery mechanism is a channel fails `channelCount == 0` |
-| Title work | No title tag, handle, prefix or suffix naming a channel or a community. A title that reads as a channel handle fails `externalUrlCount == 0` on inspection |
+| Title work | No title tag, handle, prefix or suffix naming a channel or a community. A title that reads as a channel handle fails the ten patterns in `externalUrlCountPatterns` |
 | Store-icon and thumbnail work | **No social-platform glyph, no watermark handle, no "follow us" or "join the group" overlay** on any slot or variant. This is independent of the humor ban and of `T6` |
 | Community-management and feedback-intake work | You inherit an empty **outbound** set, and this key is the half of `G1` that says so. Your `channels == []` and mine agree by construction. If you conclude an off-platform intake must exist, raise a revision request naming `C2`; do not create one, because it hands you a moderation position for an 8-14 audience that nothing funds |
 | Register work (`theme/tone`) | `theme/tone/02`'s *"group posts"* row is now **vacuous**. Not edited here. Whether it is rewritten, dropped or kept as a forbidden surface with no referent is yours |
 | Publish-checklist work (`release`) | **Creator Hub → Creations → Social Links must hold zero entries at publish, and no checklist row reads it back.** Stated as an obligation with `ownedBy: release`; I add no row on my own authority |
-| Contract-and-seam work | `channels` merges and reaches **no emitter** (`M6`). It is `DOCUMENTATION_ONLY` in the emitted-config sense and every field in it is a value or a count a verifier reads. If `channels` is judged to duplicate `community`, the distinguishing line is outbound versus inbound, stated in `seam`. **`externalUrlCountScope` is a field the schema must carry**, because the invariant is unrunnable without it |
-| Verification | The useful part of this key is a check on five sibling keys, not on itself: `externalUrlCount == 0` summed across `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels` and `launchBeats`, **counting operated channels and not cited evidence**. A `T0` `backedBy` url and a `platformRules[].source` are exempt by name |
+| Contract-and-seam work | `channels` merges and reaches **no emitter** (`M6`). It is `DOCUMENTATION_ONLY` in the emitted-config sense and every field in it is a value or a count a verifier reads. If `channels` is judged to duplicate `community`, the distinguishing line is outbound versus inbound, stated in `seam`. **`externalUrlCountPatterns.patterns` is a field the schema must carry**, because the invariant is a pattern list and is unrunnable without it |
+| Verification | The useful part of this key is a check on five sibling keys, not on itself: ten anchored patterns, matched **0** times, over the six values with **no field excluded**. A `T0` `backedBy` url and a `platformRules[].source` need no exemption, because a citation has no trailing handle and the patterns require one |
 
 ## Acceptance criteria
 
@@ -276,11 +297,15 @@ this project funds, plus (for `C1`) a Roblox community creation fee carried as `
    `experiencePageSocialLinks.count == 0` against `maxPermitted: 3`; `postingCadence == "none"`;
    `contentPillars == []`; `outreach.contactCount`, `paidPlacements`, `briefsIssued` and
    `keysIssued` are each `0`; and the merged value contains **zero `null` tokens**.
-2. Summed across `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels` and
-   `launchBeats`, the number of **operated-channel references** (an external url, Discord invite,
-   social handle or Roblox community id naming a channel this project would run) is **0**. Fields
-   whose role is citation are excluded by name and are not counted: `platformRules[].source`,
-   `backedBy`, `settledBy`, `captureSource`, and any `[research: url]` tag.
+2. Over `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels` and `launchBeats`, with
+   **no field excluded**, each of these ten patterns matches **0** times:
+   `discord\.gg/[A-Za-z0-9]`, `discord\.com/invite/[A-Za-z0-9]`, `tiktok\.com/@[A-Za-z0-9._]`,
+   `youtube\.com/(@[A-Za-z0-9._-]|channel/UC|c/[A-Za-z0-9])`,
+   `(^|[^a-z0-9.])x\.com/[A-Za-z0-9_]{1,15}([^A-Za-z0-9_/]|$)`, `twitter\.com/[A-Za-z0-9_]`,
+   `twitch\.tv/[A-Za-z0-9_]`, `guilded\.gg/[A-Za-z0-9]`, `facebook\.com/[A-Za-z0-9.]`,
+   `roblox\.com/(groups|communities)/[0-9]`; and no field name matches
+   `/(roblox)?(group|community)Id$/i`. **Verified this run over all of `cid/marketing/`, a superset
+   of the six values: 0 matches for all ten.**
 3. `channels.forbidden` has exactly **13** rows, each with `id`, `form`, `closedBy` and `observable`,
    every `id` unique and matching `/^C\d+$/`; `channels.platformRules` has exactly **8** rows, each
    carrying `role: "citation"`, and every `source` string appears in `cid/_research/pack.md`.
@@ -299,8 +324,9 @@ forbid and which `F15` and the non-goals do; **(c)** a channel behind both reope
 `RC1`-`RC3` and still invisible to the stated audience. **I recommend (a).** Also `[cid: decided]`:
 extending the enumeration from the four channels my assignment named to **all seven linkable types
 plus TikTok plus the in-experience url**, so the key is closed rather than illustrative; recording
-`C9`/`C10` as **vacuous** rather than empty; and `externalUrlCountScope`, which decides that a cited
-url is evidence and not a channel.
+`C9`/`C10` as **vacuous** rather than empty; and `externalUrlCountPatterns`, which decides that a
+cited url is evidence and not a channel, and says so as ten patterns rather than as a list of fields
+to skip.
 
 ## Not decided here
 
@@ -310,6 +336,7 @@ Discord is ever *stated* in outward copy, which is store-listing work. What the 
 reads back about social-link slots, which is `release`. Whether `theme/tone/02`'s now-vacuous *"group
 posts"* row is rewritten, which is register work. Whether a launch is announced at all and in what
 form, which is launch-beat work; I rule only that no announcement has a channel to use. Whether
-`channels` is promoted into `bridge/schema.mjs` and whether `externalUrlCountScope` becomes a shared
-field the other five marketing keys inherit, which is contract-and-seam work. The three `[unverified]`
-items `U1`-`U3`, which a batched research pass settles and on which nothing in this sheet rests.
+`channels` is promoted into `bridge/schema.mjs` and whether `externalUrlCountPatterns` becomes a
+shared field the other five marketing keys inherit, which is contract-and-seam work. The three
+`[unverified]` items `U1`-`U3`, which a batched research pass settles and on which nothing in this
+sheet rests.
