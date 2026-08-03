@@ -289,9 +289,27 @@ const PROSE_BUDGET = 100;
   const domains = new Set(leaves.filter(scoped).map((f) => relative(ROOT, dirname(f))));
   const { proposals } = await mergeSheets(ROOT);
   const proposedBy = new Map(proposals.map((p) => [dirname(p.sheet), p.key]));
+
+  // An amendment is a data form here too, exactly as it is in the per-sheet check above.
+  //
+  // Without this, a domain whose every sheet honestly amends a NEIGHBOUR'S key reads as
+  // "produced only prose" — the one thing this check exists to catch — and the only way to
+  // silence it is to invent a key. `theme/identity` is the worked case: the body is
+  // `characterArt`'s, the co-presence rules are `social`'s, the word bans are `vocabulary`'s,
+  // and an `identity` key would put a second owner on three subjects. The check would have
+  // been pushing for the outcome the seam exists to prevent.
+  //
+  // Reported by the Identity writer, which reached the right answer, predicted that this
+  // check would punish it for that, and wrote the reason down instead of inventing the key.
+  const amendedBy = new Set();
+  for (const f of leaves.filter(scoped)) {
+    if (/"amends"\s*:/.test(await readFile(f, 'utf8'))) amendedBy.add(relative(ROOT, dirname(f)));
+  }
+  const producesData = (d) => proposedBy.has(d) || amendedBy.has(d);
+
   const keyless = [...domains].filter((d) => !owners.has(d)).sort();
-  const waiting = keyless.filter((d) => proposedBy.has(d));
-  const mute = keyless.filter((d) => !proposedBy.has(d));
+  const waiting = keyless.filter(producesData);
+  const mute = keyless.filter((d) => !producesData(d));
 
   // Every proposal, not only those from keyless domains. The first version reported the
   // keyless ones, which showed 1 of wave 2's 9: Systems already owns `tiers` and `currency`

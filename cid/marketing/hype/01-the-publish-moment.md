@@ -25,16 +25,14 @@ Until that setting moves no stranger can reach this game at all, which makes it 
 launch — and `release`, which claims *"every publish-time platform setting and its read-back"*, has
 no checklist row for it.
 
-**Live Ops ran, so the dependency this sheet was drafted around is now answered rather than
-deferred.** `roadmap` ruled `dropCount: 1`, `cadence.value: "none"`, `ordering.dated: false`, and its
-own `announcement.external` reads *"not this key's. Discovery and Marketing owns…"*; `store-page/05`
-routes the same question here by name — *"Hype owns whether anything is said outside the game"* — and
-sets `storeListing.updateNotes.entryCount: 0`, `surface: "none"`
+**Live Ops ran, so the dependency this sheet deferred is now answered.** `roadmap` ruled
+`dropCount: 1`, `cadence.value: "none"`, `ordering.dated: false`, and routes `announcement.external`
+to this category; `store-page/05` routes it here by name — *"Hype owns whether anything is said
+outside the game"* — at `updateNotes.entryCount: 0`, `surface: "none"`
 `[research: cid/liveops/roadmap/01-what-ships-after-v1.md]`
-`[research: cid/marketing/store-page/05-no-update-notes.md]`. **My answer is zero.** `D1` has no
-channel to be posted on, the flip is a one-way state change that cannot fire twice, and the only
-outward surface that could ever carry a drop is an `updateNotes` entry — which is a listing field
-under `store-page/05`'s own reopening condition, not a beat here. **`M10` closes.** `[cid: decided]`
+`[research: cid/marketing/store-page/05-no-update-notes.md]`. **My answer is zero beats for `D1`:**
+no channel exists, the flip is one-way and cannot fire twice, and the only outward carrier left is an
+`updateNotes` entry, which is their listing field and not a beat. **`M10` closes.** `[cid: decided]`
 
 **The order is safe under both readings of an ambiguous prerequisite.** `release.provisioning` gate 4
 rests on the experience being *"published and is accessible"*, and the page does **not** say *public*
@@ -48,11 +46,11 @@ unprovisioned — Store Page's `M7`, routed there. `[cid: decided]`
 **The trailer is dormant, and capture closes it, not taste.** `Theme.luau` ships `archetype =
 "cartoon-vibrant"`, `sourceTitle = "Pet Ascend Simulator"`, surface `#2B1B4D` against a brief naming
 `fantasy-ornate` three times (`T8`, `G2`) `[research: game/src/shared/Theme.luau]`. A trailer is
-captures in sequence, so it inherits that wholesale. Platform-side it is otherwise cheap, and the
-facts belong to Thumbnails more than to me: an approved video *"will appear first on your game's
-detail page"*, a detail page holds up to **10** images or videos, uploads run against a **monthly
-quota of 3** with rejections counted, and all are reviewed against *"authentic and accurately
-portray in-game content without misleading alterations"*
+captures in sequence, so it inherits that wholesale. Platform-side the facts belong to Thumbnails
+more than to me: an approved video *"will appear first on your game's detail page"*, a page holds up
+to **10** images or videos, uploads run against a **monthly quota of 3** with rejections counted, and
+all are reviewed against *"authentic and accurately portray in-game content without misleading
+alterations"*
 `[research: https://github.com/Roblox/creator-docs/blob/main/content/en-us/production/publishing/thumbnails.md]`.
 
 **Re-engagement is closed twice and the second closure is the honest one.** The brief closes it by
@@ -132,7 +130,7 @@ place, and the brief names no other game by this developer (**H4**).
         "reversible": true,
         "reversalPath": "set the place back to private. The page stops being reachable; nothing in game/src changes and no save is touched.",
         "fireableTwice": false,
-        "fireableTwiceWhy": "the flip is a one-way state change on the page. Once public, there is no second flip to spend on a later drop, which is half of why beatsAfterTheFlip is 0."
+        "fireableTwiceWhy": "the flip is a one-way state change on the page. Once public there is no second flip to spend on a later drop, which is half of why beatsAfterTheFlip is 0."
       }
     ],
     "preconditions": [
@@ -248,7 +246,7 @@ place, and the brief names no other game by this developer (**H4**).
       "key": "roadmap",
       "owner": "Live Ops — Roadmap, same wave",
       "resolvedHere": true,
-      "resolvedAgainst": "the shipped sheet, not the expectation this key was drafted with. An earlier draft left this open as a conditional; roadmap has since ruled and store-page/05 routed the outward half here by name, so the conditional is replaced by an answer.",
+      "resolvedAgainst": "the shipped sheet, not the expectation this key was drafted with. An earlier draft left this as a conditional; roadmap has since ruled and store-page/05 routed the outward half here by name, so the conditional is replaced by an answer.",
       "seam": "this key announces; roadmap decides whether there is anything to announce. Marketing's does_not_own is what is actually in the update.",
       "roadmapRuled": {
         "dropCount": 1,
@@ -337,30 +335,28 @@ place, and the brief names no other game by this developer (**H4**).
 |---|---|---|
 | `RR-H1` | `cid/tech/deploy/01-the-release-contract.md` | add **a new `publishChecklist` row, id assigned by `release`**, for the **private→public visibility setting**. A new place is private by default, so a correctly executed four-row checklist leaves the game reachable by nobody but its creator, with no error and no in-game symptom. Values are `release`'s; the surface, read-back status and failure mode are in `launchBeats.revisionRequests[RR-H1].suggestedRow`. **I name no id and assert no post-acceptance row count** |
 
-**Cited, not refiled: `RR-C1`.** `cid/liveops/community/02` asks `release` for a new row covering the
-Maturity & Compliance questionnaire, and words it as *"a new `publishChecklist` row, id assigned by
-`release`"*. Wave 7's Community domain found the same gap from the Live Ops side, and two domains
-filing one request against one sheet is the collision this pipeline keeps finding. **Four requests
-are live against one four-row checklist** — `RR-H1`, `RR-C1`, `RR-T1` (`marketing/thumbnails/02`) and
-an unnumbered ask from `marketing/icon/01` — and `release` is the only holder that can see all four,
-so it numbers them. This sheet requires only **at least one row beyond `P4`**; when a row is
-accepted, `launchBeats.preconditions` cites it instead of stating the obligation.
+**Cited, not refiled: `RR-C1`.** `cid/liveops/community/02` asks `release` for the Maturity &
+Compliance row and words it as *"a new `publishChecklist` row, id assigned by `release`"*. Two domains
+filing one request against one sheet is the collision this pipeline keeps finding, so I cite theirs.
+**Four requests are live against one four-row checklist** — `RR-H1`, `RR-C1`, `RR-T1`
+(`marketing/thumbnails/02`) and an unnumbered ask from `marketing/icon/01` — and `release` is the only
+holder that can see all four, so it numbers them. This sheet requires only **at least one row beyond
+`P4`**; when a row is accepted, `launchBeats.preconditions` cites it instead of stating the obligation.
 
 ## Consequences for other work
 
-- **Publish-and-release-mechanics work (`release`).** `RR-H1`, and the flip is now sequenced between
-  your gates 2 and 3 by another key. **I add no row, name no id and state no resulting count** — your
-  AC1 carries the count, and restating it after you accept any of the four requests is your edit.
+- **Publish-and-release-mechanics work (`release`).** `RR-H1`, and the flip is sequenced between your
+  gates 2 and 3. **I add no row, name no id and state no resulting count** — your AC1 carries the
+  count, and restating it after you accept any of the four requests is your edit.
 - **Thumbnail-slot work (`storeThumbnails`).** Slot 1 is yours and uncontested today. If the capture
   gate ever closes, an approved video takes slot 1 regardless of your ordering, so your slot list
   must survive one insertion at the head without hand-renumbering.
-- **Store-listing work (`storeListing`).** The page goes public while `gamePassId` is unprovisioned.
-  What the listing says about `Span` in that window (`M7`) is a consequence of an ordering chosen
-  here, not a free choice. And your `updateNotes` surface is the **only** outward carrier a drop can
-  ever have, because I rule `D1` gets no beat; your `reopeningCondition` decides whether it fills.
-- **Roadmap work (`roadmap`).** Your one drop gets **zero outward beats** and `beatCount: 1` is a
-  total. `M10` closes. A second drop does not reopen this by itself — reopening needs a channel,
-  which is `channels`', not yours.
+- **Store-listing work (`storeListing`).** The page goes public while `gamePassId` is unprovisioned;
+  what the listing says about `Span` in that window (`M7`) follows from an ordering chosen here. And
+  `updateNotes` is now the **only** outward carrier a drop can have, because `D1` gets no beat.
+- **Roadmap work (`roadmap`).** Your one drop gets **zero outward beats**; `beatCount: 1` is a total
+  and `M10` closes. A second drop does not reopen this alone — that needs a channel, which is
+  `channels`' ruling, not yours.
 - **Off-platform-presence work (`channels`).** Your empty channel set is what makes
   `beatsBeforeTheFlip: 0` and `beatsAfterTheFlip: 0` arithmetic. Any channel you find reopens `S1`.
 - **Name, Icon, Store Page, Social.** Each owns one precondition row (4–8). Shipping a field at the
@@ -380,11 +376,10 @@ both readings, (b) under one, and (a)'s cost is a copy line Store Page already o
 
 **Second: do you own another Roblox experience?** One line closes `S4` permanently; nothing else can.
 
-**Third, and new this round: `roadmap`'s one drop ships with no outward announcement of any kind.**
-Nothing in the game says it happened (`R-F11`), no channel exists, and `updateNotes.entryCount` is 0.
-The alternative is one listing note, which `store-page/05` already has a shape for and which becomes
-owed only if a real player loses cleared ground. I recommend silence, and their condition as the
-trigger if it does not hold.
+**Third, new this round: `roadmap`'s one drop ships with no outward announcement at all.** Nothing
+in-game says it happened (`R-F11`), no channel exists, `updateNotes.entryCount` is 0. The alternative
+is one listing note, whose shape `store-page/05` already holds. I recommend silence, with their
+reopening condition as the trigger if it does not hold.
 
 ## Acceptance criteria
 
@@ -400,7 +395,7 @@ trigger if it does not hold.
    non-empty `owner`, `ownedToday` and `check`; exactly one row has `ownedToday: "nobody"` (`n: 3`)
    and it carries `revisionRequest: "RR-C1"` with `citedNotDuplicated: true`; and rows 4–8 name
    exactly `title`, `storeIcon`, `storeThumbnails`, `storeListing`, `channels`, each once.
-4. `launchBeats.revisionRequests` has exactly one entry, carrying `rowIdAssignedBy: "release"`,
+4. `launchBeats.revisionRequests` has exactly one entry carrying `rowIdAssignedBy: "release"`,
    `rowIdPinned: false`, `absoluteRowCountAsserted: false`, a `rowCountEffect` of exactly
    `"at least one row beyond P4"` and an `otherLiveRequestsAgainstThisChecklist` array of **3** rows;
    `revisionRequestsCitedNotFiled` has exactly one entry with `rowIdPinned: false`; the serialized
