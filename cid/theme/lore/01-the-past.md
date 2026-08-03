@@ -106,8 +106,8 @@ took as long as plants take. Nothing here is broken that time did not settle.
     },
     "silences": "supplied as an amendment by cid/theme/lore/02-the-silences.md; six rows, each with an id, a question, a token list and a structural test. This key declares the field; that sheet decides its contents.",
     "enforcement": {
-      "hardHalf": "the L1, L3 and L5 word lists, requested into vocabulary.bannedWords below, where the merger fails a build on a hit",
-      "softHalf": "L2, L4, L6 and every artPrompt: reviewer-checkable only, because nothing in the pipeline reads an artPrompt",
+      "hardHalf": "25 words drawn from the L1, L3 and L5 lists and requested into vocabulary.bannedWords below, where the merger fails a build on a hit. The subset is deliberate: a word is requested only where it is fatal to the canon AND has no legitimate use in a 14-character label, so the ban costs a later writer nothing.",
+      "softHalf": "L2, L4, L6, the remaining L1 words, and every artPrompt: reviewer-checkable only, because nothing in the pipeline reads an artPrompt",
       "knownGap": "a wave-4 artPrompt contradicting wave-1 canon passes the merge silently. This key exists so the reviewer has one artifact to hold rather than a sheet to re-read."
     }
   }
@@ -120,7 +120,7 @@ took as long as plants take. Nothing here is broken that time did not settle.
   "field": "bannedWords",
   "requestedBy": "cid/theme/lore/01-the-past.md",
   "reasonClass": "canon, not occupancy — these words do not collide with a competitor, they assert a past this game does not have",
-  "checkedAgainstCurrentManifest": "0 hits, whole-word case-insensitive, against all 40 player-facing strings on disk today",
+  "checkedAgainstCurrentManifest": "0 hits, whole-word case-insensitive, against all 43 player-facing strings on disk today",
   "add": [
     { "word": "hoard",       "reason": "L1 — the finds are worn tools and fittings, not a hoard" },
     { "word": "idol",        "reason": "L1 — denotes a will, which L6 forbids" },
@@ -180,11 +180,11 @@ took as long as plants take. Nothing here is broken that time did not settle.
    4 `rulings` rows and 6 `rules` rows, and no other sheet proposes `canon`.
 2. Every word in `canon.rules[].forbidden` returns **zero** whole-word case-insensitive hits
    against every value `bridge/schema.mjs playerFacingStrings()` returns for the merged manifest.
-   The count is 0 of 40 strings today.
+   The count is 0 of 43 strings today.
 3. This sheet coins **zero** proper nouns, so Vocabulary's canonical term list gains 0 entries from
    it and 0 terms here require collection.
-4. Every `vocabulary` amendment row carries both a `word` and a `reason`, and every reason names
-   the rule id (`L1`, `L3` or `L5`) it enforces.
+4. The `vocabulary` amendment carries exactly 25 rows, each with both a `word` and a `reason`, and
+   every reason names the rule id (`L1`, `L3` or `L5`) it enforces.
 
 ## Pushing back
 

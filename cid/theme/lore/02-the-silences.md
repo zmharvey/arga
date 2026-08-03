@@ -19,9 +19,9 @@ line's own word. "Buried by the last of them" fails.
 | `S1` | What ended the place. Why it was left | every available cause is closed. An **agent** (war, a rival) is the antagonist `HANDOFF.md` instructs nobody to invent `[brief: binding]`. An **event** (fire, flood, plague) reads grim against *"not spooky, not grim"* and *"reclamation, not a haunted place"* `[brief: soft]` ×2. A **gradual decline** makes the world trend downward against *"cleared is permanent"* `[brief: binding]` ← `[you chose: R2 Q1]`. And *"they simply left"* is not neutral: it invites *why*, so it buys nothing and spends the only channel there is | the 24 object prompts, `objectArt[].artPrompt` — unlimited room, and *"put the flavour in artPrompt"* is the pipeline's own instruction |
 | `S2` | Who made the place, and what they were called | a proper noun for a people is the cheapest route back to *"uncover a lost civilisation"*, declined *"because the verb disappears"* `[brief: soft]` ← `[you accepted: R6 Q1]`. It implies a faction Identity reports empty, and a face priority 1 funds no art for. At a delivery bandwidth of zero it would dominate the fiction by default. This is the answer to Identity's routed gap 5: **they are not nameable** | `storeListing.description` — it needs a sentence, and "lost civilisation" is the genre's reflex |
 | `S3` | Who buried the objects, and whether they were hidden on purpose | *"clearing and discovering are one action; do not design them as separate systems"* `[brief: soft]` is **the stated reason this theme beat cobwebs, ash and rust**. A burial agent splits one action into two events with two agencies. Deliberate concealment additionally gives the world an entity that anticipated the player. And the loop explains it with zero fiction: things are under the overgrowth because the overgrowth grew over them, seen inside *"the first ten seconds"* with *"no text, no tutorial"* | set themes (Meta & Content) — *"what the four sets mean"* is the natural place to write "these were put away together" |
-| `S4` | Why clearing pays, and where a Shard comes from | each answer spends something. **Economic** needs a counterparty; Identity declares the cast empty and priority 1 funds no NPC. **Material** makes value a property of the overgrowth, which `rarity` has since ruled against by making find placement seed-derived and tier-independent. **Magical** spends the supernatural budget on a HUD counter, and that budget is Setting's. A rising counter is genre-legible with zero fiction across 38M visits at 96% likes `[research: https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator]` | the premium SKU — `products` sells a throughput multiplier, and a fiction of value is the usual way one is justified |
+| `S4` | Why clearing pays, and where a Shard comes from | each answer spends something. **Economic** needs a counterparty; Identity declares the cast empty and priority 1 funds no NPC. **Material** makes value a property of the overgrowth, which `rarity` has since ruled out: `gradedLadderCount` is 1 and `findPlacementReadsTier` is false. **Magical** spends the supernatural budget on a HUD counter, and that budget is Setting's. A rising counter is genre-legible with zero fiction across 38.2M visits at a 96.2% like ratio `[research: https://www.roblox.com/games/133086043677134/Grass-Incremental-Simulator]` | the premium SKU — `products` sells a throughput multiplier, and a fiction of value is the usual way one is justified |
 | `S5` | Whether anyone besides the players will ever see the restored place, or is owed it | **both answers are already ruled out.** "Someone is coming back" is the returning-benefactor fiction the category gate forbids as importing daily rewards (priority 3), and it makes restoration instrumental when *"satisfaction comes from before/after and discovery, nothing else"*. "No one is coming" is the melancholy reading, against *"not grim"* `[brief: soft]` ×2. When every answer is closed by a stated constraint, a silence is the correct output rather than an unmade decision | the return hook (Live Ops) — `roadmap` and `events` both rule nothing ships, and a waiting figure is the cheapest fictional patch for a weak pull |
-| `S6` | Whether the player is the first, or the only one, to do this | "first" is a chosen-one framing adjacent to the *"not a power fantasy"* the brief forbids, and it is **falsified on sight**: `social` puts 12 to 20 players in one world clearing their own plots, visible to each other, so a second player walking past contradicts the canon within seconds. "Not first" requires predecessors, a class of being Identity declares absent | the first minute (`firstSession.beats`) — a first find is exactly where "you are the first" wants to be written |
+| `S6` | Whether the player is the first, or the only one, to do this | "first" is a chosen-one framing adjacent to the *"not a power fantasy"* the brief forbids, and it is **falsified on sight**: `social` puts a full server of players in one world clearing their own plots, visible to each other, so a second player walking past contradicts the canon within seconds. "Not first" requires predecessors, a class of being Identity declares absent | the first minute (`firstSession.beats`) — a first find is exactly where "you are the first" wants to be written |
 
 ## Why
 
@@ -46,9 +46,9 @@ silence.** A silence is a question the canon declines to answer; an empty slot i
 game does not contain. Nobody should read `S1`–`S6` as coyness about a villain.
 
 **One entry moved since wave 1.** `S3`'s duplicate-handling worry is closed rather than open:
-`discovery.repeat.possible` is `false` and that key states in its own value that the silent
-duplicate case this sheet worried about *"is a defect path, not the silent duplicate case
-core-loop/03 forbids"*. No fiction is owed for a branch no player can reach.
+`discovery.repeat.possible` is `false` and that key states in its own value that the remaining
+branch *"is a defect path, not the silent duplicate case core-loop/03 forbids"*. No fiction is owed
+for a branch no player can reach.
 
 ```json
 {
@@ -78,7 +78,7 @@ core-loop/03 forbids"*. No fiction is owed for a branch no player can reach.
       "question": "who made the place, and what they were called",
       "answer": "never as an identity: no proper noun, title, count, order, dynasty, language or face",
       "tokens": ["civilisation","civilization","empire","kingdom","dynasty","tribe","clan","ancients","elders","priest","priests","king","queen","lord","founder","founders","architect","makers","forefathers"],
-      "structuralTest": "no player-facing string and no artPrompt may contain a possessive apostrophe-s or the phrase 'of the', both of which attribute an object to a party. Zero of the 40 strings on disk contain either.",
+      "structuralTest": "no player-facing string and no artPrompt may contain a possessive apostrophe-s or the phrase 'of the', both of which attribute an object to a party. Zero of the 43 strings on disk contain either.",
       "ratifiedException": "a trade REGISTER is not a named party. Ledger, Tally and Stylus pass; a common-noun occupation in a rationale is allowed, a capitalised party in a shipped string is not.",
       "likelyViolator": "storeListing.description"
     },
@@ -131,10 +131,10 @@ Run whole-word or it produces false hits: `sealed` must not match the find name 
 not match `Bellcast`. **A hit is a question a reviewer must answer, not an automatic failure.**
 
 **What this sheet may not do, checked.** No entry forbids anything a contract-key owner needs to
-fill its key. All 40 player-facing values on disk — `area.label`, four `collection.sets[].label`,
+fill its key. All 43 player-facing values on disk — `area.label`, four `collection.sets[].label`,
 24 `relics`, four `tiers[].name`, three `upgrades[].label`, three `blurb`, `currency.name`,
-`.plural`, `collection.className`, `.classPlural` — pass every token list and both structural
-tests. A silence that blocked one of those would be a silence that failed.
+`currency.plural`, `collection.className` and `collection.classPlural` — pass every token list and
+both structural tests. A silence that blocked one of those would be a silence that failed.
 
 ## Consequences for other work
 
@@ -163,7 +163,7 @@ tests. A silence that blocked one of those would be a silence that failed.
 2. This sheet answers zero of its own six questions and contains zero proper nouns naming a person,
    a people, a place, an event or a date.
 3. Run whole-word and case-insensitive, the pattern above returns **zero** hits against every value
-   `playerFacingStrings()` returns for the merged manifest — 40 strings today.
+   `playerFacingStrings()` returns for the merged manifest — 43 strings today.
 4. `npm run bridge` reports no problem for this sheet: an `amends` block is collected, never merged,
    and no second sheet claims `canon`.
 

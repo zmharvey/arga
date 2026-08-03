@@ -59,12 +59,16 @@ handle for writers and art prompts, not a name for anything.
     "oneLineIsInternal": "not a player-facing string. vocabulary does not bind it, and no field name or value below is ever rendered to a player unless another key renders it.",
     "keyShape": {
       "whyOneKey": "five sheets, one subject: the place. This sheet carries the key; the other four amend named sub-objects of it with a json amends block, and no sub-object is written twice.",
-      "identity, land, climate, materialRegister, readability, life": "cid/theme/setting/01-the-ruin.md (this sheet)",
+      "carriedHere": ["identity", "land", "climate", "materialRegister", "readability", "life"],
       "extent": "cid/theme/setting/02-extent.md",
       "law": "cid/theme/setting/03-physical-law.md",
       "passage": "cid/theme/setting/04-permanence-and-passage.md",
       "contents": "cid/theme/setting/05-inventory.md",
       "promotionNote": "a schema owner promoting this key must fold the four amendments in; each names its sub-object and touches no other."
+    },
+    "exclusionListFields": {
+      "whyThisFieldExists": "four fields in this key are exclusion lists, and an exclusion list has to name the thing it excludes. Every word-pattern criterion in this domain exempts them by name, here and in setting.contents. Naming them once is what makes that exemption checkable instead of a judgement call.",
+      "fields": ["setting.identity.isNotA", "setting.materialRegister.excludedStones", "setting.materialRegister.ornamentIsNot", "setting.life.bannedWords", "setting.climate.excludedBands[].band"]
     },
     "identity": {
       "buildingFunction": "gathering water and keeping the count of it",
@@ -92,15 +96,15 @@ handle for writers and art prompts, not a name for anything.
     "climate": {
       "band": "temperate humid",
       "growingSeason": "long",
-      "rain": "frequent enough that holding water was worth building for",
-      "rainIsDepicted": false,
-      "rainIsDepictedOwner": "setting.law R2, which closes it at never shown",
+      "precipitation": "frequent enough that holding water was worth building for",
+      "precipitationIsDepicted": false,
+      "precipitationIsDepictedOwner": "setting.law R2, which closes it at never shown",
       "excludedBands": [
         { "band": "tropical", "why": "darkens the greens and cools and wets the stone, against the high-contrast requirement 04-PRESENTATION.md calls a requirement, not a nicety" },
         { "band": "arid", "why": "grows nothing to clear" },
         { "band": "alpine or northern", "why": "grey light and a grey palette, which is the v1 snow failure" }
       ],
-      "evidenceOnDisk": "tiers[].name Moss, Fern, Bramble, Heartvine are a temperate humid flora; a cistern is only worth building where rain is reliable and dry spells happen"
+      "evidenceOnDisk": "tiers[].name Moss, Fern, Bramble, Heartvine are a temperate humid flora; a cistern is only worth building where water is reliable and dry spells happen"
     },
     "materialRegister": {
       "stone": "warm pale limestone",
@@ -131,7 +135,7 @@ handle for writers and art prompts, not a name for anything.
       "offScreenAmbientSoundBeyondTheEdge": "permitted, continuous only, and it is Audio's to take or leave. It is the one permitted living sound in the game.",
       "runningWaterBedAvailable": false,
       "bannedWords": ["bird", "birds", "animal", "animals", "beast", "insect", "beetle", "butterfly", "fish", "deer", "fox", "snake", "lizard", "frog", "bat", "spider"],
-      "bannedWordsScope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt and non-visual ambient audio is exempt.",
+      "bannedWordsScope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt, non-visual ambient audio is exempt, and this field is itself exempt per exclusionListFields.",
       "reopeningCondition": "a developer ruling only — theme/identity/04 row 7. No other sheet may add a visible creature."
     },
     "playtestUnknowns": [
@@ -210,7 +214,7 @@ high-contrast, so rarity tiers stay legible"* `[brief: soft]`, which is load-bea
 constraint `04-PRESENTATION.md` calls *"a requirement, not a nicety"*; **arid** grows nothing to
 clear; **alpine or northern** delivers grey light and a grey palette, which is the v1 snow
 failure the same line was written to prevent. A cistern is also its own climate evidence: it is
-only worth building where rain is reliable and dry spells happen. `[cid: decided]`
+only worth building where water is reliable and dry spells happen. `[cid: decided]`
 
 **Warm pale limestone, stated as a contrast relation rather than a colour, because the colour is
 Art's.** The requirement is that cleared stone read lighter than every tier of overgrowth in
@@ -261,7 +265,7 @@ not the noun"* and *"the theme is a **vehicle**"* `[brief: binding]` `[you chose
 (`00-CORE.md`). A hillside waterworks is not claimed here as unclaimed territory, and no argument
 in this sheet is *"this setting is unoccupied"*. **Occupancy is unverified and stays that way
 from this domain:** my index assigns the fantasy-level Roblox search to fantasy work, and the two
-pages that would have informed this sheet both failed to fetch this run — the UCSB terraces page
+pages that would have informed this sheet both failed to fetch — the UCSB terraces page
 refused the connection and the `Prospecting!` wiki returned HTTP 402. A search result (snippet
 only, not fetched) suggests `Prospecting!` contains an *"Overgrown Grotto"* where vines are cut
 with tool-gated scissors; **that is a near-miss worth checking and it is `[unverified]` here.**
@@ -302,7 +306,7 @@ Routed to fantasy work rather than claimed.
   never grey granite, white marble, red brick or dark basalt. **The area boundary is built** — a
   retaining wall on the uphill side, a low parapet or wall on the open side, broadleaf canopy
   beyond as a backdrop with no walkable ground on it. **Ornament is carving, casting, dressed
-  joints and pattern in paving.** No gilding, no gemstones, no iconography, no statuary of a
+  joints and pattern in paving.** No gilding, no gemstones, no iconography, no carved figure of a
   person or a creature. Weathering is uniform across all four depths per history work; only the
   quantity of green varies. **`setting.readability` is the field to cite, not this prose.**
 - **Object art** *[Art & Visuals — Objects, wave 4+]*: the 24 Finds are the fittings and
@@ -323,7 +327,9 @@ Routed to fantasy work rather than claimed.
   merged. Promoting it means folding in four amendments — `extent`, `law`, `passage`, `contents` —
   each of which names its sub-object and touches no other. Nothing downstream may read `setting`
   until it is promoted; every current consumer cites this sheet's prose by hand, which is the
-  defect the proposal exists to close.
+  defect the proposal exists to close. **`setting.exclusionListFields` is the one field a lint has
+  to know about:** four fields in this key name what they exclude, and a word check run over them
+  fails on its own subject matter.
 - **Fantasy work** *[Fantasy, this wave]*: your Roblox occupancy search now has a specific target
   shape to check — restoration of a terraced hillside stoneworks — plus the unverified near-miss
   above (`Prospecting!`, *"Overgrown Grotto"*, vine-cutting behind tool gates). **If your search
@@ -341,10 +347,9 @@ Routed to fantasy work rather than claimed.
 
 1. **Ratification check.** All 5 architectural strings on disk — `area.label` (`East Terrace`)
    and the 4 `collection.sets[].label` (`Terrace`, `Cistern`, `Vault`, `Spire`) — are accounted
-   for by this sheet as parts of one complex, and each appears verbatim in
-   `setting.identity.partKinds` or is named by it. Count of renames requested: **0.** Count of
-   revision requests raised against `cid/gameplay/meta/01-the-area.md` or `02-the-collection.md`:
-   **0.**
+   for by this sheet as parts of one complex, and each appears in `setting.identity.partKinds`.
+   Count of renames requested: **0.** Count of revision requests raised against
+   `cid/gameplay/meta/01-the-area.md` or `02-the-collection.md`: **0.**
 2. **Level-ground check.** Within the area's 120-stud extent at `originXZ` `[0, 0]` (cited, not
    set here), the walkable surface has a single elevation, and every one of its four sides
    terminates in built stone or in ground the player cannot walk onto. Walkable ground outside
@@ -357,7 +362,9 @@ Routed to fantasy work rather than claimed.
    interactables in the build is **0**, and across every `manifest` block and every `artPrompt`
    under `cid/` the whole-word case-insensitive pattern
    `bird|birds|animal|animals|beast|insect|beetle|butterfly|fish|deer|fox|snake|lizard|frog|bat|spider`
-   returns **0 hits**. Non-visual ambient audio is exempt, and no manifest field holds it.
+   returns **0 hits** outside the five fields named in `setting.exclusionListFields`, which are the
+   check rather than a violation of it. Non-visual ambient audio is exempt, and no manifest field
+   outside that list holds it.
 
 ## Not decided here
 

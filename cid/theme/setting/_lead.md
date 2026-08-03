@@ -17,26 +17,43 @@ genuine defects in the source rather than latitude.
 
 ---
 
-## Contract check — I own zero keys
+## Contract check — this domain proposes one key, `setting`
 
-`bridge/schema.mjs` lists nine keys a build reads: `area`, `tiers`, `upgrades`, `movement`, `patch`,
-`collection`, `onboarding`, `modules`, `runtime`. **Not one is owned by any Theme & Narrative
-domain.** So every sheet below is a non-value decision, carries no `manifest` block, and constrains
-other people's work rather than producing something a build can read. That is the correct shape for
-this domain, and it is stated so a later reader does not go looking for the setting's numbers.
+**The original version of this section was wrong, and the way it was wrong is worth keeping on the
+record.** It read *"I own zero keys ... so every sheet below is a non-value decision, carries no
+`manifest` block, and constrains other people's work rather than producing something a build can
+read. **That is the correct shape for this domain.**"* It is not the correct shape for any domain.
+A domain does not need a contract key to run; it needs to **produce** one. Owning none at planning
+time is the ordinary case, because the contract was derived from one hand-built game and most
+domains had not run.
 
-Three consequences, and the third is the important one:
+**What the wrong version cost, measurably.** Five sheets of place decisions reached wave 6 as prose
+only, so Art re-derived them by hand: `cid/art/environment/01-world-part-budget.md` cites `P1`,
+`P2`, `P3`, `P9`, `A6`, `A7` and `A14` by id, `cid/art/style/01-palette-and-materials.md` names
+`theme/setting/01 criterion 3` as the reason for its 165-luma floor, and
+`cid/art/lighting/01-the-one-daylight-state.md` implements `R1`. Every one of those is an agent
+reading five files of prose to recover a number a key could have carried.
 
-1. **`area` owns the dimensions and the density.** `size`, `patchCount`, `minSpacing`, `originXZ`
-   belong to `gameplay/meta`. No sheet below states how big anything is, how much overgrowth is in
-   it, how many areas exist, or how they are arranged. *"The only friction is the size of an area"*
-   (`02-GAMEPLAY.md`) is curve work and appears here only as something I must not contradict.
+**The corrected shape, and it is one key for five sheets.** `01-the-ruin` carries a `manifest` block
+providing `setting` with `status: proposed`; `02`, `03`, `04` and `05` each carry a JSON `amends`
+block naming exactly one sub-object — `extent`, `law`, `passage`, `contents`. One key, one
+subject, no sub-object written twice, and a schema owner promoting it folds in four amendments that
+do not overlap. The contract at the time of this correction is **26 merged keys**, and none of them
+holds a place, a landform, a climate, a material register or a roster of what is alive.
+
+Three consequences survive the correction unchanged, and the third is still the important one:
+
+1. **`area`, `depths` and `plots` own the dimensions and the density.** `size`, `patchCount`,
+   `minSpacing`, `originXZ`, `areaCount`, `bays` all belong to `gameplay/meta`. No sheet below states
+   how big anything is, how much overgrowth is in it, how many areas exist, or how they are arranged.
+   *"The only friction is the size of an area"* (`02-GAMEPLAY.md`) is curve work and appears here only
+   as something I must not contradict.
 2. **Naming follows the key.** `area.label`, `collection.sets[].label`, the 24 relic names and
    `tiers[].name` all travel inside keys owned elsewhere, and the merger rejects a second sheet
    claiming a key. **Sheets below name what they themselves decide and may not name an area, a set,
    a relic, or an overgrowth tier.** No parallel name list.
-3. **The fiction of this place has already been written, by the owners of those keys, because no
-   setting sheet existed when they needed it.** On disk right now:
+3. **The fiction of this place had already been written, by the owners of those keys, because no
+   setting sheet existed when they needed it.** On disk before sheet `01`:
    - `cid/gameplay/meta/01-the-area.md` — *"Named the **East Terrace**"*, *"one area of an intended
      four"*, and a consequence line handing Art *"a 120-stud terrace to dress, **not an open
      landscape**"*. That is a location decision.
@@ -53,7 +70,7 @@ Three consequences, and the third is the important one:
    renaming them — see consequence 2. Sheets `01`, `02` and `05` must either supply the fiction that
    makes them coherent or state plainly that they do not fit, and where they do not fit that is a
    **consequence for the owner of the key**, raised as a revision request, never a rename from here.
-   Their status — hand-built ahead of their wave, not approved output — is not mine to settle.
+   All five were ratified with zero renames.
 
 ---
 
@@ -164,33 +181,33 @@ separately from overgrowth rarity is unresolved in the source (`01-FOUNDATION.md
 
 ## Why 5 sheets
 
-I own no contract keys, so the count is one sheet per genuine non-value decision and nothing else.
-There are five. **Two exist because the source contradicts itself** and a writer has to pick: `02`
-resolves one ruin or many, which way *deeper* points, and why the place cannot be exhausted (one
-decision, not three — any answer to the first answers the other two, which is why the previous
-`scale-and-unit` and `endlessness` sheets collapse into one); `04` resolves a restored area
-surviving as a visitable place against a stated default to collapse it to a flag. **Two exist
-because the brief is silent on something a different downstream owner needs in a different form:**
-`01` is what the ruin actually is, which Art must dress and which the owners of `area` and
-`collection` have already had to invent unsupported; `03` is the rules of the place, which
-set-completion fiction and Art both depend on. **One is a roster:** `05`, the explicit presence and
-absence list, which is a named half of my ownership (*"what exists here and what does not"*) and the
-one artifact the other five leads and Art can read instead of re-deriving the priority-3 gate from
-process notes. Four sheets from the previous plan are gone on purpose: dimensions and density belong
-to `area`, co-presence is a one-line consequence of `02`, and location-plus-era is one act of
-description rather than two sheets that would each have to reference the other. **Dependency:** `01`
-before `02` before `04`; `03` is independent and can start day one; `05` closes last, and its absent
-column can be drafted from binding decisions alone. Every sheet ends in 2–4 criteria checkable
-without judgment — for a fiction sheet that means a term count, a stated absence, or an observable
-state of the place, never a number that belongs to a contract key.
+One sheet per genuine decision, and nothing else. There are five. **Two exist because the source
+contradicts itself** and a writer has to pick: `02` resolves one ruin or many, which way *deeper*
+points, and why the place cannot be exhausted (one decision, not three — any answer to the first
+answers the other two, which is why the previous `scale-and-unit` and `endlessness` sheets collapse
+into one); `04` resolves a restored area surviving as a visitable place against a stated default to
+collapse it to a flag. **Two exist because the brief is silent on something a different downstream
+owner needs in a different form:** `01` is what the ruin actually is, which Art must dress and which
+the owners of `area` and `collection` have already had to invent unsupported; `03` is the rules of
+the place, which set-completion fiction and Art both depend on. **One is a roster:** `05`, the
+explicit presence and absence list, which is a named half of my ownership (*"what exists here and
+what does not"*) and the one artifact the other five leads and Art can read instead of re-deriving
+the priority-3 gate from process notes. Four sheets from the previous plan are gone on purpose:
+dimensions and density belong to `area`, co-presence is a one-line consequence of `02`, and
+location-plus-era is one act of description rather than two sheets that would each have to reference
+the other. **Dependency:** `01` before `02` before `04`; `03` is independent and can start day one;
+`05` closes last, and its absent column can be drafted from binding decisions alone. Every sheet ends
+in 2–4 criteria checkable without judgment — for a fiction sheet that means a term count, a stated
+absence, or an observable state of the place, never a number that belongs to a contract key.
+**Every sheet also ends in data:** `01` carries `setting`, and `02`–`05` amend one sub-object each.
 
 | # | sheet | must decide |
 |---|---|---|
-| 01 | `the-ruin` | **What this place actually is:** what kind of built thing the ruin is, what landscape and climate hold it, whether anything exists past its edge, and how far back its building and its overgrowing sit. Must stay inside *"vines and moss on ancient stone"* and must not break *"green overgrowth on warm stone is naturally high-contrast"*. **May not** name an area, set, relic or tier; **may not** lay anything out or size anything; **must** state whether the register already on disk (a terrace, a cistern, a vault, a spire, and *"not an open landscape"*) is ratified or contradicted, and if contradicted, raise it as a consequence for the owner of `area` and `collection` rather than renaming. |
-| 02 | `extent` | **One ruin or many**, what an *area* is a piece of, **which way depth points**, and why the place cannot be exhausted while still reading as *made by hands*. Must respect *"Areas, not zones"* and *"Endless via shuffled authored chunks, not generation"* `[both binding]`, must weigh an island-chain answer against the genre's own *"unlock new islands"* boilerplate before taking it, must say why the place continues past the fourth set, and must state the consequence that makes *"everyone occupies one world"* and *"own areas"* both unremarkable. **May not** decide area count, size, density, arrangement, or how many authored layouts exist. |
-| 03 | `physical-law` | **The rules of the place:** whether anything here changes without the player's hand (the fixed-or-cycling hour, sky and weather is the concrete case), and whether anything more than ordinary exists here, stated as a budget a later wave can hold to. Must state its own argument on whether an ambient cycle trips the category's anti-cyclical gate. Must name the consequence for a fictional explanation of set-completion bonuses without deciding what they are. **May not** import an agency with intent (that is the tension the handoff forbids), and **may not** specify lighting values, effects, or ambience assets. |
-| 04 | `permanence-and-passage` | **What clearing leaves behind, and how you go further:** what a cleared area *is* afterwards, holding priority 2's *visitable restored ruins* against `OPEN.md §2`'s collapse-to-a-completion-flag default; and how the place lets a player go deeper with no gate, lock, key or threshold. **May not** decide arrangement, area order, travel UI, or persistence format; **may not** make visiting a requirement; **must** be written so that a later refusal on save-size grounds is a one-line change rather than a rewrite. |
-| 05 | `inventory` | **The two-column roster: what exists in this place and what does not.** The present column decides the questions no other sheet answers — whether anything is alive here besides the players, standing water, sky, wind, roads, remains, machinery — as **classes** only. The absent column states every priority-3 exclusion, plus the tension, hazard, threat and deadline absences, as facts about the world rather than process rules, marking which are inherited from binding decisions and which this sheet decides. **May not** name an asset, an area, a set, a relic, a tier, or a count; **may not** resolve overgrowth-versus-relic rarity; **may not** re-decide anything `01`–`04` decided, only cite it. |
+| 01 | `the-ruin` | **What this place actually is:** what kind of built thing the ruin is, what landscape and climate hold it, whether anything exists past its edge, and how far back its building and its overgrowing sit. Must stay inside *"vines and moss on ancient stone"* and must not break *"green overgrowth on warm stone is naturally high-contrast"*. **May not** name an area, set, relic or tier; **may not** lay anything out or size anything; **must** state whether the register already on disk (a terrace, a cistern, a vault, a spire, and *"not an open landscape"*) is ratified or contradicted, and if contradicted, raise it as a consequence for the owner of `area` and `collection` rather than renaming. **Carries the `setting` key.** |
+| 02 | `extent` | **One ruin or many**, what an *area* is a piece of, **which way depth points**, and why the place cannot be exhausted while still reading as *made by hands*. Must respect *"Areas, not zones"* and *"Endless via shuffled authored chunks, not generation"* `[both binding]`, must weigh an island-chain answer against the genre's own *"unlock new islands"* boilerplate before taking it, must say why the place continues past the fourth set, and must state the consequence that makes *"everyone occupies one world"* and *"own areas"* both unremarkable. **May not** decide area count, size, density, arrangement, or how many authored layouts exist. **Amends `setting.extent`.** |
+| 03 | `physical-law` | **The rules of the place:** whether anything here changes without the player's hand (the fixed-or-cycling hour, sky and weather is the concrete case), and whether anything more than ordinary exists here, stated as a budget a later wave can hold to. Must state its own argument on whether an ambient cycle trips the category's anti-cyclical gate. Must name the consequence for a fictional explanation of set-completion bonuses without deciding what they are. **May not** import an agency with intent (that is the tension the handoff forbids), and **may not** specify lighting values, effects, or ambience assets. **Amends `setting.law`.** |
+| 04 | `permanence-and-passage` | **What clearing leaves behind, and how you go further:** what a cleared area *is* afterwards, holding priority 2's *visitable restored ruins* against `OPEN.md §2`'s collapse-to-a-completion-flag default; and how the place lets a player go deeper with no gate, lock, key or threshold. **May not** decide arrangement, area order, travel UI, or persistence format; **may not** make visiting a requirement; **must** be written so that a later refusal on save-size grounds is a one-line change rather than a rewrite. **Amends `setting.passage`.** |
+| 05 | `inventory` | **The two-column roster: what exists in this place and what does not.** The present column decides the questions no other sheet answers — whether anything is alive here besides the players, standing water, sky, wind, roads, remains, machinery — as **classes** only. The absent column states every priority-3 exclusion, plus the tension, hazard, threat and deadline absences, as facts about the world rather than process rules, marking which are inherited from binding decisions and which this sheet decides. **May not** name an asset, an area, a set, a relic, a tier, or a count; **may not** resolve overgrowth-versus-relic rarity; **may not** re-decide anything `01`–`04` decided, only cite it. **Amends `setting.contents`.** |
 
 ---
 
@@ -202,21 +219,26 @@ cistern, a vault and a spire and handed Art *"a 120-stud terrace to dress, not a
 inside `manifest` blocks that a build reads. If `01` decides a place those names do not belong to,
 the collision is not theoretical and not distant — it is a revision request against two sheets that
 already supply contract keys. `01` should read them before it decides and should say which way it
-went.
+went. **Outcome: ratified, 5 of 5, zero renames.**
 
 **Second: `04 · permanence-and-passage`.** Three owners are already pulling on it before it exists:
 arrangement and area order *[Gameplay — Meta & Content]*, the `areas` screen and any travel
 affordance *[UI/UX]*, and the save-size call that `OPEN.md §2` already defaults to collapsing
 finished areas to a flag *[Tech & Data]*. Any rule that keeps a restored area standing raises a cost
 a later owner has a stated default to refuse; any rule that discards it contradicts priority 2's
-plural. It will get a revision request; it should be cheap to revise.
+plural. It will get a revision request; it should be cheap to revise. **Outcome: it got one. `W5` was
+struck by `depths.unlockRule` and `plots.openings.gatedUntilPreviousBayComplete`, both citing the
+one-line hinge that sheet named in advance. The hinge worked exactly as designed, and the sheet now
+records the strike as data rather than as prose.**
 
 **Third: `03 · physical-law`**, contradicted by set-completion-bonus work if it forbids a
 supernatural explanation those bonuses turn out to need, or by relic and effect work if it permits
 one nobody wants to render.
 
 **Lowest risk: `05 · inventory`**, because most of its absent column is copied from binding
-decisions. Its failure mode is the opposite one: being too short to be worth reading.
+decisions. Its failure mode is the opposite one: being too short to be worth reading. **Outcome:
+the opposite again — it is the most-cited sheet in the domain, and `environment` resolves seven of
+its row ids by hand. That is the argument for it carrying data, which it now does.**
 
 **Category-level check this index expects to be held to:** every term these five sheets coin must
 reach the canonical list held by naming-rules work *[currently: Theme & Narrative — Vocabulary]*,

@@ -1435,12 +1435,17 @@ GameConfig.Response = {
 			"upgradePurchased",
 		},
 		sequenceOrderOwner = "gameplay/core-loop/02-payoff-weights, which fixes reveal -> set completion -> area completion and says NOTHING about upgradePurchased. This array used to lead with upgradePurchased, contradicting beats[].rank (findReveal 1, setComplete 2, areaComplete 3, upgradePurchased 4) -- which is the owner's order with upgradePurchased appended. The array had it prepended, a position no sheet ever owned. Reordered to agree with rank; buy an upgrade while walking into a Find and the two readings produced opposite cue orders 600 ms apart. Found by the beats builder, which implemented rank because the acceptance criteria name it twice, and isolated the choice in one comparator so a reversal is a one-function change.",
-		minOnsetGapSeconds = 0.6,
+		minOnsetGapSeconds = 0.35,
 		minOnsetGapTestRangeSeconds = {
 			0.35,
 			0.9,
 		},
 		minOnsetGapOwner = "gameplay/core-loop/02-payoff-weights, figure set by Balance & Tuning",
+		minOnsetGapWas = 0.6,
+		minOnsetGapIsACopyOf = "pacing.coincidentOnsetSeparationSeconds (gameplay/balance/05-time-to-milestone), which is 0.35. This field is a COPY and must track it. It carried 0.6 while naming Balance & Tuning as the owner of the figure, which is a copy disagreeing with the source it cites by name.",
+		minOnsetGapRuling = "0.35 governs, on two independent grounds. (1) minOnsetGapOwner already says the figure is Balance & Tuning's, and pacing is their key; a key that defers by name and then carries a different number is carrying a stale copy. (2) It is the better number on the merits. game/src/client/Beats.report.md finding 3 measured that at 0.6, areaComplete begins 600 ms after its packet against a 400 ms acknowledgmentBudgetMs — a 50% overrun EVERY TIME an area ends on a Find, which a player notices. At 0.35 that case passes (350 < 400). The two published values were each other's range endpoints (response tested [0.35, 0.9], pacing [0.2, 0.6]), so both were legal under both ranges and the disagreement was purely the point value.",
+		acknowledgmentBudgetsStillBlownAtThisGap = "upgradePurchased's 200 ms and the 300 ms row, whenever either waits behind another onset. This answers the builder's open question in Beats.report.md finding 3 in the direction it assumed: THE GAP WINS. An acknowledgment budget is defined for a lone beat; under coincidence the gap is dominant and a blown budget is not a defect. No value in either range clears all three budgets, so a rule that made the budget dominant would have no legal gap at all.",
+		onsetGapAppliesToTheStream = "gap-always, ratifying what the beats builder implemented under Beats.report.md finding 2. The gap is a property of two consecutive onsets, not only of a queue holding two things. The other reading puts two onsets 0.3 s apart, which a player hears.",
 		loneSequencedBeatDelayed = false,
 		unsequencedBeats = {
 			"patchClear",
