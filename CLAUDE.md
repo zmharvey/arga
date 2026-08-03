@@ -233,10 +233,15 @@ questions nobody would notice the answer to is how a specification becomes a sec
 
 ## Known gaps
 
-1. **No touch or gamepad purchase path.** Keyboard 1/2/3 is the whole surface, and the brief
-   says the audience is mobile-heavy — so most of the target audience cannot spend currency.
-   Closing it needs a `pressable` readout in ui-forge's `hud-overlay` pattern, which is the
-   one-pattern bottleneck, not a spec gap. The largest remaining item.
+1. ~~**No touch or gamepad purchase path.**~~ **Closed, and this entry was stale for a while.**
+   `Input.luau` binds no key at all now: `input.gameBoundInputClasses` is exactly `["pressable"]`
+   and `input.pressable.keyboardAcceleratorRequired` is false, so a key may sit beside a button
+   and may never be the only way to reach one. The `Enum.KeyCode.One/Two/Three` binding is gone
+   — it was the only path to a purchase, and on a mobile-heavy audience a keyboard-only purchase
+   path is a currency nobody can spend. Every verb now arrives on `onActivate(role, index)` from
+   a control already on screen: `Input.luau:316` binds it, `Pressables.luau:446` connects
+   `GuiButton.Activated`, and the engine fires that for a touch tap and a mouse click through
+   **one** code path, which is the point — a second path is a second thing to get wrong.
 2. ~~**Five modules still declare their own `PlayerState`.**~~ **Closed.** Zero rival
    declarations remain. Two modules still write the name — `Progression` and `Modifiers` —
    and both say in place that they are declaring a structural *subset* of `Types.PlayerState`
