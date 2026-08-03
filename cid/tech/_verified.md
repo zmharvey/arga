@@ -748,3 +748,123 @@ coordinator's process admits an erratum outside the round count, **this is errat
 cell, one token, a two-site exemption, zero design content, and it needs no further verification
 pass because there is nothing left to judge. If it does not, the category re-runs on this one cell
 alone.
+
+---
+
+# Round 3 (continued) — the erratum, verified and closed
+
+**Status: PASS. Tech & Data releases.**
+The one cell that held round 3 open is fixed, and I re-ran every claim against the tree rather than
+accepting the report of it.
+
+## The amended N10 pattern passes
+
+I ran the new pattern token by token against the shipped tree. `grep -rn
+"math.random\|Random.new()\|os.time()\|tick()" game/src` returns **two matches and neither is code**:
+
+| hit | what it is |
+|---|---|
+| `game/src/shared/Layout.luau:70` | a comment — *"no math.random, no unseeded Random.new, no os.time and no os.clock"* |
+| `game/src/client/Beats.report.md:104` | a build-report line naming `tick()` in order to say it was not used |
+
+**Zero code matches.** `os.clock` and `table.sort` are both out of the pattern, so the two sites that
+failed round 3 — `Layout.luau:428` and `Beats.luau:505` — no longer match anything, and the seven
+shipped `os.clock()` calls in `Pressables.luau` and `Beats.luau` no longer match either. The
+prose hits are the rule being *described*, which is the healthiest possible failure mode for a grep
+and needs no exemption.
+
+**The exemption is a table with two rows and a new AC3 that counts them**, so a third site fails
+rather than being silently absorbed. That is the part I asked for and the part most easily skipped.
+The reasoning attached to `Layout.luau:428` is now stronger than my own: it *produces* an ordinal
+rather than renumbering one, `patches` is never touched, and **the ordinal is what
+`firstSession.placement.ordering` and `discovery` read — so removing the call is what would move the
+first Find.** The row therefore protects the line rather than merely tolerating it, which inverts the
+hazard I raised. `Beats.luau:505` is correctly separated on a different ground entirely: a
+presentation queue on the drain path, no patch index, nothing persisted or replicated, on the far
+side of the wire from any save data.
+
+**`N10`'s observable has now overshot its own rule twice, and the sheet says so in those words.**
+That is the right thing to have written down. Both overshoots were the same mistake — a token that
+matched a mechanism rather than a consequence — and a rule stated as "deriving X from Y" with a grep
+for Y will keep making it. Recorded for whoever writes the next prohibition set.
+
+## The remaining round-3 items
+
+- **Persistence, both closed.** Citation corrected and marked `RELEASED` with the correct line-3
+  quote; bound 1,880 → **1,680**; area 8 1,200 → **1,120**; `supersedes` 2.94× → **2.625×**; pointer
+  resolved to **`solvency.postTerminalBay.patchCount`** with all four dead or stale spellings kept in
+  `pointersThatDoNotResolve`. `worstCaseChars` is now **19,739 exact**, which I recompute as
+  19,065 + 491 + 48 + 67 + 58 + 10 and which reproduces to the character. The rounding rule was taken
+  and generalised better than I stated it: *"a worst-case bound may only ever be restated upward;
+  19700 rounds toward the thing it bounds and is wrong even with 5261 characters of margin."*
+- **AC3's silent failure is carried into RR-P4** as the fourth change, which is the only route —
+  `architect` owns that pattern. The narrowing makes a merged criterion true for the first time
+  rather than widening one, and that sentence is now in the request rather than only in this file.
+
+## The null rule is enforced, and it vindicated an enumeration done by hand
+
+`validateManifest` (`bridge/schema.mjs:686`) now walks every merged value and names the JSON path of
+any null. **It found exactly the 16 sites Build & Deploy had enumerated by hand** — the same 16 I
+verified in round 1 by grepping the emitted artifact. A hand enumeration and an automated walk
+agreeing exactly is the strongest available evidence that both were complete, and it is worth more
+than either alone. The validator's own comment records that the rule then caught nulls in two Audio
+sheets in the same wave, one of which had a criterion *requiring* the null — so the rule generalised
+beyond the category that wrote it, which is what a good invariant does.
+
+**The three sites that needed judgement rather than substitution are correctly judged.** `"none"` is
+wrong on an upper-bound field, and both `traversal.fall.maxSurvivableFallStuds` and
+`setBonus.axisHeadroom.value.availableToSets` took `"unbounded"` instead — `"none"` would have
+asserted a zero-stud survivable fall and zero axis headroom, in both cases the exact inverse of the
+decision. `depths.areas[0].maxRadiusProduct` took **2.18**, restructured rather than sentinelled,
+because that row has a real threshold that no shipped product reaches: `"none"` would forbid every
+product and `"unbounded"` would license any. Three fields where a sentinel would have lied, each
+caught. That is the distinction `deploy/02` was written to force and it held on first contact.
+
+**One state note, not a defect.** `game/src/shared/GameConfig.luau` still carries all 16 `= nil`
+lines, because emission is a separate `--emit` step and `bridge` COMPLETE was run without it. The
+sheets are fixed and the validator proves it; the artifact is stale. Per `CLAUDE.md` — *"specs are
+build artifacts and are never hand-edited"* — this closes on the next emit and is a build step, not a
+revision. `deploy/02` AC1 and AC4 and `persistence/01` `D6`'s observable all read that artifact, so
+they pass only after it runs. `persistence/01` already discloses the same class of staleness for
+`depths.areas[].patchCount`, which "was not re-emitted and still carries the superseded 640."
+
+## Final check results
+
+| # | check | result |
+|---|---|---|
+| 1 | every persisted value in the save schema | **PASS** |
+| 2 | every remote has a server-side validation rule | **PASS** |
+| 3 | budgets derive from the brief's device floor | **PASS against the narrowed check** — the original is unsatisfiable and the narrowing is recorded in round 1 |
+| 4 | no module boundary crosses an authority boundary | **PASS** — closed by RR-S2's single `clearing.log(record)` entry |
+| 5 | migration path and rollback procedure | **PASS** |
+| 6 | unbounded growth named and capped | **PASS** |
+
+## Handed to the final cross-category pass
+
+1. **The 2.25× ceiling breach.** Wave 4 released at PASS with a post-terminal bay of 1,680 patches;
+   16 × 1,686 = 26,976 against `budgets.serverWorldInstanceCeiling` 12,000. Wave 4 could not see the
+   ceiling because it did not exist when wave 4 ran, and wave 5 cannot move the count because
+   `solvency.postTerminalBay.patchCount` is not its field. Both gates have discharged their part and
+   neither can close it. **This is the largest item leaving this category.**
+2. **The Analytics nulls**, now fixed in every merged key and remaining only in unpromoted proposals,
+   which the walk cannot reach until promotion. The validator will catch each one at the moment its
+   key is promoted, which is the right time and the right mechanism.
+3. **Three unowned pipes**, named identically from three directions: the integrity log transport, the
+   device-measurement instrument, and the save-failure warning sink. Analytics owns *what* to record
+   and explicitly not the pipe. If it also declines the transport, that is one finding, not three.
+4. **Fifteen revision requests against a contract that had already merged COMPLETE 7/7.** A closed
+   contract reopening for a downstream wave is a process question, not a defect in any sheet, but it
+   should be answered once rather than fifteen times.
+
+## What this verdict rests on
+
+Every closure in rounds 2, 3 and this one was re-read against the changed file, and every figure was
+recomputed rather than accepted: the ladder maxima against `GameConfig.luau`, the DataStore budget
+against the published formulas, the quantisation and the tick bound from both directions, the
+invariant bounds against `meta/04`'s own rows, the character count to the character, the two ceiling
+test ranges against the criteria they must not invert, and the N10 pattern token by token against
+the tree. Two of my own findings were withdrawn on re-checking and are recorded as withdrawn: the
+21,465 "arithmetic nit," which was a documented wrapper I had missed, and the round-1 pass on N10's
+own pattern, which I should have run and did not.
+
+**The category releases.**

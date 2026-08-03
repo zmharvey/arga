@@ -52,13 +52,15 @@ costs a second wipe for the same outcome.** That, and not a calendar, is the who
 domain has.
 
 **A finding nobody else is positioned to see: three approved keys share one id space.**
-`release.forbidden`, `storeMigration.nonTriggers` and `performance.forbidden` all number their
-exclusion rows `N1` upward and they mean different things — `N6` is a `MessagingService` ban in
-one and a *permission* to move every price freely in another. **This key is the only sheet in the
-run that cites more than one of them**, so it is the only place the collision is visible. Every
-citation below is written dotted (`release.forbidden.N6`, `storeMigration.nonTriggers.N6`) and
-criterion 2 is namespaced accordingly; an unqualified `N6` satisfies and fails nothing.
-`[cid: decided]`
+`release.forbidden` (ten rows), `storeMigration.nonTriggers` (eight) and `performance.forbidden`
+(thirteen) all number their exclusion rows from one upward, and they mean different things — the
+sixth row is a `MessagingService` ban in the first and a *permission* to move every price freely
+in the second `[research: cid/tech/performance/03-what-optimisation-may-never-do.md]`. **This key
+is the only sheet in the run that cites more than one of them**, so it is the only place the
+collision is visible. `storeMigration.bumpTriggers` is cited here too but numbers `B1` upward, so
+it is a fourth namespace and not a fourth collision. Every citation below is written dotted
+(`release.forbidden.N6`, `storeMigration.nonTriggers.N6`), and criterion 2 is scoped to citations
+rather than to this paragraph. `[cid: decided]`
 
 **Cadence is `none`, and `OPEN.md §2`'s *"ships and settles"* is upheld on the merits, not on its
 tag** — which is `[brief: soft]` ← `[I assumed — batched]` at **0 interview questions**
@@ -96,7 +98,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
 | G1 | raise `depths.areaCount` past 8, or add content to the post-terminal bay | R-3; `endgame` — unbounded already, buries nothing |
 | G2 | add, rename or remove a `collection.sets[].relics` name | R-3; `storeMigration.bumpTriggers.B4` |
 | G3 | add, remove, rename or retype a persisted field | `storeMigration.bumpTriggers.B3`; `stateShape` — seven fields, one writer each |
-| G4 | add a product, a price tier or a second SKU | **G7** — `03-META.md`'s three priority lists contain neither a store nor a pass |
+| G4 | add a product, a price tier or a second SKU | the category's gap G7 — `03-META.md`'s three priority lists contain neither a store nor a pass |
 | G5 | add an instance to a bay | `cid/art/_verified.md` — Environment has **0 spare** at the merged ceiling; `chunkDressing.variation.variantsDressedDifferently: 0` means a 9th chunk reuses its family signature and costs 0 assets |
 | G6 | introduce a player-facing string | `vocabulary` binds every such string; `environment/04` F6 forbids a numeral, sign, marker or banner on a chunk |
 | G7 | carry a window, countdown, expiry, or a gate on content | `02-GAMEPLAY.md` *"zero tension is deliberate"*; `03-META.md` *"never content access"* |
@@ -134,17 +136,25 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
     "neverReaches": "GameConfig",
     "playerFacingStrings": 0,
     "idNamespaces": {
-      "finding": "release.forbidden, storeMigration.nonTriggers and performance.forbidden all number their rows N1 upward and mean different things. release.forbidden.N6 bans MessagingService fan-out; storeMigration.nonTriggers.N6 permits every price to move freely. This key is the only sheet in the run that cites more than one of them.",
-      "rule": "every citation of an N-numbered row in this key is written dotted, as key.list.Nn. An unqualified Nn is not a citation and satisfies no check.",
-      "namespacesCitedHere": ["release.forbidden", "storeMigration.nonTriggers", "storeMigration.bumpTriggers", "performance.forbidden"],
+      "finding": "three approved keys number their exclusion rows from one upward and mean different things. release.forbidden.N6 bans MessagingService fan-out; storeMigration.nonTriggers.N6 is 'products[] and every price', which is a permission. This key is the only sheet in the run that cites more than one of them, so it is the only place the collision is visible.",
+      "collidingNamespaces": [
+        { "path": "release.forbidden", "rowCount": 10, "owner": "cid/tech/deploy/01" },
+        { "path": "storeMigration.nonTriggers", "rowCount": 8, "owner": "cid/tech/persistence/03" },
+        { "path": "performance.forbidden", "rowCount": 13, "owner": "cid/tech/performance/03" }
+      ],
+      "citedHereButNotColliding": [
+        { "path": "storeMigration.bumpTriggers", "rowCount": 7, "idPrefix": "B", "why": "B-numbered, so it shares no id with the three above. A citation namespace, not a colliding one." }
+      ],
+      "rule": "every citation of an exclusion row in this key is written dotted, as key.list.id. An undotted id is not a citation and satisfies no check. This field and the finding above are documentation prose describing the collision rather than citations, which is why criterion 2's scan is scoped to citation-bearing fields.",
+      "citationBearingFields": ["closedBy", "why", "blockedBy", "rule", "migrationTrigger", "migrationTriggerReasoning", "migrationTriggerConfirmationOwed", "precondition", "costAgainst", "alsoCosts", "reversalCost", "whyOneDropAndNotTwo", "shipWindow"],
       "ownIdPrefixes": ["D for drops", "T for forbiddenTriggers", "X for notADrop", "R-F for forbidden", "G for guardrails"],
-      "ownIdsCollideWithNothing": "no id minted by this key is of the form Nn"
+      "ownIdsCollideWithNothing": "no id minted by this key is of the form Nn or Bn"
     },
     "dropUnit": {
       "definition": "a content unit: one or more changes to authored content, or to a content-shaping field in a merged key, shipped together through exactly one release publish",
       "isNotAReleaseVersion": "release owns version. A version is the shipping event and may carry zero drops; a hotfix is a version with no drop. A drop is what a version carries.",
       "minimumSize": "one field, or one authored asset",
-      "batchingRule": "changes that trip the same storeMigration bumpTrigger ship as one drop, because the bump and its cleared discard are paid per publish and not per change",
+      "batchingRule": "changes that trip the same storeMigration bump trigger ship as one drop, because the bump and its cleared discard are paid per publish and not per change",
       "countedBy": "roadmap.dropCount"
     },
     "dropCount": 1,
@@ -182,8 +192,8 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
         "releaseGatesNotApplicable": ["gate 3, networking re-resolution", "gate 4, create the pass", "gate 5, write the id"],
         "releaseGatesNotApplicableReason": "D1 needs no new product, so the six-gate provisioning sequence collapses to three",
         "migrationTrigger": "storeMigration.bumpTriggers.B1",
-        "migrationTriggerReasoning": "layout.composition draws without replacement from the family seeded by (layoutSeed, areaOrdinal), so growing the family re-draws every existing run; and authoring anchorSource moves the grid. B1 names both the grid and the draw sequence.",
-        "migrationTriggerConfirmationOwed": "cid/tech/persistence/03 holds storeMigration and confirms or denies that anchorSource authoring fires B1. This sheet states the reading and designs nothing.",
+        "migrationTriggerReasoning": "layout.composition draws without replacement from the family seeded by (layoutSeed, areaOrdinal), so growing the family re-draws every existing run; and authoring anchorSource moves the grid. storeMigration.bumpTriggers.B1 names both the grid and the draw sequence.",
+        "migrationTriggerConfirmationOwed": "cid/tech/persistence/03 holds storeMigration and confirms or denies that anchorSource authoring fires storeMigration.bumpTriggers.B1. This sheet states the reading and designs nothing.",
         "storeBump": "one increment of runtime.dataStoreName, to ArgaRuin_v4 if solvency's revision table has not landed, or v5 if it has",
         "costToPlayers": "cleared and clearedCount are discarded. The player restarts the live area with its ground standing and keeps every Shard, every held level, every revealed row and every Find.",
         "costUpperBound": "one area's patch run: 640 patches at today's depths.areas[8].chunkCount of 16 against layout.families[3].patchesPerChunk of 40, or 1120 if solvency's revision table lands at 28. The depth ladder times that as one lap, 93.5 seconds.",
@@ -197,7 +207,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
         "rideAlong": {
           "with": "storeMigration.openConsequences.W1",
           "what": "solvency's revision table moving depths.areas[].chunkCount to 4/5/7/10/15/18/25/28 and endgame.postTerminalArea to a 42-chunk, 1680-patch bay",
-          "why": "W1 already fires B1 and B2 and already discards cleared. D1 on the same publish costs zero additional wipes; D1 after it costs a second wipe for the same outcome.",
+          "why": "storeMigration.openConsequences.W1 already fires storeMigration.bumpTriggers.B1 and .B2 and already discards cleared. D1 on the same publish costs zero additional wipes; D1 after it costs a second wipe for the same outcome.",
           "consequenceIfMissed": "D1's next free window is w2, which does not exist until area-layout work creates it"
         },
         "guardrail": ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10"],
@@ -223,7 +233,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
         { "id": "T2", "condition": "a week-over-week comparison of any metric", "closedBy": "kpis.cadence is a bounded window that closes; no standing review exists", "readableToday": false, "blockedBy": "zero analytics calls in game/src, and StoredState carries no timestamp, session id or run ordinal" },
         { "id": "T3", "condition": "elapsed calendar time since the last publish", "closedBy": "release.forbidden.N2, and cadence none above", "readableToday": true, "blockedBy": "none, and it is forbidden anyway, which is why it is listed" },
         { "id": "T4", "condition": "a session return rate or short-session re-engagement reading", "closedBy": "the algorithm source names these and this project measures neither; a discovery argument may not re-enter a declined retention decision", "readableToday": false, "blockedBy": "zero analytics calls in game/src" },
-        { "id": "T5", "condition": "a player request, review, comment or community post", "closedBy": "G1 in cid/liveops/_category.md, the brief states no off-Roblox presence anywhere; products F15 closes every in-game intake surface", "readableToday": false, "blockedBy": "no intake channel exists in the brief or in the build; liveops/community rules on intake" },
+        { "id": "T5", "condition": "a player request, review, comment or community post", "closedBy": "the category's gap G1, the brief states no off-Roblox presence anywhere; products F15 closes every in-game intake surface", "readableToday": false, "blockedBy": "no intake channel exists in the brief or in the build; liveops/community rules on intake" },
         { "id": "T6", "condition": "revenue, a purchase count or a pass conversion", "closedBy": "00-CORE.md, 'Revenue. Offered and declined' [brief: binding]", "readableToday": false, "blockedBy": "every gamePassId is unprovisioned at 0 and no purchase has been made" },
         { "id": "T7", "condition": "a competitor or the reference shipping something", "closedBy": "unsourced as a design input, and the reference's own weekly cadence is the counter-evidence in this sheet's Why", "readableToday": true, "blockedBy": "none, and it is forbidden anyway" }
       ]
@@ -265,7 +275,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       {
         "id": "secondSkuOrdering",
         "what": "where a second product would sit in the drop order",
-        "blockedBy": "G7 — 03-META.md's three priority lists contain neither a store nor a pass, so there is no ordering to order it by",
+        "blockedBy": "the category's gap G7 — 03-META.md's three priority lists contain neither a store nor a pass, so there is no ordering to order it by",
         "needsRuling": "the developer, as a scope-ordering escalation. Inventing an ordering would be inventing the priority list the brief never interviewed."
       }
     ],
@@ -289,7 +299,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       { "id": "G1", "rule": "no drop raises depths.areaCount past 8 or adds content to the post-terminal bay", "closedBy": "R-3; endgame" },
       { "id": "G2", "rule": "no drop adds, renames or removes a collection.sets[].relics name", "closedBy": "R-3; storeMigration.bumpTriggers.B4" },
       { "id": "G3", "rule": "no drop adds, removes, renames or retypes a persisted field", "closedBy": "storeMigration.bumpTriggers.B3; stateShape" },
-      { "id": "G4", "rule": "no drop adds a product, a price tier or a second SKU", "closedBy": "G7 — there is no priority ordering to order it by" },
+      { "id": "G4", "rule": "no drop adds a product, a price tier or a second SKU", "closedBy": "the category's gap G7 — there is no priority ordering to order it by" },
       { "id": "G5", "rule": "no drop adds an instance to a bay", "closedBy": "cid/art/_verified.md records 0 spare Environment instances at the merged ceiling; chunkDressing.variation.variantsDressedDifferently 0 means a new chunk variant reuses its family signature and costs 0 assets" },
       { "id": "G6", "rule": "no drop introduces a player-facing string", "closedBy": "vocabulary binds every such string; environment/04 F6 forbids a numeral, sign, marker or banner on a chunk" },
       { "id": "G7", "rule": "no drop carries a window, countdown, expiry or gate on content", "closedBy": "02-GAMEPLAY.md zero tension; 03-META.md never content access" },
@@ -300,19 +310,19 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
     "announcement": {
       "inGame": "none",
       "inGameClosedBy": [
-        "no member of notices.members has a class or trigger that a content drop could fire: setComplete and areaComplete are beats, saveNotLoaded is class system and fires on a failed load. Stated as a predicate over the member list rather than as a member count, so a fourth member does not silently invalidate it.",
+        "no member of notices.members has a class or trigger that a content drop could fire: setComplete and areaComplete are beats, saveNotLoaded is class system and fires on a failed load. Stated as a predicate over the member list rather than as a member count, so a further member does not silently invalidate it.",
         "products F19 — no product is named, shown, priced or referred to anywhere inside the game",
         "release.shutdown.playerFacing is nothing"
       ],
       "consequence": "a drop happens silently, and a player whose area resets is told nothing about why",
-      "external": "not this key's. Discovery and Marketing owns the store page, update notes, icon and thumbnail variants, and the update title-tag stem, which G8 leaves without a name."
+      "external": "not this key's. Discovery and Marketing owns the store page, update notes, icon and thumbnail variants, and the update title-tag stem, which the category's gap G8 leaves without a name."
     },
     "invariantsForSchema": [
       "len(roadmap.drops) == roadmap.dropCount",
       "every drops[].id, declined[].id, blocked[].id and notADrop[].id is absent from endgame.forbidden",
       "roadmap.cadence.value == 'none' implies roadmap.cadence.intervalDays == 0",
       "no value anywhere in roadmap is null or undefined at any depth",
-      "every citation of an N-numbered row in this key is dotted with its owning key and list",
+      "every exclusion-row citation in a field named by idNamespaces.citationBearingFields is dotted with its owning key and list",
       "no field in this key states a count of notices.members"
     ]
   }
@@ -336,22 +346,23 @@ schedule around it, which is why D1 exists at all rather than being declined.
 - **Area-layout work (`layout`).** Two asks, zero fields. **(a)** For D1 to ship after the first
   non-developer save exists, `composition` needs a draw whose first N picks for a given
   `(layoutSeed, areaOrdinal)` do not move when the family grows. I state the requirement and
-  design none of it; if you rule a stable append-only draw a design you would take, B1 stops
-  firing for a library *growth*, D1's window opens permanently, and this sheet's ordering
-  survives unchanged. **(b)** `chunksPerFamily` inside `[8,16]` is yours — I schedule the move
-  and set no number.
+  design none of it; if you rule a stable append-only draw a design you would take,
+  `storeMigration.bumpTriggers.B1` stops firing for a library *growth*, D1's window opens
+  permanently, and this sheet's ordering survives unchanged. **(b)** `chunksPerFamily` inside
+  `[8,16]` is yours — I schedule the move and set no number.
 - **Store-version work (`storeMigration`).** Confirm or deny that authoring `anchorSource` fires
-  **B1**; my reading is that it moves the grid B1 names. `openConsequences` should gain a D1 row
-  beside **W1**, because the two co-ship for free and separately cost two wipes.
+  `bumpTriggers.B1`; my reading is that it moves the grid that row names. `openConsequences`
+  should gain a D1 row beside `W1`, because the two co-ship for free and separately cost two
+  wipes.
 - **Depth-ladder and area-authoring work (`depths`, `endgame`).** The publish that executes
   `solvency`'s revision table is the one D1 rides. If it goes without D1, D1 loses its only free
   window.
-- **Release work (`release`), store-version work and performance-budget work, jointly.** Your
-  three exclusion lists share the `N1…` id space and mean different things. Nothing needs
-  renumbering, but a bare `Nn` is ambiguous across your three keys, and this sheet writes every
-  one of them dotted. Any grep over exclusion ids — in verification, in a build check, or in a
-  later sheet — must namespace them or it will match the wrong list.
-- **Notice-channel work (`notices`).** I request no fourth member, so D1 ships silently. My claim
+- **Release work, store-version work and performance-budget work, jointly.** Your three exclusion
+  lists number from one upward — ten rows, eight rows and thirteen rows — and mean different
+  things. Nothing needs renumbering, but an undotted id is ambiguous across your three keys, and
+  this sheet writes every one of them dotted. Any grep over exclusion ids, in verification, in a
+  build check or in a later sheet, must namespace it or it will match the wrong list.
+- **Notice-channel work (`notices`).** I request no further member, so D1 ships silently. My claim
   is a predicate over `notices.members` — no member has a trigger a drop could fire — not a member
   count, so adding a member does not invalidate it and adding an *announcement* member would,
   deliberately.
@@ -365,10 +376,10 @@ schedule around it, which is why D1 exists at all rather than being declined.
 
 ## Flagged to the developer
 
-Two calls on the brief's silence. **G5 — what re-opens the project:** an applied revision request
-against a named sheet, and nothing else. The live alternatives were a calendar interval (needs an
-instrument that does not exist) and "nothing ever re-opens it" (which makes priority 2 a lie); I
-recommend as written. **The one real choice is D1's window:** ship it inside the
+Two calls on the brief's silence. **The trigger — what re-opens the project:** an applied revision
+request against a named sheet, and nothing else. The live alternatives were a calendar interval
+(needs an instrument that does not exist) and "nothing ever re-opens it" (which makes priority 2 a
+lie); I recommend as written. **The one real choice is D1's window:** ship it inside the
 pre-installed-base window while the wipe is free, or ask `layout` for a stable draw and ship it
 any time, or never ship it and strike *"richer authored chunk variety"* from priority 2. **I
 recommend the first, riding `solvency`'s publish.**
@@ -380,13 +391,15 @@ recommend the first, riding `solvency`'s publish.**
    case-insensitive scan of the serialised key for
    `monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|march|april|june|july|august|september|october|november|december|weekly|biweekly|fortnight|monthly|quarterly|q[1-4]\b|\d{4}-\d{2}-\d{2}`
    returns zero matches.
-2. **Namespaced, because three approved keys share the `N1…` id space.** Every one of the 13
-   names in `endgame.forbidden`, and every id matching `release\.forbidden\.N([1-9]|10)\b`,
-   appears inside `roadmap` **only** within `roadmap.forbidden[]` or `roadmap.guardrails[]`. Ids
-   matching `storeMigration\.(nonTriggers|bumpTriggers)\.` and `performance\.forbidden\.` are
-   outside this criterion's scope and appear legitimately in `notADrop[]`, `declined[]` and
-   `blocked[]`. And no undotted id is cited at all:
-   `grep -oE "(^|[^.[:alnum:]])N([1-9]|10)\b"` over the serialised value returns zero matches.
+2. **Scoped to citations, because three approved keys number their exclusion rows from one
+   upward.** Every one of the 13 names in `endgame.forbidden`, and every id matching
+   `release\.forbidden\.N([1-9]|10)\b`, appears inside `roadmap` **only** within
+   `roadmap.forbidden[]` or `roadmap.guardrails[]`. Ids matching
+   `storeMigration\.(nonTriggers|bumpTriggers)\.` and `performance\.forbidden\.` are outside this
+   criterion's scope and appear legitimately in `notADrop[]`, `declined[]` and `blocked[]`. And
+   over the fields named in `idNamespaces.citationBearingFields`, and those fields only —
+   `idNamespaces.finding` and `idNamespaces.rule` are documentation prose about the collision
+   rather than citations — `grep -oE "(^|[^.[:alnum:]])N([1-9]|1[0-3])\b"` returns zero matches.
 3. `grep -rn "AnalyticsService\|LogService\|FireEvent\|LogCustomEvent" game/src` returns zero
    matches; exactly one trigger in the key (`roadmap.trigger.theOneReadableToday`) has a
    `readMechanism` naming a repository artifact; and every `forbiddenTriggers[]` row whose
@@ -402,19 +415,19 @@ recommend the first, riding `solvency`'s publish.**
 The value of `layout.chunksPerFamily` and the content of `layout.anchorSource`
 (`gameplay/meta/05`, which holds `layout`; I schedule the move and write no number), and whether
 the draw can be made stable under an append-only library — same sheet; the requirement is stated,
-the design is not. Whether authoring `anchorSource` fires **B1** (`tech/persistence/03`, which
-holds `storeMigration`; my reading is stated and is theirs to confirm). Whether the three `N1…`
-exclusion lists are ever renumbered or namespaced at the schema — contract-and-seam work; I state
-the collision and change no other key. Whether the collection grows past 24 (the developer; R-3
-against `meta/04`'s `## Flagged`). Where a second SKU sits in any priority order (the developer;
-**G7**). Whether an event, a season or a code exists (`liveops/events`, `/seasons`, `/codes`,
-each ruling its own key — I forbid them here only as roadmap slots, not as designs). What
-`notices` may say and how many members it has (`ui-ux/feedback/03`, which holds `notices`; I
-assert a predicate over its member list and request no member). Feedback intake, moderation, and
-whether `cid/_playtest.md` is the process (`liveops/community`). Every mechanism of shipping —
-versions, environments, the checklist, the gates, rollback, the restart delay, flags — and
-whether `publishChecklist` `P1`–`P4` is re-executed on a subsequent publish (`tech/deploy/01`,
-which holds `release`; the re-execution question is routed there and unanswered here). How
-anything is announced outside the game, and the `[UPDATE]` title-tag stem (Discovery & Marketing
-— Name and Store Page; **G8** leaves it without a name and I do not fill it). Any tuning value
-inside a drop (Balance).
+the design is not. Whether authoring `anchorSource` fires `storeMigration.bumpTriggers.B1`
+(`tech/persistence/03`, which holds `storeMigration`; my reading is stated and is theirs to
+confirm). Whether the three colliding exclusion lists are ever renumbered or namespaced at the
+schema — contract-and-seam work; I state the collision, name the three row counts, and change no
+other key. Whether the collection grows past 24 (the developer; R-3 against `meta/04`'s
+`## Flagged`). Where a second SKU sits in any priority order (the developer). Whether an event, a
+season or a code exists (`liveops/events`, `/seasons`, `/codes`, each ruling its own key — I
+forbid them here only as roadmap slots, not as designs). What `notices` may say and how many
+members it has (`ui-ux/feedback/03`, which holds `notices`; I assert a predicate over its member
+list and request no member). Feedback intake, moderation, and whether `cid/_playtest.md` is the
+process (`liveops/community`). Every mechanism of shipping — versions, environments, the
+checklist, the gates, rollback, the restart delay, flags — and whether `publishChecklist`
+`P1`–`P4` is re-executed on a subsequent publish (`tech/deploy/01`, which holds `release`; the
+re-execution question is routed there and unanswered here). How anything is announced outside the
+game, and the `[UPDATE]` title-tag stem (Discovery & Marketing — Name and Store Page; I do not
+fill it). Any tuning value inside a drop (Balance).

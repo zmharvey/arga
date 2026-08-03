@@ -39,7 +39,7 @@ built edge grows with the slab instead of vanishing behind the player.
   paving; `9 × (645 + 16)` = **`9 × 661 = 5,949`**; `+ 6` streamed backdrop `+ 11` effects =
   **5,966** parts on screen at the worst case, so `batchingFactorFloor` is `5,966 / 1,000` =
   **5.966**. Style Guide re-derived the same figure and I read theirs rather than carry a second
-  one; **5.990 was round 1's number at the old reservation and is struck.**
+  one; round 1's 5.990 was computed at the old reservation and is struck.
 - **Which shared figure enters which sum, ruled by Style Guide and read here, not re-decided.**
   `sharedMaxStreamedConcurrently` (6) enters the **client and draw-call** sums;
   `sharedPlaceInstances` (20) enters the **server** sum. `clientStreamedInstanceCeiling` is a
@@ -180,7 +180,7 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
         "reversingField": "residency.tiers.liveBay.residentBays, raised to 3",
         "reversalCostPerLane": 34,
         "reversalCostBreakdown": "5 lane-persistent + 8 crossWall + 3 basin + 18 chunkDressing signature = 34, corrected from round 1's 32",
-        "reversalVerdict": "9 * 34 + 6 + 11 = 323 against 186 of headroom; it does not fit. The multiplier depends on which effects figure it is measured against (1.74x at the arbitrated bound of 11, 1.87x at round 1's reserve of 35) and the verdict is invariant."
+        "reversalVerdict": "9 * 34 + 6 + 11 = 323 against 186 of headroom; it does not fit. The multiplier depends on which effects figure it is measured against (1.74x at the arbitrated bound of 11, 1.87x at round 1's reserve) and the verdict is invariant."
       }
     },
     "allowance": {
@@ -196,10 +196,11 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
           "isABoundNotAnEstimate": true,
           "derivation": "vfx/01 budget.clientInstancesAdded 8 clear-host instances + concurrentRevealObjectsPerPlayer 3 reveal Parts",
           "whyABound": "both terms are per-player concurrency ceilings and neither scales with loaded lanes or with runtime.maxPlayers",
-          "supersedes": "round 1's 8 + 27 = 35 worst-case reserve; VFX cut its own need by moving the reveal object client-side"
+          "supersedes": "round 1's 35-instance worst-case reserve; VFX cut its own need by moving the reveal object client-side"
         }
       },
       "spareAgainstClientCeiling": 25,
+      "spareComposition": "24 released by the effects change plus the 1 instance round 1 already had spare",
       "reservationRelease": {
         "released": 24,
         "releasedBecause": "the effects figure fell from a 35 reserve to an 11 bound",
@@ -228,7 +229,7 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
       "at1":  { "drawCallsUsed": 5966, "binds": "drawCalls", "verdict": "void: patches alone are 5805 parts against 1000, so no art budget exists at any size and no legal streaming radius closes it" },
       "batchingFactorFloor": 5.966,
       "batchingFactorFloorDerivation": "(9 * (lanePartFormula(640) + residentInstancesPerLane) + sharedMaxStreamedConcurrently + perClientReservation.effects.bound) / budgets.renderCeilings.drawCalls = (9 * 661 + 6 + 11) / 1000 = 5.966",
-      "supersedes": "round 1's 5.990, which was computed at the superseded 35-instance effects reserve",
+      "supersedes": "round 1's floor, which was computed at the superseded 35-instance effects reserve",
       "agreesWith": "styleGuide, which re-derived the same figure at the arbitrated totals; this key carries no second derivation",
       "leverIfBelowFloor": "depths.areas[].patchCount",
       "notAnOptimisationRequest": true
@@ -266,9 +267,9 @@ is `Anchored`, `Reflectance` 0, `Transparency` 0, `CanTouch` false. Every `mater
 
 - **VFX work (`effects`)** has a **bound of 11**, not a reservation of 35, and it earned the
   difference by moving the reveal object client-side. It should cite
-  `environment.allowance.perClientReservation.effects.bound` and never restate 8 and 27, which are
-  superseded. If a future cue reintroduces a server-replicated reveal object, the bound stops
-  being a bound and this key has to be re-cut.
+  `environment.allowance.perClientReservation.effects.bound` and never restate the superseded pair.
+  If a future cue reintroduces a server-replicated reveal object, the bound stops being a bound and
+  this key has to be re-cut.
 - **Detail-budget work (`style/03`)** owns the canonical shared-field split, which I read rather
   than re-derive, and its floor of **5.966** is the one this key carries. Neither of us holds a
   second derivation; if the totals move, `style/03` re-derives and I follow.
@@ -312,9 +313,10 @@ below are mine, and each reverses with one field.
    `runtime.maxPlayers × (max(depths.areas[].patchCount) + 6 + 16) +
    environment.allowance.sharedPlaceInstances ≤
    budgets.instanceCeilings.serverWorldInstanceCeiling` (10,612 ≤ 12,000).
-3. `environment.budgetAtBatchingFactor.batchingFactorFloor` is **5.966** and equals
-   `styleGuide`'s re-derived floor; the string `5.990` appears nowhere in this domain's five
-   sheets, and neither does `8 + 27`.
+3. `environment.budgetAtBatchingFactor.batchingFactorFloor` is **5.966**, equals `styleGuide`'s
+   re-derived floor, and is the only floor value asserted anywhere in this domain's five sheets;
+   every occurrence of a superseded figure sits inside a `supersedes` field or the sentence that
+   strikes it, and zero occurrences assert one as live.
 4. `environment.allowance.perConsumerPerLane` sums to `residentInstancesPerLane`; every placement
    listed under `residency.tiers.lane` is created once per lane, not once per bay; and a grep for
    `rbxassetid|MaterialVariant|SurfaceAppearance|Decal|Texture|Cobblestone|litter\.leaf` over

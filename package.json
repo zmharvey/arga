@@ -23,7 +23,7 @@
     "feedback": "node ui-forge/src/cli.mjs feedback",
     "forge": "node ui-forge/src/cli.mjs forge",
     "concept:lint": "node concept/src/lint-sheets.mjs",
-    "test": "node --test concept/test/gate.test.mjs ui-forge/test/patterns.test.mjs ui-forge/test/runtime.test.mjs bridge/test/bridge.test.mjs bridge/test/context.test.mjs architect/test/architect.test.mjs && luau game/test/config.spec.luau",
+    "test": "node --test concept/test/gate.test.mjs ui-forge/test/patterns.test.mjs ui-forge/test/runtime.test.mjs bridge/test/bridge.test.mjs bridge/test/refs.test.mjs bridge/test/context.test.mjs architect/test/architect.test.mjs && luau game/test/config.spec.luau",
     "place": "rojo build game/default.project.json -o game/arga.rbxl",
     "bridge": "node bridge/cli.mjs",
     "cid:verify": "node bridge/verify-sheets.mjs",

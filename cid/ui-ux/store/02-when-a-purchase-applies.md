@@ -1,7 +1,8 @@
 # 02 — When a purchase applies
 
 **Domain:** ui-ux/store · **Category:** UI/UX · **Wave:** 5 · **Revised:** UI/UX verification
-round 1, `P1` re-worded so this block stays byte-identical to sheet `01`'s mirror of it
+round 1 — `P1` and `P4` re-worded so this block stays byte-identical to sheet `01`'s mirror of it,
+and `P4`'s path corrected to `input.pressable.rejectionCueOnFailedPrecondition`
 
 ## Decision
 
@@ -16,12 +17,14 @@ persisted nowhere. **A failed ownership read gets the same answer and the same r
 
 **This sheet has no manifest block of its own.** Its rows are the value of
 `offerSurface.pendingPurchase`, supplied inside sheet `01`'s manifest and restated below as an
-`amends` block so the decision and its record sit in one place.
+`amends` block so the decision and its record sit in one place. Sheet `01` publishes the full
+citation list for both sheets as `offerSurface.citations`, with a `resolvesToday` flag per path.
 
 **Silence is forced, not chosen.** `products.F19` forbids a product being referred to on any
 in-game surface `[research: cid/gameplay/monetization/01-the-offer-ladder.md]`; `theme/tone/04`
 `D12` removes every standard way of signalling that a thing has not happened; and
-`input.pressable.rejectionCueOnFailedPrecondition` is `"none"`. Any of the three alone would kill a
+`input.pressable.rejectionCueOnFailedPrecondition` is `"none"`
+`[research: cid/gameplay/mechanics/02-verb-roster.md]`. Any of the three alone would kill a
 "purchase pending" state; together they also kill the softer versions a UI writer reaches for —
 a greyed row, a dimmed value, a small clock. The brief's *"there is no failure state … zero tension
 is deliberate"* `[brief: soft]` (`02-GAMEPLAY.md`) is the same answer from the other end: a waiting
@@ -117,7 +120,7 @@ than argued: the ruling is not mine to reverse. `[cid: decided]` that it is wort
       { "id": "P1", "thing": "A purchase-pending state on any readout, pressable or panel", "closedBy": ["products.F19", "R-4"], "observable": "no readout has a third authored state beyond present and withheld" },
       { "id": "P2", "thing": "A rejoin instruction, in any words", "closedBy": ["products.F19", "theme/tone/01 P1/P2/P6"], "observable": "zero rendered strings match /rejoin|restart|log ?out|come back|try again/i" },
       { "id": "P3", "thing": "A notice, toast, banner or modal when ownership resolves true mid-session", "closedBy": ["theme/tone/03 B4", "response.notice channel"], "observable": "the notice channel carries exactly two members, both completions; an ownership change enqueues nothing" },
-      { "id": "P4", "thing": "A cue distinguishing not-yet-propagated from not-owned", "closedBy": ["theme/tone/04 D12", "input.rejectionCueOnFailedPrecondition: none"], "observable": "the two states are byte-identical on every surface; a diff of the rendered HUD across them is empty" },
+      { "id": "P4", "thing": "A cue distinguishing not-yet-propagated from not-owned", "closedBy": ["theme/tone/04 D12", "input.pressable.rejectionCueOnFailedPrecondition: none"], "observable": "the two states are byte-identical on every surface; a diff of the rendered HUD across them is empty" },
       { "id": "P5", "thing": "A readout that announces itself when the factor lands (flash, pulse, count-up, colour change)", "closedBy": ["firstSession S6/S7", "theme/tone/04 D6", "theme/tone/03 B4"], "observable": "no Tween is created on any element by an owned-map change" },
       { "id": "P6", "thing": "A progress, spinner or waiting affordance for the ownership re-read", "closedBy": ["R-4", "onboarding/03 T6", "theme/tone/04 D12"], "observable": "the re-read creates and mutates no Instance on any client" },
       { "id": "P7", "thing": "An error, warning or retry surface when an ownership read fails", "closedBy": ["products.F19", "02-GAMEPLAY.md no failure state", "theme/tone/04 D12"], "observable": "the failure path in entitlements warns to the server console and touches no client" },
@@ -218,11 +221,11 @@ poll" and drops the re-read that is the entire remedy here.
 
 The re-read interval, its retry shape, its back-off and its rate-limit budget — ownership-resolution
 work behind `products.ownershipCheck`; I state a bound and set no value. Which surfaces may carry an
-offer at all, the deleted `shop` row and the artifact-hygiene rule — sheet `01`, this domain,
-which holds `offerSurface`. What is sold, at what factor and what price — `products`, Monetization.
-Whether an error or system surface exists at all — `notices` (gap G2); I decide only that the
-ownership failure may not appear on it. The withholding mechanism a readout uses — `composition`,
-`ui-ux/hud` `S2`/`S12`. The wire form of the snapshot that carries the applied factor — replication
-work. Whether the tool head expresses effective radius — held-tool work. Whether any of this is
-instrumented and at what pass mark — Analytics. Whether R-4 should be reopened now that its second
-cost is priced — the developer; I record the cost and reverse nothing.
+offer at all, the deleted `shop` row, the artifact-hygiene rule and the published citation list —
+sheet `01`, this domain, which holds `offerSurface`. What is sold, at what factor and what price —
+`products`, Monetization. Whether an error or system surface exists at all — `notices` (gap G2); I
+decide only that the ownership failure may not appear on it. The withholding mechanism a readout
+uses — `composition`, `ui-ux/hud` `S2`/`S12`. The wire form of the snapshot that carries the applied
+factor — replication work. Whether the tool head expresses effective radius — held-tool work.
+Whether any of this is instrumented and at what pass mark — Analytics. Whether R-4 should be
+reopened now that its second cost is priced — the developer; I record the cost and reverse nothing.

@@ -16,6 +16,7 @@ import { mergeSheets } from './merge.mjs';
 import { emitGameConfig } from './emit-config.mjs';
 import { emitBuildOrder } from './emit-buildorder.mjs';
 import { contract } from './schema.mjs';
+import { resolveRefs, sharedPredicateProblems } from './refs.mjs';
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(`--${name}`);
@@ -64,6 +65,26 @@ if (missing.length) {
 if (problems.length) {
   console.log(`\n  ${problems.length} problem(s):`);
   for (const p of problems) console.log(`    ${p}`);
+}
+
+// Citations, reported separately from merge problems and deliberately NOT failing the gate.
+//
+// Every declared reference today lives in a PROPOSED key, and a proposal is never merged — so
+// an unresolvable path there cannot reach a build and is not yet a build defect. It is a defect
+// waiting for promotion, which is exactly when it should start failing.
+//
+// Reported loudly anyway, because this is the one class seven waves could not stop producing:
+// a field path quoted from memory rather than read. Five sheets cited a `collection.total` that
+// has never existed, in three spellings, across three categories; one of them was a runtime
+// condition that would have compared against nil and silently never fired.
+const { problems: refProblems, notes: refNotes, resolved, pending } = resolveRefs(manifest, proposals);
+const spProblems = sharedPredicateProblems(manifest, proposals);
+if (refProblems.length || spProblems.length || refNotes.length) {
+  console.log(`\n  citations — ${resolved} resolve now, ${pending} wait on a proposed key:`);
+  for (const p of [...refProblems, ...spProblems]) console.log(`    x ${p}`);
+  for (const n of refNotes) console.log(`    ! ${n}`);
+  console.log('    Not counted against the gate: every citing key is still a proposal, and a');
+  console.log('    proposal is never merged. These become problems on promotion.');
 }
 
 const ok = problems.length === 0 && missing.length === 0;
