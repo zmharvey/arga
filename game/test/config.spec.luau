@@ -111,5 +111,40 @@ check(total == 24, "24 relics across 4 sets, per 02-GAMEPLAY.md")
 check(GC.RelicsPerArea * GC.AreasPerDepth == 6, "a depth's two areas partition its set of six")
 check(GC.GuaranteedFirstRelic, "the first find is guaranteed, not rolled (onboarding promise)")
 
+print("\n-- the world palette --")
+-- The lane slab shipped as Enum.Material.Slate with no Color at all against a design naming
+-- Limestone at [216, 201, 169], because styleGuide was a proposed key and nothing emitted it.
+-- These check the path Plots.luau now walks: row M1 -> its role -> that role's triple.
+local byId = {}
+for _, row in ipairs(GC.Materials) do byId[row.id] = row end
+check(byId.M1 ~= nil, "styleGuide material row M1 exists — Plots.luau errors without it")
+check(byId.M1.material == "Limestone", "the lane slab is Limestone, not the Slate it shipped as")
+check(byId.M1.role == "stone.cleared", "M1 binds the role whose appliesTo names the lane slab")
+
+local slabRole = GC.ColorRoles[byId.M1.role]
+check(slabRole ~= nil, "M1's role resolves in ColorRoles — a role cited by a row must exist")
+check(slabRole.rgb ~= nil, "the slab's role carries a triple, so the slab gets a Color")
+check(
+    slabRole.rgb[1] == 216 and slabRole.rgb[2] == 201 and slabRole.rgb[3] == 169,
+    "cleared stone is [216, 201, 169], Rec.601 luma 201.84 — above setting/01's 165 floor"
+)
+
+-- Plain data, never a constructor: this file has to run outside the engine, so ColorRoles
+-- carries triples and Materials carries NAMES. Emitting a Color3 here broke that once already.
+check(typeof(slabRole.rgb) == "table", "a role's colour is a triple, not a Color3")
+check(typeof(byId.M1.material) == "string", "a material is a name, not an Enum.Material")
+
+-- sky is lighting's and overgrowth reads tiers[].rgb by field. Both deliberately carry no
+-- triple, and both must say so rather than simply be missing — a nil and an absence read the
+-- same to a consumer, which is the whole point of the sentinel rule in tech/deploy/02.
+for _, name in ipairs({ "sky", "overgrowth" }) do
+    local role = GC.ColorRoles[name]
+    check(role ~= nil, string.format("role %q is present even though it carries no triple", name))
+    check(role.rgb == nil and role.answeredElsewhere == true,
+        string.format("role %q is marked answeredElsewhere, not silently absent", name))
+end
+
+check(GC.RelicTotal == total, "RelicTotal is derived from sets[] and agrees with counting them")
+
 print(string.format("\n%s (%d failure(s))\n", failures == 0 and "PASS" or "FAIL", failures))
 if failures > 0 then error("config checks failed", 0) end

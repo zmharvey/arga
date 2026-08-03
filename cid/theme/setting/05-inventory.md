@@ -19,17 +19,110 @@ Whether anything is alive is `01-the-ruin`'s ruling, so row `A1` reads *no fauna
 or interactive*, and never the broader phrase that sheet forbade me. Who was here is history work's,
 so row `A2` reads *nobody present now*, and never the phrase `lore/01-the-past` forbade me.
 
-**No manifest block: Setting owns no contract key.** This session has no shell tool, so
-`npm run bridge -- --contract` could not be executed; I read `SCHEMA` in `bridge/schema.mjs`
-directly, which is what `contract()` prints from. **Eleven keys** (`area`, `tiers`, `upgrades`,
-`vocabulary`, `currency`, `movement`, `patch`, `collection`, `onboarding`, `modules`, `runtime`),
-owners `gameplay/*` ×7, `tech/architecture` ×2, `art/objects` ×1, `theme/vocabulary` ×1. **None
-holds a roster of what a place contains.** `[research: repo — bridge/schema.mjs:29-311 and :499,
-read this run]`
+**This sheet amends `setting.contents`; `01-the-ruin` carries the key.** The two tables below are
+this domain's most-cited output — `environment` alone cites `P1`, `P2`, `P3`, `P9`, `A6`, `A7` and
+`A14` by id, and had to read this file to do it
+`[research: repo — cid/art/environment/01-world-part-budget.md, read this run]`. So both tables are
+carried as data as well as prose: same ids, same wording, in a form an art or audio brief can resolve
+instead of re-reading.
 
 **This sheet coins zero terms and requests zero renames.** It names no asset, no area, no set, no
 `Find`, no tier and no count of anything; where it must identify a shipped value it quotes the
 value as a citation of somebody else's key.
+
+```json
+{
+  "amends": "setting",
+  "requested_by": "cid/theme/setting/05-inventory.md",
+  "contents": {
+    "presentIsAClosedList": true,
+    "presentCount": 12,
+    "absentCount": 25,
+    "absentDecidedHere": 10,
+    "aClassNotOnTheListDoesNotExist": "adding one is a revision against this sheet, not a dressing choice",
+    "scopeNote": "the absent rows name the excluded thing on purpose. An exclusion list is the check, not a violation of it; no word-pattern criterion in any sheet may be run against the absent[] array itself.",
+    "present": [
+      { "id": "P1", "class": "dressed stone construction: platforms, retaining walls, parapets, paving, kerbs, steps, piers, vaulting", "material": "warm pale limestone, sound and weathered under the green, never rubble", "note": "vertical built stone is present in every part, which is what P5's fourth class needs", "boundBy": ["setting.readability", "lore/01 L5"] },
+      { "id": "P2", "class": "a channel-and-basin network, empty: runs, sluices, sumps, kerb gutters, tanks", "note": "the connective tissue that makes the parts one works, and it is dry", "boundBy": ["setting.extent"] },
+      { "id": "P3", "class": "fixed fittings and hand-cut mechanism, in place and inert: cast and worked metal, fired clay, worked wood, cut gearwork, set into the building", "note": "nothing was ever powered and nothing runs", "boundBy": ["setting.materialRegister.technologyFloor"] },
+      { "id": "P4", "class": "loose worked objects, set down where they were left, and every one of them is a Find", "boundary": "fixed to the building is P3; not fixed is a Find, and collection owns which objects those are", "boundBy": ["lore/01 L2", "[cid: decided] on the and-nothing-else half"] },
+      { "id": "P5", "class": "four classes of clearable overgrowth on and against the stone", "order": "as tiers ships them by height: a creeping surface mat, a fronded plant, a thorned scrambler, a woody climber", "climberHabit": "ground-rooted and leaning against built stone; never pinned flat to a wall, hung from a vault, or spanning a gap", "boundBy": ["tiers", "patch"] },
+      { "id": "P6", "class": "a thin covering layer over paving: plant litter, a shallow root mat, wind-blown leaf", "note": "no soil deep enough to bury anything. Buried here means covered over, and nothing is dug.", "boundBy": ["core-loop/03-reveal-placement", "lore/02 S3"] },
+      { "id": "P7", "class": "wear: stain, patina, softened arrises, worn tread", "note": "identical at every depth; only the quantity of green varies. Present condition only, never attributed to a cause.", "boundBy": ["lore/01 L4", "lore/02 S1"] },
+      { "id": "P8", "class": "open sky above the unroofed parts", "scope": "existence only; the hour, weather as an event and whether any of it changes are setting.law's", "boundBy": ["[cid: decided]"] },
+      { "id": "P9", "class": "broadleaf wood beyond the built edge: canopy and trunk as backdrop, no walkable ground on it", "note": "the only place any modelled motion is permitted", "boundBy": ["setting.land", "setting.extent"] },
+      { "id": "P10", "class": "moving air, unmodelled", "note": "it reaches the player only through the granted off-screen ambience and through no modelled class inside the built edge", "boundBy": ["setting.climate", "setting.life.offScreenAmbientSoundBeyondTheEdge"] },
+      { "id": "P11", "class": "daylight, and it is the only light in the game", "scope": "colour, angle, intensity and whether it changes are not decided here", "boundBy": ["setting.law R1", "lighting"] },
+      { "id": "P12", "class": "other players' bodies", "scope": "cited for roster completeness, decided elsewhere", "boundBy": ["identity/01-player-role", "identity/03-co-present-stranger"] }
+    ],
+    "absent": [
+      { "id": "A1", "fact": "no fauna of any kind, visible or interactive", "provenance": "inherited", "source": "setting.life — which decided the alive question and required this row's exact wording" },
+      { "id": "A2", "fact": "nobody present now", "provenance": "inherited", "source": "lore/01-the-past — which decided who was here and required this row's exact wording" },
+      { "id": "A3", "fact": "no entity class of any kind; nine of them, enumerated once and not restated here", "provenance": "inherited", "source": "identity/04-no-cast-declaration", "boundary": "Identity owns anything holding a relation to the player; this sheet owns inert matter, including a depicted being" },
+      { "id": "A4", "fact": "no depicted person or creature in the place's stone: no statuary, relief figure, effigy, portrait, bust, mask, or name cut into a surface. Ornament is pattern, carving, casting and dressed joint.", "provenance": "cid: decided", "source": "the boundary identity/04 routed here; extends setting.materialRegister.ornamentIsNot" },
+      { "id": "A5", "fact": "no remains and no memorial: no bone, grave, tomb, urn, ash, shrine, altar or marker stone", "provenance": "inherited + extended", "source": "lore/01 L1 word list plus not-spooky; the memorial half is this sheet's, because a marker is architecture and no cast list reaches it" },
+      { "id": "A6", "fact": "no standing water and none running: no pool, puddle, fountain, spring, held tank, or wet surface. A works for holding water, holding none.", "provenance": "cid: decided", "source": "closing at dry the range setting.climate left open; running water was already ruled out there" },
+      { "id": "A7", "fact": "no light source but daylight: no fire, torch, lamp, lantern, candle, brazier, ember, glow, or luminous plant or stone", "provenance": "cid: decided" },
+      { "id": "A8", "fact": "no rubble, debris, fallen masonry, collapse, or root-heaved paving", "provenance": "inherited + extended", "source": "lore/01 L5; the root-damage half is this sheet's" },
+      { "id": "A9", "fact": "no perishable material: no cloth, banner, tapestry, curtain, rope, thatch, leather, paper or scroll", "provenance": "cid: decided" },
+      { "id": "A10", "fact": "no legible writing on any surface of the place: no inscription, sign, notice, posted mark, numeral or code string. Marks on a Find are object work's.", "provenance": "cid: decided", "source": "supported by lore/01 L3 and lore/02 S2, neither of which reaches a wall" },
+      { "id": "A11", "fact": "no operable object: no lever, valve, switch, handle, crank, pull, prompt or button. Nothing in the place responds to anything but a player's proximity clearing overgrowth.", "provenance": "cid: decided", "source": "input: movement only" },
+      { "id": "A12", "fact": "nothing is closed. Nothing locked, sealed, barred, shut, or walled off from the route further in.", "provenance": "cid: decided", "survivesTheW5Strike": "yes, unamended — the condition on passage is the absence of built ground, not an object in a gap (setting.passage.theConditionHasNoObject)" },
+      { "id": "A13", "fact": "no player-made mark. Nothing here can be built, placed, planted, written, painted or decorated by a player. The only change a player makes to this place is clearing it.", "provenance": "cid: decided", "source": "cosmetics-only was offered and declined; lore/01 L5 is exposure, not reconstruction" },
+      { "id": "A14", "fact": "no modelled ambient motion inside the built edge. Nothing sways, drifts, falls, flows, ticks, turns or animates. P9's canopy, beyond the edge, is the exemption.", "provenance": "cid: decided", "boundary": "this rules on modelled motion of matter; whether the place's state changes without the player is setting.law's" },
+      { "id": "A15", "fact": "no instrument in service. Nothing displays a reading, a level, a count, an hour or a bearing.", "provenance": "cid: decided", "source": "the collection's register includes timekeeping and measuring objects, which is the one door a calendar could enter by" },
+      { "id": "A16", "fact": "nothing here can harm a player, and nothing but overgrowth can be changed by one. No fall, drop, deep water, unstable surface, thorn that cuts, heat, cold, or dark you can be lost in.", "provenance": "inherited + extended", "source": "no failure state / zero tension, elevated by do-not-invent-tension; stated as matter here" },
+      { "id": "A17", "fact": "nothing is trending. Nothing running out, spreading, drying, wilting, filling, ripening or falling due.", "provenance": "inherited", "source": "cleared is permanent; nothing regrows, so nothing can accrue while away" },
+      { "id": "A18", "fact": "nothing is being made. No part appears, grows or is added, whether a player is present or absent. All of it was built before anyone arrived.", "provenance": "inherited", "source": "endless via shuffled authored chunks, not generation; setting.extent.shuffleGoverns" },
+      { "id": "A19", "fact": "nothing starts over. No seed, sapling, shoot, new growth, cycle, tide, or young thing anywhere.", "provenance": "inherited", "source": "no rebirth; the seasons reframe declined by name" },
+      { "id": "A20", "fact": "nothing marks a date. No calendar, festoon, seasonal dressing, anniversary decoration, or dial that advances.", "provenance": "inherited + extended", "source": "priority 3 seasons and events, plus the category gate; stated as matter here" },
+      { "id": "A21", "fact": "nothing changes hands here. No counter, scale, stall, market space, or container that accepts a thing from a player.", "provenance": "inherited + extended", "source": "no mechanical interaction; lore/02 S4 has no counterparty" },
+      { "id": "A22", "fact": "the place records nobody's work. No scoreboard, posted list, tally of anyone's clearing, or plaque naming who cleared a part.", "provenance": "inherited + extended", "source": "the category gate's ban on exchange, gifting, rivalry, ranking or comparison between players" },
+      { "id": "A23", "fact": "nothing here is given rather than uncovered. No cache that refills, nothing that appears overnight, no gift, nothing left out for a visit.", "provenance": "inherited + extended", "source": "priority 3 daily rewards; the gate's ban on a presumed daily visit, a streak or a returning benefactor" },
+      { "id": "A24", "fact": "no road, track or way that leaves the works, and nothing built, tended, inhabited, travelled or lit past the edge", "provenance": "inherited", "source": "setting.land.visibleBeyondTheWorkedEdgeExcludes, verbatim in substance" },
+      { "id": "A25", "fact": "no map, plan, signpost, survey mark or boundary stone, and no second building of any kind", "provenance": "inherited", "source": "setting.extent.spatialRelationsExcluded plus secondBuildingOfAnyKind 0" }
+    ],
+    "priorityThreeMap": [
+      { "item": "real procedural generation", "rows": ["A18"], "strength": "brief: binding" },
+      { "item": "rebirth", "rows": ["A19"], "strength": "brief: binding, reframe refused by name" },
+      { "item": "offline accrual", "rows": ["A17", "A23"], "strength": "binding by consequence" },
+      { "item": "codes", "rows": ["A10"], "strength": "the assumed ordering only" },
+      { "item": "daily rewards", "rows": ["A23"], "strength": "the assumed ordering, plus the live-ops default" },
+      { "item": "leaderboards", "rows": ["A22"], "strength": "the assumed ordering, plus the gate" },
+      { "item": "trading", "rows": ["A21"], "strength": "no mechanical interaction — brief: soft" },
+      { "item": "seasons and events", "rows": ["A19", "A20"], "strength": "the ordering, plus the refused seasons reframe" }
+    ],
+    "noRowSpecsAPriorityThreeItem": "the intended output is a place that cannot host one: no surface to post a code on, no container to trade into, nothing that refills overnight, and nothing young enough to begin again",
+    "buildCounts": {
+      "instancesInsideAPlotThatAreNotStoneOvergrowthAFindTheOffPlotBackdropOrAPlayer": 0,
+      "partsUsingEnumMaterialWater": 0,
+      "terrainWater": 0,
+      "pointSpotOrSurfaceLights": 0,
+      "particleEmittersBeamsTrailsFireSmokeOrSparklesAsAmbience": 0,
+      "surfaceGuiTextLabelOrDecalBearingWordsOnAWorldSurface": 0,
+      "proximityPromptsOrClickDetectors": 0,
+      "animatorsAnimationControllersOrLoopingTweensInsideAPlot": 0
+    },
+    "absentClassWordCheck": {
+      "scope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt, and this key's own absent[] array is exempt because it is the list itself.",
+      "tokens": ["torch", "torches", "lamp", "lantern", "candle", "brazier", "bonfire", "banner", "tapestry", "curtain", "rope", "scroll", "parchment", "statue", "statuary", "effigy", "idol", "bust", "rubble", "debris", "puddle", "fountain", "grave", "tomb", "shrine", "altar", "lever", "valve", "switch", "padlock", "signpost", "inscription", "scoreboard"],
+      "collidesWithAShippedValue": false
+    },
+    "playtestUnknowns": [
+      {
+        "question": "whether a place with no water, no fire, no motion and no props reads as calm or as sterile to 8-14s",
+        "startingValue": "the twelve classes exactly as listed",
+        "escalationInOrder": [
+          "more variance in weathering, pattern and litter distribution inside the present classes",
+          "raise the canopy's motion and the off-screen ambience beyond the edge",
+          "a developer ruling adds a thirteenth class"
+        ],
+        "whatWouldSettleIt": "ask a first-session player what they would add to the place. More to clear passes. Something to look at fails."
+      }
+    ]
+  }
+}
+```
 
 ---
 
@@ -74,7 +167,7 @@ part of the row and the rest is mine), or **`[cid: decided]`**.
 | **A9** | **No perishable material:** no cloth, banner, tapestry, curtain, rope, thatch, leather, paper or scroll. | **`[cid: decided]`** |
 | **A10** | **No legible writing on any surface of the place:** no inscription, sign, notice, posted mark, numeral or code string. Marks *on* a `Find` are object work's and are not covered here. | **`[cid: decided]`** — supported by `lore/01-the-past` L3 and `lore/02-the-silences` S2, neither of which reaches a wall |
 | **A11** | **No operable object.** No lever, valve, switch, handle, crank, pull, prompt or button. Nothing in the place responds to anything but a player's proximity clearing overgrowth. | **`[cid: decided]`** — *"Input: movement only. No aiming, clicking, or ability buttons"* `[brief: soft]` `[you accepted: step 6 Q3]` |
-| **A12** | **Nothing is closed.** Nothing locked, sealed, barred, shut, or walled off from the route further in. | **`[cid: decided]`** — aligned with *"No gating mechanism needed"* `[brief: soft]` `[I assumed]` and *"Permanent multipliers only. Never content access"* `[brief: soft]` |
+| **A12** | **Nothing is closed.** Nothing locked, sealed, barred, shut, or walled off from the route further in. **Survives the `W5` strike unamended:** the condition on passage is an absence of built ground, not an object in a gap. | **`[cid: decided]`** — aligned with *"No gating mechanism needed"* `[brief: soft]` `[I assumed]` and *"Permanent multipliers only. Never content access"* `[brief: soft]` |
 | **A13** | **No player-made mark.** Nothing here can be built, placed, planted, written, painted or decorated by a player. The only change a player makes to this place is clearing it. | **`[cid: decided]`** — *"Cosmetics-only was offered and declined as needing a display system first"* `[brief: soft]`; `lore/01-the-past` L5 (exposure, not reconstruction) |
 | **A14** | **No modelled ambient motion inside the built edge.** Nothing sways, drifts, falls, flows, ticks, turns or animates. P9's canopy, beyond the edge, is the exemption. | **`[cid: decided]`** — see `## Why`. **Boundary:** I rule on modelled motion of matter; whether the place's *state* changes without the player is `03-physical-law`'s |
 | **A15** | **No instrument in service.** Nothing displays a reading, a level, a count, an hour or a bearing. | **`[cid: decided]`** — the collection's register includes timekeeping and measuring objects, which is the one door a calendar could enter by |
@@ -123,7 +216,9 @@ creative area real work"* `[brief: binding]` `[you chose: R1 Q3]` (`00-CORE.md`)
 class nobody listed is a class an art pass invents at wave 4, unfunded, and the fiction then has to
 absorb it retroactively. Twelve classes is also enough to dress a walled platform, which is the only
 thing that ever needs dressing: *"a 120-stud terrace to dress, not an open landscape"*
-(`cid/gameplay/meta/01-the-area.md`).
+(`cid/gameplay/meta/01-the-area.md`). **The wave-6 environment brief drew ten part classes and cited
+`P1`, `P2`, `P3` and `P9` for every one**, which is the closed list doing exactly the work it was
+written for `[research: repo — cid/art/environment/01-world-part-budget.md, read this run]`.
 
 **No standing water, and this is the row I expect to be argued with.** Five reasons, in descending
 order of strength. (1) A wet or reflective surface darkens stone, and cleared stone must hold a
@@ -168,11 +263,11 @@ tool as the premium SKU's home.
 **No modelled motion inside the built edge, on an accessibility argument rather than a taste one.**
 Tier is *"a core economic signal"* carried primarily by silhouette, and a swaying silhouette is a
 changing silhouette. Worse, the game's one meaningful visual event is a patch ceasing to exist on
-contact, and ambient motion on 140 non-colliding patches per plot across an assumed 12 to 20 plots is
-motion competing with the only motion that means anything. The canopy beyond the built edge is
-exempt because it carries no tier signal, is never cleared, and is the backdrop `01-the-ruin` and
-`02-extent` already placed there. **This is not a ruling on whether the place changes without the
-player**, which is `03-physical-law`'s question; it is a ruling on what matter is here.
+contact, and ambient motion on every standing patch across a dozen plots is motion competing with the
+only motion that means anything. The canopy beyond the built edge is exempt because it carries no
+tier signal, is never cleared, and is the backdrop `01-the-ruin` and `02-extent` already placed there.
+**This is not a ruling on whether the place changes without the player**, which is
+`03-physical-law`'s question; it is a ruling on what matter is here.
 
 **The climber, which is the one thing the shipped tier names ask of this roster.** Of the four names
 in `tiers`, exactly one denotes a climbing habit, and a climber needs something to have climbed. P1
@@ -211,21 +306,23 @@ to the place. *"More to clear"* passes. *"Something to look at"* fails.
 
 ## Consequences for other work
 
-- **Place-rules work** *[Setting — `03-physical-law`, this domain, not yet written]*: four
+- **Place-rules work** *[Setting — `03-physical-law`, this domain, ruled]*: four
   inheritances and one boundary. **(a)** `01-the-ruin`'s water range is now closed at dry, so your
   law has no still rainwater to account for. **(b)** No light exists but daylight, so an hour ruling
   is a ruling about daylight only. **(c)** No matter inside the built edge is modelled in motion, so
   a cycling sky may not be delivered by moving anything on the ground. **(d)** If you depict rain,
   it may not leave stone wet, because the luma floor is what a stated accessibility requirement
-  rests on. **The boundary:** I rule what matter is here, you rule whether its state changes and
-  whether anything more than ordinary exists. **You may not license a class this sheet lists absent
-  without revising against this sheet**, and the supernatural budget is yours untouched, including
-  `lore/02-the-silences` S4's request that you not spend it on the currency.
-- **Cleared-area and passage work** *[Setting — `04-permanence-and-passage`, this domain, not yet
-  written]*: A11 and A12 remove every affordance you were told not to use anyway. Nothing here is
+  rests on — and you closed it at never depicted, so the conditional never fires. **The boundary:**
+  I rule what matter is here, you rule whether its state changes and whether anything more than
+  ordinary exists. **You may not license a class this sheet lists absent without revising against
+  this sheet**, and the supernatural budget is yours untouched.
+- **Cleared-area and passage work** *[Setting — `04-permanence-and-passage`, this domain, ruled]*:
+  A11 and A12 remove every affordance you were told not to use anyway. Nothing here is
   closed and nothing is operable, so passage cannot be a door that opens, a lever, a threshold that
   unseals, or a key that turns; an opening in construction that was always open costs nothing and
-  breaks nothing. A13 also means a restored part cannot be made *visitable* by letting anyone
+  breaks nothing. **The `W5` strike does not reopen either row**, because the condition it introduces
+  is an absence of built ground rather than an object in a gap — 0 instances, 0 prompts, 0 barriers.
+  A13 also means a restored part cannot be made *visitable* by letting anyone
   decorate or furnish it, so priority 2's plural survives as *cleared*, not *dressed*.
 - **Environment art** *[Art & Visuals — Environment, wave 4+]*: **the present column is the whole
   dressing list and it is closed.** Nothing outside P1 to P11 appears inside the built edge.
@@ -233,7 +330,7 @@ to the place. *"More to clear"* passes. *"Something to look at"* fails.
   cloth, rope, torches and lamps, water of any kind, wet stone, statuary and relief figures, cut
   lettering, and any swaying or drifting element. The one motion budget you have is P9's canopy,
   beyond the edge. Variance goes to weathering, pattern, litter and green quantity, which is where
-  `02-extent` already sent it.
+  `02-extent` already sent it. **Cite `setting.contents.present[].id`, not this prose.**
 - **Object art** *[Art & Visuals — Objects, wave 4+]*: the fixed-or-loose rule is yours to hold. A
   fitting modelled into the building is P3 and must read as fixed; anything loose must be a `Find`.
   Marks and figures *on* a `Find` are yours and are governed by `lore/02-the-silences` S2, not by
@@ -275,9 +372,10 @@ to the place. *"More to clear"* passes. *"Something to look at"* fails.
   required and not the phrase you forbade; A8 keeps the stone sound and adds no catastrophe, no
   evacuation, and no layer of debris to read a chronology off.
 - **Naming work** *[Vocabulary, this wave, last writer]*: **nothing owed. This sheet coins zero
-  terms.** Offered, not imposed: the tokens in criterion 3 are ready for `vocabulary.bannedWords`
-  if you want them machine-checked. I checked them against the shipped strings first, and none
-  collides with a `Find` name, a tier name, an upgrade label, the area label or the currency.
+  terms.** Offered, not imposed: `setting.contents.absentClassWordCheck.tokens` is ready for
+  `vocabulary.bannedWords` if you want them machine-checked. I checked them against the shipped
+  strings first, and none collides with a `Find` name, a tier name, an upgrade label, the area label
+  or the currency.
 - **Fantasy work** *[Fantasy, this wave]*: nothing here depends on your occupancy search. This roster
   is material rather than setting identity, so it survives intact even if the search returns a
   shipping game built on a terraced stone works.
@@ -293,7 +391,7 @@ to the place. *"More to clear"* passes. *"Something to look at"* fails.
    from the set {`inherited`, `inherited + extended`, `[cid: decided]`} together with a named source
    file or a quoted brief line; **10** rows are marked `[cid: decided]`. The priority-3 mapping table
    has **8** rows, one per item in `03-META.md`'s priority-3 list, and every row names at least one
-   `A`-number.
+   `A`-number. `setting.contents.present[]` and `.absent[]` carry the same ids and the same counts.
 2. **Nothing-outside-the-list, checked against the build.** Inside a plot's bounds, the count of
    instances that are not stone construction, an overgrowth patch, a `Find`, the off-plot canopy
    backdrop, or a player character is **0**. Specifically: **0** parts using
@@ -305,29 +403,29 @@ to the place. *"More to clear"* passes. *"Something to look at"* fails.
 3. **Absent-class word check.** Across every `manifest` block and every `artPrompt` under `cid/`, the
    whole-word case-insensitive pattern
    `torch|torches|lamp|lantern|candle|brazier|bonfire|banner|tapestry|curtain|rope|scroll|parchment|statue|statuary|effigy|idol|bust|rubble|debris|puddle|fountain|grave|tomb|shrine|altar|lever|valve|switch|padlock|signpost|inscription|scoreboard`
-   returns **0 hits**. Prose in these sheets is exempt; the check is against contract values and art
-   prompts only. Verified 0 today: every hit under `cid/` is prose or another sheet's own forbidden
-   word list, and none is inside a `manifest` block.
+   returns **0 hits**. Prose in these sheets is exempt, and so are the declared exclusion lists
+   themselves — `setting.contents.absent[]` and `.absentClassWordCheck.tokens` are the check, not a
+   violation of it. The check is against contract values and art prompts only.
 4. **Two-sheet agreement.** **0** of the 25 absent rows duplicates any of the 9 rows in
    `cid/theme/identity/04-no-cast-declaration.md` (that table is entity classes, this one is inert
    matter), and the absent table contains **0** occurrences of the two broader phrases `01-the-ruin`
-   and `lore/01-the-past` each forbade this sheet, carrying instead `no fauna of any kind, visible or
-   interactive` (`A1`) and `nobody present now` (`A2`) as those sheets required.
+   and `lore/01-the-past` each forbade this sheet, carrying instead `no fauna of any kind, visible
+   or interactive` (`A1`) and `nobody present now` (`A2`) as those sheets required.
 
 ## Not decided here
 
 The hour, the sky's state, weather as a depicted event, and whether anything more than ordinary
-exists here (`03-physical-law`, this domain). What a cleared part becomes and how a player goes
-further in (`04-permanence-and-passage`, this domain). Whether anything is alive
-(`01-the-ruin`, cited at A1 and not remade). Scale, direction, and the five absences at A25
-(`02-extent`, cited). Whether rarity lives in the overgrowth, in the `Find`, or in both (Systems,
-wave 2; Meta & Content, wave 3, per `OPEN.md §5` assumption 1) — this sheet asserts no correlation
-either way. Every model, colour, material asset, lighting value, effect and sound inside the twelve
-classes (Art & Visuals; Audio). Area count, size, density, arrangement, depth theming and how many
-authored layouts exist (`gameplay/meta`, wave 3). What a stranger may *do* (Social, wave 2). The
-four tier names, the 24 `Find` names, the four set labels and the area label, all of which travel
-inside keys other domains own. Whether the criterion-3 tokens join `vocabulary.bannedWords`
-(Vocabulary).
+exists here (`03-physical-law`, which amends `setting.law`). What a cleared part becomes and how a
+player goes further in (`04-permanence-and-passage`, which amends `setting.passage`). Whether
+anything is alive (`01-the-ruin`, which carries the `setting` key; cited at A1 and not remade).
+Scale, direction, and the five absences at A25 (`02-extent`, which amends `setting.extent`). Whether
+rarity lives in the overgrowth, in the `Find`, or in both (Systems, wave 2; Meta & Content, wave 3,
+per `OPEN.md §5` assumption 1) — this sheet asserts no correlation either way. Every model, colour,
+material asset, lighting value, effect and sound inside the twelve classes (Art & Visuals; Audio).
+Area count, size, density, arrangement, depth theming and how many authored layouts exist
+(`gameplay/meta`, wave 3). What a stranger may *do* (Social, wave 2). The four tier names, the 24
+`Find` names, the four set labels and the area label, all of which travel inside keys other domains
+own. Whether the criterion-3 tokens join `vocabulary.bannedWords` (Vocabulary).
 
 ## Flagged to the developer
 
@@ -352,5 +450,4 @@ attached, and the two escalations in the playtest range (more variance inside th
 beyond the edge) both cost less than a thirteenth class would. If it reads sterile, spend those two
 first; a thirteenth class should need your signature.
 
-No URL was fetched in this run. Every `[research: repo — ...]` above cites a file read this run, and
-`npm run bridge -- --contract` could not be executed because this session has no shell tool.
+No URL was fetched in this run. Every `[research: repo — ...]` above cites a file read in this run.
