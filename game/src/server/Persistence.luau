@@ -39,6 +39,7 @@
 
 local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("UIForge")
 -- The two value modules are cast `:: any` at the require, which is this repo's convention
@@ -445,12 +446,29 @@ end
 	than about the write, and it is here because `save` is the only place that can tell the
 	difference between a real empty state and one that is empty because the store was down.
 
+	NO WRITE PATH RUNS IN STUDIO, AND THE GUARD IS HERE BECAUSE THIS IS THE ONLY PLACE ALL
+	THREE CALL SITES PASS THROUGH. `runtime.dataStoreName` is the live store and a play-test's
+	data in it is indistinguishable from a player's. `onShutdown` guarded itself and the
+	periodic loop and `onLeave` did not, so a Studio session past one save interval wrote the
+	live store — the guard existed and the two paths that needed it most went around it. Three
+	tests at three call sites is three places for the fourth to be forgotten.
+
+	Reads stay permitted, so a developer can play-test against real data.
+
+	Returns `(false, "studio")` rather than a bare false: `server-main` cannot otherwise tell a
+	suppressed write from a failed one, and they mean opposite things — one is the guard doing
+	its job, the other is a defect. Callers that ignore the second return still compile.
+
 	Yields. Idempotent: saving twice with no change between is not an error. A failure warns
 	and returns false rather than throwing; the periodic save retries by existing.
 ]]
-function Persistence.save(player: Player, state: PlayerState): boolean
+function Persistence.save(player: Player, state: PlayerState): (boolean, string?)
+	if RunService:IsStudio() then
+		return false, "studio"
+	end
+
 	if blockedSaves[player] then
-		return false
+		return false, "blocked"
 	end
 
 	-- Built as a detached copy before the write, because the write yields and clearing
@@ -467,7 +485,7 @@ function Persistence.save(player: Player, state: PlayerState): boolean
 
 	local store = getStore()
 	if store == nil then
-		return false
+		return false, "noStore"
 	end
 
 	local opened: DataStore = store
@@ -476,10 +494,12 @@ function Persistence.save(player: Player, state: PlayerState): boolean
 	end)
 	if not ok then
 		warn(string.format("%s save failed for %s: %s", LOG_PREFIX, describe(player), tostring(err)))
-		return false
+		return false, "writeFailed"
 	end
 
-	return true
+	-- Explicit, not bare `return true`: the signature is a two-value tuple and a strict checker
+	-- says so. "Succeeded, and there is no reason to report" is also the more honest reading.
+	return true, nil
 end
 
 return Persistence

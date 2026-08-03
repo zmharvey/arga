@@ -25,7 +25,7 @@
 	            was — WalkSpeed, the tool head, UpgradeApplied, StateChanged.
 	  onSave    every runtime.saveIntervalSeconds, every live state.
 	  onLeave   lift out of the collection FIRST, save, destroy the lane, drop the pose.
-	  onShutdown  nothing in Studio; every live state otherwise.
+	  onShutdown  every live state. The Studio guard is inside persistence.save, not here.
 
 	FOUR THINGS HERE ARE STRUCTURAL AND EACH ONE WAS A DEFECT SOMEWHERE:
 
@@ -60,7 +60,6 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Shared = ReplicatedStorage:WaitForChild("UIForge")
 
@@ -500,19 +499,18 @@ local function startSaveLoop()
 end
 
 --[[
-	wiring.onShutdown. A Studio stop writes nothing: runtime.dataStoreName is the live
-	store and test data in it is indistinguishable from a player's.
+	wiring.onShutdown. A Studio stop writes nothing — but the test for that is no longer here.
+	It lives inside `Persistence.save`, which is the only place all three write paths pass
+	through. This function used to carry the repo's ONLY `IsStudio()` call, so the periodic
+	loop and `onLeave` went around it and a Studio session past one save interval wrote the
+	live store. The guard existed and the two paths that needed it most did not have it.
 
-	Otherwise every state still in the collection is saved and all of them are waited for.
+	Every state still in the collection is saved and all of them are waited for.
 	Saved in parallel rather than in a sequential loop: BindToClose has a bounded budget
 	and sixteen sequential DataStore writes can exceed it, which would lose the last of
 	them rather than the last second of one.
 ]]
 local function onShutdown()
-	if RunService:IsStudio() then
-		return
-	end
-
 	local pending = 0
 	for _, state in pairs(states) do
 		local player = state.player

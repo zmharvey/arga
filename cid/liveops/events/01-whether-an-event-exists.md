@@ -1,6 +1,6 @@
 # 01 — Whether an event exists
 
-**Domain:** liveops/events · **Category:** Live Ops · **Wave:** 7
+**Domain:** liveops/events · **Category:** Live Ops · **Wave:** 7 · **Revision round 3**
 
 ## Decision
 
@@ -130,7 +130,7 @@ So the cheapest genuine event is a new product behind `release.provisioning`'s s
 blocked on an unanswered Networking question, announced on a surface that does not exist, and
 measured by nothing.
 
-### Two rounds of one defect class, and the sweep that should end it
+### Three rounds of one defect class, and the sweep that should end it
 
 Round 1 corrected a **stale count** (`notices` had grown to three); round 2 a **phantom field**
 (`collection.total` never existed; the form is `sum(len(collection.sets[i].relics))`). Both are the
@@ -143,6 +143,21 @@ top-level — it is `offerSurface.artifactHygiene`. **And it falsified one of my
 `depths.areas[]` ordinal 1 carries `unlock: "none"`, being the spawn area, so *"every unlock is
 `previousAreaComplete`"* was false. The gate ruling is unchanged; the predicate now admits both
 legal values.
+
+**Round 3 is a ruling rather than a new defect of mine, and it closes the phantom permanently.** The
+orchestrator ruled across all five sites in three categories that **every one moves to
+`sum(len(collection.sets[i].relics))` and `collection` does not gain a derived `total`** — a derived
+total duplicates data already present and can therefore disagree with it, and
+`relicsPerArea × areasPerDepth` is not guaranteed to equal what `sets[]` holds. Verified this run:
+`bridge/schema.mjs:208-217` gives `collection` five shape fields — `className`, `classPlural`,
+`relicsPerArea`, `areasPerDepth`, `sets` — and no total `[research: bridge/schema.mjs]`. My round-2
+form is already the ruled form, so **nothing in my ruling moves**; what round 3 adds is that no
+later sheet may ask for the field back, and that this domain's `_lead.md` observables table, which
+still carried `collection.total == 24`, now carries the ruled form. **Round 3 also found my own
+criterion 4 false as written** — it asserted the three phantom strings appeared 0 times outside
+`correctedAtRound2`, while `citedPaths[].replacedPhantom`, `citedPaths[].replacedGuess` and
+`forbidden[EV4].observable` all name them in order to forbid them. The criterion below now counts
+those occurrences exactly instead of denying them.
 
 ```manifest
 {
@@ -197,10 +212,13 @@ legal values.
         "sheetsThatWentStaleTogether": 3
       },
       "correctedAtRound2": [
-        { "asWritten": "collection.total: 24", "sites": 2, "problem": "phantom field; collection holds className, classPlural, relicsPerArea, areasPerDepth and sets, and no total", "nowCitedAs": "sum(len(collection.sets[i].relics)) equals 24 over four sets of six", "rulingAffected": false, "foundBy": "verification, one of five sites in three categories" },
+        { "asWritten": "collection.total: 24", "sites": 2, "problem": "phantom field; collection holds className, classPlural, relicsPerArea, areasPerDepth and sets, and no total", "nowCitedAs": "sum(len(collection.sets[i].relics)) equals 24 over four sets of six", "rulingAffected": false, "foundBy": "verification, one of five sites in three categories", "orchestratorRulingAtRound3": "every site in every category moves to sum(len(collection.sets[i].relics)); collection does not gain a derived total field", "rulingRationale": "a derived total duplicates data already present and can therefore disagree with it, and relicsPerArea times areasPerDepth is not guaranteed to equal what sets[] holds", "verifiedAgainst": "bridge/schema.mjs lines 208 to 217, whose collection shape is className, classPlural, relicsPerArea, areasPerDepth and sets" },
         { "asWritten": "social.chat window, bubble and voice all false", "sites": 2, "problem": "no window or bubble field exists on social.chat", "nowCitedAs": "social.chat.chatWindowEnabled, social.chat.bubbleChatEnabled, social.chat.text and social.chat.voice are all false", "rulingAffected": false, "foundBy": "this sheet's own sweep" },
         { "asWritten": "artifactHygiene.mustNotBePresent", "sites": 3, "problem": "not a top-level key; it sits inside offerSurface", "nowCitedAs": "offerSurface.artifactHygiene.mustNotBePresent", "rulingAffected": false, "foundBy": "this sheet's own sweep" },
         { "asWritten": "every unlock value across depths and endgame.postTerminalArea is previousAreaComplete", "sites": 2, "problem": "false: depths.areas[] ordinal 1 carries unlock none, being the spawn area", "nowCitedAs": "count of areas whose unlock is neither none nor previousAreaComplete: 0", "rulingAffected": false, "criterionRewritten": true, "foundBy": "this sheet's own sweep" }
+      ],
+      "correctedAtRound3": [
+        { "asWritten": "criterion 4: the three phantom strings appear 0 times outside citedByFieldNotByTotal.correctedAtRound2", "problem": "false against this sheet's own manifest: citedPaths[].replacedPhantom, citedPaths[].replacedGuess and forbidden[EV4].observable each name a phantom in order to forbid it", "nowCitedAs": "an exact occurrence count per phantom string inside the manifest block, with each site named, plus the test that no citedPaths[].path is one of the three", "rulingAffected": false, "foundBy": "this sheet, applying the round-3 collection ruling" }
       ]
     },
     "citedPaths": [
@@ -305,6 +323,14 @@ legal values.
         "rulingAffected": false,
         "whyRulingSurvives": "shutdown is still silent, because notices.forbiddenAdditions closes any string a shutdown would need, not because the roster is beats-only",
         "repairedHere": false
+      },
+      {
+        "id": "F-E3",
+        "to": "the cross-category pass that issued the round-3 collection ruling, and to every domain lead index in Live Ops",
+        "finding": "the leaf sheets in this category were corrected for the notices member count at round 1, but three lead indexes were not: cid/liveops/events/_lead.md lines 48 and 87, cid/liveops/roadmap/_lead.md line 69 and cid/liveops/seasons/_lead.md line 147 still read notices has exactly two members, both beats, and cid/liveops/_category.md carries it at lines 42, 281 and 344. Verified this run against ui-ux/feedback/01 lines 237 and 253 (setComplete and areaComplete, class beat) and ui-ux/feedback/03 lines 138 and 148 to 149 (saveNotLoaded, class system, via amends notices). The correct statement is two beat members and one system member",
+        "rulingAffected": false,
+        "whyRulingSurvives": "every leaf-sheet citation is already a predicate over notices.members[] rather than a count, so no ruling in this category depends on the number",
+        "repairedHere": "only cid/liveops/events/_lead.md's collection.total observable, which was in scope; the notices sites in lead and category files were left for their owners"
       }
     ],
     "invariants": [
@@ -313,7 +339,8 @@ legal values.
       "placeSideEventCount is 0 and dashboardEntriesAreNotThisKey is true; a dashboard entry existing does not falsify eventCount",
       "this key adds zero faucets, zero sinks, zero conversions, zero products, zero gates and zero player-facing strings",
       "every forbidden row carries a ruling tracing to an approved sheet or to this sheet, and an observable that is a count",
-      "every cross-key citation in this sheet appears in citedPaths with resolves true; no citation is a member count of another key's roster and no citation names a field its owning key does not hold"
+      "every cross-key citation in this sheet appears in citedPaths with resolves true; no citation is a member count of another key's roster and no citation names a field its owning key does not hold",
+      "no citedPaths[].path is collection.total, social.chat.window or a bare top-level artifactHygiene; those three strings appear in this key only inside correctedAtRound2, citedPaths[].replacedPhantom, citedPaths[].replacedGuess and forbidden[EV4].observable, and only in order to forbid them"
     ]
   }
 }
@@ -330,7 +357,8 @@ legal values.
 | **Release work** *[Tech & Data — Deploy, `release`]* | Finding `F-E2`: `release.shutdown.playerFacing`'s own value asserts *"no notice channel may carry a non-beat"*, which `saveNotLoaded` falsified. Your ruling survives on `notices.forbiddenAdditions`, not on the roster's shape; the sentence inside the value is what needs the edit. |
 | **Screen-inventory and UI-emission work** *[UI/UX — Store, Screens]* | Finding `F-E1`, now cited at its real path `offerSurface.artifactHygiene.mustNotBePresent`. Your whitelist survives; its `instanceToday` would be stronger if it named the event banner and the countdown, and the fix is the two generator inputs. |
 | **Anyone writing runtime code** *[Tech & Data, Mechanics, Meta & Content]* | `EV10` is new and binds you. `os.clock` is permitted because it is monotonic; `os.time`, `os.date` and `DateTime` are not, and the ban is now a content rule as well as `Layout.luau`'s determinism rule. |
-| **Contract-and-seam work** | `events` needs a shape in `bridge/schema.mjs` with `eventCount == len(events)`. `citedPaths` is published as data so a resolver can check all 22 references mechanically; four of the keys it names are proposals. |
+| **Live Ops lead-index and category-brief upkeep** | Finding `F-E3`: the stale *"`notices` has exactly two members, both beats"* clause survives in three `_lead.md` files and at three places in `_category.md`, verified this run. No ruling depends on it, because every leaf citation is a predicate; it is a correctness debt on the indexes, not on the keys. |
+| **Contract-and-seam work** | `events` needs a shape in `bridge/schema.mjs` with `eventCount == len(events)`. `citedPaths` is published as data so a resolver can check all 22 references mechanically; four of the keys it names are proposals. `collection` gains **no** derived `total` — round-3 ruling, and the schema's five-field `collection` shape at `bridge/schema.mjs:208-217` is the form to keep. |
 
 ## Acceptance criteria
 
@@ -346,16 +374,19 @@ legal values.
    Today that set is exactly `{shared/Screens/shop-v2.luau, shared/Screens/quests.luau}`, both
    already listed, verified this run; the criterion fails the moment a path outside it matches.
 4. **Every entry in `events.citedPaths` resolves against its owning manifest**, all **22** of them,
-   and no string anywhere in this sheet cites a cross-key field absent from that list. In particular
-   `collection.total`, `social.chat.window` and a bare top-level `artifactHygiene` appear **0** times
-   outside `citedByFieldNotByTotal.correctedAtRound2`, and `sum(len(collection.sets[i].relics))` is
-   **24**.
+   `sum(len(collection.sets[i].relics))` is **24**, and no `citedPaths[].path` is `collection.total`,
+   `social.chat.window` or a bare top-level `artifactHygiene`. Inside this sheet's `manifest` block
+   those three strings occur **6 times in total and never as a citation of a value**:
+   `collection.total` **3 times** — `citedByFieldNotByTotal.correctedAtRound2[0].asWritten`,
+   `citedPaths[].replacedPhantom`, `forbidden[EV4].observable`; `social.chat.window` **1 time** —
+   `citedPaths[].replacedGuess`; and `artifactHygiene` unprefixed by `offerSurface.` **2 times** —
+   `correctedAtRound2[2].asWritten` and `citedPaths[].replacedGuess`.
 
 ## Not decided here
 
 What happens to currency the player cannot spend — **`economy.atMaxLadder`** *[Gameplay — Systems]*,
 timed by **`solvency.ladderExhaustedAfter`** *[Balance]*; I route and add no rule. Whether an undated
-ordered sequence of drops exists — **update-ordering work** *[Live Ops — Roadmap]*; I own only the
+ordering of drops exists — **update-ordering work** *[Live Ops — Roadmap]*; I own only the
 dated half. Recurring, tiered, resetting structures — **Seasons**. How many notices exist and what
 any of them says — **`notices`** *[UI/UX — Feedback]*; I cite a predicate over its roster and set no
 member. The wording inside `release.shutdown.playerFacing` — **`release`** *[Tech & Data — Deploy]*;
@@ -363,7 +394,9 @@ member. The wording inside `release.shutdown.playerFacing` — **`release`** *[T
 what it looks like — **store-listing work** *[Discovery & Marketing]*. Repairing `F-E1` — the owner
 of `offerSurface.artifactHygiene`, plus whoever owns `ui-forge/briefs/`; I delete nothing and claim
 no screen. The `·` in the emitted banner — **`vocabulary`**. Whether codes or a group reward exist —
-**Codes**.
+**Codes**. The stale `notices` member-count clause in this category's three `_lead.md` files and in
+`_category.md` — **the Live Ops lead and category-brief owners**, via finding `F-E3`; I repaired
+only the `collection` observable in my own domain's `_lead.md`, which the round-3 ruling named.
 
 ## Flagged to the developer
 

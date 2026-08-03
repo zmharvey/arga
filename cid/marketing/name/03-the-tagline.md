@@ -43,14 +43,19 @@ the family with a hidden-object collection layer.
 
 **The supply of 24 is derived, not stored, and this sheet had that wrong.** There is **no
 `collection.total` field.** The merged `collection` key holds `className`, `classPlural`,
-`relicsPerArea`, `areasPerDepth` and `sets`, and the four sets hold six named Finds each —
-`Terrace`, `Cistern`, `Vault`, `Spire`
-`[research: cid/gameplay/meta/02-the-collection.md]`. The supply is
-`sum(len(collection.sets[i].relics))`, which is the same expression `store-page/01` already uses
-in its own `C3` check. Every `backedBy` and every check below now names the derivation rather
-than a field that does not exist. `[cid: decided]` — and worth stating plainly, because a
-`backedBy` pointing at a phantom field is exactly the failure `T0` was written to catch, and it
-survived a whole draft here.
+`relicsPerArea`, `areasPerDepth` and `sets`, and the four sets — `Terrace`, `Cistern`, `Vault`,
+`Spire` — hold six named Finds each, counted on disk this run at `meta/02:62-67`
+`[research: cid/gameplay/meta/02-the-collection.md]`. 4 × 6 = **24**. The supply is
+`sum(len(collection.sets[i].relics))`, the same expression `store-page/01` uses in its own `C3`
+check (`store-page/01:215`) and states as a rule at its `countPathRule` (`:166`). Every
+`backedBy` and every `check` below names the derivation rather than a field that does not exist.
+
+**And `collection` does not gain a derived total, in any spelling.** `[cid: decided]`, applying
+the cross-category ruling this run. A derived `total`, `totalFinds` or `totalRelics` duplicates
+data already present in `collection.sets` and can therefore disagree with it, which is a worse
+failure than the recompute it saves — the sum is four array lengths and `HudBinding.luau:370-376`
+already recomputes it per bind. **Consequence: the `collection.totalRelics` field HUD readout
+work marks `"requested"` is refused**, and every site reads the sum.
 
 **Verified against all four predicates a hook can trip.**
 
@@ -107,15 +112,22 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
       "promise": {
         "kind": "firstSession",
         "supply": 24,
-        "supplyDerivation": "sum(len(collection.sets[i].relics)) over the 4 sets. There is no collection.total field and this key does not name one.",
+        "supplyDerivation": "sum(len(collection.sets[i].relics)) over the 4 sets of 6",
         "supplyBackedBy": ["collection.sets", "cid/gameplay/meta/02-the-collection.md"],
+        "supplyFieldRuling": {
+          "derivedTotalFieldAdded": false,
+          "spellingsRefused": ["total", "totalFinds", "totalRelics"],
+          "because": "a derived total duplicates data already present in collection.sets and can therefore disagree with it; the sum is four array lengths and HudBinding.luau:370-376 already recomputes it per bind",
+          "everySiteReads": "sum(len(collection.sets[i].relics))",
+          "refuses": "the collection.totalRelics field ui-ux/hud/02 records as requested"
+        },
         "lifetimeRuledBy": "cid/theme/fantasy/02-promise-over-time.md",
         "mayNotBeRestatedInGame": true,
         "mayNotPromiseEndlessFinds": true,
         "mayNotPromiseAReclaimedWorld": true
       },
       "claims": [
-        { "id": "G1", "claim": "clearing overgrowth reveals objects the player keeps", "backedBy": ["collection.sets", "onboarding", "discovery"], "check": "collection.sets has 4 entries whose relics arrays sum to 24; onboarding guarantees a find in the first area; discovery holds a per-Find permanent record", "truthCondition": "a first-session promise with a supply of exactly 24 (theme/fantasy/02); it is the store hook and is not restated on any in-game surface as a standing promise", "tCleared": ["T1", "T2", "T3", "T9", "T10"] },
+        { "id": "G1", "claim": "clearing overgrowth reveals objects the player keeps", "backedBy": ["collection.sets", "onboarding", "discovery"], "check": "len(collection.sets) == 4 and sum(len(collection.sets[i].relics)) == 24; onboarding guarantees a find in the first area; discovery holds a per-Find permanent record", "truthCondition": "a first-session promise with a supply of exactly 24 (theme/fantasy/02); it is the store hook and is not restated on any in-game surface as a standing promise", "tCleared": ["T1", "T2", "T3", "T9", "T10"] },
         { "id": "G2", "claim": "there is overgrowth to clear", "backedBy": ["tiers", "patch", "cid/theme/setting/01-the-ruin.md"], "check": "tiers is non-empty and patch defines a clearable footprint", "truthCondition": "always", "tCleared": ["T1", "T2"] }
       ],
       "predicateChecks": [
@@ -157,12 +169,17 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
 - **Hype work**: if a trailer brief exists, this is the only promise it may make. If it rules no
   trailer exists, nothing here is orphaned, because the description consumes the string anyway.
 - **In-game string owners** gain one grep they must keep passing: this sentence appears zero
-  times in `game/src`. It is a store hook, and restating it in the HUD would convert a
-  first-session promise into a standing one.
-- **Content-volume work (`collection`)**: `G1` points at `collection.sets`, not at a scalar. If
-  a set's roster ever changes size, `promise.supply` is re-derived and the claim is re-checked,
-  never reworded. **No sheet should reintroduce a `collection.total`** — five sheets across three
-  categories cite that phantom in three spellings, and the cross-category pass is carrying it.
+  times in `game/src`. Restating it in the HUD converts a first-session promise into a standing
+  one.
+- **Content-volume work (`collection`)**: `G1` points at `collection.sets`, not at a scalar. If a
+  set's roster ever changes size, `promise.supply` is re-derived and the claim is re-checked,
+  never reworded. **No sheet may add a derived total in any spelling** — `total`, `totalFinds`
+  or `totalRelics` — and the ground is duplication, not cost.
+- **HUD readout work** loses the `collection.totalRelics` field it records as `"requested"`. The
+  substitute is the sum, which `HudBinding.luau:370-376` already computes locally.
+- **The cross-category pass** carries what is left: read this run, every leaf sheet has moved to
+  the sum form, and one domain index — `liveops/events/_lead:101` — still cites
+  `collection.total == 24` as a check. That is the last live occurrence in `cid/`.
 
 ## Acceptance criteria
 
@@ -172,8 +189,9 @@ in the hook would trade the differentiator for a negation. Routed, not solved.
    non-empty `check` and a non-empty `tCleared`; `predicateChecks` carries a verdict for each of
    `T1`, `T2`, `T9`, `T10`.
 3. `grep -ri "find what's buried" game/src` returns zero matches.
-4. `title.tagline.promise.supply` equals `sum(len(collection.sets[i].relics))`, and the string
-   `collection.total` appears zero times in this sheet.
+4. `title.tagline.promise.supply` is `24` and equals `sum(len(collection.sets[i].relics))` over
+   `collection.sets`; and no `backedBy`, `check` or `supplyBackedBy` value anywhere in this
+   sheet's fence contains the string `collection.total`.
 
 ## Not decided here
 
@@ -184,4 +202,5 @@ rebirth and idle is disclosed outward: store-listing work. Whether a thumbnail c
 all, its position, size and typeface, and what a Find looks like given it has no form: thumbnail
 work and icon work, holding gap `M1`. Whether a trailer exists: hype work. The in-game wording
 of anything the player reads while playing: `theme/vocabulary` and each string's owning domain.
-The four other sheets citing a `collection.total` that does not exist: the cross-category pass.
+The one remaining live citation of `collection.total` — `liveops/events/_lead:101`, a domain
+index rather than a leaf sheet, and not mine to edit: the cross-category pass.

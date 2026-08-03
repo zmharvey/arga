@@ -8,11 +8,11 @@
 `crossCuttingProblems`), `ui-forge/src/theme/generate.mjs`, `concept/src/derive/game-context.mjs`,
 `game/src/shared/Theme.luau`.
 
-**Contract position.** `bridge/schema.mjs` holds **25** keys and none is an outward artifact. I own
-none of them, so I propose **`title`**, which is not in the taken list at `_category.md` §Contract
-position. One key, one sheet with a `manifest` fence (sheet 01). Sheets 02 and 03 carry a plain
-`json` amendment fence addressed to `title` and **claim no key**, which is the pattern
-`theme/vocabulary/01` used against `vocabulary` and which `bridge` does not parse as a claim
+**Contract position.** `bridge/schema.mjs` holds **25** keys (counted this run) and none is an outward
+artifact. I own none of them, so I propose **`title`**, which is not in the taken list at
+`_category.md` §Contract position. One key, one sheet with a `manifest` fence (sheet 01). Sheets 02
+and 03 carry a plain `json` amendment fence addressed to `title` and **claim no key**, which is the
+pattern `theme/vocabulary/01` used against `vocabulary` and which `bridge` does not parse as a claim
 `[research: repo — bridge/merge.mjs, bridge/schema.mjs, read this run]`.
 
 ---
@@ -103,32 +103,50 @@ grounds, checked rather than relayed:
 has made and which sheet 02 must state as the operative bound rather than a number it invented.
 `[cid: decided]`, and it agrees with M-B rather than extending it.
 
-### The wire, which changes what `title` is worth
+### The wire, and why `title` is an orphan key after all
 
-`title` is **not** an orphan key, and this is the one place my domain escapes gap `M6`. The path
-exists end to end in code read this run:
+**Correction to this index's first draft.** It said *"`title` is not an orphan key … the path exists
+end to end in code read this run"*. **That is wrong at the first arrow, and the whole chain is
+therefore not a wire.** What is actually on disk, re-read this run:
 
 ```
-title.value  →  context.title            concept/src/derive/game-context.mjs:136 (`title: concept.title`)
-             →  ctx.title                ui-forge/src/theme/generate.mjs:116 (`sourceTitle: ctx.title ?? 'Untitled'`)
-             →  Theme.luau meta.sourceTitle   game/src/shared/Theme.luau:12 (today: "Pet Ascend Simulator")
-             →  asserted by art/ui-art/01's proposed bridge/test/theme-archetype.test.mjs on `npm test`
+title.value        →  nothing.  No file in this repo reads a merged title.value.
+                                title is not among bridge/schema.mjs's 25 SCHEMA keys.
+concept.title      →  context.title   concept/src/derive/game-context.mjs:136 (`title: concept.title`)
+                                      — a stage-0 concept object, not a CID key, and
+                                      no *.concept.json exists anywhere in this repo (glob, this run)
+context.title      →  ctx.title       ui-forge/src/theme/generate.mjs:116
+                                      (`sourceTitle: ctx.title ?? 'Untitled'`) — real code
+ctx.title          →  Theme.luau meta.sourceTitle   game/src/shared/Theme.luau:12 ("Pet Ascend Simulator")
+bridge/test/theme-archetype.test.mjs  →  does not exist. bridge/test/ holds bridge.test.mjs,
+                                         context.test.mjs and refs.test.mjs.
 ```
 
-`[research: repo — four files, read this run]`. **Consequence for UI-Art work** (stated as a
-consequence, not a crossing): two keys would hold one string. Sheet 01 must rule which is
-authoritative and I expect `title.value`, with `uiTheme.sourceTitle` as the mirror the existing
-`npm test` assertion compares against, resolving `art/ui-art/01`'s flagged alternative **(c)** into a
-one-field revision request. That sheet asked for exactly that: *"I recommend (a) and a one-field
-revision when you name the game."*
+`[research: repo — five files, read this run]`. **So `title` carries category gap `M6` exactly like
+the other five keys in this category**, and sheet 01 records it as `emitter.keyReachesNothingToday:
+true` — the same form as `storeIcon` `G-I3`, `storeThumbnails`
+`fileOwnership.keyReachesNothingToday`, `storeListing` `emitter: "none"`, `channels.emitter.exists:
+false` and `launchBeats.emitterHole`.
+
+**Four sites asserted the missing arrow; two are mine and are corrected here.** The other two are
+`art/ui-art/01:60`, approved in wave 6 and not this domain's to edit, and **`bridge/schema.mjs:710-711`**,
+a code comment reading *"except `title`, which reaches `Theme.luau` through `generate.mjs` and is
+therefore build-read"* — repo code stating the same wrong wire. Both are routed: the first to the
+cross-category pass, the second to contract-and-seam work as sheet 01's request `N-C`.
+
+**Consequence for UI-Art work** (a consequence, not a crossing): two keys hold one string. Sheet 01
+rules `title.value` authoritative with `uiTheme.sourceTitle` as the mirror, which resolves
+`art/ui-art/01`'s flagged alternative **(c)** into a one-field revision request. That sheet asked for
+exactly that: *"I recommend (a) and a one-field revision when you name the game."* What it cannot yet
+supply is the assertion, because the test it names is not written.
 
 **One correction to an approved sheet, found by reading the file.** `art/ui-art/01`'s
 `context.mustAlsoCarry` lists `title`, `genre`, `audience.ageBand` and `audience.platformMix` as
-fields `deriveGameContext` does not carry. **All four are already emitted**, at
-`concept/src/derive/game-context.mjs:136–143`. Only `artDirection.tokenOverrides` and
-`artDirection.tokens` are genuinely absent, so its `A3` stands and its `mustAlsoCarry` list
-overstates the hole by four entries. This does not change any decision on that sheet; it is recorded
-so a later reader does not build a second `A3` around a hole that is not there.
+fields `deriveGameContext` does not carry. **All four are emitted**, at
+`concept/src/derive/game-context.mjs:136–143` — from a concept object that has no instance in this
+repo, which is a different hole and the one `A3`/`A4` already name. Only
+`artDirection.tokenOverrides` and `artDirection.tokens` are genuinely absent from the emitter, so its
+`A3` stands and its `mustAlsoCarry` list overstates that hole by four entries.
 `[research: repo — concept/src/derive/game-context.mjs, read this run]`
 
 ---
@@ -147,6 +165,7 @@ Named, routed, not filled.
 | **G6** | **Nobody says what `uiTheme.sourceTitle` holds while ratification is pending.** `art/ui-art/01` flagged it and recommended (a) *"and a one-field revision when you name the game"*; the revision has no trigger, no owner and no state. | **01** |
 | **G7** | **`research/landscape.md` states its own limit and it is mine to inherit.** *"'taken' here means 'exists', not 'successful'"*, no CCU or visit figures, and *"whether the untouched themes are actually free or simply poorly indexed. Four searches surfaced nothing; that is weak evidence."* Category gap **M9**, relayed here. Every occupancy row I bank carries the same bound. | **01**, stated in the sheet |
 | **G8** | **The glyph question has no owner.** `theme/tone/01` P4/P6 forbid glyphs *in-game* and M-B says they do not reach a title, yet the glyph is this genre's own tic (`[🌱]`, `🧲`, `[UPDT🍂]`). A rule was removed and none replaced it. | **02** |
+| **G9** | **No key in this project reaches an outward artifact, and `title` is not the exception I first recorded it as.** Four sites in two categories and one source file assert a wire that is not built. | **01**, as `emitter.keyReachesNothingToday` and requests `N-A`–`N-C`; the `art/ui-art/01:60` instance to the cross-category pass |
 
 **Scope check.** Nothing in my subject is priority 3. The one adjacent item that is, **a seasonal or
 event variant of the name**, is in my graph `owns` list via title tags and is **forbidden** by
@@ -173,9 +192,9 @@ decision, and the rule lives with the rename cost in 02.
 
 | # | sheet | must decide |
 |---|---|---|
-| 01 | `the-title` | Build the candidate set for this game's name from a stated generation frame, at least six candidates wide, and for each one record the exact-match and near-match occupancy result against the evidence banked in `cid/_research/pack.md`, eliminating on sight any candidate containing a `vocabulary.bannedWords` entry or the word `Incremental`; then state one recommendation **as a recommendation with the developer's ratification open**, name the reserved alternates, rule which key is authoritative for the string given that `title.value` and `uiTheme.sourceTitle` both hold it and `Theme.luau` is asserted against the latter on `npm test`, say what `uiTheme.sourceTitle` holds until ratification, and supply the `title` key holding the recommended string, the alternates, and the per-candidate evidence rows with a resolving `backedBy` on each. |
+| 01 | `the-title` | Build the candidate set for this game's name from a stated generation frame, at least six candidates wide, and for each one record the exact-match and near-match occupancy result against the evidence banked in `cid/_research/pack.md`, eliminating on sight any candidate containing a `vocabulary.bannedWords` entry or the word `Incremental`; then state one recommendation **as a recommendation with the developer's ratification open**, name the reserved alternates, rule which key is authoritative for the string given that `title.value` and `uiTheme.sourceTitle` both hold it, say what `uiTheme.sourceTitle` holds until ratification, **record on disk whether anything reads a merged `title.value` and name the owner of each missing step**, and supply the `title` key holding the recommended string, the alternates, and the per-candidate evidence rows with a resolving `backedBy` on each. |
 | 02 | `the-name-field` | Decide what the Roblox name field may ever contain and when it may change: rule whether any glyph or emoji appears in the title, against the platform's own *"one or two well-placed emojis isn't harmful"* guidance on one side and four shipping competitors using one on the other, and rule it as an occupancy decision rather than a typography one; rule the title-tag convention (`[UPDATE]`, `[X2]`) as **present with a firing condition** or **explicitly absent**, given *"ships and settles"* and given that priority 3 leaves no seasonal or event tag anything to attach to; state the character bound you actually apply, derived from the surface it renders on, and carry the platform field limit as `[unverified]` with the exact fetch that would settle it rather than a number from memory; and state the rename cost from the platform's own consistency guidance as the rule that governs promoting a reserved alternate after publish. |
-| 03 | `the-tagline` | Decide whether this game has a tagline distinct from its title at all, given that Roblox exposes a name field and a description field and no tagline field, and if it does, state the exact string as a single `T0` claim row with a `backedBy` that resolves and a check a critic can run: the brief's *"Clear the overgrowth, find what's buried"* `[brief: soft]` is the default and `theme/fantasy/02` has already bound it to **a first-session promise with a supply of 24**, so rule explicitly whether the tagline is that line unchanged, a narrowed version, or absent, verify it against `T1`, `T2`, `T9` and `T10` and against the canon that the place *"was never lost, only overgrown"*, and name where the string is consumed without deciding any consumer's layout. |
+| 03 | `the-tagline` | Decide whether this game has a tagline distinct from its title at all, given that Roblox exposes a name field and a description field and no tagline field, and if it does, state the exact string as a single `T0` claim row with a `backedBy` that resolves and a check a critic can run: the brief's *"Clear the overgrowth, find what's buried"* `[brief: soft]` is the default and `theme/fantasy/02` has already bound it to **a first-session promise with a supply of 24**, so rule explicitly whether the tagline is that line unchanged, a narrowed version, or absent, verify it against `T1`, `T2`, `T9` and `T10` and against the canon that the place *"was never lost, only overgrown"*, count the 24 from `collection.sets` rather than from any scalar, and name where the string is consumed without deciding any consumer's layout. |
 
 **Sheet 01 carries the only `manifest` fence in this domain.** Sheets 02 and 03 file their outputs as
 fields of `title` through a plain `json` fence tagged `"amends": "title"`, so no two sheets claim one
@@ -195,11 +214,17 @@ number. Third, and cheapest to fix: **sheet 01's occupancy rows go stale**, by t
 that made v1's snow finding worthless. Every row is dated and every row inherits `G7`'s bound that
 *"taken" means "exists", not "successful"*.
 
+**The failure this index actually committed**, recorded so it is not repeated: it read four real
+files, found three real arrows, and wrote the fourth from expectation. A chain is a wire only if
+**every** arrow is code, and the missing one was the first. Sheet 01 now states the negative as a
+key field rather than as prose, which is the only form a later reader cannot skim past.
+
 **One live cross-key risk for the cross-category pass:** `title.value` and `uiTheme.sourceTitle` hold
-the same string and `art/ui-art/01`'s proposed test asserts equality between `uiTheme` and a
-generated file, not between `title` and `uiTheme`. If sheet 01 recommends anything other than
-`"Ruin Restoration"`, **an approved wave-6 key's value changes**, and the revision request is
-Art & Visuals' to accept. Sheet 01 states it as a consequence; it does not edit that sheet.
+the same string, and `art/ui-art/01`'s test asserts equality between `uiTheme` and a generated file —
+except that the test is proposed and absent, so nothing asserts anything today. If sheet 01
+recommends anything other than `"Ruin Restoration"`, **an approved wave-6 key's value changes**, and
+the revision request is Art & Visuals' to accept. Sheet 01 states it as a consequence; it does not
+edit that sheet.
 
 ---
 

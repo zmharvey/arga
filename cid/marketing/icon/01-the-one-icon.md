@@ -1,6 +1,6 @@
 # 01 — The one icon
 
-**Domain:** marketing/icon · **Category:** Discovery & Marketing · **Wave:** 7
+**Domain:** marketing/icon · **Category:** Discovery & Marketing · **Wave:** 7 · **Revised:** round 1, `RR-5`
 
 ## Decision
 
@@ -29,7 +29,7 @@ both excluded on stated grounds and the exclusions are the decision**, not the l
 
 | candidate | rejected because |
 |---|---|
-| the held tool in frame | the two parts land on **opposite sides** of the overgrowth, not both inside one gap. Head luma **163.01** sits **inside** the 72.73-wide gap between `tiers[0]` 123.11 and `stone.built` 195.84 — and only **32.83** under the stone, itself below the 40 floor. Grip **94.46** sits **28.65 below** `tiers[0]`, a band beneath the green `[research: cid/art/objects/03-the-tool-in-hand.md]`. So the tool adds one band inside the gap and one band under it: a third and a fourth region against `02` `L3`'s cap of 2. And a tool on a tile is the one image every surveyed competitor already ships `[research: concept/spec/incremental-spinoff-v2/research/landscape.md]` |
+| the held tool in frame | **the head bridges the only two regions the icon has, and the grip excludes nothing.** `objectArt` sets the head at `[178,160,133]`, Rec.601 luma **162.30**, `styleGuide.roles["wood.worked"]` adopted verbatim `[research: cid/art/objects/03-the-tool-in-hand.md]`. That is **39.19** above `tiers[0]` 123.11 and **33.54** below `stone.built` 195.84, i.e. inside `02` `L2`'s 40-wide band on **both** sides, so no assignment of it passes `02` `L4`: banded with the green, the band runs 123.11–162.30 and its top sits 33.54 under the stone; banded with the stone, the band runs 162.30–201.84 and its floor sits 39.19 over the green; left alone it is a **third** region against `L3`'s cap of 2 and fails `L4` on both adjacencies. The **grip** `[118,88,66]` luma **94.46** is not a ground: 123.11 − 94.46 = **28.65**, inside one 40-wide band with `tiers[0]`, so it adds no region at all. `styleGuide` `[research: cid/art/style/01-palette-and-materials.md]` line 264 ratifies the head as `[190,158,118]` luma **163.01**, the near-duplicate `objectArt` declined by name; **the exclusion holds at either figure** (39.90 over the green, 32.83 under the stone, both under 40). And a tool on a tile is the one image every surveyed competitor already ships `[research: concept/spec/incremental-spinoff-v2/research/landscape.md]` |
 | a player avatar mid-clear | `art/characters/01` — *"the only face available is a player avatar, which you do not control and may not dress."* An uncontrolled subject makes the icon vary by whoever captured it, which is not a composition |
 | an empty socket, setting bed or plinth where something was lifted out | `art/objects/04` forbids Environment placing *"a Find, a plinth for one, or a setting bed where one would sit"*. It would also be a `T6` claim by implication |
 | sky as a backdrop band | the sky is the engine default with **zero `Sky` instances and no `Color3`** (`styleGuide.roles.sky`), so its luma cannot be computed and `02` `L4` cannot be evaluated against it. A region whose separation is unmeasurable is not a legal region |
@@ -66,8 +66,9 @@ green is by construction not the in-game visual, and because commissioning one c
 **Which makes the honest output a specified icon with a gate, not an icon.** Both gate conditions
 are hard, both are checkable, and one of them is unsatisfied by a subject that `art/_category.md`
 rows 10–19 mark **[does not exist]**. Because a missing icon ships platform stock art rather than
-nothing, the gate is a **publish blocker**: publish-checklist work must not mark its row done with
-`storeIcon.uploaded` false. I state the requirement; the checklist row is `release`'s.
+nothing, the gate is a **publish blocker**: the publish checklist must not report done with
+`storeIcon.uploaded` false. I state the requirement and ask for **a new row, id assigned by
+`release`**; I do not number it and I write none of that key's fields.
 
 **Zero characters of text on the image, and the genre convention is ruled on rather than
 inherited.** The platform's icon page has exactly three best-practice subsections — quality and
@@ -122,7 +123,7 @@ work** owns the upload step if it is not.
 | a face, eyes or a mouth, on anything | **0** | `D13` |
 | a player character or avatar of any kind | **0** | this sheet — an uncontrolled subject; `art/characters/01` |
 | a nameplate | **0** | follows from zero characters in frame |
-| the held tool | **0** | this sheet — head 163.01 inside the gap, grip 94.46 **below** the green: a third and a fourth band against `02` `L3` |
+| the held tool | **0** | this sheet — the head 162.30 sits 39.19 over `tiers[0]` and 33.54 under `stone.built`, inside a 40-luma band of **both** regions, so it bridges them and fails `02` `L4` under every assignment. The grip 94.46 is 28.65 from `tiers[0]` and adds no region |
 | a second hour, dawn, dusk, night, sunset or moonrise | **0** | `theme/setting/03` `R1`; `art/lighting/01` — every promotional image is at `ClockTime` 15.5 |
 | rain, snow, fog, cloud, wind or any depicted weather | **0** | `theme/setting/03` `R2` |
 | sky pixels | **0** | camera pitch puts the horizon out of frame; `styleGuide.roles.sky` has no `Color3` to measure |
@@ -186,7 +187,14 @@ work** owns the upload step if it is not.
         ], "satisfiedToday": false, "why": "art/_category.md rows 10-19 mark the retaining wall, parapet, paving, channels, fittings, weathering, sky and canopy all [does not exist]" }
       ],
       "blocksPublish": true,
-      "blocksPublishBecause": "a missing icon does not ship a blank tile, it ships platform stock art. publish-checklist work must not mark its row done while uploaded is false.",
+      "blocksPublishBecause": "a missing icon does not ship a blank tile, it ships platform stock art. The publish checklist must not report done while uploaded is false.",
+      "publishChecklistAsk": {
+        "row": "a new row, id assigned by release",
+        "atLeastOneRowBeyond": "P4",
+        "reads": "storeIcon.productionRoute.uploaded == true",
+        "idAssignedHere": false,
+        "why": "requesters do not assign ids. release owns publishChecklist and its numbering; this key states the requirement and the field the row reads."
+      },
       "uploaded": false,
       "captureFieldNamedElsewhere": "thumbnails work owns the 16:9 set and its own capture-legitimacy ruling. This key does not name or restate that field; both gates above are stated in conditions a cross-category pass can diff."
     },
@@ -211,7 +219,16 @@ work** owns the upload step if it is not.
       "canopyAreaPct": 0,
       "canopyAreaPctBecause": "02 L3 - maxRegions is 2 and stone and overgrowth take both. This is a region-budget exclusion, NOT a luma one: canopy.leaf 59.31 against the tiers[0] 123.11 actually shown is a separation of 63.80 and clears the 40 floor. Standing note: canopy.leaf sits only 10.26 below tiers[3] 69.57, so a darker tier shown alongside canopy would additionally fail L4.",
       "toolAreaPct": 0,
-      "toolAreaPctBecause": "objectArt's two tool parts land on OPPOSITE sides of the overgrowth: head 163.01 inside the 72.73 gap between tiers[0] 123.11 and stone.built 195.84 (and only 32.83 under the stone, itself below the 40 floor), grip 94.46 sitting 28.65 BELOW tiers[0]. That is a third and a fourth band against L3's cap of 2."
+      "toolAreaPctBecause": "the HEAD bridges the two regions and the GRIP excludes nothing. objectArt's head is [178,160,133], luma 162.30 (styleGuide roles wood.worked adopted verbatim): 162.30 - 123.11 = 39.19 over tiers[0] and 195.84 - 162.30 = 33.54 under stone.built, both inside L2's 40-wide band, so banding it with the green leaves 33.54 to the stone, banding it with the stone leaves 39.19 to the green, and leaving it alone is a third region against L3's cap of 2. Every assignment fails L4. The grip [118,88,66] luma 94.46 is 28.65 below tiers[0], inside one band with it, and adds no region: it is not a ground. styleGuide 01 line 264 ratifies the head as [190,158,118] luma 163.01, the near-duplicate objectArt declined by name; at that figure the separations are 39.90 and 32.83 and the verdict is unchanged.",
+      "toolHeadLumaDiscrepancy": {
+        "objectArtValue": 162.30,
+        "objectArtRgb": [178, 160, 133],
+        "styleGuideProseValue": 163.01,
+        "styleGuideProseRgb": [190, 158, 118],
+        "authoritative": "objectArt - art/objects/03 owns the tool's parts and styleGuide roles wood.worked appliesTo says so by name",
+        "verdictUnchangedAtEitherValue": true,
+        "routedTo": "a cross-category pass; this key reads the owning value and does not edit art/style/01"
+      }
     },
     "styleGuideRolesUsed": ["stone.cleared", "stone.built", "overgrowth"],
     "styleGuideRolesForbiddenHere": ["sky", "canopy.leaf", "canopy.trunk", "wood.worked", "clay.fired", "metal.cast"],
@@ -314,10 +331,10 @@ work** owns the upload step if it is not.
 
 ## Consequences for other work
 
-- **Publish-checklist work (`release.publishChecklist`)** gains a required row: the experience icon
-  is uploaded and `storeIcon.productionRoute.uploaded` is true **before** the checklist may report
-  done. Skipping it does not ship no icon; it ships platform stock art. This key names the
-  requirement and writes none of that key's fields.
+- **Publish-checklist work (`release.publishChecklist`)** gains **a new row, id assigned by
+  `release`**, reading `storeIcon.productionRoute.uploaded == true` before the checklist may report
+  done; the checklist therefore carries **at least one row beyond `P4`**. I do not number it and I
+  write none of that key's fields. Skipping it does not ship no icon; it ships platform stock art.
 - **Store-listing work** inherits `G-I2` in full: **the collection reaches a stranger only through
   the description.** The icon carries `IC1`–`IC5` and nothing about a Find, a set, an index or 24/24
   — so if the description also declines to carry it, the brief's one binding differentiator reaches
@@ -334,6 +351,10 @@ work** owns the upload step if it is not.
 - **Palette and lighting work** are asked for nothing and may change nothing: `GATE-1` reads
   `styleGuide` and `lighting.properties` by field and copies the four Lighting values only so the
   capture condition is checkable without opening another sheet.
+- **Tool and palette work** get one recorded conflict and no edit from me: `art/style/01` line 264
+  ratifies the tool head as `[190,158,118]` luma 163.01 while `art/objects/03`, which owns the part,
+  holds `[178,160,133]` luma 162.30. I read the owning value. The icon's verdict is the same at
+  both, so nothing here waits on it, but one of the two sheets is carrying a superseded number.
 - **Naming work** is not waited on. `storeIcon` carries no string, references no `title`, and coins
   nothing, so the icon can be produced before the game is named and neither blocks the other.
 - **Contract-and-seam work** receives `G-I3`, the third arrival of the no-emitter hole on a third
@@ -342,16 +363,20 @@ work** owns the upload step if it is not.
 ## Acceptance criteria
 
 1. `storeIcon.count == 1`, `storeIcon.variants.count == 0`, `storeIcon.abTest.setSize == 0`,
-   `storeIcon.text.characterCount == 0`, and `storeIcon.composition.regionCount == 2`.
-2. Every row in `storeIcon.claims[]` has a non-empty `backedBy` that resolves to a merged or
+   `storeIcon.text.characterCount == 0`, `storeIcon.composition.regionCount == 2`, and
+   `toolAreaPct`, `canopyAreaPct`, `skyAreaPct` and `backdropAreaPct` are each `0`.
+2. The tool exclusion reproduces as arithmetic and the canopy exclusion does not:
+   `162.30 − 123.11 == 39.19 < 40` **and** `195.84 − 162.30 == 33.54 < 40` (the head is inside a
+   40-luma band of both regions), while `123.11 − 59.31 == 63.80 ≥ 40`, so
+   `composition.canopyAreaPctBecause` must cite `maxRegions == 2` and must not cite a separation
+   failure. `123.11 − 94.46 == 28.65 < 40`, so no field claims the grip adds a region.
+3. Every row in `storeIcon.claims[]` has a non-empty `backedBy` that resolves to a merged or
    proposed key path, an approved sheet id or a repo file; **no row's text matches the `T1`–`T10`
    predicates**; and no `claims[]` row names the collection, a Find, a set, 24/24, a price or a pass.
-3. `storeIcon` contains **zero `null` values** at any depth (`tech/deploy/02` makes an emitted null a
+4. `storeIcon` contains **zero `null` values** at any depth (`tech/deploy/02` makes an emitted null a
    hard error); every "not stated by the platform" field is the string `"unverified"` and carries a
-   sibling `settlingFetch`.
-4. `storeIcon.productionRoute.gates` has exactly two entries, both with
-   `satisfiedToday: false`, and `GATE-1` condition 1 fails today by inspection:
-   `game/src/shared/Theme.luau` line 10 reads `archetype = "cartoon-vibrant"`.
+   sibling `settlingFetch`; `productionRoute.gates` has exactly two entries, both with
+   `satisfiedToday: false`; and `productionRoute.publishChecklistAsk.idAssignedHere` is `false`.
 
 ## Flagged to the developer
 
@@ -360,6 +385,7 @@ work** owns the upload step if it is not.
 | **Text on the icon.** The platform publishes no text rule and the genre's tile convention is unevidenced. | (a) zero characters, as ruled; (b) the title alone, once naming work coins one; (c) a two-word phrase from the hook line | **(a).** The platform prints the name under the tile anyway, and a text block is a third region the legibility rule caps out. Reversing to (b) costs one field and one region-count change. |
 | **`blocksPublish: true`.** This lets a spec sheet hold up a publish. | (a) hard block, as ruled; (b) advisory, and accept stock art on first publish; (c) publish with a deliberately plain two-colour placeholder capture from the current build | **(a).** (c) is `T8` and is worse than (b). |
 | **`G-I3`, the emitter hole.** Three keys have now hit it. | (a) `storeIcon` merges and reaches nothing; (b) an outward-artifact emitter; (c) an explicit publish-checklist row that carries it | **(c)**, and it is one row, not a system. |
+| **The tool head's two luma values.** `art/style/01:264` says 163.01, `art/objects/03` says 162.30 for the same `Part`. | (a) `objectArt` is authoritative and `styleGuide`'s prose is corrected; (b) the reverse; (c) leave both | **(a).** `styleGuide.roles["wood.worked"].appliesTo` already says the tool is `objectArt`'s to set. Neither changes this icon. |
 
 ## Not decided here
 
@@ -370,9 +396,11 @@ slots, its overlay rule, its capture ruling and the `05-OUTWARD.md` revision req
 thumbnails work, `cid/marketing/thumbnails/03`. **Every line of the description, the tag set, the
 genre selection, the age settings and how `Span` is described** — store-listing work, which also
 inherits `G-I2`. **Whether anything is announced when the place publishes** — launch-beat work.
-**The checklist row that carries the upload, and when it is read back** — publish-checklist work
-(`release`). **Whether an outward key is a build artifact at all** — contract-and-seam work.
-**Where the dressed stone step sits, its size and its dressing** — environment work; I require one
-in frame and author none. **Whether a Find ever gains a form** — `objectArt` and `representation`,
-both of which say no. **In-game iconography, which is at zero and stays there** — `uiTheme`,
+**The checklist row that carries the upload, its id, its position and when it is read back** —
+publish-checklist work (`release`). **Whether an outward key is a build artifact at all** —
+contract-and-seam work. **Where the dressed stone step sits, its size and its dressing** —
+environment work; I require one in frame and author none. **Which of the tool head's two recorded
+luma values `art/style/01` keeps** — palette work and objects work; I read `objectArt`'s and edit
+neither sheet. **Whether a Find ever gains a form** — `objectArt` and `representation`, both of
+which say no. **In-game iconography, which is at zero and stays there** — `uiTheme`,
 `art/ui-art/04`.

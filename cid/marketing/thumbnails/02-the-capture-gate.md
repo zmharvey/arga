@@ -2,6 +2,14 @@
 
 **Domain:** marketing/thumbnails · **Category:** Discovery & Marketing · **Wave:** 7
 
+> **Revised, round 2.** `RR-T1` asked `release` for a row and also numbered it. **A requester does
+> not assign a checklist id**, and four live requests — this one, `RR-C1` (`liveops/community/02`),
+> `RR-H1` (`marketing/hype/01`) and `icon/01`'s unnumbered ask — all want a row on the same
+> four-row checklist, so four self-assigned numbers would collide. The request now names *a new row,
+> id assigned by `release`*, and states its count effect as *at least one row beyond `P4`*. The
+> other three requests are listed as data so `release` composes them rather than discovering them.
+> **No gate row, status or value moves.**
+
 ## Decision
 
 **A promotional image of this game is legitimate only if it is a frame of a running session of the
@@ -63,7 +71,8 @@ thumbnail; no emitter writes an image; `storeThumbnails` merges and reaches noth
 **not a build artifact**: it lives at `assets/marketing/`, outside the Rojo tree, so
 `grep -rn "rbxassetid" game/src` keeps returning nothing and `art/ui-art/04`'s `icons.count: 0`
 stays true (ruling `M-A`: that zero is the interface, not the experience page). The upload step is
-filed below as one checklist row.
+filed below as one checklist row **whose id is `release`'s to assign** — four live requests want a
+row on that one checklist, and a requester that numbers its own row collides with the other three.
 
 **Nine rows fail and one passes, and the one that passes is worth naming.** `C9`, the lighting
 state, already ships: `ClockTime` 15.5, zero `Atmosphere`, zero `Clouds`, zero scripts touching
@@ -143,7 +152,7 @@ row is already green shows the rows are real conditions and not a wall.
       "notInGameSrc": true,
       "whyOutsideTheTree": "so grep -rn 'rbxassetid' game/src keeps returning nothing and art/ui-art/04's icons.count 0 stays true. Ruling M-A: that zero is the interface, not the experience page.",
       "producedBy": "a human, at capture time. No emitter writes it and none is requested.",
-      "uploadedBy": "release.publishChecklist row P5, requested below",
+      "uploadedBy": "release.publishChecklist, by a new row requested below as RR-T1. The row's id is release's to assign and is deliberately not named here.",
       "keyReachesNothingToday": true,
       "keyReachesNothingTodayIsM6": "release.publishChecklist owns publish-time platform settings and names no thumbnail; no emitter writes an image; storeThumbnails merges and reaches nothing. This is the same finding art/ui-art/01 closed with a named revision request rather than with silence."
     },
@@ -152,9 +161,18 @@ row is already green shows the rows are real conditions and not a wall.
         "id": "RR-T1",
         "against": "cid/tech/deploy/01-the-release-contract.md",
         "field": "release.publishChecklist",
-        "change": "add row P5 — upload storeThumbnails.slots[].file, set it active, paste slots[].altText into the alt field, then read back that the detail page reports exactly storeThumbnails.activeCount active thumbnails and zero videos",
-        "why": "the checklist is four rows a human executes because no build step can, and this is a fifth of exactly that kind. Without it nothing uploads the file and storeThumbnails merges and reaches nothing.",
-        "scope": "one checklist row with one read-back assertion; no existing row moves",
+        "change": "add a new row: upload storeThumbnails.slots[].file, set it active, paste slots[].altText into the alt field, then read back that the detail page reports exactly storeThumbnails.activeCount active thumbnails and zero videos",
+        "rowIdAssignedBy": "release",
+        "rowIdNotNamedHere": "a requester does not assign a checklist id. Round 1 of this sheet asked for a row and numbered it itself; three other live requests want a row on the same four-row checklist, and four self-assigned numbers is a collision release would have to unpick before executing any of them.",
+        "rowCountEffect": "at least one row beyond P4",
+        "otherLiveRequestsAgainstThisChecklist": [
+          { "id": "RR-C1", "filedBy": "cid/liveops/community/02-moderation-ban-and-appeal.md", "subject": "the content maturity and compliance questionnaire" },
+          { "id": "RR-H1", "filedBy": "cid/marketing/hype/01-the-publish-moment.md", "subject": "the private to public visibility setting" },
+          { "id": "unnumbered", "filedBy": "cid/marketing/icon/01-the-one-icon.md", "subject": "uploading the experience icon" }
+        ],
+        "otherLiveRequestsNote": "listed so release composes four asks into a numbering of its own rather than discovering them one at a time. This sheet asserts no total and claims no id.",
+        "why": "the checklist is four rows a human executes because no build step can, and this is one more of exactly that kind. Without it nothing uploads the file and storeThumbnails merges and reaches nothing.",
+        "scope": "one checklist row with one read-back assertion. No existing row moves and no existing id changes.",
         "ifDeclined": "the key stays a specification with no consumer, and the failure mode is the defaults, which is how sourceTitle became Pet Ascend Simulator",
         "status": "filed, not applied"
       }
@@ -181,7 +199,10 @@ row is already green shows the rows are real conditions and not a wall.
   not add a subject; it states that the first outward artifact of this project depends on them.
 - **Objects and build work** own `C7`. The tool is in frame in the only slot this domain ships, so
   two parts rendering at engine defaults is an outward defect and not only an internal one.
-- **Publish-checklist work (`release`)** receives `RR-T1`, one row with a read-back.
+- **Publish-checklist work (`release`)** receives `RR-T1`: one row with a read-back, **and the id
+  is yours**. Three other requests (`RR-C1`, `RR-H1`, `icon/01`) want rows on the same checklist and
+  are listed inside the request as data, so the numbering is decided once, by you, rather than four
+  times by four requesters.
 - **Icon work (`storeIcon`) and Hype's trailer brief** inherit this gate by field rather than
   re-deriving it. Both should cite `storeThumbnails.captureGate`, not restate its rows.
 
@@ -197,8 +218,11 @@ row is already green shows the rows are real conditions and not a wall.
 3. No slot has `uploaded: true` while `allRowsPass` is `false`; and any uploaded image has a
    sidecar at `assets/marketing/*.provenance.json` recording all ten `provenance.fields` with
    `manualInstanceEdits` 0 and `gateRowsPassingAtCapture` 10.
-4. `grep -rn "rbxassetid" game/src` returns nothing after the image exists, and no path under
-   `assets/marketing/` appears in `game/default.project.json`.
+4. `revisionRequests[RR-T1]` carries `rowIdAssignedBy: "release"`, a `rowCountEffect` of exactly
+   `"at least one row beyond P4"`, and an `otherLiveRequestsAgainstThisChecklist` array of **3**
+   rows; it carries no field named `rowId`, `row`, `newRowId` or `newRow`, and its only `id` field
+   is `"RR-T1"`. And `grep -rn "rbxassetid" game/src` returns nothing after the image exists, with
+   no path under `assets/marketing/` in `game/default.project.json`.
 
 ## Not decided here
 
@@ -207,7 +231,9 @@ key. What the second half depicts: **sheet `03`**. Whether any string is drawn o
 **sheet `04`**. Whether `A3` and `A4` land, and who edits `bridge/schema.mjs` or
 `concept/src/derive/game-context.mjs`: **contract-and-seam work**; I state the gate, not the fix.
 The values inside `runtime.placeConfiguration` and every other publish-time platform setting:
-**publish-checklist work (`release`)**, which also accepts or refuses `RR-T1`. When the ten world
-subjects get built and in what order: **Environment build work and the architect's build order**;
-this sheet counts them and schedules nothing. Whether an icon can be produced under the same gate:
-**Icon work**, which should cite `captureGate` rather than write a second one.
+**publish-checklist work (`release`)**, which also accepts or refuses `RR-T1`. **Which id the new
+row gets, and how it composes with `RR-C1`, `RR-H1` and `icon/01`'s ask: `release`**, which is the
+only party that can see all four at once. When the ten world subjects get built and in what order:
+**Environment build work and the architect's build order**; this sheet counts them and schedules
+nothing. Whether an icon can be produced under the same gate: **Icon work**, which should cite
+`captureGate` rather than write a second one.
