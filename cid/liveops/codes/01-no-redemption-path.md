@@ -1,6 +1,6 @@
 # 01 — No redemption path
 
-**Domain:** liveops/codes · **Category:** Live Ops · **Wave:** 7 · **Revision round 1** (RR-5)
+**Domain:** liveops/codes · **Category:** Live Ops · **Wave:** 7 · **Revision round 2** (RR-5, RR-2e)
 
 ## Decision
 
@@ -53,6 +53,17 @@ distribution rather than purchase.** It is therefore forbidden here, not merely 
 not touch `products`: the one SKU stays purchasable, `Entitlements.luau:119` stays, and what is
 forbidden is a *second* id, or the existing id given away. Without this ruling a reversal walks
 straight through `L1` to `L3` and never touches a `TextBox`. `[cid: decided]`
+
+**The sixth occurrence site is now a field path and not a line number, and that is a rule.**
+`[revised: RR-2e]` `RR-5` corrected `furtherTextualOccurrences` from 7 to 6, which was right, but
+the enumeration it produced named `GameConfig.luau:1237` for the config string. That file carries
+its own header — *"GENERATED FILE — do not edit … Emitted from CID spec sheets by
+`npm run bridge -- --emit`"* — and it was re-emitted this wave when `styleGuide` was promoted,
+which moved the string to `:1299` and left `:1237` reading `ordinal = 8`
+`[research: game/src/shared/GameConfig.luau]`. The site is now given as **`products.ownershipCheck`**,
+the field path, which no emit moves. **The five `Entitlements.luau` sites keep their line numbers**
+because that module is hand-written. `[cid: decided]` on the citation form; the two counts RR-5
+set are unchanged and were re-measured this pass at 7 total and 6 further.
 
 **The five subjects this node owns are vacuous, and each is recorded rather than dropped**,
 following `cid/audio/stingers/03`. Every observable is a count.
@@ -126,6 +137,12 @@ per `tech/deploy/02`.
       "00-CORE.md non-goal: 'Beating the genre's retention curve. Offered and declined.'",
       "00-CORE.md purpose: 'Success is shipped artifacts, not players.'"
     ],
+    "generatedFileCitationRule": {
+      "rule": "no baseline, check or observable in this key gives a line number inside game/src/shared/GameConfig.luau or game/src/shared/Types.luau. Both are generated. Cite the field path instead.",
+      "basis": "GameConfig.luau's own header: GENERATED FILE — do not edit … Emitted from CID spec sheets by npm run bridge -- --emit",
+      "evidence": "RR-5's enumeration named GameConfig.luau:1237 for the UserOwnsGamePassAsync config string. The file was re-emitted this wave when styleGuide was promoted; the string is at 1299 and 1237 now reads ordinal = 8. The counts RR-5 set did not move; only the line label did.",
+      "handWrittenModulesUnaffected": "game/src/server/Entitlements.luau, game/src/client/Input.luau, game/src/client/HudBinding.luau and game/src/shared/UIBuilder.luau are hand-written and are cited by line."
+    },
     "redemptionSurfaces": [
       {
         "id": "L1",
@@ -190,11 +207,11 @@ per `tech/deploy/02`.
             "game/src/server/Entitlements.luau:87 comment",
             "game/src/server/Entitlements.luau:98 warn string",
             "game/src/server/Entitlements.luau:113 warn string",
-            "game/src/shared/GameConfig.luau, the one UserOwnsGamePassAsync occurrence in it — a config string"
+            "the products.ownershipCheck value string in game/src/shared/GameConfig.luau, which reads 'UserOwnsGamePassAsync(userId, gamePassId), read at join and never persisted, and NEVER called when gamePassId <= 0'. Cited by field path, not by line: see generatedFileCitationRule."
           ],
           "totalTextualOccurrencesIncludingTheCallSite": 7,
-          "correctedInRound": 1,
-          "correctedBy": "RR-5"
+          "correctedInRound": 2,
+          "correctedBy": "RR-5 set the counts; RR-2e replaced the sixth site's line number with its field path"
         },
         "rule": "a bearer entitlement is a code whenever what entitles the player is distribution rather than purchase. A second pass id, or the existing id given away free, is a code and is forbidden here. The one purchasable SKU and its join-time ownership read are untouched.",
         "decidedBy": "cid: decided; gap C5, on which the brief, products and F15 are all silent"
@@ -228,7 +245,8 @@ per `tech/deploy/02`.
       "len(redemptionSurfaces) == 4",
       "len(publicationChannels) == 0",
       "every subjects[].state == \"vacuous\"",
-      "no value anywhere in this key is null"
+      "no value anywhere in this key is null",
+      "no string anywhere in this key matches (GameConfig|Types)\\.luau:[0-9]+"
     ]
   }
 }
@@ -239,7 +257,7 @@ per `tech/deploy/02`.
 | subject | what this forces or forbids |
 |---|---|
 | Offer-ladder and never-sold work (`products`) | **A revision request is filed below against `F15`**, on its `closedBy` and its `check`. Neither this sheet nor `codes` edits `products`. `F15`'s *rule* is ratified as written; only its justification and its observable are contested. |
-| Contract-and-seam work | `codes` needs a shape in `bridge/schema.mjs` with six invariants, listed in the key. `music.trackCount == len(music.tracks)` is the pattern; the extension is that `codeCount == 0` alone does not close this subject, so the `redemptionSurfaces` length and all-false test must be part of the shape, not a comment. |
+| Contract-and-seam work | `codes` needs a shape in `bridge/schema.mjs` with seven invariants, listed in the key. `music.trackCount == len(music.tracks)` is the pattern; the extension is that `codeCount == 0` alone does not close this subject, so the `redemptionSurfaces` length and all-false test must be part of the shape, not a comment. **The seventh invariant is new and is a repo-wide problem in one key's clothing:** `GameConfig.luau` is generated and moved 68 lines this wave, so any citation of it by line is stale by construction. A merge-time sweep for `(GameConfig\|Types)\.luau:[0-9]+` across `cid/` would close the class. |
 | Feedback-intake and moderation work (Community) | We share `F15` and gap G1 and the seam is stated: I hold the **grant** side of a group-join reward (`L3`), you hold the **channel**, and `products` `F15` already holds the **prompt**. If you rule that an off-Roblox channel exists, `codes.publicationChannels` gains a referent and `referentExists: false` becomes a stale field, not a wrong one. |
 | Off-Roblox presence work (Discovery & Marketing — Social) | A channel created there does not reopen this ruling. `codeCount: 0` rests on the four limbs, not on having nowhere to post; a channel would close gap G1 and change nothing in this key but one boolean. |
 | Permanent-stat-change work (`modifiers`) | No boost class is requested and none should be invented to make a code possible. Gap C4 is recorded, not routed as an assignment. |
@@ -254,11 +272,13 @@ per `tech/deploy/02`.
    `Frame` and `TextLabel` and zero `TextBox`; `rg -n 'GetJoinData|LaunchData|TeleportData'
    game/src` returns 0; `rg -n 'IsInGroup|GetRankInGroup|GroupService' game/src` returns 0; and
    `UserOwnsGamePassAsync` has exactly **1 call site**, at `game/src/server/Entitlements.luau:119`,
-   plus **6 further textual occurrences** that are comments, warn strings and one config string —
-   **7 in total**, all seven named in `redemptionSurfaces[L4].baseline`.
+   plus **6 further textual occurrences** that are five comments and warn strings in
+   `Entitlements.luau` and one config string, the `products.ownershipCheck` value in
+   `GameConfig.luau` — **7 in total**, all seven named in `redemptionSurfaces[L4].baseline`.
 3. `rg -c TextBox game/src` returns **9** across 3 files and this is **not** a failure: the
    published baseline in `redemptionSurfaces[L1].rawSourceGrepSites` names all nine, and none is
-   an `Instance.new`.
+   an `Instance.new`. And `rg -nE '(GameConfig|Types)\.luau:[0-9]+'` over this sheet returns
+   **zero matches**: both are generated files and every citation of them here is a field path.
 4. Zero client-to-server remotes in `game/src` carry a `string` payload, and
    `input.clientOriginatedRemotes` still equals `["RequestState","BuyUpgrade"]`.
 
@@ -266,14 +286,16 @@ per `tech/deploy/02`.
 
 | against | file | field | current | required | why |
 |---|---|---|---|---|---|
-| `products` | `cid/gameplay/monetization/02-what-is-never-sold.md` | `forbidden[F15].closedBy` | *"03-META.md priority 3 (codes), theme/tone/04 D10"* | add the structural grounding: `input.closed` + `gameDrawnPressables: 4` under R-1, `navigation.addNodeRule`, `screens[index].tree`, and `00-CORE.md`'s binding retention non-goal | `D10`'s own reason column is *"Priority 3 excludes codes"*, so the chain grounds out in an `[I assumed]` ordering that was never interviewed. The rule survives; its stated justification does not. |
-| `products` | same | `forbidden[F15]` observable | *"Zero `TextBox` instances in any screen"* | *"zero screen-spec nodes whose `class` is `TextBox`; every `screens[].tree[].class` in `[Frame, TextLabel]`"* — and explicitly not a source grep | run as a grep of `game/src` it returns 9 hits in 3 files, none of which creates a `TextBox`: a false positive today. `UIBuilder.luau:412-418` plus the `CLASS_DEFAULTS.TextBox` row makes it a false negative the day a JSON node adds one. |
+| `products` | `cid/gameplay/monetization/01-the-offer-ladder.md` (the manifest row) **and** `cid/gameplay/monetization/02-what-is-never-sold.md` (its table restatement) | `forbidden[F15].closedBy` | *"03-META.md priority 3 (codes), theme/tone/04 D10"* | add the structural grounding: `input.closed` + `gameDrawnPressables: 4` under R-1, `navigation.addNodeRule`, `screens[index].tree`, and `00-CORE.md`'s binding retention non-goal | `D10`'s own reason column is *"Priority 3 excludes codes"*, so the chain grounds out in an `[I assumed]` ordering that was never interviewed. The rule survives; its stated justification does not. **Both files need the edit**: the manifest `forbidden[F15]` lives at `monetization/01:170`, and `02:97` carries the identical text as a table. |
+| `products` | same two files | `forbidden[F15]` observable | *"Zero `TextBox` instances in any screen"* | *"zero screen-spec nodes whose `class` is `TextBox`; every `screens[].tree[].class` in `[Frame, TextLabel]`"* — and explicitly not a source grep | run as a grep of `game/src` it returns 9 hits in 3 files, none of which creates a `TextBox`: a false positive today. `UIBuilder.luau:412-418` plus the `CLASS_DEFAULTS.TextBox` row makes it a false negative the day a JSON node adds one. |
 
 ## Revisions taken
 
 | # | round | field | was | is | why |
 |---|---|---|---|---|---|
-| `RR-5` | 1 | `redemptionSurfaces[L4].baseline.furtherTextualOccurrences` | `7` | `6`, with all six sites enumerated and `totalTextualOccurrencesIncludingTheCallSite: 7` beside them | 7 was the total across `Entitlements.luau:39,59,87,98,113,119` and `GameConfig.luau:1237`. The call site at `:119` is one of the seven, so *further* is 6. Accepted without argument. Criterion 2 now states both figures and the baseline names every site, so the two counts cannot be read as one again. |
+| `RR-5` | 1 | `redemptionSurfaces[L4].baseline.furtherTextualOccurrences` | `7` | `6`, with all six sites enumerated and `totalTextualOccurrencesIncludingTheCallSite: 7` beside them | 7 was the total across `Entitlements.luau:39,59,87,98,113,119` and the one `GameConfig.luau` config string. The call site at `:119` is one of the seven, so *further* is 6. Accepted without argument. Criterion 2 now states both figures and the baseline names every site, so the two counts cannot be read as one again. |
+| `RR-2e` | 2 | `redemptionSurfaces[L4].baseline.furtherOccurrenceSites[5]` | `"game/src/shared/GameConfig.luau:1237 config string"` | the `products.ownershipCheck` value string in `GameConfig.luau`, quoted | `:1237` is `ordinal = 8` today; the string is at `:1299`. `GameConfig.luau` is generated and was re-emitted this wave when `styleGuide` was promoted. A line pin into it is stale by construction, so the site is given as a field path and `generatedFileCitationRule` makes that a rule rather than a one-off fix. Both counts were re-measured and are unchanged. |
+| — | 2 | the `products` revision request's target | `cid/gameplay/monetization/02-what-is-never-sold.md` alone | both `monetization/01` (the manifest row at `:170`) and `02:97` (its table restatement) | the request was aimed one file off: `02` carries the text, `01` carries the manifest field. Recorded by `cid/liveops/_verified.md` as a finding not acted on; acted on here because a request aimed at the wrong file lands nowhere. |
 
 ## Flagged to the developer
 
@@ -292,6 +314,7 @@ and what a group-join prompt would say if one did — feedback-intake work (Comm
 channel, `products` `F15` for the prompt. Whether a boost class is ever invented —
 permanent-stat-change work (`modifiers`). What ships after v1 and in what order — roadmap work.
 Limited-time content and recurring tracks — event and season work, which rule their own counts.
-Whether `bridge/schema.mjs` promotes `codes` and whether it also rejects nulls at validation —
-contract-and-seam work. The top-20 survey named in the `[research owed:]` above — a batched
-research pass; the ruling does not wait on it.
+Whether `bridge/schema.mjs` promotes `codes`, whether it also rejects nulls at validation, and
+whether a merge-time sweep bans line pins into generated files — contract-and-seam work; I state
+the rule for this key and legislate for no other. The top-20 survey named in the
+`[research owed:]` above — a batched research pass; the ruling does not wait on it.

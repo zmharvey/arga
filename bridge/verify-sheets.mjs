@@ -329,6 +329,58 @@ const PROSE_BUDGET = 100;
 }
 
 /*
+ * An id cited into another sheet must exist in that sheet.
+ *
+ * `bridge/refs.mjs` resolves declared references inside manifest blocks. This catches the other
+ * half — the citations that live in prose and in criteria, of the form `theme/tone/04 X10`. They
+ * are how one sheet binds another's ruling, and nothing checked them.
+ *
+ * The Tone domain was renumbered in wave 7 — `04`'s rows went from `X…` to `D1`–`D15` — and no
+ * sibling was updated. Fifteen sheets across five categories were left citing `X10`, and the
+ * proof it is a real loss rather than a rename is that two of them attribute DIFFERENT content
+ * to it: `analytics/_category.md` has `X10` as "measure freely, display none of it", binding on
+ * five domains, while `theme/setting/03` has it forbidding any surface that displays time. One
+ * of those rulings is gone and nobody can say which.
+ *
+ * Deliberately narrow: it only reports a citation whose TARGET SHEET EXISTS. A path that names
+ * no sheet is someone's shorthand, not a broken binding, and reporting it would bury this.
+ */
+{
+  const byStem = new Map();
+  for (const f of leaves) {
+    const m = relative(ROOT, f).match(/^(.+)\/(\d\d)-[^/]+\.md$/);
+    if (m) byStem.set(`${m[1]}/${m[2]}`, f);
+  }
+  const CITE = /([a-z][a-z-]*\/[a-z][a-z-]*\/\d\d)(?:-[a-z-]+)?`?[^\S\n]*`?([A-Z]{1,2}-?\d{1,2})\b/g;
+  const bodies = new Map();
+  const read = async (f) => {
+    if (!bodies.has(f)) bodies.set(f, await readFile(f, 'utf8'));
+    return bodies.get(f);
+  };
+
+  const broken = new Map();
+  for (const f of [...leaves, ...indexes].filter(scoped)) {
+    for (const m of (await read(f)).matchAll(CITE)) {
+      const target = byStem.get(m[1]);
+      if (!target) continue;
+      if (new RegExp(`\\b${m[2]}\\b`).test(await read(target))) continue;
+      const key = `${m[1]} ${m[2]}`;
+      if (!broken.has(key)) broken.set(key, new Set());
+      broken.get(key).add(relative(ROOT, f));
+    }
+  }
+  if (broken.size) {
+    const sites = [...broken.values()].reduce((n, s) => n + s.size, 0);
+    const worst = [...broken.entries()].sort((a, b) => b[1].size - a[1].size);
+    warns.push(`${broken.size} id(s) cited into a sheet that does not define them, across ${sites} site(s). `
+      + `A renumbering breaks every sibling silently — Tone's X-ids became D-ids in wave 7 and 15 sheets `
+      + `in 5 categories still cite the old ones. Worst: `
+      + `${worst.slice(0, 3).map(([k, v]) => `${k} (${v.size} sites)`).join(', ')}`
+      + `${worst.length > 3 ? ', …' : ''}`);
+  }
+}
+
+/*
  * A line number in a GENERATED file is a citation with an expiry date.
  *
  * `GameConfig.luau` says "GENERATED FILE — do not edit" on line 3 and is rewritten by

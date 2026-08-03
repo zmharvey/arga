@@ -67,8 +67,22 @@ handle for writers and art prompts, not a name for anything.
       "promotionNote": "a schema owner promoting this key must fold the four amendments in; each names its sub-object and touches no other."
     },
     "exclusionListFields": {
-      "whyThisFieldExists": "four fields in this key are exclusion lists, and an exclusion list has to name the thing it excludes. Every word-pattern criterion in this domain exempts them by name, here and in setting.contents. Naming them once is what makes that exemption checkable instead of a judgement call.",
-      "fields": ["setting.identity.isNotA", "setting.materialRegister.excludedStones", "setting.materialRegister.ornamentIsNot", "setting.life.bannedWords", "setting.climate.excludedBands[].band"]
+      "whyThisFieldExists": "this key holds eleven fields that are exclusion lists, and an exclusion list has to name the thing it excludes. Every word-pattern criterion in this domain is scoped to skip them: a check that fires on the list of forbidden words is a check reporting its own subject matter. Enumerating them once is what makes that exemption checkable rather than a judgement call, and it is the field a lint has to be handed.",
+      "fields": [
+        "setting.identity.isNotA",
+        "setting.climate.excludedBands[].band",
+        "setting.materialRegister.excludedStones",
+        "setting.materialRegister.ornamentIsNot",
+        "setting.life.bannedWords",
+        "setting.extent.spatialRelationsExcluded",
+        "setting.extent.bannedDirectionWords",
+        "setting.extent.unavailableStoreWords",
+        "setting.law.RW.tokens",
+        "setting.passage.bannedPassageWords",
+        "setting.contents.absent[].fact",
+        "setting.contents.absentClassWordCheck.tokens"
+      ],
+      "everythingElseInThisKeyIsInScope": true
     },
     "identity": {
       "buildingFunction": "gathering water and keeping the count of it",
@@ -140,7 +154,7 @@ handle for writers and art prompts, not a name for anything.
     },
     "playtestUnknowns": [
       {
-        "question": "whether a place with no visible animals reads as warm or as eerie to 8-14s",
+        "question": "whether a place with no visible fauna reads as warm or as eerie to 8-14s",
         "startingValue": "no visible fauna, ambient off-screen sound permitted",
         "escalationInOrder": ["raise ambient density and volume", "motion in the canopy at the area edge", "a developer ruling adds a visible creature"],
         "whatWouldSettleIt": "a first-session read of whether players describe the place as quiet or as empty"
@@ -251,7 +265,7 @@ spooky"* / *"reclamation, not a haunted place"* `[brief: soft]` ×2 is the const
 break first. A sound outside the edge costs one audio asset, breaks no exclusion, and is Audio's
 call to take or leave. `[cid: decided]`
 
-**`[playtest unknown]` — whether a place with no visible animals reads as warm or as eerie to
+**`[playtest unknown]` — whether a place with no visible fauna reads as warm or as eerie to
 8–14s.** `[brief: binding]` `[you chose: R1 Q4]` on the band. **Starting value: no visible fauna,
 ambient off-screen sound permitted.** Test range, in the order it should be spent if the place
 reads dead: (1) raise ambient density and volume; (2) motion in the canopy at the area edge,
@@ -327,9 +341,9 @@ Routed to fantasy work rather than claimed.
   merged. Promoting it means folding in four amendments — `extent`, `law`, `passage`, `contents` —
   each of which names its sub-object and touches no other. Nothing downstream may read `setting`
   until it is promoted; every current consumer cites this sheet's prose by hand, which is the
-  defect the proposal exists to close. **`setting.exclusionListFields` is the one field a lint has
-  to know about:** four fields in this key name what they exclude, and a word check run over them
-  fails on its own subject matter.
+  defect the proposal exists to close. **`setting.exclusionListFields` is the one field a word lint
+  has to be handed:** twelve fields across this key name what they exclude, and a word check run
+  over them reports its own subject matter.
 - **Fantasy work** *[Fantasy, this wave]*: your Roblox occupancy search now has a specific target
   shape to check — restoration of a terraced hillside stoneworks — plus the unverified near-miss
   above (`Prospecting!`, *"Overgrown Grotto"*, vine-cutting behind tool gates). **If your search
@@ -362,9 +376,9 @@ Routed to fantasy work rather than claimed.
    interactables in the build is **0**, and across every `manifest` block and every `artPrompt`
    under `cid/` the whole-word case-insensitive pattern
    `bird|birds|animal|animals|beast|insect|beetle|butterfly|fish|deer|fox|snake|lizard|frog|bat|spider`
-   returns **0 hits** outside the five fields named in `setting.exclusionListFields`, which are the
-   check rather than a violation of it. Non-visual ambient audio is exempt, and no manifest field
-   outside that list holds it.
+   returns **0 hits** at every path except the twelve listed in
+   `setting.exclusionListFields.fields`, which are the check rather than a violation of it. Prose
+   is exempt, non-visual ambient audio is exempt, and no manifest field outside that list holds it.
 
 ## Not decided here
 

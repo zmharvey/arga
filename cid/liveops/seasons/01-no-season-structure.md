@@ -56,6 +56,21 @@ recurring product is *"auto-renewing, not one-time purchases"*
 `[research: https://create.roblox.com/docs/production/monetization/subscriptions]` — precisely
 what `products` `F18` bans by name.
 
+**One of my fourteen observables was a bare zero and the repo does not return zero.**
+`[revised: RR-2g]` `forbidden[returningPlayerGrant]` claimed that a case-insensitive search of
+`game/src` for `welcomeback`, `daily`, `streak` and `login` **returns zero identifiers**. It
+returns **three lines**: `Screens/quests.luau`'s `text = "DAILY QUESTS"` and its
+`name = "Chip_Streak"` node, and `firstSession.tutorialDevicesForbidden`'s
+`"welcomeOrWelcomeBackString"` in `GameConfig.luau` `[research: game/src]`. The first two are the
+exact artifact `events/01`'s `F-E1` already names and routes to
+`offerSurface.artifactHygiene.mustNotBePresent`; the third is a thing named **in order to forbid
+it**, which the category brief calls the compliant form. So the row now states the same shape
+`events/01` AC3 states — *a subset of a named artifact set* — rather than a zero that was never
+true. **The ruling does not move**: no path in `game/src` grants anything for returning, and
+`StoredState` still carries no timestamp to condition one on. A bare zero that fails is worse
+than a scoped subset that holds, because the first gets waived on sight and the second fails
+loudly the day a fourth path matches. `[cid: decided]` on the observable's form.
+
 **And unlike Codes, this domain has no sourced counter-evidence at all.** No source states that a
 season's absence reads as an unfinished game. The direct reference ships six real passes —
 2x Walkspeed 29, 2x Grass Luck 99, 2x EXP 99, 2x Bronze 199, [OP] Giant Trimmer 2,500 and one
@@ -121,6 +136,14 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
       "observable": "StoredState has exactly 7 fields -- currency, upgrades, rowsRevealed, found, areasFinished, cleared, clearedCount -- and no code path lowers found, areasFinished, upgrades, cleared or clearedCount",
       "status": "cid decided"
     },
+    "artifactSetsThisKeyDefersTo": {
+      "rule": "where a word this key forbids already appears in game/src as a leftover from the ui-forge source screens, this key does not restate a zero. It states a SUBSET of a set another approved key already owns and routes.",
+      "sets": [
+        { "path": "offerSurface.artifactHygiene.mustNotBePresent", "owner": "ui-ux/store/01", "routedBy": "events/01 finding F-E1", "membersMatchedByThisKeysWords": ["game/src/shared/Screens/quests.luau"] },
+        { "path": "firstSession.tutorialDevicesForbidden", "owner": "the first-session key", "membersMatchedByThisKeysWords": ["welcomeOrWelcomeBackString"], "why": "a name held in a forbid-list. Naming a thing in order to forbid it is the compliant form per the category brief." }
+      ],
+      "citationForm": "both sets are cited by field path and by matched text. Neither game/src/shared/GameConfig.luau nor game/src/shared/Screens/quests.luau is cited by line number: the first is emitted by npm run bridge -- --emit and the second is emitted by ui-forge, and both move."
+    },
     "subjectVerdicts": [
       { "id": "S1", "subject": "season length", "verdict": "vacuous", "closedBy": "release.forbidden N2; products F10; 02-GAMEPLAY.md zero tension", "observable": "seasonCount == 0 and len(seasons) == 0; zero fields named startUtc, endUtc, lengthDays, duration, expires, window or countdown, and zero fields of any name holding a date" },
       { "id": "S2", "subject": "reward track tiers", "verdict": "vacuous", "closedBy": "03-META.md 'Permanent multipliers only. Never content access.'; setBonus.rows == 4; endgame.forbidden[seasonPass]", "observable": "tierCount == 0 and tiers == []; the modifiers sourceClass enum keeps exactly its three values upgrade-level, set-completion and purchase; setBonus.rows still has 4 entries whose setId multiset equals collection.sets[].id" },
@@ -140,7 +163,7 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
       { "name": "seasonReset", "what": "a period-scoped reset, wipe, rollover or decay of any persisted field", "closedBy": "'Cleared is permanent' [you chose: R2 Q1]; release.forbidden N9; endgame.gameEnds false", "observable": "resetsAnything == false; fieldsResetBySeason == []; no code path lowers found, areasFinished, upgrades, cleared or clearedCount" },
       { "name": "carryOverRule", "what": "any rule converting one period's progress into the next", "closedBy": "there is no period; endgame is unbounded and continuous", "observable": "carryOverRules == [] and seasonCount == 0" },
       { "name": "legacyReward", "what": "a legacy, veteran, founder or early-player grant of any kind", "closedBy": "endgame buries nothing and endScreen is false; stingers.forbidden[completionCeremony]; music F1", "observable": "legacyRewards == []; endgame.survivingPayoffKinds stays exactly [currencyTick, areaCompletion]; stingers.cueCount == 3" },
-      { "name": "returningPlayerGrant", "what": "a welcome-back, absence or re-join reward, including a first-login-of-the-period grant", "closedBy": "03-META.md priority 3 (daily rewards); endgame.forbidden[dailyReward]; offline accrual cut, following [you chose: R2 Q1]", "observable": "case-insensitive search of game/src for 'welcomeback', 'daily', 'streak' and 'login' returns zero identifiers; StoredState carries no timestamp" },
+      { "name": "returningPlayerGrant", "what": "a welcome-back, absence or re-join reward, including a first-login-of-the-period grant", "closedBy": "03-META.md priority 3 (daily rewards); endgame.forbidden[dailyReward]; offline accrual cut, following [you chose: R2 Q1]", "observable": "a case-insensitive search of game/src for 'welcomeback', 'daily', 'streak' and 'login' returns a set of paths that is a SUBSET of artifactSetsThisKeyDefersTo. Today that set is exactly {game/src/shared/Screens/quests.luau, game/src/shared/GameConfig.luau}, 3 lines: quests.luau's `text = \"DAILY QUESTS\"` and `name = \"Chip_Streak\"`, both already in offerSurface.artifactHygiene.mustNotBePresent and routed by events/01 F-E1; and firstSession.tutorialDevicesForbidden's 'welcomeOrWelcomeBackString', a name held in order to forbid it. NOT ZERO, and the criterion fails the moment a path outside those two sets matches. Independently: StoredState carries no timestamp, so nothing in game/src can condition a grant on absence." },
       { "name": "seasonalCosmetic", "what": "a seasonal skin, variant, dressing, palette swap or holiday reskin of any object or area", "closedBy": "products F7 (no cosmetics, no display system); release.forbidden N3 (no flag changing what content exists); music M12", "observable": "no products[] entry changes any instance parented to the character other than the tool head's width; zero date-conditional branches select an asset" },
       { "name": "reservedSeasonSlot", "what": "a reserved slot, empty tier row, placeholder calendar field, null seasonId or 'for a future update' stub", "closedBy": "the category scope gate; tech/deploy/02 -- an explicit null and a never-emitted key are the same bytes", "observable": "the count of null tokens in this manifest block is 0; reservedSlots == 0 and calendarFieldCount == 0" }
     ],
@@ -186,7 +209,9 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
       "carryOverRules, legacyRewards and persistedFieldsAdded are all empty",
       "subjectVerdicts has exactly 5 rows, one per graph subject, each with a closedBy and an observable",
       "no forbidden[].name appears as an identifier anywhere in game/src, case-insensitively",
+      "every path matched by a forbidden[].observable's word list is a member of a set named in artifactSetsThisKeyDefersTo",
       "this key contains no null token, no reserved slot, no date-valued field and no seasonId",
+      "no string anywhere in this key matches (GameConfig|Types|quests)\\.luau:[0-9]+",
       "no entry in notices.members has a season, period, track, tier or claim as its cause, at any length of that list"
     ]
   }
@@ -199,12 +224,13 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
 |---|---|
 | Icon and thumbnail work *[Discovery & Marketing]* | **You lose the referent for "seasonal and event variants."** There is no season behind a variant, so that half of your subject becomes a store-artifact question — whether an asset may be swapped with no season existing — and not a reopening of this key. I state the loss; I do not decide your artifact policy. |
 | Roadmap work *[Live Ops]* | **An ordered content sequence with no dates is not a season and nothing here forbids one.** My seam is the clock and the reset, not the sequence: `release` `N2` closes date-keyed flags and nothing closes an ordering. A drop may not carry a period label, a reset, a claim or a track. |
+| Events work *[Live Ops]* | **I now share your artifact set rather than contradicting it.** `forbidden[returningPlayerGrant]`'s observable is scoped to `offerSurface.artifactHygiene.mustNotBePresent`, the set your `F-E1` routes, so `quests.luau` matching *"DAILY QUESTS"* and *"Chip_Streak"* is one finding in two keys and not two findings. If your set gains a member, my observable widens with it and neither of us re-measures. Duration and timing of a one-off remain yours; the recurring, tiered, resetting structure is mine and is ruled zero. |
+| Screen-inventory and UI-emission work *[UI/UX — Store, Screens]* | A second key now depends on `offerSurface.artifactHygiene.mustNotBePresent` naming every leftover screen file. Its `instanceToday` is the field that has to stay complete; both `events/01` and this sheet fail loudly if a path outside it matches. |
 | Set-bonus work *[Meta & Content]* | **`setBonus` is named as this game's only permanent-grant ladder and no value of it moves.** Its four rows are why S2 is empty. A fifth permanent-grant source class in `modifiers` breaks my S2 observable before it breaks yours. |
 | Offer-ladder work *[Gameplay — Monetization]* | **There is no paid track to price**, so the "price of a paid track" item this node does not own resolves to nothing. `products.itemCount` staying 1 and `devProductCount` staying 0 are observables of my ruling as well as yours. |
 | Persistence and state-shape work *[Tech & Data, `architect`]* | `StoredState` stays at seven fields with no `seasonId`, `seasonXp`, `resetAt` or `tierClaimed`, and no writer lowers `found`, `areasFinished`, `upgrades`, `cleared` or `clearedCount`. That check is what keeps G-S2 closed. |
 | Notice-channel work *[UI/UX — Feedback]* | **`notices.members` may grow and this sheet does not care how long it is, nor what classes it holds.** My constraint is on member *causes*: no member's cause may be a season, period, track, tier or claim. `feedback/03` adding `saveNotLoaded` contradicts nothing here; a member announcing something the game is doing would. |
-| Contract-and-seam work *[owner of `bridge/schema.mjs`]* | `seasons` is proposed with `seasonCount == len(seasons)` as its invariant, on `music.trackCount == len(music.tracks)`'s pattern. **Promoting this key's and `endgame.forbidden`'s name searches into a `bridge/merge.mjs` check is worth more here than elsewhere**, because a supported first-party package makes this the cheapest priority-3 item to add by accident. |
-| Events work *[Live Ops]* | Duration and timing of a one-off are yours; the recurring, tiered, resetting structure is mine and is ruled zero. I restate none of your ruling. |
+| Contract-and-seam work *[owner of `bridge/schema.mjs`]* | `seasons` is proposed with `seasonCount == len(seasons)` as its invariant, on `music.trackCount == len(music.tracks)`'s pattern. **Promoting this key's and `endgame.forbidden`'s name searches into a `bridge/merge.mjs` check is worth more here than elsewhere**, because a supported first-party package makes this the cheapest priority-3 item to add by accident. Two of this key's cited files — `GameConfig.luau` and `Screens/quests.luau` — are **generated**, by `bridge --emit` and by ui-forge respectively, so no citation here gives either a line number and a repo-wide sweep for that pattern would find none in this sheet. |
 
 ## Acceptance criteria
 
@@ -215,13 +241,17 @@ payoff kind and fails `endgame`'s partition of `core-loop/02`'s five.**
 2. A case-insensitive search of `game/src` for each of `seasons.forbidden[]`'s 14 names and each
    of `endgame.forbidden`'s 13 names returns **zero** identifiers. Verified zero this run for
    `season|battlepass|battle pass|reward track|carryover|legacyReward|tierClaimed|seasonXp`.
-3. `game/src/shared/Types.luau`'s `StoredState` has exactly **7** fields — `currency`, `upgrades`,
+3. `rg -lni 'welcomeback|daily|streak|login' game/src` returns a set of paths that is a **subset
+   of `artifactSetsThisKeyDefersTo`**. Today that set is exactly
+   `{shared/Screens/quests.luau, shared/GameConfig.luau}` — three lines, verified this run:
+   `quests.luau`'s `text = "DAILY QUESTS"` and `name = "Chip_Streak"`, both members of
+   `offerSurface.artifactHygiene.mustNotBePresent`, and `GameConfig.luau`'s
+   `welcomeOrWelcomeBackString`, a member of `firstSession.tutorialDevicesForbidden`. **The
+   criterion fails the moment a path outside those two sets matches**, and it is not a zero.
+4. `game/src/shared/Types.luau`'s `StoredState` has exactly **7** fields — `currency`, `upgrades`,
    `rowsRevealed`, `found`, `areasFinished`, `cleared`, `clearedCount` — the save payload contains
-   no `seasonId`, `seasonXp`, `resetAt` or `tierClaimed`, and no code path lowers `found`,
-   `areasFinished`, `upgrades`, `cleared` or `clearedCount`.
-4. `endgame.survivingPayoffKinds` is exactly `["currencyTick","areaCompletion"]`,
-   `stingers.cueCount` is 3, `modifiers`' `sourceClass` enum still has exactly three values,
-   `products.itemCount` is 1, `products.devProductCount` is 0, and **no entry in `notices.members`
+   no `seasonId`, `seasonXp`, `resetAt` or `tierClaimed`, no code path lowers `found`,
+   `areasFinished`, `upgrades`, `cleared` or `clearedCount`, and **no entry in `notices.members`
    — at whatever length that list currently has — carries a season, period, track, tier or claim
    as its cause.**
 
@@ -236,16 +266,26 @@ reverse. **Recommendation: hold `seasonCount: 0`.** Reversal costs zero removal 
 its build cost is itemised in `reversalPath`; the first thing it needs is a persisted field that
 falls, which is the sentence `[you chose: R2 Q1]` bought.
 
+**`G-S2`, the permanence reading, is `[cid: decided]` and is flagged here as well as carried as
+data.** The brief's sentence is about overgrowth; I read it as binding the whole of `StoredState`.
+The live alternative is the narrow reading — a season may reset `currency` and `upgrades` because
+neither is overgrowth — which is literally consistent with the brief and which this sheet
+rejects, because `endgame` makes permanence a property of the save. **Recommendation: the whole of
+`StoredState`.** If you take the narrow reading, `S4` reopens and `permanenceReading.taken` is the
+one field that changes.
+
 ## Not decided here
 
 The price of a paid track and every Robux figure — *[Gameplay — Monetization]*, which holds
 `products`. One-off limited content, its duration and its unspent-currency handling — *[Live Ops
-— Events]*, which holds `events`. Whether an ordered, dateless content sequence exists at all —
+— Events]*, which holds `events` and owns `F-E1`'s routing of `quests.luau`; I cite its artifact
+set and add no member to it. Whether an ordered, dateless content sequence exists at all —
 *[Live Ops — Roadmap]*, which holds `roadmap`. How many members `notices` has, what class each one
 is and what any of them says — *[UI/UX — Feedback]*, which holds `notices`; I constrain member
-causes and never its length or its classes. Any value inside `setBonus`, including whether it is
-framed as a progression track — *[Meta & Content]*, via finding `FS1`. What the terminal state
-sounds like or grants — `endgame`, `stingers` and `music`, cited above and not reopened. Whether a
-store icon or thumbnail may carry a variant with no season behind it — *[Discovery & Marketing —
-Icon and Thumbnails]*. The shape and checks that would promote `seasons` from a proposal —
-*[owner of `bridge/schema.mjs`]*.
+causes and never its length or its classes. Which screen files are legitimate leftovers and which
+must be deleted — *[UI/UX — Store]*, which owns `offerSurface.artifactHygiene`. Any value inside
+`setBonus`, including whether it is framed as a progression track — *[Meta & Content]*, via
+finding `FS1`. What the terminal state sounds like or grants — `endgame`, `stingers` and `music`,
+cited above and not reopened. Whether a store icon or thumbnail may carry a variant with no season
+behind it — *[Discovery & Marketing — Icon and Thumbnails]*. The shape and checks that would
+promote `seasons` from a proposal — *[owner of `bridge/schema.mjs`]*.

@@ -40,7 +40,7 @@ value as a citation of somebody else's key.
     "absentCount": 25,
     "absentDecidedHere": 10,
     "aClassNotOnTheListDoesNotExist": "adding one is a revision against this sheet, not a dressing choice",
-    "scopeNote": "the absent rows name the excluded thing on purpose. An exclusion list is the check, not a violation of it; no word-pattern criterion in any sheet may be run against the absent[] array itself.",
+    "scopeNote": "absent[].fact and absentClassWordCheck.tokens name the excluded thing on purpose, and both are registered in setting.exclusionListFields.fields. No word-pattern criterion in any sheet is run against them: a check that fires on the list of forbidden words is a check reporting its own subject matter.",
     "present": [
       { "id": "P1", "class": "dressed stone construction: platforms, retaining walls, parapets, paving, kerbs, steps, piers, vaulting", "material": "warm pale limestone, sound and weathered under the green, never rubble", "note": "vertical built stone is present in every part, which is what P5's fourth class needs", "boundBy": ["setting.readability", "lore/01 L5"] },
       { "id": "P2", "class": "a channel-and-basin network, empty: runs, sluices, sumps, kerb gutters, tanks", "note": "the connective tissue that makes the parts one works, and it is dry", "boundBy": ["setting.extent"] },
@@ -104,7 +104,7 @@ value as a citation of somebody else's key.
       "animatorsAnimationControllersOrLoopingTweensInsideAPlot": 0
     },
     "absentClassWordCheck": {
-      "scope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt, and this key's own absent[] array is exempt because it is the list itself.",
+      "scope": "manifest string values and artPrompt values, whole-word case-insensitive. Prose is exempt, and every path in setting.exclusionListFields.fields is exempt.",
       "tokens": ["torch", "torches", "lamp", "lantern", "candle", "brazier", "bonfire", "banner", "tapestry", "curtain", "rope", "scroll", "parchment", "statue", "statuary", "effigy", "idol", "bust", "rubble", "debris", "puddle", "fountain", "grave", "tomb", "shrine", "altar", "lever", "valve", "switch", "padlock", "signpost", "inscription", "scoreboard"],
       "collidesWithAShippedValue": false
     },
@@ -226,9 +226,9 @@ Rec.601 luma of at least 165, at least 40 above the lightest tier green, because
 differ by shape or silhouette, not only hue"* is *"a requirement, not a nicety"* (`04-PRESENTATION.md`)
 `[brief: soft]`, self-described as a requirement. (2) Water in the tanks reads as the works still in
 service, against `01-the-ruin`'s ruling that the works no longer works. (3) A pool is the one place
-in this world a player would expect a fish or a skating insect, and A1 forbids both, so water makes
-the fauna absence conspicuous instead of unremarkable. (4) Deep water is the only hazard this
-architecture could plausibly contain, and A16 forbids hazards. (5) It is the cheapest row in the
+in this world a player would expect something swimming or skating on it, and A1 forbids both, so
+water makes the fauna absence conspicuous instead of unremarkable. (4) Deep water is the only hazard
+this architecture could plausibly contain, and A16 forbids hazards. (5) It is the cheapest row in the
 sheet to build: nothing. **It is inside `01-the-ruin`'s stated range and overrules nothing** (it
 offered *"dry or hold still rainwater at most"* and handed standing water to me by name), and the dry
 joke of a waterworks with no water in it is left dry, per the register.
@@ -403,9 +403,9 @@ to the place. *"More to clear"* passes. *"Something to look at"* fails.
 3. **Absent-class word check.** Across every `manifest` block and every `artPrompt` under `cid/`, the
    whole-word case-insensitive pattern
    `torch|torches|lamp|lantern|candle|brazier|bonfire|banner|tapestry|curtain|rope|scroll|parchment|statue|statuary|effigy|idol|bust|rubble|debris|puddle|fountain|grave|tomb|shrine|altar|lever|valve|switch|padlock|signpost|inscription|scoreboard`
-   returns **0 hits**. Prose in these sheets is exempt, and so are the declared exclusion lists
-   themselves — `setting.contents.absent[]` and `.absentClassWordCheck.tokens` are the check, not a
-   violation of it. The check is against contract values and art prompts only.
+   returns **0 hits** at every path except the twelve listed in
+   `setting.exclusionListFields.fields`, which are the check rather than a violation of it. Prose in
+   these sheets is exempt. The check is against contract values and art prompts only.
 4. **Two-sheet agreement.** **0** of the 25 absent rows duplicates any of the 9 rows in
    `cid/theme/identity/04-no-cast-declaration.md` (that table is entity classes, this one is inert
    matter), and the absent table contains **0** occurrences of the two broader phrases `01-the-ruin`
@@ -438,7 +438,7 @@ Four calls were genuinely live. Each is cheap to reverse and I state the cost.
 
 | call | live alternative | why I did not take it | cost of overruling me |
 |---|---|---|---|
-| **No standing water** (A6) | Shallow still rainwater in the lowest tanks, which `01-the-ruin` explicitly permitted | It darkens stone against a luma floor a stated accessibility *requirement* rests on, reads as the works still in service, and makes the fauna absence conspicuous by putting a pond in a world with no fish | One row, one art note. Nothing else in this sheet depends on it |
+| **No standing water** (A6) | Shallow still rainwater in the lowest tanks, which `01-the-ruin` explicitly permitted | It darkens stone against a luma floor a stated accessibility *requirement* rests on, reads as the works still in service, and makes the fauna absence conspicuous by putting a pond in a world where nothing swims | One row, one art note. Nothing else in this sheet depends on it |
 | **No loose object that is not a `Find`** (P4) | Scattered non-collectible props as dressing, the ordinary way a ruin is dressed | It teaches on sight that some objects are not for you, in a game whose whole distinction is that what you uncover is what you keep, and it is indistinguishable from a `Find` in a phone-sized cell | Moderate. It reaches Art at wave 4 and would want a visual rule separating a prop from a `Find` |
 | **No depicted person or creature in the stone** (A4) | One carved figure or a name cut into a lintel, which `identity/04` explicitly left available | A nameless face is the most reliable way to make an empty place read as watched, against *"reclamation, not a haunted place"*; and a cut name is the proper noun two lore silences forbid | One row. Ornament is unaffected, because it was already defined as abstract |
 | **No modelled ambient motion inside the built edge** (A14) | Gently swaying foliage, the genre's default warmth touch | A swaying silhouette competes with the silhouette channel that carries tier, and with the one visual event that matters, a patch ceasing to exist on contact | One row plus a performance cost. The canopy exemption already gives the place some life |

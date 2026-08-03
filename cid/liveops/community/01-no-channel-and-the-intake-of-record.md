@@ -8,10 +8,13 @@
 > `products` `F15` — verbatim at `cid/gameplay/monetization/01-the-offer-ladder.md:170` — plus
 > `G-a`, marked explicitly weaker than the six off-Roblox rows, and named in
 > `rowsReopenedByGaAlone`. **R6** closed: AC2's `social` exclusion is restated as its reason.
-> **Both published figures were wrong, mine included.** Measured today: **40 matching lines
-> across 7 files, 39 across 6 `.luau` files** — and three of the forty are the word used
-> descriptively, not the contract key, which my first correction asserted they all were. None of
-> the forty is a channel reference, and that zero is what the criterion rests on.
+> **`RR-2d` closed, and it corrects a correction:** measured today, **40 matching lines across 7
+> files, 39 across 6 `.luau` files** — that part was right — but **two** of the forty are the word
+> used descriptively, not three. `World.luau:26` reads *"it calls none of the social-graph or
+> ranking APIs **social** forbids"*: its second occurrence **is** the contract key, so the line is
+> both. The two purely descriptive lines are cited by their matched text, not by a line number,
+> because both sit in generated or freely-recommented files. None of the forty is a channel
+> reference, and that zero is what the criterion rests on.
 
 ## Decision
 
@@ -65,6 +68,19 @@ cannot share social media links directly within a game"*
 `[research: https://about.roblox.com/community-standards]`. That agrees with `products` `F15`
 from **outside** the project — two independent closures on one surface, which is why the
 in-game intake row carries both.
+
+**One line in the baseline is not what I said it was, and the correction is smaller than the
+error was.** `[revised: RR-2d]` My last pass listed three of the forty `social` matches as the
+word used descriptively rather than as the contract key. Two are: the `belowMinBreaks` string
+reading *"a player can spend a whole session alone and receives no social proof"* and
+`Plots.luau`'s comment *"deletes the only social system the game has"*. The third,
+`World.luau:26`, reads *"it calls none of the social-graph or ranking APIs `social` forbids"* —
+**one descriptive use and one key reference on one line**, so it belongs in neither column
+cleanly and is now carried as its own field. **Nothing the criterion rests on moves**: the
+criterion is the zero, and all forty lines still fail AC2's compound pattern. **And the two
+descriptive lines are cited by matched text, not by line number**, because one of them is in
+`GameConfig.luau`, which is generated and was re-emitted 68 lines out of position inside this
+wave `[research: game/src/shared/GameConfig.luau]`.
 
 **The intake of record already exists and had no rules.** `cid/_playtest.md` was created by
 Analytics to close a pipeline gap — *"no artifact type for an empirical reading"* — not as a
@@ -148,7 +164,7 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       { "id": "twitch",         "class": "offRoblox",  "exists": false, "closureStrength": "strong", "closedBy": "same",                                                                     "observable": "grep -rniE \"twitch\" game/src returns zero" },
       { "id": "facebook",       "class": "offRoblox",  "exists": false, "closureStrength": "strong", "closedBy": "same. Enumerated because it is one of the seven link types, so the set is complete against its source rather than against habit", "observable": "grep -rniE \"facebook\" game/src returns zero" },
       { "id": "robloxCommunity","class": "onRoblox",   "exists": false, "closureStrength": "WEAKEST OF THE EIGHT — see offRobloxPresence.rowsReopenedByGaAlone", "closedBy": "products F15 bans a group-join prompt anywhere in the game; G-a, the brief states no presence so the referent is empty. NOT the 16+ rule, which reaches a link to a community and not the community itself.", "observable": "grep -rniE \"roblox\\.com/(groups|communities)|IsInGroup|GetRankInGroup|GetRoleInGroup\" game/src returns zero" },
-      { "id": "inGameIntake",   "class": "inExperience","exists": false, "closureStrength": "strong", "closedBy": "products F15 (no code entry field, no rate-us or share prompt, zero TextBox); notices has two beat members and one system member and cannot carry a non-beat; community-standards bars the in-experience URL form", "observable": "no module constructs a TextBox instance, and grep -rniE \"https?://|SocialService|PromptGameInvite\" game/src returns zero. NOTE: a bare grep for the word TextBox matches a type union in HudBinding and a defaults table in UIBuilder and is NOT the check." }
+      { "id": "inGameIntake",   "class": "inExperience","exists": false, "closureStrength": "strong", "closedBy": "products F15 (no code entry field, no rate-us or share prompt, zero TextBox); no member of notices.members accepts input or reaches a person — two beat members and one system member, saveNotLoaded, which reports a failed save read; community-standards bars the in-experience URL form", "observable": "no module constructs a TextBox instance, and grep -rniE \"https?://|SocialService|PromptGameInvite\" game/src returns zero. NOTE: a bare grep for the word TextBox matches a type union in HudBinding and a defaults table in UIBuilder and is NOT the check." }
     ],
     "channelsConsideredCount": 8,
     "channelsConsideredSource": "the seven social-link types named at https://create.roblox.com/docs/production/promotion/social-media-links, plus the in-experience surface",
@@ -165,12 +181,17 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       "channelReferencesAmongThem": 0,
       "channelReferenceTest": "run AC2's compound pattern over those 40 lines: zero hits",
       "descriptiveNotKeyPathUses": [
-        "GameConfig.luau, the line matching `no social proof` — a player can spend a whole session alone and receives no social proof",
-        "Plots.luau, the line matching `the only social system` — deletes the only social system the game has",
-        "World.luau:26 — social-graph or ranking APIs social forbids"
+        "game/src/shared/GameConfig.luau, the line matching `no social proof` — belowMinBreaks, 'a player can spend a whole session alone and receives no social proof'. Cited by matched text: GameConfig.luau is generated and its line numbers move on every emit.",
+        "game/src/server/Plots.luau, the line matching `the only social system` — 'An opaque wall there deletes the only social system the game has'"
       ],
-      "correctionRecord": "the published figure was 37 across 7 files; the first correction said all 40 were the contract key. Both were wrong. 40/7/39/6 is measured, and the three lines above are not key paths. Neither error touched the exclusion, which holds.",
-      "stabilityWarning": "the 40 drifts with every comment edit and nothing here depends on it. The zero does not drift and is the criterion."
+      "descriptiveNotKeyPathUseCount": 2,
+      "linesCarryingBoth": [
+        { "at": "game/src/server/World.luau:26", "text": "it calls none of the social-graph or ranking APIs social forbids", "why": "the first occurrence is descriptive (social-graph, an industry term); the second is the contract key by name. The line is not a purely descriptive use and is not a pure key reference, so it is counted in neither column.", "correctedFromRound2": "this line was previously listed as the third descriptive use, which was wrong" }
+      ],
+      "linesCarryingBothCount": 1,
+      "correctionRecord": "the published figure was 37 across 7 files; the first correction said all 40 were the contract key; the second said three were descriptive. 40/7/39/6 is measured and stands. TWO lines are purely descriptive and ONE carries both a descriptive use and a key reference. No error in this chain has touched the exclusion, which holds.",
+      "stabilityWarning": "the 40 drifts with every comment edit and nothing here depends on it. The zero does not drift and is the criterion.",
+      "generatedFileCitationRule": "no line number in this key points inside game/src/shared/GameConfig.luau or game/src/shared/Types.luau. Both are emitted by npm run bridge -- --emit and moved by up to 68 lines within this wave when styleGuide was promoted. Matched text is cited instead. Hand-written modules such as World.luau and Plots.luau are cited by line where the line is stable."
     },
     "roles": [],
     "roleCount": 0,
@@ -222,7 +243,7 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
       "forbiddenDispositions": [
         "a live tuning change to any balance value (kpis.verdictRule: no live tuning response exists and none may be invented)",
         "a flag, a rollout, a cohort or a schedule (release.forbidden N1, N2, N10)",
-        "an in-game message telling a player anything about a reading (notices carries two beat members and one system member; release.shutdown.playerFacing is nothing)",
+        "an in-game message telling a player anything about a reading (no member of notices.members reports anything but this player's own completion or a failed save read; release.shutdown.playerFacing is nothing)",
         "publishing a review interval, day, week or schedule in this key"
       ]
     }
@@ -253,6 +274,10 @@ sheets authors a player-facing string,** so `vocabulary` binds nothing here and
   reading missing any of the five is recorded and is **not citable by a sheet**.
 - **Review-rhythm work (`kpis`).** No second cadence is published here and no field in
   `community` names an interval. Your window remains the only one.
+- **Contract-and-seam work (owner of the emitter).** `bareSocialWordBaseline` cites matched text
+  and never a `GameConfig.luau` line, because that file is generated and moved 68 lines inside
+  this wave. If a merge-time check for `(GameConfig|Types)\.luau:[0-9]+` across `cid/` is ever
+  written, this key passes it today.
 
 ## Flagged to the developer
 
@@ -280,10 +305,12 @@ record. **Roles:** none, or a tester rank — **none**, because `release.environ
    files, 1 in `game/src/server/Tool.report.md` — and **running the compound pattern above over
    those 40 lines returns zero**, so not one of them is a channel, a URL, a group id or a
    social-graph call. Most name the `social` contract key, a `cid/gameplay/social/*` sheet path
-   or the `GameConfig.Social`/`SOCIAL` identifier; **three use the word descriptively and are
-   also not channel references** — `GameConfig.luau` *"no social proof"*, `Plots.luau`
-   *"the only social system the game has"*, `World.luau:26` *"social-graph or ranking APIs"*.
-   The 40 drifts with every comment edit; the zero does not, and the zero is the criterion.
+   or the `GameConfig.Social`/`SOCIAL` identifier. **Exactly two use the word descriptively and
+   are also not channel references** — the `GameConfig.luau` line matching *"no social proof"* and
+   the `Plots.luau` line matching *"the only social system"*. **One further line carries both a
+   descriptive use and a key reference**, `World.luau:26`, *"it calls none of the social-graph or
+   ranking APIs `social` forbids"*. The 40 drifts with every comment edit; the zero does not, and
+   the zero is the criterion.
 3. **No field under `community` publishes a review rhythm.** `community.triage.cadence` is the
    string `"none"`, and searching the merged `community` value for
    `daily|weekly|monthly|everyN|schedule|intervalSeconds` returns zero hits. The only
@@ -295,8 +322,9 @@ record. **Roles:** none, or a tester rank — **none**, because `release.environ
 4. `community.triage.classes` has exactly 4 rows; every row carries exactly one `disposition`
    and `liveChange: false`; every row with `revisionRequest: true` names a target sheet and a
    field in its `disposition`; `community.intakeOfRecord.requiredFields` has exactly 5 rows;
-   and `community.offRobloxPresence.rowsReopenedByGaAlone` is exactly `["robloxCommunity"]`,
-   matching the one `channelsConsidered` row whose `closureStrength` is not `"strong"`.
+   `community.offRobloxPresence.rowsReopenedByGaAlone` is exactly `["robloxCommunity"]`,
+   matching the one `channelsConsidered` row whose `closureStrength` is not `"strong"`; and
+   `grep -nE "(GameConfig|Types)\.luau:[0-9]+"` over this sheet returns **zero matches**.
 
 ## Not decided here
 
@@ -306,9 +334,10 @@ obligation — **sheet `02`, this domain**, which amends this key and proposes n
 channel is ever created, and what it would be named — Discovery & Marketing — Social, whose
 decision reverses this sheet. Whether a Roblox community is ever created, which is the one
 channel this sheet closes weakly and the one `G-a` alone reopens — the same owner, and it is
-also where a group-join reward's channel side lands. What a notice may say — `notices`
-(`ui-ux/feedback/01`, `/03`); this sheet adds no member and no string. The review window and
-what a breached KPI row does — `kpis` (`analytics/kpis/02`); I inherit its disposition shape and
-publish no rhythm. Where codes would be published — Live Ops — Codes, which cites my empty set.
-Whether `cid/_playtest.md`'s `PT-1` is a real keyboard path — nobody yet; it is `T4` and stays
-open until someone reproduces it against a named build.
+also where a group-join reward's channel side lands. What a notice may say, how many members
+`notices` has and what class each one is — `notices` (`ui-ux/feedback/01`, `/03`); this sheet
+adds no member and no string, and states a predicate over the member list rather than a count.
+The review window and what a breached KPI row does — `kpis` (`analytics/kpis/02`); I inherit its
+disposition shape and publish no rhythm. Where codes would be published — Live Ops — Codes,
+which cites my empty set. Whether `cid/_playtest.md`'s `PT-1` is a real keyboard path — nobody
+yet; it is `T4` and stays open until someone reproduces it against a named build.
