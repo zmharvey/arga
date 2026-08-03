@@ -166,6 +166,13 @@ criterion 4 false as written** — it asserted the three phantom strings appeare
 `forbidden[EV4].observable` all name them in order to forbid them. The criterion below now counts
 those occurrences exactly instead of denying them.
 
+**Round 3 also re-measured `F-E2`'s spread, and it is wider than either previous count.** The false
+clause *"no notice channel may carry a non-beat"* was reported as sitting in three places at round 2
+and in two at the start of round 3. Re-grepped across `cid/` this run it sits in **five**, and one
+of them is a leaf sheet rather than an index. Each site is named in `F-E2` with its line, and the
+round-2 pointer to `cid/marketing/hype/_lead.md:40` is corrected: that line is an unrelated
+`05-OUTWARD.md` row and the clause is at `:54`.
+
 ```manifest
 {
   "provides": "events",
@@ -225,7 +232,8 @@ those occurrences exactly instead of denying them.
         { "asWritten": "every unlock value across depths and endgame.postTerminalArea is previousAreaComplete", "sites": 2, "problem": "false: depths.areas[] ordinal 1 carries unlock none, being the spawn area", "nowCitedAs": "count of areas whose unlock is neither none nor previousAreaComplete: 0", "rulingAffected": false, "criterionRewritten": true, "foundBy": "this sheet's own sweep" }
       ],
       "correctedAtRound3": [
-        { "asWritten": "criterion 4: the three phantom strings appear 0 times outside citedByFieldNotByTotal.correctedAtRound2", "problem": "false against this sheet's own manifest: citedPaths[].replacedPhantom, citedPaths[].replacedGuess and forbidden[EV4].observable each name a phantom in order to forbid it", "nowCitedAs": "an exact occurrence count per phantom string inside the manifest block, with each site named, plus the test that no citedPaths[].path is one of the three", "rulingAffected": false, "foundBy": "this sheet, applying the round-3 collection ruling" }
+        { "asWritten": "criterion 4: the three phantom strings appear 0 times outside citedByFieldNotByTotal.correctedAtRound2", "problem": "false against this sheet's own manifest: citedPaths[].replacedPhantom, citedPaths[].replacedGuess and forbidden[EV4].observable each name a phantom in order to forbid it", "nowCitedAs": "an exact occurrence count per phantom string inside the manifest block, with each site named, plus the test that no citedPaths[].path is one of the three", "rulingAffected": false, "foundBy": "this sheet, applying the round-3 collection ruling" },
+        { "asWritten": "F-E2's false clause sits in three places, later restated as two", "problem": "both counts were low. Re-grepped across cid/ this run the clause sits in five live sites, one of them a leaf sheet. The round-2 pointer to cid/marketing/hype/_lead.md line 40 named an unrelated 05-OUTWARD.md row; the clause is at line 54", "nowCitedAs": "F-E2.remainingCopies, five named sites with lines, plus F-E2.copiesClosedAtRound3", "rulingAffected": false, "foundBy": "this sheet, re-measuring rather than carrying a handed-down figure" }
       ]
     },
     "citedPaths": [
@@ -331,14 +339,27 @@ those occurrences exactly instead of denying them.
         "rulingAffected": false,
         "whyRulingSurvives": "shutdown is still silent, because notices.forbiddenAdditions closes any string a shutdown would need, not because the roster is beats-only",
         "repairedHere": false,
-        "remainingCopiesAtRound3": ["release.shutdown.playerFacing's value string", "cid/marketing/hype/_lead.md line 40"],
-        "copiesClosedAtRound3": ["cid/liveops/_category.md, which carried the clause in its intake-surface constraint and now states a predicate instead"]
+        "remeasuredOn": "2026-08-02",
+        "literalSweptFor": "carry a non-beat",
+        "remainingCopies": [
+          { "file": "cid/tech/deploy/01-the-release-contract.md", "line": 252, "note": "release.shutdown.playerFacing's own value string. The original, the only copy inside a merged key, and the only one whose edit changes a contract value" },
+          { "file": "cid/marketing/social/01-no-off-platform-presence.md", "line": 53, "note": "notices holds exactly two beat members and cannot carry a non-beat. A LEAF SHEET, so this one is not merely an index debt: both halves are false, the roster is three and saveNotLoaded is the non-beat" },
+          { "file": "cid/marketing/hype/_lead.md", "line": 54, "note": "Exactly two of response's five beats produce one, both beats, and no notice may carry a non-beat" },
+          { "file": "cid/marketing/social/_lead.md", "line": 78, "note": "planning lead, writer already run" },
+          { "file": "cid/liveops/events/_lead.md", "line": 87, "note": "this domain's own lead, and also one of F-E3's three sites" }
+        ],
+        "remainingCopyCount": 5,
+        "copiesClosedAtRound3": [
+          "cid/liveops/_category.md, whose intake-surface row carried the clause and now states a predicate; deleted rather than reworded, because saveNotLoaded IS the non-beat",
+          "cid/liveops/seasons/01, whose reversalPath.buildCost row cid/_state.md:396 still lists as open and which no longer carries the clause"
+        ],
+        "measurementCorrection": "round 2 reported three copies and the start of round 3 reported two; both were low. It also pointed at cid/marketing/hype/_lead.md line 40 for this clause, which is an unrelated 05-OUTWARD.md row. Re-grepped for the literal phrase across cid/ this run"
       },
       {
         "id": "F-E3",
         "to": "the Live Ops domain lead indexes",
         "finding": "the leaf sheets in this category were corrected for the notices member count at round 1 and the category brief at round 3, but three lead indexes still read notices has exactly two members, both beats: cid/liveops/events/_lead.md lines 48 and 87, cid/liveops/roadmap/_lead.md line 69, cid/liveops/seasons/_lead.md line 147. Verified this run against ui-ux/feedback/01, whose members[] holds setComplete and areaComplete both class beat, and ui-ux/feedback/03, whose saveNotLoaded is class system with beat null and systemNoticesAreBeats false, added via amends notices. The correct statement is two beat members and one system member, and the correct FORM is a predicate over notices.members[] rather than either count",
-        "categoryBriefStatus": "closed at round 3. cid/liveops/_category.md carried the clause at three sites and now carries none: its intake-surface, announcement-surface and operable-surface rows all state a predicate, and the deliberately false trailing clause cannot carry a non-beat was deleted rather than reworded, because saveNotLoaded IS the non-beat",
+        "categoryBriefStatus": "closed at round 3. cid/liveops/_category.md carried the clause at three sites and now carries none: its intake-surface, announcement-surface and operable-surface rows all state a predicate",
         "rulingAffected": false,
         "whyRulingSurvives": "every leaf-sheet citation is already a predicate over notices.members[] rather than a count, so no ruling in this category depends on the number",
         "repairedHere": "this domain's _lead.md exclusive-rewards observable only, which the round-3 collection ruling named. The three remaining lead sites are consumed wave-7 planning artifacts whose writers have run; no key, manifest or criterion depends on them"
@@ -351,7 +372,8 @@ those occurrences exactly instead of denying them.
       "this key adds zero faucets, zero sinks, zero conversions, zero products, zero gates and zero player-facing strings",
       "every forbidden row carries a ruling tracing to an approved sheet or to this sheet, and an observable that is a count",
       "every cross-key citation in this sheet appears in citedPaths with resolves true; no citation is a member count of another key's roster and no citation names a field its owning key does not hold",
-      "no citedPaths[].path is any of the three phantom paths recorded in correctedAtRound2; every occurrence of those three strings in this key sits in correctedAtRound2, citedPaths[].replacedPhantom, citedPaths[].replacedGuess or forbidden[EV4].observable, and names the string in order to forbid it"
+      "no citedPaths[].path is any of the three phantom paths recorded in correctedAtRound2; every occurrence of those three strings in this key sits in correctedAtRound2, citedPaths[].replacedPhantom, citedPaths[].replacedGuess or forbidden[EV4].observable, and names the string in order to forbid it",
+      "len(findings[F-E2].remainingCopies) equals findings[F-E2].remainingCopyCount, and every entry carries a file and an integer line"
     ]
   }
 }
@@ -365,7 +387,8 @@ those occurrences exactly instead of denying them.
 | **Update-ordering work** *[Live Ops — Roadmap]* | An undated ordering is yours; a date is mine and is zero. `release` `N2` answers *"why is an ordering permitted and a calendar not"* and it is not mine to give. Either Roadmap ruling leaves this key untouched. |
 | **Income and sink work** *[Gameplay — Systems `economy`; Balance `solvency`]* | Subject five stays yours. This key adds no faucet, no sink and no conversion, and states no rule about held currency. |
 | **Notice and transient-message work** *[UI/UX — Feedback, `notices`]* | Nothing here asks you for a member. My citation is a **predicate over `notices.members[]`** — no entry announces an event, an update or a schedule — so a fourth member does not touch this ruling. |
-| **Release work** *[Tech & Data — Deploy, `release`]* | Finding `F-E2`: `release.shutdown.playerFacing`'s own value asserts *"no notice channel may carry a non-beat"*, which `saveNotLoaded` falsified. Your ruling survives on `notices.forbiddenAdditions`, not on the roster's shape; the sentence inside the value is what needs the edit. Two copies of that clause remain — yours and `cid/marketing/hype/_lead.md:40`; `cid/liveops/_category.md`'s copy was deleted at round 3. |
+| **Release work** *[Tech & Data — Deploy, `release`]* | Finding `F-E2`: `release.shutdown.playerFacing`'s own value at `tech/deploy/01:252` asserts *"no notice channel may carry a non-beat"*, which `saveNotLoaded` falsified. Your ruling survives on `notices.forbiddenAdditions`, not on the roster's shape; the sentence inside the value is what needs the edit. **Re-measured this round, the clause sits in five live sites, not the two or three previously reported** — yours, `marketing/social/01:53` (a leaf sheet), `marketing/hype/_lead:54`, `marketing/social/_lead:78` and `liveops/events/_lead:87`. `cid/liveops/_category.md`'s copy was deleted at round 3. |
+| **Off-platform presence work** *[Discovery & Marketing — Social]* | `social/01:53` is the one **leaf sheet** outside this category still asserting *"`notices` holds exactly two beat members and cannot carry a non-beat"*. Both halves are false: the roster is three, and `saveNotLoaded` is the non-beat. Your `postingCadence: "none"` conclusion is unaffected — it rests on rows `C1`–`C8` and an empty referent, not on the roster's shape. |
 | **Screen-inventory and UI-emission work** *[UI/UX — Store, Screens]* | Finding `F-E1`, now cited at its real path `offerSurface.artifactHygiene.mustNotBePresent`. Your whitelist survives; its `instanceToday` would be stronger if it named the event banner and the countdown, and the fix is the two generator inputs. **A second key now depends on that set being complete:** `seasons.forbidden[returningPlayerGrant]` is scoped as a subset of it, so a path outside it fails two criteria rather than one. |
 | **Anyone writing runtime code** *[Tech & Data, Mechanics, Meta & Content]* | `EV10` is new and binds you. `os.clock` is permitted because it is monotonic; `os.time`, `os.date` and `DateTime` are not, and the ban is now a content rule as well as `Layout.luau`'s determinism rule. |
 | **Live Ops lead-index upkeep** | Finding `F-E3`: the stale *"`notices` has exactly two members, both beats"* clause survives in **three `_lead.md` files** — `events/_lead:48,87`, `roadmap/_lead:69`, `seasons/_lead:147` — and **no longer in `_category.md`**, whose three sites were corrected at round 3 to predicates. No ruling depends on any of them; it is a correctness debt on consumed planning artifacts, not on the keys. |
@@ -391,7 +414,10 @@ those occurrences exactly instead of denying them.
    `collection.total` **3 times** — `citedByFieldNotByTotal.correctedAtRound2[0].asWritten`,
    `citedPaths[].replacedPhantom`, `forbidden[EV4].observable`; `social.chat.window` **1 time** —
    `citedPaths[].replacedGuess`; and `artifactHygiene` unprefixed by `offerSurface.` **2 times** —
-   `correctedAtRound2[2].asWritten` and `citedPaths[].replacedGuess`.
+   `correctedAtRound2[2].asWritten` and `citedPaths[].replacedGuess`. Separately,
+   `findings[F-E2].remainingCopies` has **5** entries equalling `remainingCopyCount`, each carrying
+   a `file` and an integer `line`, and each of those five files contains the literal string
+   `carry a non-beat` at the line it names.
 
 ## Not decided here
 
@@ -402,15 +428,16 @@ dated half. Recurring, tiered, resetting structures — **Seasons**, which now s
 `returningPlayerGrant` observable as a subset of the artifact set `F-E1` routes rather than
 restating my finding. How many notices exist and what any of them says — **`notices`**
 *[UI/UX — Feedback]*; I cite a predicate over its roster and set no member. The wording inside
-`release.shutdown.playerFacing` — **`release`** *[Tech & Data — Deploy]*; `F-E2` reports it and
-repairs nothing. Whether a dashboard event entry is created, what it says and what it looks like —
-**store-listing work** *[Discovery & Marketing]*. Repairing `F-E1` — the owner of
-`offerSurface.artifactHygiene`, plus whoever owns `ui-forge/briefs/`; I delete nothing and claim
-no screen. The `·` in the emitted banner — **`vocabulary`**. Whether codes or a group reward exist —
-**Codes**. The stale `notices` member-count clause in this category's three remaining `_lead.md`
-files — **the Live Ops lead owners**, via finding `F-E3`; `_category.md`'s three sites were closed
-at round 3 and I repaired only the `collection` observable in my own domain's `_lead.md`, which the
-round-3 ruling named.
+`release.shutdown.playerFacing` and in the four sheets that copied it — **`release`**
+*[Tech & Data — Deploy]* for the value, and each copying sheet's own owner for its restatement;
+`F-E2` names all five sites with lines and repairs none. Whether a dashboard event entry is created,
+what it says and what it looks like — **store-listing work** *[Discovery & Marketing]*. Repairing
+`F-E1` — the owner of `offerSurface.artifactHygiene`, plus whoever owns `ui-forge/briefs/`; I delete
+nothing and claim no screen. The `·` in the emitted banner — **`vocabulary`**. Whether codes or a
+group reward exist — **Codes**. The stale `notices` member-count clause in this category's three
+remaining `_lead.md` files — **the Live Ops lead owners**, via finding `F-E3`; `_category.md`'s
+three sites were closed at round 3 and I repaired only the `collection` observable in my own
+domain's `_lead.md`, which the round-3 ruling named.
 
 ## Flagged to the developer
 

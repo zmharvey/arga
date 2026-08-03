@@ -102,6 +102,13 @@ second. **The bar is consistency, not one good result.**
   `npm run cid:verify` warns on every line-number citation into a generated file. Hand-written
   files may be cited by line freely — those move only when someone edits them, and then the
   editor is present to notice.
+- **Publish the command, not the list.** A sheet enumerating *someone else's* open items is
+  wrong by the next round, and it reads as authoritative while it rots. Three instances in one
+  wave: `name/03` said a site was "the last live occurrence in `cid/`" and the same round closed
+  it; `F-C4` listed ten stale citations of which four had already been fixed by the domain it
+  was filing against; the corrected six-site list was stale again one round later. State the
+  grep and the date it was last run, so a reader can re-derive the answer instead of trusting a
+  snapshot. Scope it — a bare `P5` grep hits 44 files across six unrelated id namespaces.
 - **A check must be able to pass.** Three sheets independently shipped an acceptance criterion
   of the form *"the string X appears zero times in this sheet"* — in a sheet that names X in
   order to forbid it. Scope a grep-shaped check to the fields that carry claims, never to the

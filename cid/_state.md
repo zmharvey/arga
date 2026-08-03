@@ -393,9 +393,12 @@ produced a key or a stated reason its subject has none.
    `idNamespaces.finding` says *"all number their rows N1 upward"*, space-preceded and therefore
    undotted. Fix is one token (`Nn`, or "from one upward"), or scope the criterion to citations rather
    than prose, which its own `rule` field already says.
-3. **`liveops/seasons/01`** — `reversalPath.buildCost` still says *"none may carry a non-beat"* while
-   naming `saveNotLoaded`, a non-beat, in the same sentence. Wording residue; its load-bearing
-   predicate and AC are correct and unaffected.
+3. ~~**`liveops/seasons/01`**~~ **CLOSED.** `reversalPath.buildCost` said *"none may carry a
+   non-beat"* while naming `saveNotLoaded`, a non-beat, in the same sentence. Gone — the clause was
+   deleted rather than reworded, in that sheet and in three others carrying copies of it. Verified:
+   `grep -c "cannot carry a non-beat\|exactly two members, both beats" cid/liveops/seasons/01-*.md`
+   returns 0. *This entry was itself stale for a round, which is the case for stating the grep
+   beside the claim rather than a snapshot of it.*
 4. **`marketing/thumbnails/01` criterion 3** asserts `slots[].pixelSize` and `slots[].format`; both
    live at `platform.*`, so the criterion returns undefined. Two of its criteria are also unverifiable
    against files it may not edit — it was mid-fix when it died.

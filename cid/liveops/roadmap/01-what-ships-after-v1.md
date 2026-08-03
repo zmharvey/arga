@@ -148,7 +148,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       "rule": "every citation of an exclusion row in this key is written dotted, as key.list.id. An undotted id is not a citation and satisfies no check. This field and the finding above are documentation prose describing the collision rather than citations, which is why criterion 2's scan is scoped to citation-bearing fields.",
       "citationBearingFields": ["closedBy", "why", "blockedBy", "rule", "migrationTrigger", "migrationTriggerReasoning", "migrationTriggerConfirmationOwed", "precondition", "costAgainst", "alsoCosts", "reversalCost", "whyOneDropAndNotTwo", "shipWindow"],
       "releaseForbiddenCitationSites": ["forbidden[].closedBy", "guardrails[].closedBy", "trigger.forbiddenTriggers[].closedBy", "idNamespaces.finding"],
-      "releaseForbiddenCitationSitesWhy": "the first three are the only fields in this key that name a release.forbidden row, and each names it in order to forbid or to close something — which is the compliant form the category brief states. idNamespaces.finding is the single documentation site: it quotes release.forbidden.N6 to demonstrate the collision and forbids nothing. Zero entries in drops[], notADrop[], blocked[] or declined[] cite release.forbidden at all, and that is what criterion 2 clause 1 checks.",
+      "releaseForbiddenCitationSitesWhy": "the first three are the only fields in this key that name a release exclusion row, and each names it in order to forbid or to close something, which is the compliant form the category brief states. The fourth is the single documentation site: it quotes the sixth release exclusion row to demonstrate the collision and forbids nothing. Zero entries in drops[], notADrop[], blocked[] or declined[] cite that list at all, and that is what criterion 2 clause 1 checks. This field states the rule and therefore holds no dotted id itself.",
       "ownIdPrefixes": ["D for drops", "T for forbiddenTriggers", "X for notADrop", "R-F for forbidden", "G for guardrails"],
       "ownIdsCollideWithNothing": "no id minted by this key is of the form Nn or Bn"
     },
@@ -325,7 +325,7 @@ comparable in the pack.]`** Nothing above depends on it: the order is derived fr
       "roadmap.cadence.value == 'none' implies roadmap.cadence.intervalDays == 0",
       "no value anywhere in roadmap is null or undefined at any depth",
       "every exclusion-row citation in a field named by idNamespaces.citationBearingFields is dotted with its owning key and list",
-      "every occurrence of release.forbidden.N<k> lies in a field named by idNamespaces.releaseForbiddenCitationSites, and none lies in drops[], notADrop[], blocked[] or declined[]",
+      "every dotted citation of a release exclusion row lies in a field named by idNamespaces.releaseForbiddenCitationSites, and none lies in drops[], notADrop[], blocked[] or declined[]",
       "no field in this key states a count of notices.members"
     ]
   }
@@ -403,7 +403,7 @@ recommend the first, riding `solvency`'s publish.**
    fields listed by `idNamespaces.releaseForbiddenCitationSites` — `forbidden[].closedBy`,
    `guardrails[].closedBy`, `trigger.forbiddenTriggers[].closedBy` (each of which names a
    `release` row in order to forbid or close something) and `idNamespaces.finding` (documentation
-   prose that quotes `N6` to demonstrate the collision and forbids nothing). **Zero occur
+   prose that quotes one such id to demonstrate the collision and forbids nothing). **Zero occur
    anywhere in `drops[]`, `notADrop[]`, `blocked[]` or `declined[]`**, which is the breach this
    clause exists to catch. Ids matching `storeMigration\.(nonTriggers|bumpTriggers)\.` and
    `performance\.forbidden\.` are outside this criterion's scope and appear legitimately in
