@@ -114,28 +114,44 @@ function walk(root, segs) {
       const v = c[ident];
       if (v === undefined) return { status: 'absent' };
       if (sub === null) { next.push(v); continue; }
-      if (!Array.isArray(v)) return { status: 'absent' };
-      if (sub === '*') next.push(...v);
+      // A subscript means "a collection, indexed" and the manifest keeps collections in both
+      // shapes: `tierMix.byDepth` is an object keyed "1".."4", `withheld` is an array. The
+      // author of `byDepth[*].expectedValuePerPatch` meant exactly what [*] means — every
+      // depth carries this field — and refusing it would push them toward a shorter path that
+      // checks less. So iterate an object's VALUES and select by its KEYS.
+      const isMap = v && typeof v === 'object' && !Array.isArray(v);
+      if (!Array.isArray(v) && !isMap) return { status: 'absent' };
+      const elems = Array.isArray(v) ? v : Object.values(v);
+      if (sub === '*') next.push(...elems);
       else if (sub === '?') {
         // ANY has to branch here rather than fan out. Fanning out and letting the next segment
         // reject the first element that lacks the field is ALL wearing a `?` — which is what
         // this did until a test asked it the difference. Resolve the remainder per element and
         // keep the ones that carry it; the quantifier is satisfied if any does.
-        if (!v.length) return { status: 'absent' };
+        if (!elems.length) return { status: 'absent' };
         const rest = segs.slice(i + 1);
-        const hits = v.map((el) => walk(el, rest)).filter((r) => r.status !== 'absent');
+        const hits = elems.map((el) => walk(el, rest)).filter((r) => r.status !== 'absent');
         if (!hits.length) return { status: 'absent' };
         const values = hits.flatMap((h) => h.values ?? []);
         return values.every(isSentinel) ? { status: 'absentByDesign', values } : { status: 'present', values };
+      }
+      else if (isMap) {
+        // On a map every non-quantifier subscript is a key, including a numeric one: `byDepth[1]`
+        // is the depth named "1", not the second entry. Object key order is not a contract.
+        const want = sub.startsWith('"') ? sub.slice(1, -1) : sub;
+        if (v[want] === undefined) return { status: 'absent' };
+        next.push(v[want]);
       }
       else if (/^\d+$/.test(sub)) {
         if (v[+sub] === undefined) return { status: 'absent' };
         next.push(v[+sub]);
       } else {
-        // A string subscript selects by a row's `id`, `name` or `key` — the three spellings
-        // the sheets actually use for a row's identity. Quotes are stripped if present.
+        // A string subscript selects a row by its identity field. The list is closed and derived
+        // from what the sheets actually wrote — `surface` is here because `firstSession.withheld`
+        // rows are named that way and nothing else in the row identifies them. Closed, so it
+        // stays checkable; extended by observation rather than by guess.
         const want = sub.startsWith('"') ? sub.slice(1, -1) : sub;
-        const row = v.find((r) => r && (r.id === want || r.name === want || r.key === want));
+        const row = v.find((r) => r && (r.id === want || r.name === want || r.key === want || r.surface === want));
         if (row === undefined) return { status: 'absent' };
         next.push(row);
       }

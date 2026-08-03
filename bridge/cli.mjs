@@ -79,12 +79,17 @@ if (problems.length) {
 // condition that would have compared against nil and silently never fired.
 const { problems: refProblems, notes: refNotes, resolved, pending } = resolveRefs(manifest, proposals);
 const spProblems = sharedPredicateProblems(manifest, proposals);
-if (refProblems.length || spProblems.length || refNotes.length) {
-  console.log(`\n  citations — ${resolved} resolve now, ${pending} wait on a proposed key:`);
-  for (const p of [...refProblems, ...spProblems]) console.log(`    x ${p}`);
-  for (const n of refNotes) console.log(`    ! ${n}`);
+// Printed even when clean. "No output" and "nothing was checked" look identical, and this
+// section spent its first three runs reporting the resolver's own bugs — the count is the
+// evidence that it walked something.
+console.log(`\n  citations — ${resolved} resolve now, ${pending} wait on a proposed key:`);
+for (const p of [...refProblems, ...spProblems]) console.log(`    x ${p}`);
+for (const n of refNotes) console.log(`    ! ${n}`);
+if (refProblems.length || spProblems.length) {
   console.log('    Not counted against the gate: every citing key is still a proposal, and a');
   console.log('    proposal is never merged. These become problems on promotion.');
+} else if (!refNotes.length) {
+  console.log('    Every declared reference resolves.');
 }
 
 const ok = problems.length === 0 && missing.length === 0;

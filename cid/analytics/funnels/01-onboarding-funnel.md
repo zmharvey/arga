@@ -212,6 +212,7 @@ stopping-rule bar.
       }
     ],
     "sharedPredicate": {
+      "definedBy": "funnels",
       "field": "funnels.customFields[saveState]",
       "readBy": ["funnels.populations[run1Sessions]", "engagement.populations.returning"],
       "mapping": { "run1": "saveState == pristine", "returning": "saveState == progressed" },

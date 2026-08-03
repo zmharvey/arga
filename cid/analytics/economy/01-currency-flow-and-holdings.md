@@ -121,6 +121,8 @@ reveals. Its definition, alarm and routing are sheet `02`'s. `dormant`, `structu
   "value": {
     "note": "A reading specification, not a design value a module consumes. Every readings[] row carries a refGrammar ref and no copy of the cited field's value.",
     "refShape": 1,
+    "refSites": ["readings[*].refutes"],
+    "refCount": 9,
     "promotionStatus": {
       "recommended": "developer-facing, not read by a build",
       "reason": "no Luau module needs a value from this key at runtime; game/src has zero AnalyticsService and zero LogService calls, and bridge/emit-config.mjs produces GameConfig only.",

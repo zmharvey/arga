@@ -129,6 +129,8 @@ recorded rather than smoothed over.
   "status": "proposed",
   "value": {
     "refShape": 1,
+    "refSites": ["events[*].refutes"],
+    "refCount": 13,
     "refsLocation": "every ref emitted by this key sits at events[*].refutes and nowhere else; the ref-recognition rule itself is kpis.refGrammar's to name and this key emits whatever it publishes",
     "transport": "AnalyticsService",
     "clientEmissionPossible": false,

@@ -144,6 +144,39 @@ test('a quoted subscript selects a row by id, name or key', () => {
   assert.equal(bad.problems.length, 1);
 });
 
+test('a subscript works on a map as well as an array — the manifest keeps both', () => {
+  // `tierMix.byDepth` is keyed "1".."4". `byDepth[*].expectedValuePerPatch` means exactly what
+  // [*] means — every depth carries this field — and refusing it would push the author toward
+  // a shorter path that checks less.
+  const universe = {
+    tierMix: {
+      byDepth: {
+        1: { weights: [38, 30], expectedValuePerPatch: 5.16 },
+        2: { weights: [34, 29], expectedValuePerPatch: 5.85 },
+      },
+    },
+    kpis: citer([field('tierMix.byDepth[*].expectedValuePerPatch'), field('tierMix.byDepth[2].weights[0]')]),
+  };
+  assert.deepEqual(resolveRefs(universe, []).problems, []);
+
+  // On a map a numeric subscript is a KEY, not a position — object key order is not a contract.
+  universe.kpis = citer([field('tierMix.byDepth[0]')]);
+  assert.equal(resolveRefs(universe, []).problems.length, 1);
+});
+
+test('a row is selected by its identity field, and `surface` is one of them', () => {
+  const universe = {
+    firstSession: {
+      withheld: [
+        { surface: 'collectionCount', latched: false },
+        { surface: 'upgradeRow', latched: true },
+      ],
+    },
+    kpis: citer([field('firstSession.withheld["upgradeRow"].latched')]),
+  };
+  assert.deepEqual(resolveRefs(universe, []).problems, []);
+});
+
 /* ------------------------------------------------------------------- sentinels */
 
 test('a sentinel resolves — reading "unbounded" or 0 as an absence is the bug, not the check', () => {
