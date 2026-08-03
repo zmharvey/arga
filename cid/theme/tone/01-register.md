@@ -52,7 +52,7 @@ key it feeds do not disagree `[research: bridge/schema.mjs]`.
 
 | id | property | rule | check |
 |---|---|---|---|
-| P1 | person | No first or second person. Copy names the thing, never the reader. Banned whole words, case-insensitive: `you your yours yourself we us our ours let's I my me mine` | regex over every player-facing string |
+| P1 | person | **No first person, and no role address.** Copy names the thing, never a station it assigns the reader. Banned whole words, case-insensitive: `we us our ours let's I my me mine`. **Second person is permitted** — narrowed wave 7; `theme/identity/02` sets `secondPersonPermitted` true and rules the shipped `"Clear a wider sweep as you walk"` passes, and the two sheets were handing `gameplay/balance` opposite instructions about one string it had already shipped. Tone owns register; Identity owns whether the player is given a station; `you` is a pronoun, not a station. | regex over every player-facing string |
 | P2 | mood | Declarative sentences only. No imperative, no question, no exclamation. **One exemption:** a control affordance may be a bare verb if it is exactly one word and names the action the control performs (`Close`, `Buy`, `Back`) | a string of 2+ words beginning with a bare verb fails |
 | P3 | length | 12 words a sentence, 2 sentences a string, 1 sentence for anything that is not `.blurb` or `.flavour`. Where `theme/vocabulary` sets a tighter per-field ceiling, the tighter one governs | `vocabulary.maxSentenceWords`, merged at 12 |
 | P4 | characters | The enforced set is `vocabulary.allowedPattern`, today `^[A-Za-z0-9 ,.'%%/-]+$`: the alphabet, the digits, space, and the six marks `,` `.` `'` `%` `-` `/`. Banned by name: `!` `?` `:` `;` `"` `*` `~` `#` `@` `+` `=` `\` `\|` `(` `)` `[` `]` `{` `}` `…` `—` `–` `’` `“` `”` and **every codepoint above U+007E**, which covers emoji, the genre's title glyphs and curly quotes | the merger runs the pattern over every player-facing string, prose included |
@@ -137,14 +137,15 @@ this domain does not own, so it is a request against `theme/vocabulary`, not a m
     { "word": "mine", "rule": "P1", "reason": "also a physical place a later area or Find could legitimately name" },
     { "words": ["screen", "press", "hold", "drag", "tap", "lobby"], "rule": "P6", "reason": "each is also a physical object or a physical verb this fiction may need: a fire screen, an olive press, a bowl that holds water, a cistern tap, a lobby of a ruined house. Banned as interface words, reviewer-enforced, deliberately not machine-banned" }
   ],
-  "breaksOnMerge": [
+  "breaksOnMerge": [],
+  "breaksOnMergeWithdrawn": [
     {
       "path": "upgrades[1].blurb",
       "value": "Clear a wider sweep as you walk",
-      "violates": "P1, the word you",
-      "replacement": "Clear a wider sweep while walking",
-      "owner": "gameplay/balance",
-      "note": "6 words, inside maxSentenceWords 12 and inside the grade ceiling. This is the only string in the merged manifest that any requested word hits; the other 80 requests are inert today"
+      "hadViolated": "P1, the word you",
+      "withdrawnBecause": "P1 is narrowed: second person is PERMITTED. theme/identity/02 sets secondPersonPermitted true and rules this exact shipped string passes, and the two sheets were giving gameplay/balance — which owns upgrades[].blurb — opposite instructions about one string it has already shipped.",
+      "ruling": "orchestrator, wave 7. The overlap was accidental: Tone owns REGISTER, how a string sounds; Identity owns whether the player is assigned a STATION. \"You\" is a pronoun, not a station, so P1 as written was broader than the thing it protects. First person stays banned — that is a register fact about a game with no narrator — and so does role address, which is Identity's rule and its actual concern (its alsoForbidden names role nouns, and its enforcementRoute is about our/us catching legitimate copy).",
+      "consequence": "gameplay/balance changes nothing. The shipped string stands, and this was the only string in the merged manifest any requested word hit, so the whole 81-word request list is inert today."
     }
   ]
 }
@@ -152,10 +153,13 @@ this domain does not own, so it is a request against `theme/vocabulary`, not a m
 
 ## Consequences for other work
 
-- **Upgrade copy** (`gameplay/balance`, owns `upgrades[].blurb`) must change one string:
-  `"Clear a wider sweep as you walk"` becomes `"Clear a wider sweep while walking"`. The
-  replacement is supplied so there is nothing to invent. Until it lands, P1 cannot be merged
-  without failing the manifest, and that is why it is a request rather than a value.
+- **Upgrade copy** (`gameplay/balance`, owns `upgrades[].blurb`) **changes nothing.** An earlier
+  version of this bullet required `"Clear a wider sweep as you walk"` to become `"Clear a wider
+  sweep while walking"`. That request is withdrawn: P1 is narrowed and second person is
+  permitted, so the shipped string passes. `theme/identity/02` had already ruled it passes, and
+  the two sheets were handing one owner opposite instructions about one string it had shipped.
+  With that row gone, no string in the merged manifest is hit by any requested word, and the
+  whole 81-word request list is inert today.
 - **Banned-word maintenance** (`theme/vocabulary/02`, holds the `vocabulary` key): four grouped
   requests and a `heldBack` list are above. The held-back words are a decision, not an
   oversight — machine-banning `hold` would fail a flavour line about a bowl.
@@ -186,8 +190,9 @@ from the genre's. Recommendation: (a). `[cid: decided]`, the brief is silent.
 1. Every string returned by `playerFacingStrings(manifest)` matches `vocabulary.allowedPattern`,
    contains no codepoint above U+007E, and contains no all-caps word of 2 or more letters.
 2. Zero player-facing strings contain, as whole words case-insensitively, any word in the four
-   `requestedBannedWords` groups above. **This currently fails on exactly one string**,
-   `upgrades[1].blurb`, and the replacement is named in `breaksOnMerge`.
+   `requestedBannedWords` groups above. **This passes today, and `breaksOnMerge` is empty.** It
+   failed on exactly one string, `upgrades[1].blurb`, until P1 was narrowed in wave 7 to permit
+   second person; see `breaksOnMergeWithdrawn` for the ruling and why the two sheets collided.
 3. No sentence in any player-facing string exceeds 12 words; no string outside `.blurb` and
    `.flavour` contains more than one sentence; no string contains more than two.
 4. Flesch-Kincaid grade over the concatenated `.blurb` and `.flavour` corpus, proper nouns
