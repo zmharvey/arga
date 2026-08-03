@@ -43,7 +43,15 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("UIForge")
-local GameConfig = require(Shared.GameConfig)
+-- Cast `:: any`, which is what Clearing, Tool, Persistence and server-main already do for this
+-- require and for the same reason: an instance require of a generated table resolves to `any`
+-- inside the engine anyway, and the cast is what lets luau-analyze check the rest of this file
+-- instead of stopping at the require it cannot follow.
+--
+-- The 15 errors that remain in this file are a different chain and are NOT fixed by this line:
+-- they come from `Layout`, whose own uncast GameConfig require makes `Layout.build()` return
+-- `unknown`. Named here so the next reader does not add a second cast expecting them to clear.
+local GameConfig = require(Shared.GameConfig) :: any
 local Layout = require(Shared.Layout)
 local Types = require(Shared.Types)
 
@@ -118,6 +126,28 @@ local plotsByUserId: { [number]: PlotRecord } = {}
 -- ==========================================================================
 -- Lane arithmetic
 -- ==========================================================================
+
+--[[
+	One row of the closed material list, by id.
+
+	Errors on an unknown id rather than returning nil. `styleGuide.materials` declares itself
+	exhaustive for world geometry — a twelfth row is a revision against that key, not a dressing
+	choice — so a miss here means the emitted config and this module disagree about what exists,
+	and that is worth stopping for. A nil returned quietly would surface as an untextured grey
+	part that nobody traces back to a config change.
+]]
+-- Annotated rather than inferred: the loop below only ever compares `.id`, so a checker
+-- narrows the return to `{ read id: unknown }` and every later `.material` read is an error.
+type MaterialRow = { id: string, material: string, role: string? }
+
+local function materialRow(id: string): MaterialRow
+	for _, row in ipairs(GameConfig.Materials) do
+		if row.id == id then
+			return row
+		end
+	end
+	error(`Plots: no styleGuide material row "{id}" — GameConfig.Materials and this module disagree`)
+end
 
 --[[
 	Slot n's lane origin on the walkable plane, from plots.slotOrigin:
@@ -531,7 +561,29 @@ function Plots.spawn(player: Player, state: PlayerState): CFrame
 	slab.Anchored = true
 	-- The one thing in the lane the player stands on. traversal.collision.playerVsWorld is true.
 	slab.CanCollide = true
-	slab.Material = Enum.Material.Slate
+
+	-- styleGuide material row M1: Limestone bound to the `stone.cleared` role, which
+	-- art/style/01 describes as "the lane slab and every cleared paving surface a player stands
+	-- on". Read from the row rather than written here, so the closed list stays the one place a
+	-- material is decided.
+	--
+	-- This was Enum.Material.Slate with no Color at all until wave 7 — not because anyone chose
+	-- Slate, but because styleGuide was a proposed key and nothing emitted it, so the value did
+	-- not exist to read. Slate is still in the list, at M4, for parapet copings and tread
+	-- nosings. It was never the slab's.
+	--
+	-- Colour matters here beyond taste: stone.cleared is luma 201.84, which is what clears
+	-- theme/setting/01's 165 readability floor and sits 78.7 above the lightest tier green, so
+	-- an uncleared patch never reads as floor.
+	local slabRow = materialRow("M1")
+	local slabMaterial = materialFromName(slabRow.material)
+	if slabMaterial ~= nil then
+		slab.Material = slabMaterial
+	else
+		warn(string.format("Plots: %q is not an Enum.Material name; leaving the slab material at its default", slabRow.material))
+	end
+	local slabRgb = GameConfig.ColorRoles[slabRow.role].rgb
+	slab.Color = Color3.fromRGB(slabRgb[1], slabRgb[2], slabRgb[3])
 
 	local spawnAnchor = Instance.new("Attachment")
 	spawnAnchor.Name = "Spawn"

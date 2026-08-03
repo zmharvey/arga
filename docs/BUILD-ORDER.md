@@ -8067,6 +8067,447 @@ state looks like, what each object is made of, and what happens in what order.
 ]
 ```
 
+#### `styleGuide` *(from art/style/01-palette-and-materials.md)*
+
+```json
+{
+  "oneLine": "Warm pale limestone under green, in one afternoon: cut stone, cast fittings and plants, matte throughout, and the ornament is cut into the stone rather than added to it.",
+  "oneLineIsInternal": "Not a player-facing string. vocabulary (casing title, maxLabelChars 14, maxSentenceWords 12, bannedWords) does not bind it, and no role name below is ever rendered.",
+  "citeAs": {
+    "whyThisExists": "verification round 1 found three sheets citing paths into this key that do not resolve. These are the spellings. An alias is a merge error, not a synonym.",
+    "canonical": [
+      "styleGuide.oneLine",
+      "styleGuide.roles[\"stone.cleared\"]",
+      "styleGuide.roles[\"stone.built\"]",
+      "styleGuide.roles[\"wood.worked\"]",
+      "styleGuide.roles[\"clay.fired\"]",
+      "styleGuide.roles[\"metal.cast\"]",
+      "styleGuide.roles[\"canopy.leaf\"]",
+      "styleGuide.roles[\"canopy.trunk\"]",
+      "styleGuide.roles.sky",
+      "styleGuide.roles.overgrowth",
+      "styleGuide.roles[<id>].rgb and .luma",
+      "styleGuide.materials.rows[] — an ARRAY keyed by .id M1 through M11, each with .enum, .role and .subjectClass",
+      "styleGuide.roleRules[] — keyed by .id C1 through C9",
+      "styleGuide.exclusionsByName[]",
+      "styleGuide.forbiddenMaterials[]",
+      "styleGuide.forbiddenMechanisms[]",
+      "styleGuide.surfaceRules.reflectance.value",
+      "styleGuide.surfaceRules.transparency.permittedValues",
+      "styleGuide.lumaCheck.partOne and .partTwo",
+      "styleGuide.revisionRequests[] — keyed by .id RR-A1, RR-A2",
+      "styleGuide.gapG3"
+    ],
+    "wrongSpellingsSeenInRoundOne": [
+      {
+        "cited": "styleGuide.roles.clearedStone",
+        "by": "lighting/01, vfx/01",
+        "resolvesTo": "styleGuide.roles[\"stone.cleared\"]"
+      },
+      {
+        "cited": "styleGuide.materials[worked-wood-dark]",
+        "by": "objects/03",
+        "resolvesTo": "nothing. materials.rows is an array; worked wood is the row with id M7, whose role is wood.worked. There is no dark/pale pair in this key — objectArt sets an object's own two values."
+      },
+      {
+        "cited": "styleGuide.materials[worked-wood-pale]",
+        "by": "objects/03",
+        "resolvesTo": "same as above"
+      },
+      {
+        "cited": "styleGuide.form.minimumFeatureStuds",
+        "by": "vfx/01",
+        "resolvesTo": "formLanguage.featureSize.near.minStuds. This key holds no form, size or proportion field at all."
+      }
+    ],
+    "notInThisKey": "every size, proportion, height and ornament field is in formLanguage (sheet 02). Every instance, part and triangle figure is in detailBudget (sheet 03), and every per-subject-class allocation is in environment or effects. styleGuide.form and styleGuide.budget do not exist and never will."
+  },
+  "lumaFormula": "Y = 0.299*R + 0.587*G + 0.114*B, Rec.601, on the authored Color3 in 0-255 space",
+  "roles": {
+    "stone.cleared": {
+      "family": "stone",
+      "rgb": [
+        216,
+        201,
+        169
+      ],
+      "hex": "#D8C9A9",
+      "luma": 201.84,
+      "rMinusB": 47,
+      "hueDeg": 40.9,
+      "hsvSaturation": 0.218,
+      "appliesTo": "the lane slab and every cleared paving surface a player stands on. This is the role theme/setting/01 criterion 3 is about."
+    },
+    "stone.built": {
+      "family": "stone",
+      "rgb": [
+        210,
+        195,
+        163
+      ],
+      "hex": "#D2C3A3",
+      "luma": 195.84,
+      "rMinusB": 47,
+      "hueDeg": 40.9,
+      "hsvSaturation": 0.224,
+      "appliesTo": "P1 vertical dressed stone: retaining wall, parapet, piers, steps, kerbs, vaulting, end walls. Also P2's channel and basin runs."
+    },
+    "wood.worked": {
+      "family": "register",
+      "rgb": [
+        178,
+        160,
+        133
+      ],
+      "hex": "#B2A085",
+      "luma": 162.3,
+      "rMinusB": 45,
+      "hueDeg": 36,
+      "hsvSaturation": 0.253,
+      "appliesTo": "P3 worked-wood fittings SET INTO THE BUILDING. Weathered and silvered, never fresh timber. NOT the held tool — objectArt sets that object's own values."
+    },
+    "clay.fired": {
+      "family": "register",
+      "rgb": [
+        171,
+        129,
+        101
+      ],
+      "hex": "#AB8165",
+      "luma": 138.37,
+      "rMinusB": 70,
+      "hueDeg": 24,
+      "hsvSaturation": 0.409,
+      "appliesTo": "P3 fired-clay fittings: pipe collars, tank linings, spouts. Never a wall and never a paving surface."
+    },
+    "metal.cast": {
+      "family": "register",
+      "rgb": [
+        128,
+        108,
+        76
+      ],
+      "hex": "#806C4C",
+      "luma": 110.33,
+      "rMinusB": 52,
+      "hueDeg": 36.9,
+      "hsvSaturation": 0.406,
+      "appliesTo": "P3 cast fittings and cut gearwork SET INTO THE BUILDING (materials row M6). Weathered dull, never green-patinated (verdigris is G-largest and is banned by C6) and never gilded.",
+      "assignedToNoObject": "struck from the tool head on verification RR-6. This key assigns this role to no held or carried object; objectArt does that."
+    },
+    "canopy.leaf": {
+      "family": "backdrop",
+      "rgb": [
+        52,
+        66,
+        44
+      ],
+      "hex": "#34422C",
+      "luma": 59.31,
+      "appliesTo": "P9 broadleaf canopy beyond the built edge. Darker than every tiers[].rgb by at least 10 luma so it never reads as clearable."
+    },
+    "canopy.trunk": {
+      "family": "backdrop",
+      "rgb": [
+        88,
+        78,
+        64
+      ],
+      "hex": "#584E40",
+      "luma": 79.39,
+      "appliesTo": "P9 trunks."
+    },
+    "sky": {
+      "family": "backdrop",
+      "rgb": "none",
+      "rgbIsNone": "not a hole. Sky carries no value HERE because lighting owns it; an explicit null would emit as nil and Luau drops the key, so a reader could not tell 'answered elsewhere' from 'never written'. Sentinel per tech/deploy/02.",
+      "instances": 0,
+      "appliesTo": "P8 open sky. Zero Sky instances; the engine default at the ratified ClockTime 15.5. Its read is Lighting's lighting key, not this one."
+    },
+    "overgrowth": {
+      "family": "green",
+      "rgb": "READ tiers[].rgb BY FIELD",
+      "shipped": true,
+      "appliesTo": "patch. Not set, resized or recoloured here."
+    }
+  },
+  "roleAssignmentBoundary": {
+    "thisKeySets": "which roles exist, their Color3 values, the rules every authored world colour obeys (C1-C9), and the closed material list every world surface picks from",
+    "thisKeyDoesNotSet": "which role any specific object takes. The tool's two parts, the four foliage forms and any Find's material are objectArt's; every dressed surface's role assignment is environment's; every cue's colour is effects'.",
+    "whatStillBinds": "C2, C4, C5, C6 and C7 bind ANY authored Color3 in the game, and materials.rows binds any Enum.Material in world geometry, whoever assigns it.",
+    "scope": "styleGuide.roles is scoped to world geometry. A held Model (the tool) sits outside it; the rules above still reach it, and uiTheme owns every GUI surface."
+  },
+  "roleRules": [
+    {
+      "id": "C1",
+      "rule": "every role with family 'stone' has luma in [195, 210]",
+      "protects": "theme/setting/01 criterion 3 at 30 points of headroom over the 165 floor, checked per part; the 210 cap is what keeps a bright stone from reading as the excluded white marble"
+    },
+    {
+      "id": "C2",
+      "rule": "every role with family 'stone' or 'register' has R > G > B and R - B >= 38",
+      "protects": "'warm pale limestone'; excludes Roblox's near-neutral default part colour [163,162,165], whose R - B is -2"
+    },
+    {
+      "id": "C3",
+      "rule": "every role with family 'stone' has HSV saturation >= 0.18",
+      "protects": "the white-marble and grey-granite exclusions, which are near-neutral"
+    },
+    {
+      "id": "C4",
+      "rule": "no role has hue below 20 degrees",
+      "protects": "the red-brick exclusion, which sits at roughly 5-15 degrees"
+    },
+    {
+      "id": "C5",
+      "rule": "no role has HSV saturation >= 0.45 together with luma >= 150",
+      "protects": "theme/lore/01's no-gilding overrule. fantasy-ornate's gold token #D4A34A is saturation 0.65 at luma 167.5 and fails this check by construction"
+    },
+    {
+      "id": "C6",
+      "rule": "no role inside the built edge has G as its largest channel; only tiers[].rgb do",
+      "protects": "green is the overgrowth channel alone, so no fitting or wall detail can be mistaken for a patch. canopy.leaf is exempt because zero canopy parts are parented to a lane slab"
+    },
+    {
+      "id": "C7",
+      "rule": "no role's luma falls inside 123.11 +/- 8",
+      "protects": "the lightest tier green's greyscale band. canopy roles are exempt under C6's clause"
+    },
+    {
+      "id": "C8",
+      "rule": "stone.cleared and stone.built are exempt from mutual separation and differ by only 6.00 luma",
+      "why": "they are one stone, per theme/setting/04's 'the same stone, with and without plants on it'. A vertical face already renders darker than a horizontal one under ClockTime 15.5; authoring a large step would double-count that and risk pushing a wall below 165 at render"
+    },
+    {
+      "id": "C9",
+      "rule": "there is no depth-varying stone role and no second stone",
+      "protects": "theme/lore/01 L4 (weathering identical at every depth) and theme/setting/03 (depth may not read darker or later). A dim vault is lit by authored openings, which is Environment's geometry, not a lighter colour and not a lighting value"
+    }
+  ],
+  "exclusionsByName": [
+    {
+      "excluded": "grey granite",
+      "source": "theme/setting/01",
+      "enforcedBy": "C2 + C3 + Enum.Material.Granite in forbiddenMaterials"
+    },
+    {
+      "excluded": "white marble",
+      "source": "theme/setting/01",
+      "enforcedBy": "C1's 210 cap + C3 + Enum.Material.Marble in forbiddenMaterials"
+    },
+    {
+      "excluded": "red brick",
+      "source": "theme/setting/01",
+      "enforcedBy": "C4 + Enum.Material.Brick in forbiddenMaterials + no clay.fired element laid in a repeating rectangular course"
+    },
+    {
+      "excluded": "dark basalt",
+      "source": "theme/setting/01",
+      "enforcedBy": "C1's 195 floor + Enum.Material.Basalt in forbiddenMaterials"
+    }
+  ],
+  "materials": {
+    "closed": true,
+    "shape": "an ARRAY at styleGuide.materials.rows, keyed by .id. It is not a map and has no name-keyed lookup.",
+    "rule": "this list is exhaustive for world geometry. A twelfth row is a revision against this key, not a dressing choice. The enum name is an engine texture identifier and is not fiction: theme/setting/01's exclusions are about what a surface reads as.",
+    "rows": [
+      {
+        "id": "M1",
+        "enum": "Limestone",
+        "role": "stone.cleared",
+        "subjectClass": "the lane slab and cleared paving (representation.plot)",
+        "sourced": "BasePart-valid, creator-docs parts/materials"
+      },
+      {
+        "id": "M2",
+        "enum": "Limestone",
+        "role": "stone.built",
+        "subjectClass": "P1 dressed stone: retaining wall, parapet, piers, steps, kerbs, vaulting, end walls",
+        "sourced": "same"
+      },
+      {
+        "id": "M3",
+        "enum": "Sandstone",
+        "role": "stone.built",
+        "subjectClass": "P2 channel-and-basin network only — one register step rougher, so the waterwork reads as a different piece of the same building without a second colour",
+        "sourced": "BasePart-valid, creator-docs parts/materials"
+      },
+      {
+        "id": "M4",
+        "enum": "Slate",
+        "role": "stone.built",
+        "subjectClass": "P1 flat capping only: parapet copings, tread nosings, tank lids. Retained because it ships (Plots.luau:534) and is proven BasePart-valid by shipped code.",
+        "sourced": "shipped"
+      },
+      {
+        "id": "M5",
+        "enum": "Concrete",
+        "role": "clay.fired",
+        "subjectClass": "P3 fired-clay fittings. Fine-grained and untextured enough to read as fired clay at hue 24 and saturation 0.41; it is not concrete in the fiction and nothing renders its name.",
+        "sourced": "BasePart-valid, creator-docs parts/materials"
+      },
+      {
+        "id": "M6",
+        "enum": "SmoothPlastic",
+        "role": "metal.cast",
+        "subjectClass": "P3 cast fittings and cut gearwork SET INTO THE BUILDING. Smooth + dark + warm reads as cast metal at 3 studs on a phone better than any stone texture, and it is proven BasePart-valid by shipped code (Plots.luau:300). Does NOT reach the held tool.",
+        "sourced": "shipped"
+      },
+      {
+        "id": "M7",
+        "enum": "Wood",
+        "role": "wood.worked",
+        "subjectClass": "P3 worked-wood fittings set into the building. objectArt also picks this enum for the held tool at its own two Color3 values, which is a role assignment and is theirs.",
+        "sourced": "enum membership only — creator-docs enums/Material. If Wood turns out Terrain-only, the fallback is SmoothPlastic at the same Color3 and no other value moves."
+      },
+      {
+        "id": "M8",
+        "enum": "Grass",
+        "role": "overgrowth",
+        "subjectClass": "patch. Shipped as patch.material; read by field, not set here.",
+        "sourced": "shipped"
+      },
+      {
+        "id": "M9",
+        "enum": "Grass",
+        "role": "canopy.leaf",
+        "subjectClass": "P9 canopy beyond the built edge. LeafyGrass was rejected: it is not established BasePart-valid in the pack.",
+        "sourced": "shipped"
+      },
+      {
+        "id": "M10",
+        "enum": "Wood",
+        "role": "canopy.trunk",
+        "subjectClass": "P9 trunks. Same fallback as M7.",
+        "sourced": "enum membership only"
+      },
+      {
+        "id": "M11",
+        "enum": "SmoothPlastic",
+        "role": "none",
+        "roleIsNone": "the one row that legitimately binds no role, because nothing renders: Transparency is 1. Sentinel rather than null per tech/deploy/02 — a nil role and an unwritten role are the same byte in an emitted config.",
+        "subjectClass": "the four plot-boundary parts (representation.plot-boundary). The one row that never renders: Transparency is 1 and no Color is set by this key.",
+        "sourced": "shipped"
+      }
+    ]
+  },
+  "forbiddenMaterials": [
+    "Granite",
+    "Marble",
+    "Brick",
+    "Basalt",
+    "Neon",
+    "Glass",
+    "ForceField",
+    "CorrodedMetal",
+    "DiamondPlate",
+    "Ice",
+    "Snow",
+    "Sand",
+    "Mud",
+    "Ground",
+    "Asphalt",
+    "Foil",
+    "Fabric",
+    "Leather",
+    "Plastic"
+  ],
+  "forbiddenMechanisms": [
+    {
+      "thing": "MaterialVariant",
+      "why": "requires an uploaded PBR texture; budgets.textureCeilings.uploadedImageAssetsInWorldGeometry is 0 and N17 forbids it"
+    },
+    {
+      "thing": "SurfaceAppearance",
+      "why": "same route, same source"
+    },
+    {
+      "thing": "Texture",
+      "why": "an uploaded image asset in world geometry"
+    },
+    {
+      "thing": "Decal",
+      "why": "same; also the only route to cut lettering, which theme/setting/05 lists absent"
+    },
+    {
+      "thing": "MeshPart / SpecialMesh",
+      "why": "budgets.textureCeilings.uploadedMeshAssetsInWorldGeometry is 0; representation assembles every subject from primitives"
+    },
+    {
+      "thing": "UnionOperation / NegateOperation",
+      "why": "N1 forbids UnionAsync and SubtractAsync by grep"
+    },
+    {
+      "thing": "Terrain",
+      "why": "a Terrain voxel region is neither counted by the lane instance formula nor coloured by this key, and N2 keys clearing to a patch array index"
+    }
+  ],
+  "surfaceRules": {
+    "reflectance": {
+      "value": 0,
+      "everyPart": true,
+      "why": "theme/setting/05 A6 — no wet or reflective surface. A single number so the check is a grep, not a judgement."
+    },
+    "transparency": {
+      "permittedValues": [
+        0,
+        1
+      ],
+      "noIntermediate": true,
+      "oneIsFor": [
+        "the four plot-boundary parts (representation.plot-boundary, N7, social/02)",
+        "the client's predicted-clear hide of a patch (prediction), which writes the authored 0 back on restore"
+      ],
+      "exemption": "a transient tween inside response.residueLifetimeSeconds 0.4 or dwellSeconds 2.5 belongs to effects (Art — VFX) and is not an authored value. This rule constrains authored state only, and does not block a fade-out clear."
+    },
+    "castShadow": "not set by this key. Patches ship false (budgets). Every other class is Lighting's lighting key.",
+    "noEmissive": "zero parts use Enum.Material.Neon and zero PointLight, SpotLight or SurfaceLight instances exist — theme/setting/05 A7 and its criterion 2. Named rather than described because Neon is a real enum member."
+  },
+  "lumaCheck": {
+    "partOne": {
+      "kind": "arithmetic on the authored Color3",
+      "rule": "every part carrying a stone-family role computes Rec.601 luma >= 195",
+      "runnable": "without a running game, from this key"
+    },
+    "partTwo": {
+      "kind": "rendered greyscale reading",
+      "rule": "in a greyscale screenshot of the least-lit authored part (a depth-3 vaulted bay at the ratified ClockTime 15.5), the mean greyscale of an unobstructed cleared-stone surface reads >= 165, and no cleared-stone pixel reads darker than any tiers[0] pixel in the same frame",
+      "runnable": "in Studio on budgets.deviceFloor",
+      "status": "[research owed:] — the Material-to-Color compositing rule is undocumented, so part two cannot be predicted from part one"
+    },
+    "whyTwoParts": "theme/setting/01 criterion 3 states both a Color3 floor and a greyscale screenshot test, and they are not the same measurement.",
+    "notAWcagClaim": "this floor is Rec.601 luma. WCAG 1.4.11's 3:1 is sRGB relative luminance, computing to roughly 1.5:1 against tiers[0]; a 3:1 ratio would need about 231 luma, above C1's cap and unreachable by any legal stone. Legibility is carried by tiers' four shapes and four heights. NO SHEET MAY CITE THIS FLOOR AS AN ACCESSIBILITY CONFORMANCE CLAIM."
+  },
+  "revisionRequests": [
+    {
+      "id": "RR-A1",
+      "against": "architect/sheets/06-representation.md",
+      "field": "representation.plot",
+      "change": "set material to Limestone (from Slate) and add color [216, 201, 169]",
+      "shippedDefect": "game/src/server/Plots.luau:534 sets slab.Material = Enum.Material.Slate and assigns no slab.Color. Verified this run: zero matches for slab.Color or slab.BrickColor anywhere in that file; the only .Color assignment in it is line 249, a patch.",
+      "arithmetic": "an unassigned Part renders at Roblox's default [163,162,165] -> 48.74 + 95.09 + 18.81 = 162.64 luma, which is 2.36 BELOW theme/setting/01's 165 floor, and R - B = -2, i.e. very slightly cool where the requirement is warm. The ground a player walks on — the exact surface criterion 3 is about — fails that criterion today on both halves.",
+      "scope": "one property added, one property changed, on one Part. No size, position, count or geometry moves. plots, tiers and patch are untouched.",
+      "notEditedHere": "this sheet files the request and does not edit architect/06."
+    },
+    {
+      "id": "RR-A2",
+      "against": "game/default.project.json:51-56 — the lobby baseplate",
+      "field": "Color [0.404, 0.353, 0.286], material Slate",
+      "arithmetic": "[103.0, 90.0, 72.9] -> 30.80 + 52.83 + 8.31 = 91.94 luma. Dark, and outside the fiction.",
+      "routedTo": "publish-checklist work (Tech & Data — Build & Deploy), as a placeConfiguration item on the RR-P2 precedent",
+      "whyNotMine": "architect/04-tree forbids the build editing that file, so this cannot be a build change and is not sheet 01's to make."
+    }
+  ],
+  "gapG3": {
+    "statement": "no token path exists for a world Color3, an Enum.Material, a Lighting property, a skybox or a ParticleEmitter. Every value in this key is therefore a literal, stated as a defect rather than blessed.",
+    "routeThatAlreadyExists": "generateTheme's additive token groups, ui-forge/src/theme/generate.mjs:172-176, would admit a color.world group into the same tree with no schema change",
+    "secondHalf": "even promoted, styleGuide has no emitter. bridge/emit-config.mjs produces GameConfig.luau, which is how patch.material and tiers[].rgb reach Plots.luau; ui-forge produces Theme.luau, which is UI-only and which architect/06 records no module owns. A styleGuide value reaches a Part only through GameConfig, and reaches Lighting or a skybox through nothing.",
+    "owner": "contract-and-seam work. [cid: decided] on the diagnosis only; the ruling is not mine."
+  },
+  "scopeCheck": "no role, material row or surface rule is reserved for a seasonal, festival, weather, time-of-day, rebirth, leaderboard or trading surface. 03-META.md priority 3, and theme/setting/05 A17-A23 already state each as a fact about the place."
+}
+```
+
 #### `interfaces (yours and your dependencies')`
 
 ```json

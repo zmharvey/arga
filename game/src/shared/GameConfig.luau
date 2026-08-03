@@ -149,6 +149,43 @@ GameConfig.AreasPerDepth = 2
 -- merger enforces: the previous noun was occupied inside this game's own genre family.
 GameConfig.FindNoun = { singular = "Find", plural = "Finds" }
 
+-- The world colour roles. From art/style/01-palette-and-materials.md.
+--
+-- Promoted in wave 7 because the lane slab was material "Slate" with no Color at all against
+-- a design that says Limestone at [216, 201, 169]. That is the surface a player stands on for
+-- the whole game, and there was no way to close it: the values lived in a key nothing emitted.
+-- A builder cannot build a world from an adjective.
+--
+-- `answeredElsewhere` marks a role that deliberately carries no triple here. It is not missing:
+-- sky is lighting's, and overgrowth reads tiers[].rgb by field.
+GameConfig.ColorRoles = {
+	["stone.cleared"] = { rgb = { 216, 201, 169 } },
+	["stone.built"] = { rgb = { 210, 195, 163 } },
+	["wood.worked"] = { rgb = { 178, 160, 133 } },
+	["clay.fired"] = { rgb = { 171, 129, 101 } },
+	["metal.cast"] = { rgb = { 128, 108, 76 } },
+	["canopy.leaf"] = { rgb = { 52, 66, 44 } },
+	["canopy.trunk"] = { rgb = { 88, 78, 64 } },
+	["sky"] = { answeredElsewhere = true },
+	["overgrowth"] = { answeredElsewhere = true },
+}
+
+-- The closed material list. A twelfth row is a revision against styleGuide, not a
+-- dressing choice. `role` is nil only for the row that never renders (Transparency 1).
+GameConfig.Materials = {
+	{ id = "M1", material = "Limestone", role = "stone.cleared" },
+	{ id = "M2", material = "Limestone", role = "stone.built" },
+	{ id = "M3", material = "Sandstone", role = "stone.built" },
+	{ id = "M4", material = "Slate", role = "stone.built" },
+	{ id = "M5", material = "Concrete", role = "clay.fired" },
+	{ id = "M6", material = "SmoothPlastic", role = "metal.cast" },
+	{ id = "M7", material = "Wood", role = "wood.worked" },
+	{ id = "M8", material = "Grass", role = "overgrowth" },
+	{ id = "M9", material = "Grass", role = "canopy.leaf" },
+	{ id = "M10", material = "Wood", role = "canopy.trunk" },
+	{ id = "M11", material = "SmoothPlastic", role = nil },
+}
+
 -- From gameplay/onboarding/01-first-find.md. The first find is placed, not rolled, so the promise
 -- that the first patch has something under it cannot be broken by the shuffle.
 GameConfig.GuaranteedFirstRelic = true

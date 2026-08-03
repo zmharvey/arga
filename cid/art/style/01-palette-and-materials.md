@@ -151,7 +151,7 @@ and I do not rule.** The seam owner does.
       "metal.cast": { "family": "register", "rgb": [128, 108, 76], "hex": "#806C4C", "luma": 110.33, "rMinusB": 52, "hueDeg": 36.9, "hsvSaturation": 0.406, "appliesTo": "P3 cast fittings and cut gearwork SET INTO THE BUILDING (materials row M6). Weathered dull, never green-patinated (verdigris is G-largest and is banned by C6) and never gilded.", "assignedToNoObject": "struck from the tool head on verification RR-6. This key assigns this role to no held or carried object; objectArt does that." },
       "canopy.leaf": { "family": "backdrop", "rgb": [52, 66, 44], "hex": "#34422C", "luma": 59.31, "appliesTo": "P9 broadleaf canopy beyond the built edge. Darker than every tiers[].rgb by at least 10 luma so it never reads as clearable." },
       "canopy.trunk": { "family": "backdrop", "rgb": [88, 78, 64], "hex": "#584E40", "luma": 79.39, "appliesTo": "P9 trunks." },
-      "sky": { "family": "backdrop", "rgb": null, "instances": 0, "appliesTo": "P8 open sky. Zero Sky instances; the engine default at the ratified ClockTime 15.5. Its read is Lighting's lighting key, not this one." },
+      "sky": { "family": "backdrop", "rgb": "none", "rgbIsNone": "not a hole. Sky carries no value HERE because lighting owns it; an explicit null would emit as nil and Luau drops the key, so a reader could not tell 'answered elsewhere' from 'never written'. Sentinel per tech/deploy/02.", "instances": 0, "appliesTo": "P8 open sky. Zero Sky instances; the engine default at the ratified ClockTime 15.5. Its read is Lighting's lighting key, not this one." },
       "overgrowth": { "family": "green", "rgb": "READ tiers[].rgb BY FIELD", "shipped": true, "appliesTo": "patch. Not set, resized or recoloured here." }
     },
     "roleAssignmentBoundary": {
@@ -192,7 +192,7 @@ and I do not rule.** The seam owner does.
         { "id": "M8", "enum": "Grass", "role": "overgrowth", "subjectClass": "patch. Shipped as patch.material; read by field, not set here.", "sourced": "shipped" },
         { "id": "M9", "enum": "Grass", "role": "canopy.leaf", "subjectClass": "P9 canopy beyond the built edge. LeafyGrass was rejected: it is not established BasePart-valid in the pack.", "sourced": "shipped" },
         { "id": "M10", "enum": "Wood", "role": "canopy.trunk", "subjectClass": "P9 trunks. Same fallback as M7.", "sourced": "enum membership only" },
-        { "id": "M11", "enum": "SmoothPlastic", "role": null, "subjectClass": "the four plot-boundary parts (representation.plot-boundary). The one row that never renders: Transparency is 1 and no Color is set by this key.", "sourced": "shipped" }
+        { "id": "M11", "enum": "SmoothPlastic", "role": "none", "roleIsNone": "the one row that legitimately binds no role, because nothing renders: Transparency is 1. Sentinel rather than null per tech/deploy/02 — a nil role and an unwritten role are the same byte in an emitted config.", "subjectClass": "the four plot-boundary parts (representation.plot-boundary). The one row that never renders: Transparency is 1 and no Color is set by this key.", "sourced": "shipped" }
       ]
     },
     "forbiddenMaterials": ["Granite", "Marble", "Brick", "Basalt", "Neon", "Glass", "ForceField", "CorrodedMetal", "DiamondPlate", "Ice", "Snow", "Sand", "Mud", "Ground", "Asphalt", "Foil", "Fabric", "Leather", "Plastic"],
@@ -260,10 +260,20 @@ and I do not rule.** The seam owner does.
   (gap G7), and this sheet now assigns none of them.** Struck on verification `RR-6`: an earlier
   draft put the tool head on `metal.cast`, whose luma 110.33 gives a head-to-grip separation of
   15.87 against the 60 `objectArt` requires for its anti-blade signal. `objectArt`'s own values —
-  `Enum.Material.Wood` on both parts, grip `[118,88,66]` luma **94.46**, head `[190,158,118]`
-  luma **163.01**, the head deliberately paler by **68.55** — are ratified here against `C2`,
-  `C4`, `C5`, `C6` and `C7` and pass all five: `R − B` 52 and 72, hue 25.4° and 33.3°, saturation
-  0.441 and 0.379, G never largest, neither luma inside 123.11 ± 8. **`metal.cast` stays as an
+  `Enum.Material.Wood` on both parts, grip `[118,88,66]` luma **94.46**, head `[178,160,133]`
+  luma **162.30**, the head deliberately paler by **67.84** — are ratified here against `C2`,
+  `C4`, `C5`, `C6` and `C7` and pass all five: `R − B` 52 and 45, hue 25.4° and 36.0°, saturation
+  0.441 and 0.253, G never largest, neither luma inside 123.11 ± 8.
+
+  **The head's five figures were wrong here until wave 7, and wrongly attributed.** This
+  paragraph carried `[190,158,118]` / 163.01 / paler by 68.55 as *"`objectArt`'s own values"*.
+  `objectArt` holds `[178,160,133]` / 162.30 / 67.84, and says at `art/objects/03:40-46` that it
+  adopted `styleGuide.roles["wood.worked"]` **verbatim instead of** authoring a near-duplicate
+  0.7 luma away — so the values ratified here were the ones that sheet declined by name, and the
+  role they were said to differ from is in this key's own `roles` table. Recomputed above from
+  `[178,160,133]`: all five checks still pass, which is why nothing downstream moves. Found by
+  Marketing's icon writer redoing the subtraction instead of copying it, while fixing a third
+  sheet that had inherited the same 163.01. **`metal.cast` stays as an
   unassigned role**, because `M6` needs it for `P3` cast fittings and cut gearwork and
   `theme/setting/01` names cast bronze in the Find register. The defect was the assignment, not
   the value. `C6` also settles that register — dressed stone, fired clay, cast bronze, worked

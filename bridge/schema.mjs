@@ -556,6 +556,77 @@ export const SCHEMA = {
     },
   },
 
+  /*
+   * Promoted from a proposal in wave 7, and the reason is the clearest case the contract has:
+   * the lane slab is `Enum.Material.Slate` with no `Color` at all, and the design says
+   * `Limestone` at `[216, 201, 169]`. That is a difference a player sees on the surface they
+   * stand on for the whole game — bar (a) — and there was no way to close it, because the
+   * values lived in a key nothing emitted. A builder cannot build a world from an adjective.
+   *
+   * Promoted narrow. `styleGuide` also carries a luma formula, exclusion lists, surface rules
+   * and revision requests, all of which are reasoning ABOUT the palette rather than values a
+   * module reads. Only `roles` and `materials` are here.
+   *
+   * `sky` and `overgrowth` are roles with no rgb of their own, deliberately: sky is lighting's
+   * and overgrowth reads `tiers[].rgb` by field, which is what keeps green the overgrowth
+   * channel alone (rule C6). They are checked as sentinels, not as holes.
+   */
+  styleGuide: {
+    doc: 'The world colour roles and the closed material list bound to them.',
+    owner: 'art/style',
+    shape: {
+      roles: 'object',
+      materials: 'object',
+    },
+    check(sg) {
+      const problems = [];
+      const roles = sg.roles;
+      if (!roles || typeof roles !== 'object') {
+        problems.push('styleGuide.roles must be an object keyed by role name');
+        return problems;
+      }
+
+      for (const [name, role] of Object.entries(roles)) {
+        // A role whose rgb is null or a by-field instruction is answered elsewhere and is not
+        // missing. Distinguishing the two is the whole point: a role with no value AND no
+        // reason is a hole, and it emits as nothing.
+        if (role.rgb === null || typeof role.rgb === 'string') continue;
+        if (!Array.isArray(role.rgb) || role.rgb.length !== 3) {
+          problems.push(`styleGuide.roles["${name}"].rgb must be a 3-channel triple, null, or a by-field instruction`);
+          continue;
+        }
+        if (role.rgb.some((ch) => !Number.isInteger(ch) || ch < 0 || ch > 255)) {
+          problems.push(`styleGuide.roles["${name}"].rgb has a channel outside 0..255: ${JSON.stringify(role.rgb)}`);
+        }
+      }
+
+      const rows = sg.materials?.rows;
+      if (!Array.isArray(rows) || !rows.length) {
+        problems.push('styleGuide.materials.rows must be a non-empty array of material rows');
+        return problems;
+      }
+
+      const seen = new Set();
+      for (const row of rows) {
+        if (!row.id || !row.enum) {
+          problems.push(`a styleGuide material row needs an id and an enum: ${JSON.stringify(row.id ?? '?')}`);
+          continue;
+        }
+        if (seen.has(row.id)) problems.push(`styleGuide material id "${row.id}" is used twice`);
+        seen.add(row.id);
+        // A row may bind no role — M11's plot-boundary parts are one, Transparency 1 and nothing
+        // rendered — and `deploy/02` spells that "none" rather than null, because a nil role and
+        // an unwritten role are the same byte in an emitted config. A row naming any OTHER
+        // absent role is a citation that resolves to nothing, which is the defect this wave
+        // spent most of its verification budget on.
+        if (row.role != null && row.role !== 'none' && !(row.role in roles)) {
+          problems.push(`styleGuide material "${row.id}" names role "${row.role}", which styleGuide.roles does not define`);
+        }
+      }
+      return problems;
+    },
+  },
+
 };
 
 /* ------------------------------------------------------------------ checking */

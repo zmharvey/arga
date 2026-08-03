@@ -39,6 +39,20 @@ const CREATIVE = {
   onboarding: { guaranteedFirstRelic: true },
   currency: { name: 'Shard', plural: 'Shards', icon: 'shard' },
   vocabulary: { maxLabelChars: 14, register: 'Plain.', bannedWords: [{ word: 'relic', reason: 'taken' }] },
+  // Both role kinds and both row kinds, because the interesting cases here are the absences:
+  // a role answered elsewhere emits no triple, and the row that never renders binds no role.
+  styleGuide: {
+    roles: {
+      'stone.cleared': { family: 'stone', rgb: [216, 201, 169] },
+      sky: { family: 'backdrop', rgb: 'none' },
+    },
+    materials: {
+      rows: [
+        { id: 'M1', enum: 'Limestone', role: 'stone.cleared' },
+        { id: 'M11', enum: 'SmoothPlastic', role: 'none' },
+      ],
+    },
+  },
 };
 
 const TECH = {
@@ -79,7 +93,7 @@ const TECH = {
   modules: [
     { id: 'config', path: 'a.luau', side: 'shared', responsibility: 'values', reads: ['tiers', 'movement', 'patch', 'area', 'collection', 'onboarding', 'currency', 'runtime', 'upgrades'], exposes: ['GameConfig'], dependsOn: [], criteria: ['x'] },
     { id: 'progression', path: 'b.luau', side: 'server', responsibility: 'derive', reads: ['upgrades', 'stateShape', 'tree', 'interfaces'], exposes: ['valueMultiplier(state)'], dependsOn: ['config'], applies: ['value'], criteria: ['x'] },
-    { id: 'plots', path: 'd.luau', side: 'server', responsibility: 'build the plot', reads: ['representation'], exposes: ['spawn(state)'], dependsOn: ['config'], criteria: ['x'] },
+    { id: 'plots', path: 'd.luau', side: 'server', responsibility: 'build the plot', reads: ['representation', 'styleGuide'], exposes: ['spawn(state)'], dependsOn: ['config'], criteria: ['x'] },
     { id: 'server-main', path: 'c.luau', side: 'server', responsibility: 'wire', reads: ['wiring'], exposes: [], entryPoint: true, dependsOn: ['progression', 'plots'], criteria: ['x'] },
   ],
 };

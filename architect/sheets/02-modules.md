@@ -301,7 +301,7 @@ functions used to own alone.
       "path": "game/src/server/Plots.luau",
       "side": "server",
       "responsibility": "Build and maintain one player's lane: the slab, its boundary, its spawn Attachment, and the patch Instances of the live bay only.",
-      "reads": ["plots", "traversal", "endgame", "patch", "tiers", "representation", "stateShape", "tree", "interfaces"],
+      "reads": ["plots", "traversal", "endgame", "patch", "tiers", "representation", "styleGuide", "stateShape", "tree", "interfaces"],
       "exposes": ["claimSlot(): number", "releaseSlot(n)", "spawn(player, state): CFrame", "advance(state): CFrame", "despawn(state)"],
       "dependsOn": ["config", "layout"],
       "forbids": [

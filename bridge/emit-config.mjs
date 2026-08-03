@@ -194,6 +194,59 @@ end
 `;
 }
 
+/**
+ * The world colour roles, and the closed material list bound to them.
+ *
+ * Emitted as two tables rather than one merged lookup, because the binding is many-to-one:
+ * `Limestone` is M1 and M2 at two different roles, and `stone.built` is M2, M3 and M4 at three
+ * different materials. Flattening either direction loses a row.
+ *
+ * PLAIN DATA ONLY — an rgb triple and a material NAME, never a `Color3` or an `Enum.Material`.
+ * The emitted config has to run outside the engine so `game/test/config.spec.luau` can execute
+ * it, and a constructor in here breaks that. Same convention `tiers[].rgb` and `patch.material`
+ * already use; `Plots.luau` already has the `Enum.Material:FromName` helper that consumes it,
+ * with the better failure mode (FromName returns nil where a dynamic index throws).
+ *
+ * A role whose rgb is the `"none"` sentinel or a by-field instruction emits NO `rgb` field.
+ * `sky` is lighting's and `overgrowth` reads `tiers[].rgb` — neither is a hole, and neither
+ * should arrive as a triple a caller might use. Rule C6 depends on that: green is the
+ * overgrowth channel alone, so a role table that manufactured a green would break it.
+ */
+function styleGuideBlock(sg, source) {
+  const roleRows = Object.entries(sg.roles).map(([name, role]) => {
+    const rgb = role.rgb;
+    if (!Array.isArray(rgb)) {
+      return `\t[${str(name)}] = { answeredElsewhere = true },`;
+    }
+    return `\t[${str(name)}] = { rgb = { ${rgb.join(', ')} } },`;
+  }).join('\n');
+
+  const matRows = sg.materials.rows.map((r) =>
+    `\t{ id = ${str(r.id)}, material = ${str(r.enum)}, `
+    + `role = ${r.role && r.role !== 'none' ? str(r.role) : 'nil'} },`).join('\n');
+
+  return `
+-- The world colour roles. From ${source}.
+--
+-- Promoted in wave 7 because the lane slab was material "Slate" with no Color at all against
+-- a design that says Limestone at [216, 201, 169]. That is the surface a player stands on for
+-- the whole game, and there was no way to close it: the values lived in a key nothing emitted.
+-- A builder cannot build a world from an adjective.
+--
+-- \`answeredElsewhere\` marks a role that deliberately carries no triple here. It is not missing:
+-- sky is lighting's, and overgrowth reads tiers[].rgb by field.
+GameConfig.ColorRoles = {
+${roleRows}
+}
+
+-- The closed material list. A twelfth row is a revision against styleGuide, not a
+-- dressing choice. \`role\` is nil only for the row that never renders (Transparency 1).
+GameConfig.Materials = {
+${matRows}
+}
+`;
+}
+
 function setsBlock(collection, source) {
   const rows = collection.sets.map((s) =>
     `\t{ id = ${str(s.id)}, label = ${str(s.label)}, depth = ${num(s.depth)}, `
@@ -296,6 +349,7 @@ GameConfig.Area = {
 `);
 
   parts.push(setsBlock(manifest.collection, src('collection')));
+  parts.push(styleGuideBlock(manifest.styleGuide, src('styleGuide')));
 
   parts.push(`
 -- From ${src('onboarding')}. The first find is placed, not rolled, so the promise
@@ -350,6 +404,12 @@ ${r.maxPlayers === undefined ? '' : `GameConfig.MaxPlayers = ${num(r.maxPlayers)
   const HAND_WRITTEN = new Set([
     'tiers', 'upgrades', 'movement', 'currency', 'patch', 'area', 'collection',
     'onboarding', 'runtime',
+    // styleGuide is here for exactly the reason the next comment gives, which it proved again
+    // on the day it was promoted: the generic dump emitted 250 lines of luma reasoning, role
+    // exclusions and revision requests, and carried nine literal "Enum.Material.X" strings out
+    // of that prose into a file whose own contract says it constructs no Roblox type. Only
+    // `roles` and `materials` reach the build, through styleGuideBlock above.
+    'styleGuide',
   ]);
   // Technical keys that are a SPECIFICATION rather than tuned values, and that already have
   // their own emitted artifact. Dumping them here put 2,700 lines of module plan, interface
