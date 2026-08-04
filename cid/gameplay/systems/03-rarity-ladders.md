@@ -1,0 +1,147 @@
+# 03 — Rarity ladders
+
+**Domain:** gameplay/systems · **Category:** Gameplay · **Wave:** 2
+
+## Decision
+
+**One graded rarity ladder exists in this game. It is the overgrowth's, it is read from
+`patch.tierIndex`, and nothing else is graded.** A Find carries no rarity field of its own:
+its set is a *position* — which depth it was buried at — not a grade, and it is never drawn,
+lit, framed or sounded as one. **Find placement may not read a patch's tier.**
+
+## Why
+
+- `01-FOUNDATION.md`: "**Rarity ladder lives in the overgrowth**, not in a separate drop
+  table." `[brief: soft]` ← `[I assumed]`, and `OPEN.md §5 #1` names Systems as inheritor. It
+  is the weakest line binding this domain, so I did not keep it on its own authority — I kept
+  it because the firmer line agrees. `02-GAMEPLAY.md` on the roster: "**Each set tied to area
+  depth** — rarity and location are one axis, so there is one concept to learn rather than
+  two." `[brief: soft]` ← `[you accepted: R4 Q4]`. Two ladders is the reading that contradicts
+  the brief; one is the reading that satisfies both lines at once.
+- **The accessibility constraint prices the alternative, and this is the cost stated so Art can
+  price it rather than discover it.** `04-PRESENTATION.md` makes shape-not-hue a requirement
+  because "tier is a core economic signal"; `HANDOFF.md` repeats it as one of six pre-design
+  facts. `[brief: soft]` ← `[you accepted: R6 Q4]`. Four foliage silhouettes in a green frame on
+  a phone is already the hard case. A second graded ladder would put a second silhouette system
+  on 24 hand-authored objects, readable at the same instant, in the same frame, under the same
+  rule — and read under motion, because the reveal is the loudest moment in the game. That is
+  affordable in a game whose primary creative work is content (`00-CORE.md`), and it is not
+  affordable *twice*. Art draws four silhouettes and no more.
+- **Two approved sheets already assume this answer.** `gameplay/meta/02-the-collection` gives
+  Audio "one reveal cue, reused 24 times, so it must survive repetition" — one cue, not one per
+  rank. `gameplay/core-loop/05-depth-escalation` routes "whether `tiers[].weight` shifts toward
+  the rare end with depth" to content work and then Balance, which is the overgrowth channel
+  this sheet names and not a Find property. Neither reads as written under two ladders.
+- **The shipped build already answers this way and I ratify it.** `Layout.luau:130-153` places
+  Finds with no reference to `tierIndex`; every patch is an equally likely host.
+  `[research: game/src/shared/Layout.luau]`
+- **Weighted placement would also break a `[brief: soft]` guarantee.** `onboarding` fixes the
+  first Find under the patch nearest spawn, deterministically. If rarity biased placement, that
+  patch would additionally need a tier the shuffle cannot promise, and the guarantee would
+  depend on a roll instead of none.
+- **Where depth's "rarer" goes instead.** `03-META.md` says deeper areas "hide rarer sets"
+  `[brief: soft]`. Under one ladder that promise is kept on the overgrowth: the tier mix shifts
+  toward the rare end with depth, so a deeper area *is* rarer material and the Finds in it are
+  simply later. `[cid: decided]` — the brief never says which channel carries it. The blocker is
+  named in the manifest: `tiers` is a flat array with no depth dimension, and adding one is a
+  revision to `01-overgrowth-tiers`, which I may not edit.
+
+```manifest
+{
+  "provides": "rarity",
+  "value": {
+    "gradedLadderCount": 1,
+    "ladders": [
+      {
+        "id": "overgrowth-tier",
+        "kind": "graded",
+        "sourceField": "patch.tierIndex",
+        "definedBy": "tiers",
+        "rungs": 4,
+        "rolled": true,
+        "rolledFrom": "tiers[].weight",
+        "perObjectVisualGrade": true,
+        "legibilityChannel": "silhouette first, colour second",
+        "affects": ["the per-clear payout, via economy.faucets[patch-clear]"]
+      },
+      {
+        "id": "find-set",
+        "kind": "ordinal",
+        "sourceField": "collection.sets[].index",
+        "definedBy": "collection",
+        "rungs": 4,
+        "rolled": false,
+        "perObjectVisualGrade": false,
+        "legibilityChannel": "the set heading on the collection surface, and nothing on the object",
+        "affects": []
+      }
+    ],
+    "findRarityField": "none",
+    "findRarityFieldAbsence": "\"none\" is the scalar sentinel from cid/tech/deploy/02 (no explicit null in an emitted config). It asserts exactly what the null asserted — a Find has no rarity field — and nothing weaker: a null emits as nil, Luau drops the key, and a reader cannot tell it from a key that was never emitted.",
+    "findPlacementReadsTier": false,
+    "findPlacementWeighting": "blind to tier: the probability a patch carries a Find is independent of its tierIndex. Whether that choice is spatially uniform or spread is content-structure work's, not this key's.",
+    "depthRarityChannel": "tiers[].weight, shifted toward the rare end per depth",
+    "depthRarityBlocker": "tiers has no depth dimension; adding one is a revision to 01-overgrowth-tiers, not a change made here",
+    "forbidden": [
+      "a rarity, grade, tier, star, quality or condition field on a Find",
+      "a rarity colour, frame, glow, border, sparkle or badge on a collection slot",
+      "a rarer patch hiding a Find more often than a common patch does",
+      "a rarer patch hiding a rarer Find",
+      "a fifth overgrowth tier added to signal depth",
+      "a per-depth recolour of the four tiers that changes their silhouettes",
+      "a reveal cue that varies by which set the Find belongs to",
+      "any rarity read a player must learn in addition to the four silhouettes"
+    ]
+  }
+}
+```
+
+## Consequences for other work
+
+- **Rarity-legibility work (currently Art & Visuals) draws one ladder, four rungs.** It is not
+  being asked to make two systems readable at once, and it may not invent a per-Find grade to
+  fill the space. The 24 objects differ by *what they are*, never by rank.
+- **Reveal-cue work (Audio — Stingers; Art — VFX) gets one cue, not four.** A Find reveal sounds
+  and looks the same at depth 1 and depth 4, which is the same cue `meta/02` already sized to
+  survive 24 firings. The tier note the brief's audio default assigns per rarity belongs to the
+  clear, not the reveal.
+- **Content-structure work inherits a live blocker:** if depth is to read as rarer, `tiers` needs
+  a per-depth weight dimension. That is a change to sheet `01`'s key and it needs the key owner,
+  not a downstream reader assuming a second field exists.
+- **Balance & Tuning** gets a channel with no values in it: the per-depth tier mix. I set none.
+- **Offer-ladder work** may not sell a "find better Finds" multiplier: there is no per-Find rank
+  for a multiplier to move. Sheet `05` closes the rate half of the same question.
+- **Object and Find art work (Art — Objects, five sheets).** `findRarityField` is now the string
+  `"none"` rather than a null, per `cid/tech/deploy/02`. The **fact those sheets cite is
+  unchanged** — a Find has no rarity field — so `02-the-object-roster` `Z6`, `04-what-a-find-is-
+  made-of` and `05-foliage-form` all still hold. Their prose wording *"is `null`"* is now stale
+  by one word and is a wording fix in their own sheets, not a design change here.
+
+## Pushing back
+
+`03-META.md`'s "deeper areas are larger, denser, and **hide rarer sets**" `[brief: soft]` reads
+as though a Find has a rarity. I am overruling that reading, not the sentence: depth still
+delivers rarer *material*, and a set is still met later than the one above it, but no object in
+the collection outranks another. The alternative keeps a word and costs a second accessibility
+system, which the brief prices as a requirement rather than a nicety.
+
+## Acceptance criteria
+
+1. `rarity.findRarityField` is the string `"none"` and **is not null** (`cid/tech/deploy/02`),
+   and no manifest key, emitted config field or module carries a rarity, grade, tier, star or
+   quality value attached to a Find.
+2. Build the layout under 10,000 different seeds and bucket the Find-carrying patches by
+   `tierIndex`: the distribution matches `tiers[].weight` with no significant difference,
+   because placement is blind to tier.
+3. In a greyscale screenshot of an area, the four overgrowth silhouettes remain distinguishable
+   and no revealed Find carries a rank marking of any kind.
+4. Exactly one entry in `rarity.ladders` has `perObjectVisualGrade: true`.
+
+## Not decided here
+
+The tier names, shapes, colours, heights, weights and payouts (`01-overgrowth-tiers`, same
+domain, already supplied as `tiers`). What pool a Find comes from, where the seed puts it, and
+what a repeat does (`05-the-find-ledger`, same domain). Whether burial is spatially uniform or
+spread, and the per-depth discovery rates (content-structure work, currently Meta & Content; then
+Balance & Tuning for the figures). What any tier or any Find actually looks like (Art & Visuals).
+The per-depth weight values, once `tiers` can hold them (Balance & Tuning).

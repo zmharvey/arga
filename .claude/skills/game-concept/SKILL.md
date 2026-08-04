@@ -9,6 +9,7 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+  - Task
   - WebSearch
   - WebFetch
   - AskUserQuestion
@@ -54,19 +55,28 @@ This repo is `arga`, a staged Roblox game pipeline. `concept/README.md` has the
 surrounding shape. Further downstream, `ui-forge` builds UI — see `<seams>`.
 
 `node concept/src/cli.mjs vocab` prints tested option menus for genre, player mode,
-loop verbs, mechanic kinds, motivations, monetization and more. Use them as **menus to
-offer**, not limits on what the developer may say.
+age band, loop verbs, mechanic kinds, motivations, monetization and more. Use them as
+**menus to offer**, not limits on what the developer may say.
+
+**But when you leave a menu, say so in the sheet.** Writing a value the closed list does not
+contain is often correct — the lists lag the platform — and it is only correct *out loud*.
+Record it as: the value you used, the closest listed value, and why it does not fit. Silently
+departing makes the sheet look like it used a validated term when it did not, and it hides a
+gap in the vocabulary that is worth fixing. *Got wrong twice in one run: a genre written in
+prose because no listed genre fitted, which was correctly disclosed, and an age band written
+as `13+` when the list has `13-17` and `16+`, which was not disclosed at all.*
 </context>
 
 <consumers>
 Your sheets are read by downstream creative agents that invent on top of your baseline.
 
 **The specific consumer list is NOT load-bearing and will change.** Today it is a
-Creative Idea Department of roughly fourteen agents in five waves — Theme & Narrative,
-Core Loop, Systems, Mechanics, Social, Meta & Content, Monetization, UI/UX, Art, Audio,
-Tech & Data, Analytics, Discovery & Marketing, Live Ops. Tomorrow it may be nine agents,
-or twenty, or differently sliced. **Never organize your output around that list, and
-never let a gap in your coverage be justified by "no current department needs it."**
+Creative Idea Department of nine categories fanning out to roughly fifty specialist leads:
+Theme & Narrative, Gameplay, UI/UX, Art & Visuals, Audio, Tech & Data, Analytics, Live
+Ops, Discovery & Marketing. **It has already been re-sliced once** — from fourteen agents
+in five waves into that shape — which is the best available evidence that the next slicing
+will differ too. **Never organize your output around that list, and never let a gap in
+your coverage be justified by "no current department needs it."**
 
 The target is context so complete that *whatever* agents exist, each finds what it needs.
 
@@ -119,7 +129,13 @@ it, **or** you assumed it, tagged the assumption, and the developer has seen the
 
 **Layer 1 — foundation. Everything else is downstream of these. Go deepest here.**
 - **theme / fantasy** — what the player is pretending to be and where. The fiction,
-  not the art style. Constrains tone, world, naming, audio, marketing.
+  not the art style. Constrains world, naming, audio, marketing.
+- **tone** — the mood and emotional register, as a decision rather than an adjective:
+  how serious, how funny, and what is tonally off-limits. Theme says what the fiction
+  *is*; tone says how it is *played*. An overgrown ruin can be wistful, cosy or comic,
+  and those are three different games to name, score and animate. Left to fall out of
+  the theme answer, naming, music, effects and store copy each interpret one adjective
+  independently and none of them agree.
 - **core loop** — ordered player actions, what each produces, one lap's length, how
   the last step feeds the first, and what changes between lap 1 and lap 100.
 - **purpose** — why this is being made, what success means, what makes it worth
@@ -128,7 +144,10 @@ it, **or** you assumed it, tagged the assumption, and the developer has seen the
 
 **Layer 2 — gameplay.**
 - **players** — single-player / co-op / multiplayer, server shape and size, and what
-  players can actually do to or with each other.
+  players can actually do to or with each other. Include **chat and the moderation
+  stance** — whether players can talk to each other at all, and what happens when one
+  behaves badly. On a young audience that is a decision, not a default, and anyone
+  writing a moderation policy needs to know whether a chat surface exists at all.
 - **genre** — as Roblox players would name it, and the progression shape it implies.
 - **mechanics** — the systems that make the loop work, and which are load-bearing.
 - **controls & game feel** — the input scheme, and what the game should feel like to
@@ -137,7 +156,11 @@ it, **or** you assumed it, tagged the assumption, and the developer has seen the
 - **economy** — currencies, what generates them, what drains them, how money enters.
 - **content roster** — the creatures / units / items / levels that *are* the content,
   with whatever structure they need: types, rarity, tiers, abilities. Establish the
-  structure and scale; let someone downstream invent the entries.
+  structure and scale; let someone downstream invent the entries. Two parts of this are
+  routinely skipped and both cost work downstream: **whether there is a cast at all** —
+  NPCs, enemies, named characters — because "there are none" spares several areas from
+  writing specs for nobody; and **the player's on-screen body**, their own Roblox avatar
+  or a provided character, which decides whether cosmetics have anywhere to live.
 - **onboarding / first session** — what the first sixty seconds must accomplish, and what
   a player must understand before they are allowed to be confused. Every game has a first
   minute whether or not it was designed; leaving this unstated means it was not designed.
@@ -147,7 +170,10 @@ it, **or** you assumed it, tagged the assumption, and the developer has seen the
 
 **Layer 3 — meta.**
 - **objectives** — what the player wants across a moment, a session, and a month.
-- **world** — setting, regions, how space gates progression.
+- **world** — setting, regions, how space gates progression, and whether the world has
+  **time of day or weather.** That last is a yes/no that costs nothing now and cannot be
+  retrofitted: lighting, ambient sound and set dressing all have to agree on it, and they
+  are decided separately.
 - **replayability** — what makes lap 50 different from lap 5, and what brings a player
   back tomorrow.
 - **monetization stance** — not the SKUs. The line you will not cross, and where
@@ -157,13 +183,31 @@ it, **or** you assumed it, tagged the assumption, and the developer has seen the
   agent's: anyone left to guess at scope designs for the version they find most
   interesting.
   Push until the ordering is real — if everything is first, nothing is.
+- **extension cost** — **how expensive the *next* unit of content is, after launch.** Not
+  whether more is coming (`live-ops intent`) and not what ships first
+  (`scope & priority`) — what more *costs*. An authored world gated on specific
+  abilities and a shuffled procedural one give opposite answers to the same question,
+  and the answer follows from decisions already made above rather than from a
+  preference. So it must be **stated**, not discovered later: a roadmap built on the
+  wrong answer promises a cadence the design cannot feed, and content work sized against
+  the wrong answer is either starved or wasted. *Surfaced by a completeness sweep that
+  found an authored, gated world described as easy to extend in one sheet and expensive
+  in another, with nothing in the inventory asking.*
 
 **Layer 4 — presentation & support.**
 - **art direction** — the look in words, plus a `ui-forge` vibe key (see `<seams>`).
 - **audio intent** — the tonal target, and whether audio carries feedback or just
   atmosphere. Audio needs this or it invents a tone that fights the theme.
+- **visual feedback intent** — whether visuals carry feedback or only carry the look,
+  and what the game's biggest moment looks like. The mirror of the item above and the one
+  more often missed: a design can say feedback rests on sound *and* picture and then only
+  ever describe the sound. Effects, popups and reward moments are designed by different
+  hands and will not converge on their own.
 - **technical shape** — what must persist, what must be secured, server limits,
-  streaming, anything about the Roblox build that constrains design.
+  streaming, anything about the Roblox build that constrains design. Name the **device
+  floor** — the weakest phone this has to run on. A device mix says who plays; the floor
+  is the number every budget is set against, and art detail and performance limits get
+  set separately from that one number.
 - **measurement** — what would tell you it is working, and the two or three funnels
   worth instrumenting. A design with no stated question cannot be evaluated.
 - **accessibility** — who the current design excludes, and whether that is acceptable.
@@ -178,17 +222,23 @@ it, **or** you assumed it, tagged the assumption, and the developer has seen the
 - **discovery hook** — the one-line promise, and what makes it legible in a name and a
   thumbnail. On Roblox this decides whether anyone plays it at all.
 - **live-ops intent** — whether this is a game that gets seasons and events, or ships
-  and settles. This retroactively constrains progression, so ask it even briefly.
+  and settles, and whether it has any presence off Roblox at all: a group, a Discord,
+  socials. Both are ongoing-commitment questions. The second matters because channels get
+  referenced from several directions at once — where codes are published, where feedback
+  arrives, where an update is announced — and if nobody has said which channels exist,
+  each of those invents its own. This retroactively constrains progression, so ask it
+  even briefly.
 - **references** — the games this is measured against, and how it differs from each.
 
 Judge whether an item applies. When you decide one does not, say so rather than
-silently dropping it — "no narrative, this is a systems game" is itself context Wave 1
-needs.
+silently dropping it — "no narrative, this is a systems game" is itself context whoever
+handles narrative needs. An item ruled out explicitly is covered; an item merely absent
+gets invented.
 </inventory>
 
 <process>
 Steps 1 to 4 interleave freely — an answer in round three naming a new reference game
-should send you back to research immediately. Steps 5 and 6 are terminal: they are how
+should send you back to research immediately. Steps 5 to 7 are terminal: they are how
 you are allowed to stop, and they run once the earlier work has gone quiet.
 
 **1. Read the idea.** Restate it in a few sentences before anything else, so a
@@ -204,12 +254,49 @@ something you have not yet looked up.
 a domain, a mechanic, or a game you have not researched, **go research it before asking
 the next round.** Specifically:
 
-- **A chosen theme must be checked for occupancy.** If the developer picks a fantasy,
-  search for existing Roblox games already doing it. Discovering after the fact that the
-  chosen direction is already occupied invalidates the answer you built everything on.
-  *This has actually been got wrong: a run verified that grass, lumber and ore were
-  taken, asked the developer to choose a different theme, and then never checked whether
-  the theme they picked was free.*
+- **Occupancy must be checked at every level where you claim distinction — not just the
+  noun.** There are three, and a run has failed at each:
+
+  1. **the theme / noun.** *Got wrong: a run verified that grass, lumber and ore were
+     taken, asked the developer to choose a different theme, and never checked whether the
+     theme they picked was free.*
+  2. **the differentiating mechanism.** If you write "nothing in this space does X", that
+     sentence *is* the design and it needs a fetch behind it. *Got wrong: a run located
+     distinction in a hidden-collection layer and asserted twice that no game in the family
+     had one. Downstream research found three shipping games with it, one at 56M visits
+     selling it in its store copy.*
+  3. **the recurring terms.** The words your sheets use forty times become the game's
+     names by default. *Got wrong: a run used one noun throughout without ever checking it;
+     two games in the same family ship that exact word for a different kind of object, so
+     it imports the wrong mental model and reads as a clone.*
+
+- **Search outside the genre family you are comparing against.** The family is chosen by
+  the brief's own framing, and the nearest neighbour is usually one step outside it. Search
+  the mechanic in plain language, the fantasy in plain language, and the adjacent genres
+  that share the verb. *Got wrong: a survey of `X Incremental` missed a restoration game
+  and a cleaning game that both sell the exact fantasy, because neither is an incremental.*
+
+- **Search to refute, not to confirm, and never write the claim first.** The order matters
+  more than the effort. If you decide where distinction lives and *then* search, you will
+  find one occupant, feel informed, and stop. Write the claim only after searching, and
+  phrase your searches as though trying to prove yourself wrong.
+
+- **A negative claim is worth exactly the searches behind it, so record them.** "Nothing in
+  this space does X" is the single highest-stakes sentence you can write, and one search does
+  not support it. Before writing one:
+  - run **at least three independently phrased searches** — the mechanic in the developer's
+    words, the mechanic in a player's words, and the mechanic without the theme attached
+  - **write every phrasing you tried into the research sheet**, including the ones that found
+    nothing
+  - state the claim as *"not found across N phrasings, listed below"*, never as *"nothing
+    does this"*
+
+  *Got wrong twice, both times by the same shape.* One run claimed no game shared a bid or
+  split proceeds; a fresh reader found a 37.8M-visit game with a higher peak CCU than the
+  incumbent the run *had* found, using a different phrasing. Another run claimed nothing gated
+  space on creature ability; a fresh reader found a console series that has done it since 2016.
+  **In both cases the search was real and the phrasing was narrow**, which is why recording
+  phrasings is the fix and "search harder" is not.
 - **A named mechanic must be checked** against how existing games implement it, so the
   next round's questions are informed rather than generic.
 - **A newly named reference game gets a full research sheet**, same as the first one.
@@ -223,6 +310,14 @@ For every existing game named or clearly implied:
   page, dev forum threads, patch notes.
 - **Never answer from recollection.** Roblox games change weekly and your impressions
   are probably stale. This is the biggest source of confident error here.
+- **A fetch tool's summary is not the page, and quoting it is fabrication.** Fetching a URL
+  returns a *model's characterization* of that page, phrased in flowing prose that reads
+  exactly like source text. **If you did not see the sentence on the page, you do not have the
+  quote.** Paraphrase it and mark it as a characterization, or fetch again for the literal
+  wording. *Got wrong: a run put a fetch tool's own summarising sentence in quotation marks,
+  attributed it to a guide site, and built a distinction claim on it. The page did not contain
+  those words.* This is the same family of error as researching from memory, and it is harder
+  to notice because the sentence arrived from a real tool call about the right URL.
 - Extract design, not lore: the loop, what retains players, what it charges for, and
   **what players of it will expect any similar game to have.**
 - Write down what the sources did **not** cover. A short sourced answer beats a
@@ -255,11 +350,16 @@ Expect several rounds and well over a dozen questions. It is not one batch.
 pure taste. **Art direction is never batched** — it is the one item that has actually
 been got wrong in practice by being assumed from a stray adjective.
 
-*Pre-fill in `OPEN.md`* — audio intent, technical shape, measurement, live-ops intent.
-Write your best default for each with a one-line rationale, in a section the developer
-can edit in place. **Do not block on it.** If they never touch it, the defaults stand,
-tagged `[I assumed]`, and the sheets are complete anyway. If they do edit it, a later
-`/game-concept` run reads it and promotes those to `[you answered]`.
+*Pre-fill in `OPEN.md`* — audio intent, visual feedback intent, technical shape,
+measurement, live-ops intent. Write your best default for each with a one-line rationale,
+in a section the developer can edit in place. **Do not block on it.** If they never touch
+it, the defaults stand, tagged `[I assumed]`, and the sheets are complete anyway. If they
+do edit it, a later `/game-concept` run reads it and promotes those to `[you answered]`.
+
+**Write each default as direction, not as a placeholder.** A whole area of work builds on
+it untouched, so it has to be actionable standing alone: *"warm, organic, tactile; a
+reveal owns the best sound in the game"* is direction, *"audio fits the theme"* is not.
+This channel is cheap because the defaults are decisive, not because they are thin.
 
 The reason for the split: these four benefit from being seen together and thought about
 at leisure — a developer reading "seasons: yes" next to "progression: prestige" often
@@ -292,6 +392,31 @@ thoroughly covered. The count column would have read `0`, which does not.
 Written on purpose. "I feel like I have enough" is the failure mode this stage exists to
 prevent, and a visibly empty cell is much harder to skip than a check done in your head.
 
+**Then run the coherence pass.** The audit above checks each item *on its own*. It cannot see
+a conflict between two items, and that is where most real defects live — because you wrote the
+sheets incrementally over a long session and never put two distant paragraphs side by side.
+
+**Re-read every sheet, together, in one pass.** Not the summary and not your memory of them.
+Then check four things explicitly:
+
+1. **Every term against `GLOSSARY.md`.** One concept, one word; one word, one concept. If a
+   sheet uses a noun the glossary does not have, either add it or change the sheet.
+2. **Every "forbidden" against every "allowed."** Walk each exclusion and search the other
+   sheets for the same thing being permitted. *Observed: an upgrade axis declined in the
+   gameplay sheet and listed as a paid multiplier in the meta sheet.*
+3. **Every objective against its own safeguard.** State each objective and the rule meant to
+   protect it, then check they can both be true. *Observed: a session objective of "clear the
+   board" alongside a rule that the board must always hold one takeable item. Both were
+   written to support each other and they cancel out.*
+4. **Every promise against the thing that delivers it.** For each thing the sheets say a
+   player will get, name the system, surface or currency that provides it. *Observed: a
+   flavour-text surface that no screen provided; a recovery path with no faucet behind it.*
+
+This pass is cheap and it catches most of what the step-7 verifier would otherwise charge a
+full fresh-context read to find. **It does not replace step 7** — you cannot audit your own
+blind spots — but a verifier's time is better spent on occupancy and feasibility than on
+contradictions you could have caught by re-reading.
+
 **Then sweep for what the inventory itself might miss.** The audit proves you covered your
 own list. It cannot prove the list was complete. So walk the five layers once more and ask,
 per layer: *if someone had to invent creatively in this area right now, what would they
@@ -309,13 +434,62 @@ on layer 1 or 2 items — the ones everything else is built on — and put up to
 of them to the developer as a final `AskUserQuestion` round: *here is what I decided for
 you, is it right?*
 
-An assumption on the theme or the loop propagates to thirteen agents; an assumption on
-audio intent reaches one. Spend the last round on the expensive ones. Anything they
-correct here becomes `[you answered]` — update the sheets and the audit table.
+An assumption on the theme, the tone or the loop propagates into every later decision in
+the game; an assumption on a layer-4 item stays inside its own subject. Spend the last
+round on the expensive ones. Anything they correct here becomes `[you answered]` — update
+the sheets and the audit table.
+
+**7. Verify before you hand it on.** Two gates, both **external to you**, because your own
+sense of sufficiency is precisely what this stage exists to distrust.
+
+```bash
+node concept/src/lint-sheets.mjs concept/spec/{slug}
+```
+
+The mechanical half: audit-table completeness, the foundation zero-question gate, malformed
+provenance tags, forbidden placeholders, a term declined in one sheet and permitted in
+another, and terms used heavily while naming is declared open. **It must exit 0.**
+
+Then spawn the **`concept-verifier`** subagent on the spec directory. It reads every sheet
+with fresh context, adversarially, across six lenses — contradiction, occupancy, feasibility
+against the build registry, dead ends, overlap, and whether load-bearing constraints actually
+rest on decisions. It writes `VERIFIED.md`.
+
+**This is a loop, not a single check.** Run it the way the CID waves run theirs:
+
+1. Verifier reports. Findings are `blocks downstream`, `fix before build`, or `worth knowing`.
+2. **You fix the brief.** Not `VERIFIED.md` — the sheets. A finding is a defect in the design,
+   not an opinion about it.
+3. **Re-run the verifier.** It re-reads every file it cited and marks each prior finding
+   `fixed`, `still open`, `changed` or `withdrawn`. A fix that creates a new defect is normal
+   and gets filed as a new finding.
+4. **Cap at 3 rounds.** A finding surviving three rounds is a **design disagreement**, not a
+   defect. Stop, mark it `unresolved — for the developer` with both positions stated, and put
+   it to them. Do not keep re-running.
+
+**You may not conclude while either gate fails.** Never edit `VERIFIED.md` to make it pass,
+and never hand on a failing brief because the interview felt finished. If you genuinely
+believe a finding is wrong, say so in your close and let the verifier withdraw it — do not
+quietly proceed past it.
+
+Why this is not a step you can do yourself: your step-5 audit proves you covered your own
+list. It structurally cannot prove the document agrees with itself, and it cannot catch an
+occupancy collision you did not think to search for. **A real run passed its coverage audit
+and was later found to contain** a term used for two concepts across three sheets, an
+upgrade axis forbidden in one sheet and permitted in another, a core mechanic described two
+incompatible ways, a hook three shipping games already had, and a promised text surface the
+build stage has no field for. All five were cheap here and expensive downstream.
 
 **Close** with four things: what you now know that they never told you; what you
 assumed and they should check; what is still open for them; and what you deliberately
 left open as creative work, named by kind.
+
+**List the assumptions inline in the chat, not as a pointer to `OPEN.md §5`.** The
+inventory says an item counts as accounted for when "you assumed it, tagged the assumption,
+**and the developer has seen the tag**." A file they have not opened is a tag they have not
+seen, and every assumption you leave unseen is one you have quietly made on their behalf
+while the document records it as covered. Paste the list. It is the last chance for them to
+catch you putting words in their mouth, and it costs four lines.
 </process>
 
 <question_craft>
@@ -336,8 +510,8 @@ The difference between an interview that works and one the developer abandons:
 
   Why: a run of this skill returned **19 answers out of 19 as the recommended option.**
   That interview measured the interviewer's judgement, not the developer's. Anchoring is
-  a fair price on live-ops intent; on the four items that feed thirteen agents it defeats
-  the purpose of asking.
+  a fair price on live-ops intent; on the foundation items every later decision rests on,
+  it defeats the purpose of asking.
 
 - **No option list is exhaustive, and "Other" is always available.** Say so when the
   space is genuinely open — "if none of these is it, say what is." Treat an *Other*
@@ -412,15 +586,23 @@ itself: **read `CONCEPT.md`, `00-CORE.md`, and every sheet up to and including t
 deepest layer your work touches.** No agent needs to be named anywhere for this to work.
 
 - `CONCEPT.md` — the whole game in roughly 20 tight lines. **Everyone reads this**, so it
-  is the highest-leverage thing in the directory: theme, loop, players, genre, audience,
-  hook. No hedging, no provenance clutter — the distilled picture.
+  is the highest-leverage thing in the directory: theme, tone, loop, players, genre,
+  audience, hook. No hedging, no provenance clutter — the distilled picture.
+
+  **`CONCEPT.md` and `HANDOFF.md` are derived, and they restate decisions on purpose.** That
+  duplication is correct: a summary that referred you elsewhere for everything would be
+  useless. But it means they go stale silently. **Whenever a numbered sheet changes a decision,
+  regenerate both from the numbered sheets** rather than editing them in place. The numbered
+  sheet owns the decision; these two report it. A brief where the summary and its source
+  disagree is worse than one with no summary, because everyone reads the summary first.
 - `00-CORE.md` — purpose, audience, genre, measurement. The framing.
-- `01-FOUNDATION.md` — theme and fantasy; the core loop in full.
+- `01-FOUNDATION.md` — theme and fantasy; tone; the core loop in full.
 - `02-GAMEPLAY.md` — mechanics, controls and feel, economy, roster structure, players and
   the social model, onboarding, failure and friction.
-- `03-META.md` — objectives, world and gating, replayability, monetization stance, scope.
-- `04-PRESENTATION.md` — art direction and vibe key, audio intent, screen list, technical
-  shape, analytics events, accessibility, integrity.
+- `03-META.md` — objectives, world and gating, replayability, monetization stance, scope,
+  extension cost.
+- `04-PRESENTATION.md` — art direction and vibe key, audio and visual feedback intent,
+  screen list, technical shape, analytics events, accessibility, integrity.
 - `05-OUTWARD.md` — discovery hook, name and pitch thinking, live-ops intent.
 - `research/{game}.md` — one per reference, with source URLs and what stayed unverified.
 - `OPEN.md` — five sections, in this order:
@@ -435,6 +617,29 @@ deepest layer your work touches.** No agent needs to be named anywhere for this 
      the kind of work** ("all numeric curves", "naming and fiction", "the asset list"),
      with a current-owner note in brackets if useful. Decisions, not gaps.
   5. **Every assumption**, collected in one scannable place.
+- `GLOSSARY.md` — **one term, one definition, one place.** Every noun your sheets use for a
+  thing in the game gets a row: the term, what it means in one line, and its provenance. Start
+  it in round one and add to it every time a sheet introduces a word.
+
+  | column | holds |
+  |---|---|
+  | term | the word as the sheets use it |
+  | means | one line. What it *is*, not what it does |
+  | provenance | `[you said]` / `[you chose]` / `[I assumed]` / `working word` |
+  | note | what it is **not**, where that has been confused |
+
+  **This is the cheapest defect-prevention artifact in the directory**, because most
+  contradictions in a spec are one concept wearing two names or one name covering two
+  concepts. Observed in real runs: one noun used for both a collectible and a rolled
+  multiplier; `share` used for both the percentage a player receives and the cash they pay in;
+  `capability` used for both a binary access key and an upgradeable stat. Each was two
+  statements written an hour apart, and a glossary would have caught all three the moment the
+  second one was written.
+
+  **A term you have not settled still gets a row, marked `working word`** — that is the honest
+  state, and it tells a downstream reader not to treat repetition as a decision.
+- `VERIFIED.md` — written by the `concept-verifier` subagent at step 7, never by you. The
+  gate a downstream reader checks before trusting anything else in the directory.
 - `HANDOFF.md` — **a subject index, not a staffing chart.** Three parts: which sheet
   covers which subject; the layer dependency order so a reader knows what is upstream of
   its work; and the provenance-latitude table. Optionally map the *current* consumer
@@ -466,17 +671,17 @@ Observed while building the deterministic version of this stage. Each cost a rea
 - **A loop that does not close.** The most common defect in a stated core loop is that
   nothing feeds the last step back to the first. That is a funnel. Ask.
 - **A clone with no stated deltas.** When someone says "clone" or "like X", the
-  specific differences are the entire design. Get them concretely, or every one of the
-  fourteen departments reproduces X.
+  specific differences are the entire design. Get them concretely, or every department
+  downstream reproduces X.
 - **Priority inflation.** If everything ships first, nothing is prioritised. Push for a
-  real ordering — Wave 3 and Wave 4 both depend on it.
+  real ordering — content scoping and every presentation decision hang off it.
 - **Asking what was already answered.** Costs the developer's attention, the scarcest
   input you have.
 - **Doing the creative work yourself.** Naming the pets, writing the item list, designing the SKUs. It
   feels like thoroughness and it is the most expensive mistake here, because it burns
   the interview and pre-empts the agents built to do it better.
 
-Four more from a full live run, all of which felt like success at the time:
+More, from full live runs, all of which felt like success at the time:
 
 - **Every answer coming back as the recommendation.** 19 of 19. A completed interview
   where nothing was contested is not a well-run interview; it is the developer delegating
@@ -492,13 +697,68 @@ Four more from a full live run, all of which felt like success at the time:
   established that grass, lumber and ore were taken, the developer picked snow, and
   nobody ever checked whether a snow game already existed. Research the answer, not just
   the question.
+- **Checking occupancy for the noun and never for the mechanism or the words.** The run
+  after the one above fixed the noun problem, correctly relocated distinction into a
+  mechanism, and then asserted twice that nothing in the family had that mechanism without
+  fetching anything. Three shipping games had it, one at 56M visits with it in the store
+  copy. The same run used a collectible noun forty times that two games in the same family
+  already ship for a different kind of object. **Distinction claims and recurring terms are
+  both load-bearing and both need a fetch.** See step 2.
+- **A document that passes its coverage audit and contradicts itself.** The audit counts
+  questions per item; nothing in it compares sheets. The same run shipped an upgrade axis
+  declined in one sheet and permitted in another, a core mechanic described two
+  incompatible ways, and one noun used for two different concepts. This is why step 7
+  exists and why it is not self-administered.
 - **A recorded gap treated as a handled gap.** Time-to-first-rebirth — the number the
   entire loop rests on — was never obtained because one source returned HTTP 405. It was
   flagged honestly in three places, which felt diligent and left the number unknown.
+Three more, all from synthetic runs where the interviewer answered its own questions — which
+inflates the first two but does not cause them:
+
+- **Searching to confirm a claim already written.** Twice, the run decided where distinction
+  lived, searched, found one occupant, felt informed and stopped. Both times a fresh reader
+  found a *larger* game with a different search phrasing — 37.8M visits and a higher peak CCU
+  than the occupant the run had found. The searches were real; the phrasings were narrow.
+  **Write the claim after searching, phrase searches as attempts to refute, and record every
+  phrasing tried.** See step 2.
+- **Two statements written an hour apart that cancel out.** In three consecutive runs: an
+  upgrade axis declined in one sheet and permitted in another; a session objective and the
+  rule protecting it that cannot both be true; one noun for two concepts; two different
+  formulas for the same score nine lines apart. **None is a hard problem — they are invisible
+  because nothing ever re-reads the sheets together.** That is what the step-5 coherence pass
+  and `GLOSSARY.md` are for.
+- **Quoting a fetch tool's summary as if it were the page.** A run wrapped a summarising
+  sentence in quotation marks, attributed it to a guide site, and rested a distinction claim
+  on it. The page did not contain those words. See step 2.
+
+- **Tone never asked, only inherited from the theme.** The theme came back as "an
+  overgrown ruin being reclaimed" and tone was never a question: it reached the sheets as
+  the adjectives "warm, aged, unhurried" inside the theme section, plus a "not spooky"
+  note repeated later. Naming, music, effects and store copy all read tone, and an
+  adjective is not something four separate readers can act on the same way. Theme and
+  tone are two questions.
 </failure_modes>
 
 <seams>
-Two downstream contracts are genuinely constrained. Everything else is prose.
+Three downstream contracts are genuinely constrained. Everything else is prose.
+
+**The build contract.** Run `npm run bridge -- --contract`. It prints every value a build
+eventually needs and which downstream domain owns supplying it — patch counts, tier
+weights, cost curves, tick rates, module boundaries. **This is not your list to fill in**
+and you must not try: those are the creative decisions the departments exist to make.
+
+Read it for one reason: **it tells you which of your items become numbers later.** When you
+settle "three upgrade axes" or "24 relics in 4 sets of 6" or "a device floor of a 3 GB
+phone", you are setting the frame a value gets chosen inside. When you leave one of those
+vague, nobody downstream knows whether they are choosing freely or violating a decision.
+
+So: where an inventory item is upstream of a build value, **say what the value must satisfy
+even though you are not choosing it.** "Cost curve: unspecified, but one area's income must
+buy visible progress" is a usable constraint. "There is an upgrade system" is not.
+
+The list is empirical — every key on it is something a builder had to invent because no
+sheet supplied it. It will grow as more of the game gets built, so read it each run rather
+than remembering it.
 
 **`ui-forge` vibe.** Art direction must name exactly one of `cartoon-vibrant`,
 `clean-modern`, `dark-tech`, `horror-grim`, `fantasy-ornate`, `premium-gloss`,

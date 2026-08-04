@@ -467,4 +467,22 @@ export const meta = {
     'Art', 'Badge', 'BadgeText', 'Name', 'PricePill', 'Price', 'BuyButton',
     'Text', 'PrimaryCta',
   ],
+  /**
+   * Content contract. These rules used to live in the compiler, which meant the
+   * compiler required a title and priced items of *every* pattern — so no second
+   * pattern could ever validate. Each pattern now declares its own shape.
+   */
+  validateContent(c) {
+    const problems = [];
+    if (!c.title) problems.push('content.title is required');
+    if (!Array.isArray(c.items) || c.items.length === 0) {
+      problems.push('content.items must be a non-empty array');
+    }
+    (c.items ?? []).forEach((item, i) => {
+      if (!item.name) problems.push(`content.items[${i}].name is required`);
+      if (!item.price) problems.push(`content.items[${i}].price is required`);
+      if (!item.art) problems.push(`content.items[${i}].art is required (placeholder key until art exists)`);
+    });
+    return problems;
+  },
 };

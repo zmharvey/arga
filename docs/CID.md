@@ -1,7 +1,106 @@
 # CID — Creative Idea Department
 
-**Status: not built.** This is the design brief for it, written at the end of the session
-that built stage 0. Start here.
+**Status: wave 1 built.** 37 sheets across 14 domains in Theme & Narrative, Core Loop and
+the domains owning build-contract keys. `npm run cid:verify` passes. The rest of this file
+is the original design brief; the run order below is what actually works.
+
+## The rule that decides whether a domain runs
+
+**A domain runs only if it owns at least one key in the build contract.** Check with
+`npm run bridge -- --contract`. `npm run cid:verify` warns for every domain that breaks it.
+
+This is the repo's own rule turned back on CID. Everything else here is checked for having a
+consumer — an upgrade nothing applies is rejected, a state field nothing constructs is
+rejected, a module nothing depends on is rejected. CID was the one stage exempt, and measured
+after wave 1:
+
+> **23 of 35 sheets and 6,297 of 8,051 lines came from domains that own no contract key.**
+> 78% of the output could not be read by any build step.
+
+| | sheets | lines |
+|---|---|---|
+| domains that own a key | 12 | 1,789 |
+| domains that own nothing | **23** | **6,297** |
+
+Those sheets are not bad writing; several are the best documents in the repo. But a decision
+that cannot be stated as a contract value reaches the build only as prose, and prose has to be
+re-interpreted by whoever reads it next. Exactly two rulings from those 23 sheets ever reached
+the build, and a human carried both across by hand after noticing them.
+
+**Three options when a domain has something real to say and no key to say it in:**
+
+1. **Get it a key**, if the output is checkable. Tone's register was four sheets of prose; its
+   checkable half is now `vocabulary.casing`, `.maxSentenceWords` and `.allowedPattern`, and
+   the merger enforces all three on every player-facing string. `cid:verify` used to *warn*
+   that labels shouted in some places and not others and leave the ruling to a human. It is a
+   hard failure now, and the check that warned is deleted.
+2. **Fold it into a domain that has one.** Naming is not a decision separate from the thing
+   named, and neither is most tone.
+3. **Do not run it.** A category that can only produce prose is advisory. Label it that way
+   rather than funding it like a department.
+
+The 23 sheets stay on disk as a record. Deleting them retroactively buys nothing; the rule is
+for the next wave, which was going to add 41 more domains under the old one.
+
+**Seven domains may run today:** `art/objects`, `gameplay/balance`, `gameplay/mechanics`,
+`gameplay/meta`, `gameplay/onboarding`, `gameplay/systems`, `theme/vocabulary`.
+
+## How to run a wave
+
+```bash
+# 1. leads plan. Category leads, then domain leads. Leads may fetch; writers may not.
+#    Each domain lead writes cid/<category>/<domain>/_lead.md with an assignment table.
+
+# 2. bank the research. Turns every [research: url] any lead wrote into one deduped file.
+npm run cid:research
+
+# 3. derive each writer's context. One pack per domain, nothing else needed.
+npm run cid:pack -- --domain theme/tone --brief concept/spec/<slug> --out /tmp/pack.md
+
+# 4. write. ONE cid-domain-writer per domain, handed its pack. Not one agent per sheet.
+
+# 5. check mechanically, before spending an agent on judgement.
+npm run cid:verify
+
+# 6. only now, cid-verifier agents — on contradiction, occupancy and feasibility.
+```
+
+**Step 5 before step 6 is not a style preference.** In wave 1 three separate sheets each
+spent ~150k tokens independently rediscovering that `area.label` is `EAST TERRACE` while
+`collection.sets[].label` is `Terrace`. `cid:verify` finds it in milliseconds. An agent's
+budget should go on judgement, never on counting.
+
+### Why writers are batched by domain and handed a pack
+
+Wave 1 ran one agent per sheet, each discovering its own context. That cost ~6.3M tokens of
+input to produce ~110k of sheets — **~97% of the spend was input**, and most of it was the
+same bytes delivered 37 times:
+
+| what each writer pulled in | tokens |
+|---|---|
+| sibling sheets, to find where its subject stopped | ~86,000 |
+| its own web searches, then fetches | ~60,000 |
+| the brief, whole, including the report on how the brief was made | ~12,800 |
+| `schema.mjs` + its lead's index | ~11,500 |
+
+None of that is writing. It is re-derivation, paid once per sheet.
+
+`npm run cid:pack` derives it once per *domain*: the assignment, the brief file list minus
+process artifacts, the contract keys that domain owns, a 40-line digest of every decision
+already made anywhere, and a pointer to the research pack. Measured on wave 1's own files,
+**6.3M → 580k, about 11x**, at 14 agents instead of 37.
+
+Detail is unaffected. `cid-domain-writer` inherits `cid-spec-writer`'s format contract
+unchanged — same Decision, same manifest block, same 2-to-4 checkable acceptance criteria.
+What changed is how context arrives and how many sheets one agent holds.
+
+It also *removes* a defect rather than trading against one. Sibling overlap was the recurring
+wave-1 failure, and reading siblings was how writers were supposed to prevent it. A writer
+holding all of a domain's sheets cannot collide with itself.
+
+**The one thing to watch:** a domain lead's assignment table is now parsed, and its
+`must decide` cell is the writer's whole instruction. A vague row produces a vague sheet with
+nothing upstream to fall back on.
 
 ## What it is
 

@@ -435,7 +435,14 @@ local function buildNode(node, theme, vpClass, parent): GuiObject
 	if node.clip then
 		inst.ClipsDescendants = true
 	end
-	if node.auto == "y" then
+	-- X was missing here while the spec vocabulary already accepted `auto: 'x'`, so a
+	-- node asking to size to its own width silently got none and collapsed in-engine.
+	-- The HTML preview had the identical hole, which hid it: both were wrong the same
+	-- way, so the render loop reported "clean" on broken output. Keep all three arms
+	-- in step — `ui-forge/test/patterns.test.mjs` asserts that they are.
+	if node.auto == "x" then
+		inst.AutomaticSize = Enum.AutomaticSize.X
+	elseif node.auto == "y" then
 		inst.AutomaticSize = Enum.AutomaticSize.Y
 	elseif node.auto == "xy" then
 		inst.AutomaticSize = Enum.AutomaticSize.XY
@@ -449,7 +456,20 @@ local function buildNode(node, theme, vpClass, parent): GuiObject
 	end
 
 	-- Text
-	if node.text ~= nil or node.placeholder ~= nil then
+	--
+	-- `placeholder` is overloaded and that is what broke here. On a TextBox it is the
+	-- placeholder string; on an ImageLabel or ImageButton it names an asset that does not
+	-- exist yet, handled further down by painting the node magenta.
+	--
+	-- Gating this branch on the *field* meant an ImageLabel carrying `placeholder = "relic"`
+	-- fell in and hit `inst.Text = ...`, which threw. That error propagated out of
+	-- `UIBuilder.build`, killed the client entry point on its second statement, and took the
+	-- HUD and every keybind with it — the whole client, from one icon with no asset.
+	--
+	-- So gate on what the Instance can actually hold. A node may carry any field; only some
+	-- of them apply to the class it asked for.
+	local holdsText = inst:IsA("TextLabel") or inst:IsA("TextButton") or inst:IsA("TextBox")
+	if holdsText and (node.text ~= nil or node.placeholder ~= nil) then
 		local t = theme.type[node.type or "body"]
 		if inst:IsA("TextBox") then
 			inst.PlaceholderText = node.placeholder or ""

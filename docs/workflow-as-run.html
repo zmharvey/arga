@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>arga — the workflow as given, and as run</title>
+<meta name="description" content="The arga pipeline drawn twice: the workflow graph as it was handed over, and the one that actually ran. The graph survived unchanged at 132 nodes and 293 edges; the scale, the stages and the cost model all moved.">
+<style>
+  /* minimal reset — the hosted artifact wrapper supplies one; a standalone file must not assume it */
+  *, *::before, *::after { box-sizing: border-box; }
+  body, h1, h2, h3, p, ul, table { margin: 0; }
+  img, svg { max-width: 100%; display: block; }
+  ul { padding: 0; }
+</style>
+<style>
+  :root {
+    --ink:      #141a22;
+    --ink-soft: #3d4653;
+    --slate:    #5b6675;
+    --paper:    #e8eaee;
+    --panel:    #f1f3f6;
+    --rule:     #c9ced7;
+    --blue:     #3d5f94;
+    --blue-dim: #8fa3c4;
+    --brass:    #a8752a;
+    --brass-dim:#cfae74;
+    --rust:     #8f3e36;
+
+    --display: "Iowan Old Style", "Charter", Charter, Georgia, "Times New Roman", serif;
+    --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:      #e4e8ee;
+      --ink-soft: #a6b0be;
+      --slate:    #7f8b9c;
+      --paper:    #0e1218;
+      --panel:    #151b24;
+      --rule:     #2a323d;
+      --blue:     #7398dc;
+      --blue-dim: #40567c;
+      --brass:    #d9a85a;
+      --brass-dim:#7d6234;
+      --rust:     #c4655a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:      #e4e8ee;
+    --ink-soft: #a6b0be;
+    --slate:    #7f8b9c;
+    --paper:    #0e1218;
+    --panel:    #151b24;
+    --rule:     #2a323d;
+    --blue:     #7398dc;
+    --blue-dim: #40567c;
+    --brass:    #d9a85a;
+    --brass-dim:#7d6234;
+    --rust:     #c4655a;
+  }
+  :root[data-theme="light"] {
+    --ink:      #141a22;
+    --ink-soft: #3d4653;
+    --slate:    #5b6675;
+    --paper:    #e8eaee;
+    --panel:    #f1f3f6;
+    --rule:     #c9ced7;
+    --blue:     #3d5f94;
+    --blue-dim: #8fa3c4;
+    --brass:    #a8752a;
+    --brass-dim:#cfae74;
+    --rust:     #8f3e36;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 28px 120px;
+  }
+  .col {
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+
+  /* ---------------------------------------------------------------- masthead */
+
+  .masthead {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 84px 0 40px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin: 0 0 22px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(34px, 5.2vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 22px;
+  }
+  .standfirst {
+    font-size: 19.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .standfirst strong { color: var(--ink); font-weight: 600; }
+
+  /* ------------------------------------------------------------------- prose */
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 6px;
+  }
+  h3 {
+    font-family: var(--body);
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: 0.005em;
+    margin: 0 0 8px;
+  }
+  p { margin: 0 0 18px; text-wrap: pretty; }
+  .col > p:last-child { margin-bottom: 0; }
+
+  section { margin-top: 82px; }
+  .sec-head {
+    max-width: var(--measure);
+    margin: 0 auto 30px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sec-head .eyebrow { margin-bottom: 14px; }
+  .sec-head p { margin: 12px 0 0; color: var(--ink-soft); font-size: 16.5px; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.865em;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 0.08em 0.34em;
+  }
+  a { color: var(--blue); }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* ----------------------------------------------------------------- diagram */
+
+  .plate {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    margin: 0 0 22px;
+    overflow-x: auto;
+  }
+  .plate svg { display: block; min-width: 940px; width: 100%; height: auto; }
+
+  .legend {
+    max-width: var(--measure);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 26px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--slate);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .swatch { width: 15px; height: 3px; border-radius: 2px; flex: none; }
+  .sw-blue  { background: var(--blue); }
+  .sw-brass { background: var(--brass); }
+  .sw-rust  { background: var(--rust); }
+
+  /* ------------------------------------------------------------------ ledger */
+
+  .ledger { display: flex; flex-direction: column; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 2px; }
+  .row { background: var(--paper); padding: 22px 24px; display: grid; grid-template-columns: 30px 1fr; gap: 0 18px; }
+  .qn {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--brass);
+    padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .q { font-weight: 650; margin: 0 0 10px; }
+  .a { margin: 0; color: var(--ink-soft); font-size: 16px; }
+  .a strong { color: var(--ink); font-weight: 600; }
+  .verdict {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-left: 8px;
+    vertical-align: 1.5px;
+    white-space: nowrap;
+  }
+  .v-settled { color: var(--brass); border: 1px solid var(--brass-dim); }
+  .v-open    { color: var(--rust);  border: 1px solid var(--rust); }
+
+  /* ------------------------------------------------------------------ changes */
+
+  .changes { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 20px; }
+  .changes li { display: grid; grid-template-columns: 22px 1fr; gap: 0 16px; }
+  .mark {
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--brass);
+  }
+  .mark.strike { color: var(--rust); }
+  .changes .why { display: block; color: var(--ink-soft); font-size: 15.5px; margin-top: 3px; }
+
+  /* ------------------------------------------------------------------- table */
+
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15.5px; }
+  caption {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--slate);
+    padding-bottom: 12px;
+  }
+  th, td { text-align: left; padding: 11px 14px 11px 0; border-bottom: 1px solid var(--rule); }
+  thead th {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--slate);
+    border-bottom-color: var(--ink-soft);
+  }
+  td.n, th.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; padding-right: 0; }
+  td.given { color: var(--blue); }
+  td.run   { color: var(--brass); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ------------------------------------------------------------------ closing */
+
+  .pull {
+    max-width: var(--measure);
+    margin: 0 auto;
+    border-left: 2px solid var(--brass);
+    padding: 4px 0 4px 26px;
+    font-family: var(--display);
+    font-size: 22px;
+    line-height: 1.42;
+    text-wrap: pretty;
+  }
+  .foot {
+    max-width: var(--measure);
+    margin: 76px auto 0;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.85;
+    color: var(--slate);
+  }
+
+  @media (max-width: 620px) {
+    body { font-size: 16.5px; }
+    .masthead { padding-top: 56px; }
+    section { margin-top: 62px; }
+    .row { grid-template-columns: 1fr; gap: 8px; }
+    .qn { padding-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* ------------------------------------------------------------ theme toggle */
+  /* The artifact host stamps data-theme on the root; a file opened from disk has nothing
+     that does, so the tokens' data-theme overrides would be unreachable without this. */
+  .theme {
+    position: fixed;
+    top: 18px; right: 18px;
+    z-index: 10;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--slate);
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 7px 11px;
+    cursor: pointer;
+  }
+  .theme:hover { color: var(--ink); border-color: var(--ink-soft); }
+  @media print { .theme { display: none; } }
+</style>
+</head>
+<body>
+
+
+<button class="theme" type="button" id="theme" aria-live="polite">theme</button>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">arga · the pipeline, drawn twice</p>
+    <h1>The drawing came back marked&nbsp;up</h1>
+    <p class="standfirst">You handed over a workflow graph and five questions you had deliberately
+      left open. <strong>The graph survived — 132 nodes, 293 edges, unchanged.</strong> What moved
+      was everything around it: where the work happens, what a department is allowed to hand over,
+      and which half of a verification should have been an agent at all.</p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Plate 1 · the pipeline</p>
+      <h2>What was drawn, and what was fitted</h2>
+      <p>The blue is the shape you gave: an idea goes through concept, through a creative department,
+        into a build. Everything in brass was added while fitting it, and none of it was a change of
+        mind about the blue.</p>
+    </div>
+
+    <div class="plate">
+      <svg viewBox="0 0 1140 400" role="img" aria-labelledby="plate1-title plate1-desc">
+        <title id="plate1-title">The arga pipeline as given and as built</title>
+        <desc id="plate1-desc">A horizontal spine in blue shows idea, stage 0 concept, CID, build,
+          and game. Brass additions below show derived context feeding CID, a mechanical gate, and
+          two new stages — bridge and architect — inserted between CID and build, plus a verification
+          loop returning to CID.</desc>
+
+        <defs>
+          <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--blue)"/>
+          </marker>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--brass)"/>
+          </marker>
+        </defs>
+
+        <g font-family="ui-monospace, Menlo, monospace">
+
+          <!-- ============ GIVEN SPINE (blue) ============ -->
+          <g stroke="var(--blue)" fill="none" stroke-width="1.5">
+            <rect x="24"  y="96" width="104" height="52" rx="2"/>
+            <rect x="188" y="96" width="150" height="52" rx="2"/>
+            <rect x="398" y="80" width="196" height="84" rx="2"/>
+            <rect x="900" y="96" width="120" height="52" rx="2"/>
+            <rect x="1050" y="96" width="66" height="52" rx="2"/>
+          </g>
+          <g fill="var(--blue)" font-size="13">
+            <text x="76"   y="127" text-anchor="middle">idea</text>
+            <text x="263"  y="120" text-anchor="middle">stage 0</text>
+            <text x="263"  y="137" text-anchor="middle" font-size="11.5" opacity="0.8">concept</text>
+            <text x="496"  y="112" text-anchor="middle">CID</text>
+            <text x="496"  y="130" text-anchor="middle" font-size="11.5" opacity="0.8">14 depts · 5 waves</text>
+            <text x="496"  y="147" text-anchor="middle" font-size="11.5" opacity="0.8">1 writer per sheet</text>
+            <text x="960"  y="127" text-anchor="middle">build</text>
+            <text x="1083" y="127" text-anchor="middle">game</text>
+          </g>
+          <g stroke="var(--blue)" stroke-width="1.5" marker-end="url(#ab)">
+            <line x1="128" y1="122" x2="182" y2="122"/>
+            <line x1="338" y1="122" x2="392" y2="122"/>
+            <line x1="1020" y1="122" x2="1044" y2="122"/>
+          </g>
+          <!-- The span the drawing crossed with a single arrow. Routed OVER the two stages that
+               were fitted into it, rather than through them: the original edge and the thing
+               that replaced it are the whole comparison, so they must not collide. -->
+          <path d="M 594 100 L 610 100 L 610 46 L 960 46 L 960 90"
+                stroke="var(--blue)" stroke-width="1.5" stroke-dasharray="7 5"
+                fill="none" marker-end="url(#ab)"/>
+          <text x="785" y="36" text-anchor="middle" fill="var(--blue)" font-size="11.5" opacity="0.85">
+            the drawing crossed this with one edge
+          </text>
+
+          <!-- ============ BRASS: what got fitted ============ -->
+
+          <!-- derived context into CID -->
+          <g stroke="var(--brass)" fill="none" stroke-width="1.5">
+            <rect x="188" y="232" width="150" height="66" rx="2"/>
+          </g>
+          <g fill="var(--brass)" font-size="12">
+            <text x="263" y="256" text-anchor="middle">derived context</text>
+            <text x="263" y="273" text-anchor="middle" font-size="10.5" opacity="0.85">digest · research</text>
+            <text x="263" y="288" text-anchor="middle" font-size="10.5" opacity="0.85">pack · leadpack</text>
+          </g>
+          <path d="M 338 265 L 368 265 L 368 150" stroke="var(--brass)" stroke-width="1.5"
+                fill="none" marker-end="url(#ar)"/>
+
+          <!-- mechanical gate under CID -->
+          <g stroke="var(--brass)" fill="none" stroke-width="1.5">
+            <rect x="410" y="232" width="172" height="48" rx="2"/>
+          </g>
+          <g fill="var(--brass)" font-size="12">
+            <text x="496" y="253" text-anchor="middle">cid:verify</text>
+            <text x="496" y="269" text-anchor="middle" font-size="10.5" opacity="0.85">runs before any verifier</text>
+          </g>
+          <line x1="496" y1="232" x2="496" y2="170" stroke="var(--brass)" stroke-width="1.5" marker-end="url(#ar)"/>
+
+          <!-- the two stages inserted into the dashed span -->
+          <g stroke="var(--brass)" fill="none" stroke-width="1.5">
+            <rect x="622" y="80" width="122" height="84" rx="2"/>
+            <rect x="768" y="80" width="122" height="84" rx="2"/>
+          </g>
+          <g fill="var(--brass)" font-size="13">
+            <text x="683" y="112" text-anchor="middle">bridge</text>
+            <text x="683" y="131" text-anchor="middle" font-size="10.5" opacity="0.85">26 creative keys</text>
+            <text x="683" y="147" text-anchor="middle" font-size="10.5" opacity="0.85">63 proposed</text>
+            <text x="829" y="112" text-anchor="middle">architect</text>
+            <text x="829" y="131" text-anchor="middle" font-size="10.5" opacity="0.85">7 technical keys</text>
+            <text x="829" y="147" text-anchor="middle" font-size="10.5" opacity="0.85">BUILD-ORDER</text>
+          </g>
+          <g stroke="var(--brass)" stroke-width="1.5" marker-end="url(#ar)">
+            <line x1="594" y1="122" x2="616" y2="122"/>
+            <line x1="744" y1="122" x2="762" y2="122"/>
+            <line x1="890" y1="122" x2="894" y2="122"/>
+          </g>
+
+          <!-- verification return path -->
+          <path d="M 683 164 L 683 200 L 496 200 L 496 170"
+                stroke="var(--brass)" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+          <text x="590" y="194" text-anchor="middle" fill="var(--brass)" font-size="10.5">
+            revision round
+          </text>
+
+          <!-- ui-forge, drawn as the branch that stayed out -->
+          <g stroke="var(--rust)" fill="none" stroke-width="1.5" stroke-dasharray="5 4">
+            <rect x="24" y="232" width="128" height="48" rx="2"/>
+          </g>
+          <g fill="var(--rust)" font-size="12">
+            <text x="88" y="253" text-anchor="middle">ui-forge</text>
+            <text x="88" y="269" text-anchor="middle" font-size="10.5" opacity="0.85">screens only</text>
+          </g>
+          <path d="M 88 232 L 88 148" stroke="var(--rust)" stroke-width="1.5"
+                stroke-dasharray="5 4" fill="none"/>
+          <text x="88" y="300" text-anchor="middle" fill="var(--rust)" font-size="10.5">
+            fed by stage 0, not CID
+          </text>
+
+          <!-- scale note -->
+          <g fill="var(--slate)" font-size="10.5">
+            <text x="398" y="345">CID as run: 55 domains · 7 waves · 250 sheets · one writer per domain</text>
+            <text x="398" y="363">every wave gated — a category that fails is re-run, not passed forward</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span><i class="swatch sw-blue"></i> as given</span>
+      <span><i class="swatch sw-brass"></i> fitted while building</span>
+      <span><i class="swatch sw-rust"></i> drawn in, stayed out</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Plate 2 · the five open questions</p>
+      <h2>You left five things undecided. Running it decided four.</h2>
+      <p>The brief listed these under <em>“Open design questions for CID itself — not decided.”</em>
+        They turned out to be the load-bearing ones.</p>
+    </div>
+
+    <div class="col">
+      <div class="ledger">
+
+        <div class="row">
+          <div class="qn">01</div>
+          <div>
+            <p class="q">Agent, or workflow?<span class="verdict v-settled">settled</span></p>
+            <p class="a"><strong>Both, split by kind of work.</strong> Ten deterministic scripts and five
+              agent types. The rule that emerged: an agent is for judgement, a script is for counting.
+              Three wave-1 sheets each spent ~150k tokens rediscovering one string comparison a script
+              finds in milliseconds — so <code>cid:verify</code> now runs <em>before</em> any verifier is
+              dispatched, and the verifier’s budget goes on the half that needs a mind.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="qn">02</div>
+          <div>
+            <p class="q">What does a department output — prose, or a structured artifact?<span class="verdict v-settled">settled</span></p>
+            <p class="a"><strong>A structured artifact, and this was the expensive lesson.</strong> Wave 1
+              produced 35 sheets of which 78% had no data form — 6,297 lines no build step could read. Prose
+              was never the problem; prose <em>with no data beside it</em> was. Every sheet now carries a
+              manifest block, or states in one line why its subject has none and names the key it would need.
+              As of today: zero sheets fail that.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="qn">03</div>
+          <div>
+            <p class="q">How do departments disagree?<span class="verdict v-settled">settled</span></p>
+            <p class="a"><strong>A verifier per category, issuing revision requests that name the file and the
+              fix</strong> — and for the hard case, a shared block naming one definer and its readers. That
+              exists because two domains inverted twice in three rounds over one field, each adopting the
+              other’s previous position: both correct alone, contradictory together. Deadlocks that survive
+              a round get ruled from outside.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="qn">04</div>
+          <div>
+            <p class="q">Does CID feed back into stage 0?<span class="verdict v-open">still open</span></p>
+            <p class="a"><strong>No return path was built.</strong> Findings loop inside CID — a category can
+              fail and be re-run — but nothing routes a defect back to the concept stage. If a design decision
+              turns out to be impossible, that still ends in a human re-running the interview. This is the one
+              question of the five that running the pipeline did not answer.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="qn">05</div>
+          <div>
+            <p class="q">How does CID output reach <code>ui-forge</code>?<span class="verdict v-open">answered by not happening</span></p>
+            <p class="a"><strong>It doesn’t.</strong> The question assumed <code>ui-forge</code> was on the path
+              to the build. It isn’t — it renders screens, is fed by stage 0 directly, and sits outside the
+              build order on purpose. CID reaches the game through <code>bridge</code> and the architect
+              instead. The bridge the brief called “gap 2” got built; it just wasn’t the bridge the brief
+              expected.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Revisions · at handover</p>
+      <h2>Seven changes before it ran once</h2>
+      <p>Made while turning the graph into a runnable config — each one a hole the drawing had, found
+        by trying to execute it rather than by reading it.</p>
+    </div>
+
+    <div class="col">
+      <ul class="changes">
+        <li><span class="mark">+</span><span><strong>Balance &amp; Tuning</strong>
+          <span class="why">Nothing in the graph owned the numbers.</span></span></li>
+        <li><span class="mark">+</span><span><strong>Onboarding</strong>
+          <span class="why">Nothing designed the first minute.</span></span></li>
+        <li><span class="mark">+</span><span><strong>Checks on all nine category verifications</strong>
+          <span class="why">Every verification node existed; none said what it checked.</span></span></li>
+        <li><span class="mark">↔</span><span><strong>Theme wired to all nine categories</strong>
+          <span class="why">It reached three domain leads. Art and Audio were told to match a tone document they were never sent.</span></span></li>
+        <li><span class="mark">↺</span><span><strong>A return path for cross-category verification</strong>
+          <span class="why">Its only edge went to the Build CEO, so every catch was terminal — the pass could find a problem and had nowhere to send it.</span></span></li>
+        <li><span class="mark">+</span><span><strong>A Build Capability Registry</strong>
+          <span class="why">So a spec naming a pattern the compiler can’t produce fails at CID, not three stages later.</span></span></li>
+        <li><span class="mark">↕</span><span><strong>Tech and UI/UX moved ahead of Art</strong>
+          <span class="why">Performance budgets constrain art detail, so Art was being asked to decide first and be overruled after.</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Revisions · from running it</p>
+      <h2>Six more the drawing could not have shown</h2>
+      <p>These only appear once real work goes through. None is a disagreement with the design; each is
+        a cost or a failure the design was silent about.</p>
+    </div>
+
+    <div class="col">
+      <ul class="changes">
+        <li><span class="mark strike">×</span><span><strong>One writer per sheet → one per domain</strong>
+          <span class="why">Wave 1 spent ~6.3M input tokens to produce ~110k of sheets. 97% was input, most of it the same bytes delivered once per sheet, because every writer discovered its own context by reading files. Batching by domain also removed sibling collisions: a writer holding all of a domain’s sheets cannot contradict itself.</span></span></li>
+        <li><span class="mark">+</span><span><strong>Context became a derivation, not a search</strong>
+          <span class="why">An agent that reads 26 sibling sheets to learn where its subject stops, or re-fetches a page another agent fetched an hour ago, is paying to re-derive what a parser states once. Measured after: ~11× cheaper.</span></span></li>
+        <li><span class="mark">+</span><span><strong>The mechanical half left the verifiers</strong>
+          <span class="why">Index-matches-disk, criteria-present, one-key-one-owner — none of that needed a mind, and all of it was being paid for at agent rates.</span></span></li>
+        <li><span class="mark">+</span><span><strong><code>bridge</code> — a stage the drawing didn’t have</strong>
+          <span class="why">Sheets had to become a validated manifest before anything could read them. The drawing crossed that span with a single arrow.</span></span></li>
+        <li><span class="mark">+</span><span><strong>The contract split in two</strong>
+          <span class="why">Two build trials measured what actually stopped a builder, and roughly 15 of 21 stops were not creative questions — they were require paths, collection shapes, and who writes a Humanoid property. So the architect answers <em>how it gets built</em> and CID answers <em>what the game is</em>.</span></span></li>
+        <li><span class="mark">+</span><span><strong>Citations became checkable</strong>
+          <span class="why">The single most-repeated defect across seven waves was not a bad decision — it was a field path quoted from memory. One phantom appeared in five sheets, in three spellings, across three categories, and the key had never had it. One of those was a runtime condition, and a nil compare in Luau is silently falsy, so the game state it guarded would simply never have fired.</span></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Measured</p>
+      <h2>The same graph, at fifteen times the scale</h2>
+    </div>
+
+    <div class="col">
+      <div class="tablewrap">
+        <table>
+          <caption>as given → as run</caption>
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              <th scope="col" class="n">given</th>
+              <th scope="col" class="n">run</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Graph nodes</th><td class="n given">132</td><td class="n run">132</td></tr>
+            <tr><th scope="row">Graph edges</th><td class="n given">293</td><td class="n run">293</td></tr>
+            <tr><th scope="row">Departments / domains</th><td class="n given">~14</td><td class="n run">55</td></tr>
+            <tr><th scope="row">Dependency waves</th><td class="n given">5</td><td class="n run">7</td></tr>
+            <tr><th scope="row">Spec sheets</th><td class="n given">—</td><td class="n run">250</td></tr>
+            <tr><th scope="row">Contract keys</th><td class="n given">—</td><td class="n run">33</td></tr>
+            <tr><th scope="row">Pipeline stages</th><td class="n given">3</td><td class="n run">6</td></tr>
+            <tr><th scope="row">Game modules shipped</th><td class="n given">—</td><td class="n run">21</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">The comparison</p>
+      <h2>What the drawing got right was the part it refused to fix</h2>
+    </div>
+
+    <div class="col">
+      <p>The lineup in the brief — fourteen departments in five waves — is now fifty-five domains in
+        seven. On a normal reading that is the plan being wrong by a factor of four.</p>
+      <p>Except the brief said this, in bold, before anything ran:</p>
+    </div>
+
+    <p class="pull">“This lineup is expected to change and nothing in stage 0 depends on it. Do not treat
+      the table above as a spec. Treat it as one plausible slicing.”</p>
+
+    <div class="col" style="margin-top:26px">
+      <p>That is why the count could quadruple without a rewrite. The sheets were organised by the
+        <em>design’s</em> dependency layers rather than by an org chart, so a reader routes itself by
+        subject — and re-slicing the departments left every sheet still valid. The one prediction the
+        brief made about its own weakness is the one that held.</p>
+      <p>The parts that needed the most work were the parts stated with the most confidence: a single
+        arrow where two stages belonged, verification nodes with no checks in them, and a Theme
+        department wired to three of the nine categories that were waiting on it.</p>
+    </div>
+  </section>
+
+  <p class="foot">
+    Drawn from the repository, not from memory · node and edge counts from
+    <code>docs/cid-workflow.json</code> at the commit that introduced it and at HEAD · handover
+    revisions from that commit’s own message · token figures as measured at the time and recorded in
+    the commit that fixed them · sheet, key and module counts taken at HEAD, 3 August 2026
+  </p>
+
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    var label = function () {
+      var explicit = root.getAttribute('data-theme');
+      var dark = explicit ? explicit === 'dark' : prefersDark.matches;
+      btn.textContent = dark ? 'light' : 'dark';
+    };
+    btn.addEventListener('click', function () {
+      var explicit = root.getAttribute('data-theme');
+      var dark = explicit ? explicit === 'dark' : prefersDark.matches;
+      root.setAttribute('data-theme', dark ? 'light' : 'dark');
+      label();
+    });
+    prefersDark.addEventListener('change', label);
+    label();
+  })();
+</script>
+</body>
+</html>

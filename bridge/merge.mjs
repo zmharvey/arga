@@ -1,0 +1,230 @@
+/**
+ * Spec sheets -> one validated build manifest.
+ *
+ * Deliberately not an agent. The whole reason this file exists is that prose has to
+ * be re-interpreted by whoever reads it, and interpretation is where two build
+ * agents diverge into two different games. A merger cannot interpret. It can only
+ * collect declared values, refuse duplicates, and check them against the contract.
+ *
+ * Same argument as `ui-forge/src/compose/index.mjs` makes for its own seam: an LLM
+ * here would be slower, non-reproducible, and free to drift from the schema in ways
+ * a validator can only catch after the fact.
+ *
+ * A sheet contributes by carrying a fenced block:
+ *
+ *     ```manifest
+ *     { "provides": "tiers", "value": [ ... ] }
+ *     ```
+ *
+ * JSON rather than YAML because the repo has zero runtime dependencies and that is
+ * worth keeping. The prose around the block stays the human-readable half and the
+ * reasoning record; nothing downstream of here reads it.
+ *
+ * PROPOSING A KEY THE CONTRACT DOES NOT HAVE YET
+ * ---------------------------------------------
+ * The contract is 16 keys because it was derived from one hand-built game, and 41 of
+ * the graph's 55 domains have not run. A domain that decides something real and finds
+ * no slot for it is the signal the contract should grow — not an error to route around
+ * by writing prose instead.
+ *
+ *     ```manifest
+ *     { "provides": "environment", "status": "proposed", "value": { ... } }
+ *     ```
+ *
+ * A proposal is collected and reported, never merged: nothing downstream reads a key
+ * that has no shape to validate against, and promoting one is a deliberate edit to
+ * `schema.mjs` by whoever owns the contract. `status` is required rather than inferred
+ * from "key not in schema", so a typo in a real key (`tier` for `tiers`) stays the hard
+ * error it should be instead of silently becoming a proposal.
+ */
+
+import { readdir, readFile } from 'node:fs/promises';
+import { join, relative, dirname } from 'node:path';
+import { SCHEMA, validateManifest } from './schema.mjs';
+
+const BLOCK = /```manifest\s*\n([\s\S]*?)\n```/g;
+
+/*
+ * A ```json fence is only a manifest block if it claims to be one.
+ *
+ * The comment further down says the fence stopped being load-bearing and that an amendment is
+ * recognised by its `amends` field wherever it appears. That was only ever true for fences
+ * `BLOCK` already matched — a ```json amendment never entered the loop at all, so it was never
+ * parsed and never JSON-validated. `verify-sheets.mjs` counts one as a data form via a text
+ * test for `"amends"`, which means a MALFORMED ```json amendment passed both gates in silence:
+ * the check that could see it did not parse it, and the parser could not see it.
+ *
+ * Found by the Tone writer reading the regex rather than the comment above it.
+ *
+ * The gate is deliberately narrow, two ways.
+ *
+ * A fence is a candidate only if its raw text claims a key. Sheets carry plenty of ```json
+ * fences that are not manifest data — `audio/sfx/01`'s is a revision request against another
+ * sheet's field — and those must not start reporting "needs a provides".
+ *
+ * And only LEAF sheets are widened. `cid/_contract.md` documents this very format with
+ * `{ "provides": "<key>", "value": <data> }`, which claims a key and is deliberately not JSON;
+ * the first run of this check reported it, correctly and uselessly. An amendment is a leaf
+ * sheet adding rows to its domain's key, so widening indexes buys nothing and would force the
+ * documentation to contort to satisfy a parser it is describing. ```manifest fences are still
+ * read everywhere, exactly as before.
+ */
+const JSON_BLOCK = /```json\s*\n([\s\S]*?)\n```/g;
+const CLAIMS_A_KEY = /"(amends|provides)"\s*:/;
+const IS_LEAF = /\/\d\d-[^/]+\.md$/;
+
+async function walk(dir) {
+  const out = [];
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...await walk(full));
+    else if (entry.name.endsWith('.md')) out.push(full);
+  }
+  return out.sort();
+}
+
+/**
+ * @param {string} root directory of spec sheets
+ * @param {object} [schema] which contract to merge against. Defaults to the creative one.
+ *   The architect passes `TECH_SCHEMA` to merge technical sheets through the same collector,
+ *   because "one key, one owning sheet" is worth enforcing on both contracts and is not
+ *   worth writing twice. When a custom schema is given, validation is the caller's job:
+ *   only this contract's own `validateManifest` knows the creative cross-key invariants.
+ * @returns {Promise<{manifest: object, problems: string[], missing: string[], provenance: Record<string,string>, proposals: {key: string, sheet: string, value: any}[], sheetsRead: number, sheetsContributing: number}>}
+ */
+export async function mergeSheets(root, schema = SCHEMA) {
+  const files = await walk(root);
+  const manifest = {};
+  /** @type {Record<string,string>} key -> the sheet that provided it */
+  const provenance = {};
+  /** @type {{key: string, sheet: string, value: any}[]} keys a domain wants that the contract lacks */
+  const proposals = [];
+  /** @type {string[]} sheets whose `status: proposed` outlived the promotion of their own key */
+  const staleStatus = [];
+  const problems = [];
+  let contributing = 0;
+
+  for (const file of files) {
+    const rel = relative(root, file);
+    const body = await readFile(file, 'utf8');
+    let found = false;
+
+    const candidates = [
+      ...body.matchAll(BLOCK),
+      ...(IS_LEAF.test(file)
+        ? [...body.matchAll(JSON_BLOCK)].filter((m) => CLAIMS_A_KEY.test(m[1]))
+        : []),
+    ];
+
+    for (const match of candidates) {
+      let block;
+      try {
+        block = JSON.parse(match[1]);
+      } catch (err) {
+        problems.push(`${rel}: manifest block is not valid JSON — ${err.message}`);
+        continue;
+      }
+
+      // An amendment is a sibling sheet adding rows to a key its domain already owns. The
+      // convention is a ```json fence (see `verify-sheets.mjs`, which counts one as a data
+      // form) precisely because a second ```manifest block claiming the same key is a merge
+      // error. But `amends` and `provides` are both "here is my data", the fence is the only
+      // thing telling them apart, and in wave 5 five of sixteen writers reached for
+      // ```manifest anyway. Five independent agents making one mistake is the convention's
+      // fault, not theirs.
+      //
+      // So the fence stops being load-bearing: an amendment is recognised by its `amends`
+      // field wherever it appears. It is still not merged — a key has one owning sheet and
+      // an amendment is a request against that owner, which is the rule this seam exists to
+      // hold. What changes is that stating it in the wrong fence is no longer a hard error.
+      if (typeof block.amends === 'string' && !('provides' in block)) {
+        found = true;
+        continue;
+      }
+
+      const key = block.provides;
+      if (typeof key !== 'string') {
+        problems.push(`${rel}: manifest block needs a "provides" naming the key it supplies, or an "amends" naming the key it adds rows to`);
+        continue;
+      }
+      const proposed = block.status === 'proposed';
+
+      if (!(key in schema) && !proposed) {
+        problems.push(`${rel}: provides "${key}", which is not in the build contract. Known keys: ${Object.keys(schema).join(', ')}. If this is a genuinely new key, mark the block "status": "proposed".`);
+        continue;
+      }
+      // A lingering `status: proposed` on a key the contract now has means one of two very
+      // different things, and treating them alike caused real churn.
+      //
+      // If the sheet's own domain OWNS the key, this is stale metadata: the sheet proposed it,
+      // the proposal was accepted, and the sheet has not been rewritten since. The value is
+      // authoritative and the status is a leftover. Erroring there means every promotion has
+      // to be followed by a rewrite of the very sheets that earned it, and any agent still
+      // holding pre-promotion context re-breaks the merge on its next write. That happened
+      // three times in one afternoon.
+      //
+      // If a DIFFERENT domain proposes it, that is a genuine ownership conflict and stays a
+      // hard error -- two domains claiming one key is what this seam exists to refuse.
+      if (key in schema && proposed) {
+        const owner = schema[key].owner;
+        const sheetDomain = dirname(rel);
+        if (sheetDomain !== owner) {
+          problems.push(`${rel}: proposes "${key}", which the contract already has and ${owner} owns. Two domains cannot claim one key.`);
+          continue;
+        }
+        staleStatus.push(`${rel} still marks "${key}" proposed; it was promoted and this sheet owns it`);
+      }
+      if (!('value' in block)) {
+        problems.push(`${rel}: manifest block for "${key}" has no "value"`);
+        continue;
+      }
+
+      // A proposal is a finding, not a contribution. It is reported by name and never
+      // merged: there is no shape to validate it against, so anything downstream reading
+      // it would be reading an unchecked value — the exact thing this seam exists to stop.
+      if (proposed && !(key in schema)) {
+        const already = proposals.find((p) => p.key === key);
+        if (already) {
+          problems.push(`${rel}: proposes "${key}", already proposed by ${already.sheet}. One key, one owning sheet — that rule holds for proposals too.`);
+          continue;
+        }
+        proposals.push({ key, sheet: rel, value: block.value });
+        found = true;
+        continue;
+      }
+
+      // The check that replaces a verifier agent hunting contradictions. Two sheets
+      // asserting the same key is not a disagreement to adjudicate, it is a
+      // duplicated responsibility, and the graph already says each key has one owner.
+      if (key in manifest) {
+        problems.push(`${rel}: "${key}" was already provided by ${provenance[key]}. One key, one owning sheet — decide which owns it and have the other reference it.`);
+        continue;
+      }
+
+      manifest[key] = block.value;
+      provenance[key] = rel;
+      found = true;
+    }
+    if (found) contributing += 1;
+  }
+
+  // Only the creative contract's validator knows the creative cross-key invariants. A
+  // caller merging a different schema validates it itself.
+  let missing = [];
+  if (schema === SCHEMA) {
+    const { problems: schemaProblems, missing: absent } = validateManifest(manifest);
+    problems.push(...schemaProblems);
+    missing = absent;
+  }
+
+  return {
+    manifest,
+    problems,
+    missing,
+    provenance,
+    proposals: proposals.sort((a, b) => a.key.localeCompare(b.key)),
+    staleStatus,
+    sheetsRead: files.length,
+    sheetsContributing: contributing,
+  };
+}
